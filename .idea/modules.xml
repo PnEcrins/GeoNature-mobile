@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app2/app2.iml" filepath="$PROJECT_DIR$/app2/app2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/commons/commons.iml" filepath="$PROJECT_DIR$/commons/commons.iml" />
+      <module fileurl="file://$PROJECT_DIR$/maps/maps.iml" filepath="$PROJECT_DIR$/maps/maps.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pne.iml" filepath="$PROJECT_DIR$/pne.iml" />
+    </modules>
+  </component>
+</project>
+
