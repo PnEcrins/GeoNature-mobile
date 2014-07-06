@@ -778,9 +778,6 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
             else {
                 Log.w(DrawControl.class.getName(), "addOrUpdateFeature feature '" + feature.getId() + "' invalid !");
 
-                // TODO:
-                // refreshes all features
-                //mWebViewFragment.loadUrl(getJSUrlPrefix() + ".loadFeatures()");
                 mWebViewFragment.loadUrl(getJSUrlPrefix() + ".deleteFeature(\"" + feature.getId() + "\")");
                 mWebViewFragment.setCurrentEditableFeature(null);
                 updateButtons();
