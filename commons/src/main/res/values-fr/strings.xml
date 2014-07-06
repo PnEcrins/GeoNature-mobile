@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="synchro_device_status">Etat du terminal</string>
+    <string name="synchro_last_synchronization">Dernière synchronisation</string>
+    <string name="synchro_last_synchronization_never">Jamais</string>
+    <string name="synchro_inputs_not_synchronized">Relevés non synchronisés</string>
+
+    <string name="synchro_server_status">Connexion au serveur</string>
+    <string name="synchro_data_transfer_server_mobile">Mise à jour des données</string>
+    <string name="synchro_data_transfer_mobile_server">Transfert de vos données</string>
+    <string name="synchro_device_hint">terminal</string>
+    <string name="synchro_server_hint">serveur</string>
+    <string name="synchro_server_status_pending">En cours &#8230;</string>
+    <string name="synchro_server_status_ok">OK</string>
+    <string name="synchro_server_status_ko">Echec</string>
+    <string name="synchro_message_downloading">Téléchargement de \'%1$s\' &#8230;</string>
+    <string name="synchro_message_downloading_file_ok">Terminé</string>
+    <string name="synchro_message_downloading_copy_file_ko">Echec lors de la copie de \'%1$s\'</string>
+    <string name="synchro_message_downloading_file_ko">Echec lors du téléchargement de \'%1$s\'</string>
+    <string name="synchro_message_downloading_complete">Terminé avec succès</string>
+    <string name="synchro_message_downloading_complete_with_errors">Terminé avec erreur(s)</string>
+    <string name="synchro_message_downloading_aborted">Annulé</string>
+    <string name="synchro_message_upload_no_data">Aucune saisie à envoyer</string>
+    <string name="synchro_message_upload_unable_to_load_dir">Impossible de lire le répertoire</string>
+    <string name="synchro_message_uploading">Transfert de \'%1$s\' &#8230;</string>
+    <string name="synchro_message_uploading_file_ok">Terminé</string>
+    <string name="synchro_message_uploading_file_ko">Echec lors du transfert de \'%1$s\'</string>
+    <string name="synchro_message_uploading_complete">Terminé avec succès</string>
+    <string name="synchro_message_uploading_complete_with_errors">Terminé avec erreur(s)</string>
+
+    <string name="pager_fragment_observers_and_date_title">Observateur &#38; date</string>
+    <string name="pager_fragment_taxa_title">Taxons</string>
+    <string name="pager_fragment_counting_title">Dénombrement</string>
+    <string name="pager_fragment_criteria_title">Critères</string>
+    <string name="pager_fragment_results_input_title">Bilan</string>
+
+    <string name="alert_dialog_confirm_cancel_synchro_title">Annuler ?</string>
+    <string name="alert_dialog_confirm_cancel_synchro_message">Etes vous sûr de vouloir abandonner la synchronisation ?</string>
+    <string name="alert_dialog_confirm_delete_inputs_title">Supprimer toutes les saisies ?</string>
+    <string name="alert_dialog_confirm_delete_inputs_message">Voulez vous suppprimer toutes les saisies non synchronisées ?</string>
+    <string name="alert_dialog_datetime_tab_date">Date</string>
+    <string name="alert_dialog_datetime_tab_time">Heure</string>
+    <string name="alert_dialog_taxa_filter_status_title">Filtrer par statut</string>
+    <string name="alert_dialog_confirm_delete_taxon_title">Supprimer le taxon ?</string>
+    <string name="alert_dialog_confirm_delete_taxon_message">Voulez vous supprimer la saisie de ce taxon ?</string>
+    <string name="alert_dialog_add_comment_title">Ajouter un commentaire</string>
+    <string name="alert_dialog_edit_comment_title">Editer un commentaire</string>
+    <string name="alert_dialog_add_comment_hint">Ajouter un commentaire</string>
+    <string name="alert_dialog_ok">OK</string>
+    <string name="alert_dialog_cancel">Annuler</string>
+
+    <string name="progress_title">Patientez</string>
+    <string name="progress_message_loading_settings">Chargement des paramètres &#8230;</string>
+
+    <string name="message_device_status_waiting">Chargement en cours &#8230;</string>
+    <string name="message_settings_not_found">Erreur lors du chargement des paramètres \'%1$s\'</string>
+
+    <string name="observers_and_date_selected_observers">Observateurs</string>
+    <string name="observers_and_date_date">Date</string>
+    <string name="observers_and_date_add_observer">Ajouter un observateur</string>
+
+    <string name="taxa_no_data">Aucun taxon</string>
+    <plurals name="taxa_count">
+        <item quantity="one">Un taxon</item>
+        <item quantity="other">%d taxons</item>
+    </plurals>
+    <string name="taxa_search_hint">Rechercher un taxon</string>
+    <string name="taxa_heritage_hint">patrimoniaux</string>
+    <string name="taxon_status_search">A rechercher</string>
+    <string name="taxon_status_new">Nouveau</string>
+    <string name="taxon_status_optional">Facultatif</string>
+
+    <string name="counting_no_data">Aucun critère</string>
+    <string name="counting_adult_male">Adulte male</string>
+    <string name="counting_adult_female">Adulte femelle</string>
+    <string name="counting_adult_undetermined">Adulte indéterminé</string>
+    <string name="counting_not_adult">Non adulte</string>
+    <string name="counting_young">Jeune</string>
+    <string name="counting_yearling">Jeune d\'un an</string>
+    <string name="counting_undetermined">Sexe et age indéterminé</string>
+
+    <string name="criteria_no_data">Aucun critère</string>
+
+    <string name="results_input_taxa_added">{0,choice,0#Aucun taxon saisi|1#Un taxon saisi|1&lt;{0} taxons saisis} pour ce pointage</string>
+    <string name="results_input_add_taxon">Ajouter un taxon</string>
+
+    <string name="button_start_synchro">Commencer la synchronisation sans fil</string>
+    <string name="button_start_input">Commencer la saisie</string>
+    <string name="button_pager_previous">Précédent</string>
+    <string name="button_pager_next">Suivant</string>
+    <string name="button_pager_finish">Terminer</string>
+    <string name="button_counting_minus">-</string>
+    <string name="button_counting_plus">+</string>
+
+    <string name="observers_no_data">Aucun observateur</string>
+    <plurals name="observers_count">
+        <item quantity="one">Un observateur</item>
+        <item quantity="other">%d observateurs</item>
+    </plurals>
+    <string name="observers_search_hint">Rechercher un observateur</string>
+
+    <string name="action_settings">Paramètres</string>
+    <string name="action_search">Recherche</string>
+    <string name="action_unselect_all">Annuler la sélection</string>
+    <string name="action_title_item_selected">%1$d sélectionné(s)</string>
+    <string name="action_switch_label_latin">Non scientifique</string>
+    <string name="action_switch_label_french">Nom commun</string>
+    <string name="action_delete_taxon">Supprimer un taxon</string>
+    <string name="action_comment_add">Ajouter un commentaire</string>
+    <string name="action_comment_edit">Supprimer un commentaire</string>
+
+</resources>

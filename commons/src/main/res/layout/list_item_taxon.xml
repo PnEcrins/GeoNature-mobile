@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="?android:attr/listPreferredItemHeight">
+
+    <View
+        android:id="@+id/viewStatusColor"
+        android:layout_width="20dp"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/textViewTaxonMessage"
+        android:layout_alignTop="@+id/textSwitcher"
+        android:layout_alignWithParentIfMissing="true"
+        android:background="@android:color/transparent"
+        android:minHeight="?android:attr/listPreferredItemHeight"/>
+
+    <ImageView
+        android:id="@+id/imageViewHeritage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:contentDescription="@string/taxa_heritage_hint"
+        android:src="@drawable/ic_action_taxon_heritage"
+        android:visibility="invisible"/>
+
+    <TextSwitcher
+        android:id="@+id/textSwitcher"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@id/imageViewHeritage"
+        android:layout_toRightOf="@id/viewStatusColor">
+    </TextSwitcher>
+
+    <TextView
+        android:id="@+id/textViewTaxonObservers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/textSwitcher"
+        android:layout_below="@id/textSwitcher"
+        android:paddingLeft="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/textViewTaxonDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/textSwitcher"
+        android:layout_below="@id/textViewTaxonObservers"
+        android:paddingLeft="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/textViewTaxonMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/textSwitcher"
+        android:layout_below="@id/textViewTaxonDate"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone"/>
+
+</RelativeLayout>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="?android:attr/listPreferredItemHeight">
+
+    <RadioButton
+        android:id="@+id/radioButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
+
+    <TextView
+        android:id="@+id/textViewTaxonName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/imageViewTaxonComment"
+        android:layout_toRightOf="@id/radioButton"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textIsSelectable="false"/>
+
+    <ImageView
+        android:id="@+id/imageViewTaxonComment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/action_comment_add"
+        android:src="@drawable/ic_action_comment_add"/>
+
+    <LinearLayout
+        android:id="@+id/layoutTaxonDetails"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/textViewTaxonName"
+        android:layout_toLeftOf="@+id/imageViewTaxonComment"
+        android:layout_toRightOf="@id/radioButton"
+        android:orientation="vertical"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone">
+    </LinearLayout>
+
+</RelativeLayout>

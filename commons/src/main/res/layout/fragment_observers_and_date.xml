@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
+
+    <TextView
+        android:id="@+id/textViewSelectedObservers"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="@string/observers_and_date_selected_observers"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <View
+        android:id="@+id/viewSelectedObserversSeparator"
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/textViewSelectedObservers"
+        android:background="@android:color/darker_gray"/>
+
+    <ListView
+        android:id="@+id/listSelectedDate"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true">
+    </ListView>
+
+    <View
+        android:id="@+id/viewSelectedDateSeparator"
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:layout_above="@+id/listSelectedDate"
+        android:background="@android:color/darker_gray"/>
+
+    <TextView
+        android:id="@+id/textViewSelectedDate"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/viewSelectedDateSeparator"
+        android:text="@string/observers_and_date_date"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <ListView
+        android:id="@+id/listSelectedObservers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textViewSelectedDate"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/viewSelectedObserversSeparator">
+    </ListView>
+
+</RelativeLayout>

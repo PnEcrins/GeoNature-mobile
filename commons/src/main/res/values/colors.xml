@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="darker_gray_translucent">#80aaaaaa</color>
+    <color name="darker_gray">#aaa</color>
+    <color name="holo_blue_light">#ff33b5e5</color>
+
+    <color name="status_ok">#0f0</color>
+    <color name="status_ko">#f00</color>
+    <color name="status_pending">#fc0</color>
+
+    <color name="taxon_status_color_search">#f00</color>
+    <color name="taxon_status_color_new">#ffe000</color>
+    <color name="taxon_status_color_optional">#888</color>
+
+</resources>
