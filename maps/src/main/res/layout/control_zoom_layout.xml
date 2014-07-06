@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/zoombarLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="48dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageButton
+        android:id="@+id/imageButtonZoomIn"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/btn_webview"
+        android:contentDescription="@string/action_zoom_in_hint"
+        android:src="@drawable/ic_action_zoom_in"/>
+
+    <ImageButton
+        android:id="@+id/imageButtonZoomOut"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="1dp"
+        android:background="@drawable/btn_webview"
+        android:contentDescription="@string/action_zoom_out_hint"
+        android:src="@drawable/ic_action_zoom_out"/>
+
+</LinearLayout>

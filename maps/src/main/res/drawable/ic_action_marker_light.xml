@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<item android:drawable="@drawable/ic_action_marker_light_selected" android:state_selected="true" />
+	<item android:drawable="@drawable/ic_action_marker_light_disable" android:state_enabled="false" />
+	<item android:drawable="@drawable/ic_action_marker_light_normal" />
+
+</selector>

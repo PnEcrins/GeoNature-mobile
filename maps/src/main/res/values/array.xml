@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="viewport_target_density_labels">
+        <item>@string/viewport_target_density_dpi_auto_label</item>
+        <item>@string/viewport_target_density_dpi_low_label</item>
+        <item>@string/viewport_target_density_dpi_medium_label</item>
+        <item>@string/viewport_target_density_dpi_high_label</item>
+    </string-array>
+    <string-array name="viewport_target_density_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+</resources>

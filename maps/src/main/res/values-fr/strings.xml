@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="viewport_target_density_dpi_auto_label">Optimale</string>
+    <string name="viewport_target_density_dpi_low_label">Basse</string>
+    <string name="viewport_target_density_dpi_medium_label">Moyenne</string>
+    <string name="viewport_target_density_dpi_high_label">Elevée</string>
+
+    <string name="message_location_outside_map_boundaries">Votre position est en dehors des limites de la carte</string>
+    <string name="message_mbtiles_not_found">Erreur lors du chargement des données MBTiles \'%1$s\'</string>
+    <string name="message_current_location">Votre position actuelle</string>
+    <string name="message_feature_invalid">Cette géometrie n\'est pas valide</string>
+
+    <string name="action_layer_add_remove">Ajouter ou supprimer une couche</string>
+    <string name="action_marker">Ajouter un marqueur</string>
+    <string name="action_marker_from_location">Ajouter un marqueur depuis la position courante</string>
+    <string name="action_marker_hint">Ajouter un marqueur</string>
+    <string name="action_path_hint">Ajouter un chemin</string>
+    <string name="action_polygon_hint">Ajouter un polygone</string>
+    <string name="action_edit_hint">Editer une couche vectorielle ou un marqueur</string>
+    <string name="action_delete_hint">Supprimer une couche vectorielle ou un marqueur</string>
+    <string name="action_zoom_in_hint">Zoomer</string>
+    <string name="action_zoom_out_hint">Dézoomer</string>
+    <string name="action_center_position_hint">Centrer la carte sur la position courante</string>
+
+</resources>

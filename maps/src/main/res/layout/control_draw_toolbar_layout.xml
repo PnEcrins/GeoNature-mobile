@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/editToolbarLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageButton
+        android:id="@+id/imageButtonAddMarker"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/btn_webview"
+        android:contentDescription="@string/action_marker_hint"
+        android:src="@drawable/ic_action_marker_light"/>
+
+    <ImageButton
+        android:id="@+id/imageButtonAddPath"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="1dp"
+        android:background="@drawable/btn_webview"
+        android:contentDescription="@string/action_path_hint"
+        android:src="@drawable/ic_action_path_light"/>
+
+    <ImageButton
+        android:id="@+id/imageButtonAddPolygon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="1dp"
+        android:background="@drawable/btn_webview"
+        android:contentDescription="@string/action_polygon_hint"
+        android:src="@drawable/ic_action_polygon_light"/>
+
+    <ImageButton
+        android:id="@+id/imageButtonEdit"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/btn_webview"
+        android:contentDescription="@string/action_edit_hint"
+        android:src="@drawable/ic_action_edit_light"/>
+
+    <ImageButton
+        android:id="@+id/imageButtonDelete"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="1dp"
+        android:background="@drawable/btn_webview"
+        android:contentDescription="@string/action_delete_hint"
+        android:src="@drawable/ic_action_delete_light"/>
+
+</LinearLayout>

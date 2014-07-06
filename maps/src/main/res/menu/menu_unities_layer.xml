@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group
+        android:id="@+id/groupUnities"
+        android:checkableBehavior="all">
+
+        <item
+            android:id="@+id/itemMarker"
+            android:checkable="true"
+            android:icon="@drawable/ic_action_marker"
+            app:showAsAction="ifRoom"
+            android:title="@string/action_marker"/>
+        <item
+            android:id="@+id/itemMarkerFromLocation"
+            android:checkable="true"
+            android:icon="@drawable/ic_action_marker_from_location"
+            app:showAsAction="ifRoom"
+            android:title="@string/action_marker_from_location"/>
+        <item
+            android:id="@+id/itemToggleUnitiesLayers"
+            android:checkable="true"
+            android:icon="@drawable/ic_action_layer_add"
+            app:showAsAction="ifRoom"
+            android:title="@string/action_layer_add_remove"/>
+
+    </group>
+
+</menu>

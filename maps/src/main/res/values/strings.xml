@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">maps</string>
+
+    <string name="viewport_target_density_dpi_auto_label">Best quality</string>
+    <string name="viewport_target_density_dpi_low_label">Low</string>
+    <string name="viewport_target_density_dpi_medium_label">Medium</string>
+    <string name="viewport_target_density_dpi_high_label">High</string>
+
+    <string name="message_location_outside_map_boundaries">Your position is outside map boundaries</string>
+    <string name="message_mbtiles_not_found">Unable to load MBTiles \'%1$s\'</string>
+    <string name="message_current_location">Your current position</string>
+    <string name="message_feature_invalid">This feature is not valid</string>
+
+    <string name="action_layer_add_remove">Add or remove layer</string>
+    <string name="action_marker">Add a marker</string>
+    <string name="action_marker_from_location">Add a marker from current location</string>
+    <string name="action_marker_hint">Add a marker</string>
+    <string name="action_path_hint">Add a path</string>
+    <string name="action_polygon_hint">Add a polygon</string>
+    <string name="action_edit_hint">Edit a vector or marker layer</string>
+    <string name="action_delete_hint">Delete a vector or marker layer</string>
+    <string name="action_zoom_in_hint">Zoom in</string>
+    <string name="action_zoom_out_hint">Zoom out</string>
+    <string name="action_center_position_hint">Center map from current location</string>
+
+</resources>
