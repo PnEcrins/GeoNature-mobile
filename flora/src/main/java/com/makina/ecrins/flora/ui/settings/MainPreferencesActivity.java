@@ -13,6 +13,9 @@ import com.makina.ecrins.flora.BuildConfig;
 import com.makina.ecrins.flora.MainApplication;
 import com.makina.ecrins.flora.R;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 /**
  * Global preferences for this application.
  *
@@ -52,16 +55,17 @@ public class MainPreferencesActivity extends PreferenceActivity implements OnSha
         if (defaultObserver != null) {
             Preference defaultObserverPreference = findPreference("default_observer");
 
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this)
-                    .edit();
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
             editor.putLong("default_observer", defaultObserver.getObserverId());
             editor.commit();
 
             defaultObserverPreference.setSummary(defaultObserver.getLastname() + " " + defaultObserver.getFirstname());
         }
 
-        updateDispayMapDensitySummary(Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(KEY_LIST_PREFERENCE_DENSITY_DISPLAY_MAP, "0")));
+        updateDispayMapDensitySummary(
+                Integer.parseInt(
+                        PreferenceManager.getDefaultSharedPreferences(this)
+                                .getString(KEY_LIST_PREFERENCE_DENSITY_DISPLAY_MAP, "0")));
 
         getAppVersion();
     }
@@ -88,6 +92,7 @@ public class MainPreferencesActivity extends PreferenceActivity implements OnSha
                         R.string.app_version,
                         BuildConfig.VERSION_NAME,
                         BuildConfig.VERSION_CODE,
-                        BuildConfig.BUILD_DATE));
+                        DateFormat.getDateTimeInstance().format(
+                                new Date(Long.valueOf(BuildConfig.BUILD_DATE)))));
     }
 }

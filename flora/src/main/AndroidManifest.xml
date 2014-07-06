@@ -3,7 +3,7 @@
     package="com.makina.ecrins.flora"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:sharedUserId="com.makina.ecrins"
-    android:versionCode="529">
+    android:versionCode="541">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>

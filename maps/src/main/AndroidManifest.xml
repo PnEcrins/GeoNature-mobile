@@ -2,7 +2,7 @@
 <manifest
     package="com.makina.ecrins.maps"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="387">
+    android:versionCode="399">
 
     <application
         android:allowBackup="true"
