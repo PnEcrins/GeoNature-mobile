@@ -1,0 +1,130 @@
+package com.makina.ecrins.flora.ui.input.taxa;
+
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+
+import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
+import com.makina.ecrins.commons.ui.pager.IValidateWithNavigationControlFragment;
+import com.makina.ecrins.flora.MainApplication;
+import com.makina.ecrins.flora.R;
+import com.makina.ecrins.flora.input.Taxon;
+import com.makina.ecrins.flora.ui.input.PagerFragmentActivity;
+
+/**
+ * Step 3: The user must choose an action if he found or not a {@link Taxon}.
+ *
+ * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+ */
+public class TaxaFoundFragment extends Fragment implements IValidateWithNavigationControlFragment, OnClickListener {
+
+    private static final String TAG = TaxaFoundFragment.class.getName();
+
+    private static final String ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT = "alert_dialog_delete_all_areas";
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_taxa_found, container, false);
+
+        view.findViewById(R.id.buttonTaxonFound).setOnClickListener(this);
+        view.findViewById(R.id.buttonTaxonNotFound).setOnClickListener(this);
+
+        return view;
+    }
+
+    @Override
+    public int getResourceTitle() {
+        return R.string.pager_fragment_taxa_found_title;
+    }
+
+    @Override
+    public boolean getPagingEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean validate() {
+        return true;
+    }
+
+    @Override
+    public void refreshView() {
+        ((ActionBarActivity) getActivity()).getSupportActionBar()
+                .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+    }
+
+    @Override
+    public boolean getPagingToForwardEnabled() {
+        return false;
+    }
+
+    @Override
+    public boolean getPagingToPreviousEnabled() {
+        return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.buttonTaxonFound:
+                if (((MainApplication) getActivity().getApplication()).getInput()
+                        .getCurrentSelectedTaxon() != null) {
+                    ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                            .getCurrentSelectedTaxon()).setProspectingArea(null);
+                }
+
+                ((PagerFragmentActivity) getActivity()).goToNextPage();
+                break;
+            case R.id.buttonTaxonNotFound:
+                if ((((MainApplication) getActivity().getApplication()).getInput()
+                        .getCurrentSelectedTaxon() != null) &&
+                        (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                .getCurrentSelectedTaxon()).getAreas().isEmpty())) {
+                    ((PagerFragmentActivity) getActivity())
+                            .goToPageByKey(R.string.pager_fragment_webview_pa_title);
+                }
+                else {
+                    confirmBeforeDeleteAreas();
+                }
+
+                break;
+        }
+    }
+
+    private void confirmBeforeDeleteAreas() {
+        DialogFragment dialogFragment = AlertDialogFragment
+                .newInstance(R.string.alert_dialog_confirm_delete_areas_title,
+                        R.string.alert_dialog_confirm_delete_areas_message,
+                        new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d(TAG, "delete all areas");
+
+                                if (((MainApplication) getActivity().getApplication()).getInput()
+                                        .getCurrentSelectedTaxon() != null) {
+                                    ((Taxon) ((MainApplication) getActivity().getApplication())
+                                            .getInput().getCurrentSelectedTaxon()).getAreas()
+                                            .clear();
+                                }
+
+                                ((PagerFragmentActivity) getActivity())
+                                        .goToPageByKey(R.string.pager_fragment_webview_pa_title);
+                            }
+                        },
+                        null
+                );
+
+        dialogFragment.show(
+                getActivity().getSupportFragmentManager(),
+                ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT);
+    }
+}

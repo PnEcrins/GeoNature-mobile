@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="feature">#f30</color>
+    <color name="feature_add">#03f</color>
+    <color name="feature_edit">#03f</color>
+    <color name="feature_ap">#f0c</color>
+    <color name="feature_pa">#fc0</color>
+
+</resources>

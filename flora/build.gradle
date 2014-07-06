@@ -1,0 +1,68 @@
+apply plugin: 'com.android.application'
+
+version = "0.2.9"
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "20.0.0"
+
+    defaultConfig {
+        applicationId "com.makina.ecrins.flora"
+        minSdkVersion 10
+        targetSdkVersion 19
+        versionName version
+        buildConfigField "String", "BUILD_DATE", "\"" + new Date() + "\""
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(STORE_FILE)
+            storePassword STORE_PASSWORD
+            keyAlias KEY_ALIAS
+            keyPassword KEY_PASSWORD
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+
+    buildTypes {
+        debug {
+            versionNameSuffix "-DEV"
+        }
+
+        release {
+            signingConfig signingConfigs.release
+            debuggable false
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            zipAlign true
+
+            applicationVariants.all { variant ->
+                def file = variant.outputFile
+                variant.outputFile = new File(file.parent, file.name.replace(".apk", "-" + defaultConfig.versionName + ".apk"))
+            }
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile project(':commons')
+    compile project(':maps')
+
+    compile 'com.android.support:appcompat-v7:19.+'
+}
+
+task('increaseVersionCode') << {
+    getVersionCode(module.name + "/src/main/AndroidManifest.xml", true)
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name == 'generateReleaseBuildConfig' || task.name == 'generateDebugBuildConfig') {
+        task.dependsOn 'increaseVersionCode'
+    }
+}

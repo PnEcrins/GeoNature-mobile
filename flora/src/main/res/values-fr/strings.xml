@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Flore prioritaire</string>
+    <string name="app_version">%1$s (%2$s)\n%3$s</string>
+
+    <string name="activity_main_title">Flore prioritaire</string>
+    <string name="activity_synchro_title">Synchronisation des données</string>
+    <string name="activity_preferences_title">Paramètres</string>
+    <string name="activity_observers_title">Observateurs</string>
+    <string name="activity_frequency_estimation_title">Estimation</string>
+    <string name="activity_frequency_transect_title">Transect</string>
+    <string name="activity_counting_exhaustive_title">Exhaustif</string>
+    <string name="activity_counting_sampling_title">Echantillonnage</string>
+
+    <string name="preference_category_observers">Observateurs</string>
+    <string name="preference_category_observers_default_observer">Observateur par défaut</string>
+    <string name="preference_category_pointing">Pointage</string>
+    <string name="preference_category_pointing_display_scale">Afficher l\'échelle</string>
+    <string name="preference_category_density">Qualité</string>
+    <string name="preference_category_density_title">Qualité du rendu de la carte</string>
+    <string name="preference_category_density_dialog">Choix du rendu</string>
+    <string name="preference_category_about">A propos</string>
+    <string name="preference_category_about_app_version">Version de l\'application</string>
+
+    <string name="pager_fragment_taxa_found_title">Avez vous trouvé l\'espèce ?</string>
+    <string name="pager_fragment_webview_ap_title">Carte (AP)</string>
+    <string name="pager_fragment_area_title">Surface : %s</string>
+    <string name="pager_fragment_frequencies_title">Fréquence</string>
+    <string name="pager_fragment_phenology_title">Phénologie</string>
+    <string name="pager_fragment_counting_title">Comptage</string>
+    <string name="pager_fragment_physiognomy_title">Physionomie</string>
+    <string name="pager_fragment_disturbances_title">Perturbations</string>
+    <string name="pager_fragment_remarks_title">Remarques</string>
+    <string name="pager_fragment_choose_action_title">Que voulez vous faire ?</string>
+    <string name="pager_fragment_webview_pa_title">Carte (ZP)</string>
+
+    <string name="message_saving_current_input_failed">Erreur lors de la sauvegarde de la saisie</string>
+    <string name="message_pa_not_contains_all_aps">La ZP ne couvre pas toutes les APs</string>
+    <string name="message_counting_invalid">Donnée de saisie incorrecte</string>
+
+    <string name="progress_message_saving_current_input">Sauvegarde de la saisie &#8230;</string>
+
+    <string name="alert_dialog_confirm_cancel_title">Annuler ?</string>
+    <string name="alert_dialog_confirm_cancel_input_all_message">Abandonner toute la saisie ?</string>
+    <string name="alert_dialog_confirm_delete_area_title">Supprimer l\'AP en cours ?</string>
+    <string name="alert_dialog_confirm_delete_area_message">Une AP est en cours de saisie.\nSouhaitez vous la supprimer ?</string>
+    <string name="alert_dialog_confirm_delete_areas_title">Supprimer toutes les APs ?</string>
+    <string name="alert_dialog_confirm_delete_areas_message">Ce taxon contient au moins une AP.\nSouhaitez vous tout supprimer ?</string>
+    <string name="alert_dialog_confirm_quit_title">Quitter ?</string>
+    <string name="alert_dialog_confirm_quit_finish_title">Que voulez vous faire ?</string>
+    <string name="alert_dialog_action_start_new_input">Démarrer une nouvelle prospection</string>
+    <string name="alert_dialog_action_close_app">Fermer l\'application</string>
+    <string name="alert_dialog_action_cancel_alert_dialog">Annuler cette boite de dialogue</string>
+    <string name="alert_dialog_confirm_quit_finish_message">Votre zone de prospection a bien été enregistrée.</string>
+    <string name="alert_dialog_confirm_quit_finish_step_message">Sauvegarder et quitter cette étape ?</string>
+
+    <string name="observers_and_date_date_format">dd MMMM yyyy</string>
+
+    <string name="taxa_found_button_yes">oui</string>
+    <string name="taxa_found_button_no">non</string>
+
+    <string name="area_none">Non définie</string>
+    <string name="area_point">Point</string>
+    <string name="area_path">Chemin</string>
+    <string name="area_polygon">Polygone</string>
+    <string name="area_point_area_hint">Surface (m&#x00B2;)</string>
+    <string name="area_path_length_computed">Longueur du chemin : %.2f</string>
+    <string name="area_path_width_hint">Largeur (m)</string>
+    <string name="area_path_incline">Pente :</string>
+    <string name="area_polygon_planimetric_area_computed">Surface planimétrique : %.2f m&#x00B2;</string>
+    <string name="area_computed">Surface calculée : %.2f m&#x00B2;</string>
+
+    <string name="frequencies_selected_frequency_computed">Fréquence mesurée : %s</string>
+    <string name="frequency_estimation_abacus_hint">abaque</string>
+    <string name="frequency_estimation_min_value">0</string>
+    <string name="frequency_estimation_frequency">Fréquence :</string>
+    <string name="frequency_estimation_frequency_precentage">&#37;</string>
+    <string name="frequency_transect_step_advice">Longueur du pas conseillé pour 100 points : %d cm</string>
+    <string name="frequency_transect_number_of_transects">Nombre de transects :</string>
+    <string name="frequency_transect_yes">OUI</string>
+    <string name="frequency_transect_no">NON</string>
+    <string name="frequency_transect_number_of_steps">Nombre de pas : %d</string>
+    <string name="frequency_transect_frequency">Fréquence : %s</string>
+    <string name="frequency_transect_frequency_undefined">Fréquence : non définie</string>
+
+    <string name="phenology_no_data">Aucune phénologie</string>
+
+    <string name="counting_no_method">Aucun</string>
+    <string name="counting_selected_counting">Fertiles : %1$d, Stériles : %2$d</string>
+    <string name="counting_plot">Placettes</string>
+    <string name="counting_elements">Nombre total d\'éléments comptés dans les placettes</string>
+    <string name="counting_fertile">Fertiles</string>
+    <string name="counting_sterile">Stériles</string>
+    <string name="counting_exhaustive_hint">Nombre total d\'éléments comptés pour l\'ensemble de l\'aire de présence</string>
+    <string name="counting_sampling_plot_surface">Surface d\'une placette en m&#x00B2;</string>
+    <string name="counting_sampling_plot_number">Nombre de placettes :</string>
+    <string name="counting_sampling_fertile_count">Fertiles :</string>
+    <string name="counting_sampling_sterile_count">Stériles :</string>
+    <plurals name="counting_sampling_fertile_total_count">
+        <item quantity="one">%d fertile</item>
+        <item quantity="other">%d fertiles</item>
+    </plurals>
+    <plurals name="counting_sampling_sterile_total_count">
+        <item quantity="one">%d stérile</item>
+        <item quantity="other">%d stériles</item>
+    </plurals>
+
+    <string name="physionomy_no_data">Aucune physionomie</string>
+
+    <string name="disturbances_no_data">Aucune perturbation</string>
+
+    <string name="remarks_hint">Ajouter un commentaire</string>
+
+    <string name="choose_action_title_quit_step">Confirmation : étape terminée ?</string>
+    <string name="choose_action_yes">OUI, valider et poursuivre</string>
+    <string name="choose_action_no">NON, fermer cette fenêtre</string>
+    <string name="choose_action_message">Votre aire de présence a bien été enregistrée.</string>
+    <string name="choose_action_pause">Mettre en veille et continuer la prospection</string>
+    <string name="choose_action_area">Saisir une nouvelle aire de présence</string>
+    <string name="choose_action_finish">Terminer la prospection</string>
+
+    <string name="action_collection_pa_display_hide">Afficher ou masquer les ZPs</string>
+
+    <string name="button_finish">Terminer</string>
+
+</resources>

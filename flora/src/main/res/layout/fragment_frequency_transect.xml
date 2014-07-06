@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    android:id="@+id/scrollView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <TextView
+            android:id="@+id/textViewFrequencyStepAdvice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="@string/frequency_transect_step_advice"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        <TextView
+            android:id="@+id/textViewNumberOfTransects"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/textViewFrequencyStepAdvice"
+            android:text="@string/frequency_transect_number_of_transects"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        <EditText
+            android:id="@+id/editTextNumberOfTransects"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/textViewNumberOfTransects"
+            android:layout_toRightOf="@+id/textViewNumberOfTransects"
+            android:ems="3"
+            android:inputType="number"
+            android:singleLine="true">
+        </EditText>
+
+        <Button
+            android:id="@+id/buttonYes"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_below="@+id/editTextNumberOfTransects"
+            android:layout_centerHorizontal="true"
+            android:text="@string/frequency_transect_yes"
+            android:textColor="@color/frequency_transect_yes"
+            android:textStyle="bold"/>
+
+        <EditText
+            android:id="@+id/editTextYes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/buttonYes"
+            android:layout_centerHorizontal="true"
+            android:ems="3"
+            android:inputType="number"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/buttonNo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_below="@+id/editTextYes"
+            android:layout_centerHorizontal="true"
+            android:text="@string/frequency_transect_no"
+            android:textColor="@color/frequency_transect_no"
+            android:textStyle="bold"/>
+
+        <EditText
+            android:id="@+id/editTextNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/buttonNo"
+            android:layout_centerHorizontal="true"
+            android:ems="3"
+            android:inputType="number"
+            android:singleLine="true"/>
+
+        <TextView
+            android:id="@+id/textViewNumberOfSteps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/editTextNo"
+            android:text="@string/frequency_transect_number_of_steps"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        <TextView
+            android:id="@+id/textViewComputedFrequency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/textViewNumberOfSteps"
+            android:text="@string/frequency_transect_frequency"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textStyle="bold"/>
+
+    </RelativeLayout>
+
+</ScrollView>

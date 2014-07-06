@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textViewHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_horizontal"
+        android:text="@string/counting_exhaustive_hint"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <TextView
+        android:id="@+id/textViewCountingFertile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewHint"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:text="@string/counting_fertile"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <EditText
+        android:id="@+id/editTextCountingFertile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewCountingFertile"
+        android:layout_centerHorizontal="true"
+        android:ems="3"
+        android:imeOptions="actionDone"
+        android:inputType="number"
+        android:singleLine="true"/>
+
+    <Button
+        android:id="@+id/buttonCountingMinusFertile"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignBaseline="@id/editTextCountingFertile"
+        android:layout_toLeftOf="@id/editTextCountingFertile"
+        android:text="@string/button_counting_minus"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <Button
+        android:id="@+id/buttonCountingPlusFertile"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignBaseline="@id/editTextCountingFertile"
+        android:layout_toRightOf="@id/editTextCountingFertile"
+        android:text="@string/button_counting_plus"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <View
+        android:id="@+id/viewSeparatorFertile"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/editTextCountingFertile"
+        android:layout_margin="10dp"
+        android:background="@color/darker_gray_translucent"/>
+
+    <TextView
+        android:id="@+id/textViewCountingSterile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/viewSeparatorFertile"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:text="@string/counting_sterile"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <EditText
+        android:id="@+id/editTextCountingSterile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewCountingSterile"
+        android:layout_centerHorizontal="true"
+        android:ems="3"
+        android:imeOptions="actionDone"
+        android:inputType="number"
+        android:singleLine="true"/>
+
+    <Button
+        android:id="@+id/buttonCountingMinusSterile"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignBaseline="@id/editTextCountingSterile"
+        android:layout_toLeftOf="@id/editTextCountingSterile"
+        android:text="@string/button_counting_minus"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <Button
+        android:id="@+id/buttonCountingPlusSterile"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignBaseline="@id/editTextCountingSterile"
+        android:layout_toRightOf="@id/editTextCountingSterile"
+        android:text="@string/button_counting_plus"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+</RelativeLayout>

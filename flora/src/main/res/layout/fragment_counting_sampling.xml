@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    android:id="@+id/scrollView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textViewPlot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:text="@string/counting_plot"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        <View
+            android:id="@+id/viewSeparatorPlot"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/textViewPlot"
+            android:layout_marginBottom="10dp"
+            android:background="@color/darker_gray_translucent"/>
+
+        <LinearLayout
+            android:id="@+id/plotLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/viewSeparatorPlot"
+            android:layout_centerInParent="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textViewPlotSurface"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/counting_sampling_plot_surface"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <EditText
+                android:id="@+id/editTextPlotSurface"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="3"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal"
+                android:singleLine="true"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textViewCountingPlot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/plotLayout"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="10dp"
+            android:text="@string/counting_sampling_plot_number"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <EditText
+            android:id="@+id/editTextCountingPlot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textViewCountingPlot"
+            android:layout_centerHorizontal="true"
+            android:ems="3"
+            android:imeOptions="actionDone"
+            android:inputType="number"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/buttonCountingMinusPlot"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignBaseline="@id/editTextCountingPlot"
+            android:layout_toLeftOf="@id/editTextCountingPlot"
+            android:text="@string/button_counting_minus"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        <Button
+            android:id="@+id/buttonCountingPlusPlot"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignBaseline="@id/editTextCountingPlot"
+            android:layout_toRightOf="@id/editTextCountingPlot"
+            android:text="@string/button_counting_plus"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        <TextView
+            android:id="@+id/textViewElements"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/editTextCountingPlot"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/counting_elements"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        <View
+            android:id="@+id/viewSeparatorElements"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/textViewElements"
+            android:layout_marginBottom="10dp"
+            android:background="@color/darker_gray_translucent"/>
+
+        <LinearLayout
+            android:id="@+id/fertileLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/viewSeparatorElements"
+            android:layout_centerInParent="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textViewCountingFertile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/counting_sampling_fertile_count"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <EditText
+                android:id="@+id/editTextCountingFertile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="3"
+                android:imeOptions="actionDone"
+                android:inputType="number"
+                android:singleLine="true"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/sterileLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fertileLayout"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textViewCountingSterile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/counting_sampling_sterile_count"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <EditText
+                android:id="@+id/editTextCountingSterile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="3"
+                android:imeOptions="actionDone"
+                android:inputType="number"
+                android:singleLine="true"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textViewTotalCountingFertile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/sterileLayout"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="10dp"
+            android:text="@plurals/counting_sampling_fertile_total_count"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/textViewTotalCountingSterile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textViewTotalCountingFertile"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="10dp"
+            android:text="@plurals/counting_sampling_sterile_total_count"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold"/>
+
+    </RelativeLayout>
+
+</ScrollView>

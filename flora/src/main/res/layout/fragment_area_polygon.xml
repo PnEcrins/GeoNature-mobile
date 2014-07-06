@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textViewPolygonPlanimetricAreaComputed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/area_polygon_planimetric_area_computed"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <Spinner
+        android:id="@+id/spinnerIncline"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/textViewPolygonPlanimetricAreaComputed"/>
+
+    <TextView
+        android:id="@+id/textViewAreaComputed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/spinnerIncline"
+        android:text="@string/area_computed"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <TextView
+        android:id="@+id/textViewIncline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/spinnerIncline"
+        android:layout_toLeftOf="@+id/spinnerIncline"
+        android:text="@string/area_path_incline"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+</RelativeLayout>

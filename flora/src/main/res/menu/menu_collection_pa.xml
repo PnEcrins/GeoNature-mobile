@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/itemCollectionPAs"
+        android:checkable="true"
+        android:icon="@drawable/ic_action_collection_pa"
+        app:showAsAction="ifRoom"
+        android:title="@string/action_collection_pa_display_hide"/>
+
+</menu>
