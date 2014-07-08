@@ -22,8 +22,6 @@ allprojects {
     }
 }
 
-
-import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
 def getVersionCode(manifestLocation, increment = false) {

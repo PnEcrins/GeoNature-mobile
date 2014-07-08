@@ -151,14 +151,12 @@ public class WebViewFragment extends AbstractWebViewFragment
 
     @Override
     public boolean validate() {
-        Log.d(TAG, "validate KEY_EDITING_FEATURE: " + getSavedInstanceState()
-                .getBoolean(KEY_EDITING_FEATURE, false));
+        Log.d(TAG, "validate KEY_EDITING_FEATURE: " +
+                getSavedInstanceState().getBoolean(KEY_EDITING_FEATURE, false));
 
         if (getArguments().getBoolean(KEY_AP, true)) {
-            return (((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon() != null) &&
-                    (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                            .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
+            return (((MainApplication) getActivity().getApplication()).getInput().getCurrentSelectedTaxon() != null) &&
+                    (((Taxon) ((MainApplication) getActivity().getApplication()).getInput().getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
                     (!getSavedInstanceState().getBoolean(KEY_EDITING_FEATURE, false));
         }
         else {
@@ -217,8 +215,7 @@ public class WebViewFragment extends AbstractWebViewFragment
         MapSettings mapSettings = super.getMapSettings();
 
         if (mapSettings == null) {
-            mapSettings = ((MainApplication) getActivity().getApplication()).getAppSettings()
-                    .getMapSettings();
+            mapSettings = ((MainApplication) getActivity().getApplication()).getAppSettings().getMapSettings();
             setMapSettings(mapSettings);
         }
 
@@ -241,8 +238,11 @@ public class WebViewFragment extends AbstractWebViewFragment
         if (super.addOrUpdateEditableFeature(selectedFeature) && !getEditableFeatures()
                 .getFeatures().isEmpty() && (((MainApplication) getActivity().getApplication())
                 .getInput().getCurrentSelectedTaxon() != null)) {
-            Log.d(TAG, "addOrUpdateEditableFeature : " + selectedFeature.getGeometry().getType()
-                    .name() + ", id : " + selectedFeature.getId());
+            Log.d(TAG,
+                    "addOrUpdateEditableFeature: " +
+                            selectedFeature.getGeometry().getType().name() +
+                            ", id: " +
+                            selectedFeature.getId());
 
             getSavedInstanceState().putBoolean(KEY_EDITING_FEATURE, false);
 
@@ -278,8 +278,10 @@ public class WebViewFragment extends AbstractWebViewFragment
                         .getCurrentSelectedTaxon()).getAreas().isEmpty()) {
                     // checks if this feature contains all features added to this taxon areas
                     if (!checkIfProspectingAreaContainsAllAreasPresences(selectedFeature)) {
-                        Log.d(TAG, "feature '" + selectedFeature
-                                .getId() + "' does not contains all previously added areas");
+                        Log.d(TAG,
+                                "feature '" +
+                                        selectedFeature.getId() +
+                                        "' does not contains all previously added areas");
 
                         Toast.makeText(
                                 getActivity(),
@@ -297,6 +299,16 @@ public class WebViewFragment extends AbstractWebViewFragment
             }
         }
         else {
+            if ((selectedFeature.getGeometry() == null) ||
+                    (!GeometryUtils.isValid(selectedFeature.getGeometry()))) {
+                // add this invalid feature to be edited by the user
+                getEditableFeatures().addFeature(selectedFeature);
+                Toast.makeText(
+                        getActivity(),
+                        com.makina.ecrins.maps.R.string.message_feature_invalid,
+                        Toast.LENGTH_SHORT).show();
+            }
+
             ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
 
             return false;

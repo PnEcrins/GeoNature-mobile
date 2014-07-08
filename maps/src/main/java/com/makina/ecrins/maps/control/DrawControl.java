@@ -744,7 +744,7 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
     }
 
     private void addOrUpdateSelectedFeature() {
-        Feature feature = mWebViewFragment.getCurrentEditableFeature();
+        final Feature feature = mWebViewFragment.getCurrentEditableFeature();
 
         if (feature == null) {
             Log.w(DrawControl.class.getName(), "addOrUpdateSelectedFeature: nothing to add or update");
@@ -752,7 +752,7 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
             updateButtons();
         }
         else {
-            if ((feature.getGeometry() != null) && GeometryUtils.isValid(feature.getGeometry())) {
+            if (feature.getGeometry() != null) {
                 // specific case for feature type Point
                 if (!mWebViewFragment.getEditableFeatures()
                         .hasFeature(feature.getId()) && feature.getGeometry()
@@ -766,22 +766,14 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
                         }
                     });
                 }
-
-                // refreshes all features
-                if (mWebViewFragment.addOrUpdateEditableFeature(feature)) {
-                    mWebViewFragment.loadUrl(getJSUrlPrefix() + ".loadFeatures()");
-                    mWebViewFragment.setCurrentEditableFeature(null);
-                }
-
-                updateButtons();
             }
-            else {
-                Log.w(DrawControl.class.getName(), "addOrUpdateFeature feature '" + feature.getId() + "' invalid !");
 
-                mWebViewFragment.loadUrl(getJSUrlPrefix() + ".deleteFeature(\"" + feature.getId() + "\")");
-                mWebViewFragment.setCurrentEditableFeature(null);
-                updateButtons();
-            }
+            // refreshes all features
+            mWebViewFragment.addOrUpdateEditableFeature(feature);
+            mWebViewFragment.loadUrl(getJSUrlPrefix() + ".loadFeatures()");
+            mWebViewFragment.setCurrentEditableFeature(null);
+
+            updateButtons();
         }
     }
 

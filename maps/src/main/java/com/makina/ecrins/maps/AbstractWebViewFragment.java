@@ -128,14 +128,10 @@ public abstract class AbstractWebViewFragment extends Fragment implements IWebVi
         mWebView = new WebView(getActivity().getApplicationContext());
         mLayout.addView(mWebView);
 
-        mWebView.getSettings()
-                .setJavaScriptEnabled(true);
-        mWebView.getSettings()
-                .setRenderPriority(RenderPriority.HIGH);
-        mWebView.getSettings()
-                .setSupportZoom(true);
-        mWebView.getSettings()
-                .setBuiltInZoomControls(false);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setRenderPriority(RenderPriority.HIGH);
+        mWebView.getSettings().setSupportZoom(true);
+        mWebView.getSettings().setBuiltInZoomControls(false);
 
         // see: http://code.google.com/p/android/issues/detail?id=35288
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -143,15 +139,13 @@ public abstract class AbstractWebViewFragment extends Fragment implements IWebVi
         }
 
         // cache settings
-        mWebView.getSettings()
-                .setAppCacheMaxSize(1024 * 1024 * 8);
-        mWebView.getSettings()
-                .setAppCachePath(getActivity().getCacheDir()
-                        .getPath());
-        mWebView.getSettings()
-                .setAppCacheEnabled(true);
-        mWebView.getSettings()
-                .setCacheMode(WebSettings.LOAD_DEFAULT);
+        /*
+        mWebView.getSettings().setAppCacheMaxSize(1024 * 1024 * 8);
+        mWebView.getSettings().setAppCachePath(getActivity().getCacheDir().getPath());
+        mWebView.getSettings().setAppCacheEnabled(true);
+        mWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        */
+        mWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         return view;
     }
@@ -448,14 +442,6 @@ public abstract class AbstractWebViewFragment extends Fragment implements IWebVi
         }
         else {
             this.mSavedState.putParcelable(KEY_SELECTED_EDITABLE_FEATURE, selectedFeature);
-
-            if ((selectedFeature.getGeometry() == null) ||
-                            (!GeometryUtils.isValid(selectedFeature.getGeometry()))) {
-                Toast.makeText(
-                        getActivity(),
-                        R.string.message_feature_invalid,
-                        Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
