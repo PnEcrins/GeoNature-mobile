@@ -40,8 +40,8 @@ public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter imp
     private int mSelectedItemPosition;
 
     private int[] usedSectionNumbers;
-    private SparseIntArray sectionToOffset;
-    private Map<Integer, Integer> sectionToPosition;
+    private final SparseIntArray sectionToOffset;
+    private final Map<Integer, Integer> sectionToPosition;
 
     public AlphabetSectionIndexerCursorAdapter(Context context, int layout, int resourceLabelCount, Cursor c, String sortedColumnIndex, String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
@@ -55,7 +55,7 @@ public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter imp
         this.mSelectedItemPosition = -1;
 
         //use a TreeMap because we are going to iterate over its keys in sorted order
-        sectionToPosition = new TreeMap<Integer, Integer>();
+        sectionToPosition = new TreeMap<>();
         sectionToOffset = new SparseIntArray();
 
         initializeSectionsIndexer(c);

@@ -28,7 +28,7 @@ public final class CenterPositionControl extends AbstractControl implements OnCl
     protected ImageButton mImageButtonCenterPosition;
     protected Boolean mIsCenterPosition = false;
 
-    private LayoutInflater mInflater;
+    private final LayoutInflater mInflater;
     private View mView = null;
 
     public CenterPositionControl(Context pContext) {

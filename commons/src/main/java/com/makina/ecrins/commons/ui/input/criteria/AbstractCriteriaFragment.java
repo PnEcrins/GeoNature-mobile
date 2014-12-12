@@ -101,14 +101,9 @@ public abstract class AbstractCriteriaFragment extends ListFragment
 
     @Override
     public boolean validate() {
-        AbstractTaxon selectedTaxon = getInput().getTaxa().get(getInput().getCurrentSelectedTaxonId());
+        final AbstractTaxon selectedTaxon = getInput().getTaxa().get(getInput().getCurrentSelectedTaxonId());
 
-        if (selectedTaxon == null) {
-            return false;
-        }
-        else {
-            return selectedTaxon.getCriterionId() != -1;
-        }
+        return selectedTaxon != null && selectedTaxon.getCriterionId() != -1;
     }
 
     @Override

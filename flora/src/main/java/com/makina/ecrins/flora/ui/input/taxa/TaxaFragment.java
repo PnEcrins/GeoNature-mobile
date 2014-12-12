@@ -96,7 +96,7 @@ public class TaxaFragment extends AbstractTaxaFragment {
         }
 
         final StringBuilder selection = new StringBuilder();
-        final List<String> selectionArgs = new ArrayList<String>();
+        final List<String> selectionArgs = new ArrayList<>();
 
         // adding filter
         selection.append("((");

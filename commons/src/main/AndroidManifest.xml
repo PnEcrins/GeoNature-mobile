@@ -2,7 +2,9 @@
 <manifest
     package="com.makina.ecrins.commons"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="322">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:versionCode="343"
+    tools:ignore="GradleOverrides">
 
     <application
         android:allowBackup="true"

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -20,7 +21,8 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@id/imageAbacus"
         android:text="@string/frequency_estimation_min_value"
-        android:textAppearance="?android:attr/textAppearanceMedium">
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:ignore="RtlHardcoded">
     </TextView>
 
     <TextView
@@ -29,7 +31,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_below="@id/imageAbacus"
-        android:textAppearance="?android:attr/textAppearanceMedium">
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:ignore="RtlHardcoded">
     </TextView>
 
     <SeekBar
@@ -64,7 +67,8 @@
         android:layout_toLeftOf="@id/editTextFrequency"
         android:text="@string/frequency_estimation_frequency"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        tools:ignore="RtlHardcoded"/>
 
     <TextView
         android:id="@+id/textViewFrequencyPercentage"
@@ -74,7 +78,8 @@
         android:layout_toRightOf="@id/editTextFrequency"
         android:text="@string/frequency_estimation_frequency_precentage"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        tools:ignore="RtlHardcoded"/>
 
     <GridView
         android:id="@+id/gridViewAbacus"

@@ -23,7 +23,7 @@ import java.util.List;
 public class Polygon implements IGeometry, IMathConstants, IGeoConstants {
 
     private LineString mPolygon;
-    private final List<Polygon> mHoles = new ArrayList<Polygon>();
+    private final List<Polygon> mHoles = new ArrayList<>();
 
     public Polygon(List<Point> pPoints) {
         this.mPolygon = new LineString(pPoints);
@@ -41,7 +41,7 @@ public class Polygon implements IGeometry, IMathConstants, IGeoConstants {
 
     @Override
     public List<IGeometry> getCoordinates() {
-        List<IGeometry> coordinates = new ArrayList<IGeometry>();
+        List<IGeometry> coordinates = new ArrayList<>();
 
         coordinates.add(getPolygon());
 

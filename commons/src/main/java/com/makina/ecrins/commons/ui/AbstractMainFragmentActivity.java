@@ -46,12 +46,9 @@ import com.makina.ecrins.commons.net.NetworkConnectivityListener;
 import com.makina.ecrins.commons.settings.AbstractAppSettings;
 import com.makina.ecrins.commons.settings.AbstractSettingsService;
 import com.makina.ecrins.commons.settings.ServiceStatus;
-import com.makina.ecrins.commons.sync.SyncStatus;
 import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.ProgressDialogFragment;
 import com.makina.ecrins.commons.util.FileUtils;
-
-import org.joda.time.format.DateTimeFormat;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -59,6 +56,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Deque;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -84,7 +82,7 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
 
     private static final String PROGRESS_DIALOG_SETTINGS_FRAGMENT = "progress_dialog_settings";
 
-    protected final TreeSet<String> mDialogTags = new TreeSet<String>();
+    protected final TreeSet<String> mDialogTags = new TreeSet<>();
 
     /**
      * Messenger for communicating with service.
@@ -103,7 +101,7 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
 
     private final AtomicBoolean mIsActivityCreated = new AtomicBoolean();
 
-    protected Deque<Message> messagesQueue = new ArrayDeque<Message>();
+    protected final Deque<Message> messagesQueue = new ArrayDeque<>();
 
     private Bundle mSavedState;
 
@@ -117,7 +115,7 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
     /**
      * Class for interacting with the main interface of the service.
      */
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
+    private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.d(AbstractMainFragmentActivity.class.getName(), "onServiceConnected " + name);
@@ -154,7 +152,7 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
 
         public MainFragmentHandler(AbstractMainFragmentActivity pMainFragmentActivity) {
             super();
-            mMainFragmentActivity = new WeakReference<AbstractMainFragmentActivity>(pMainFragmentActivity);
+            mMainFragmentActivity = new WeakReference<>(pMainFragmentActivity);
         }
 
         @Override
@@ -188,11 +186,8 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
                     try {
                         mainFragmentActivity.mSettingsServiceMessenger.send(mainFragmentActivity.messagesQueue.removeFirst());
                     }
-                    catch (RemoteException re) {
-                        Log.w(getClass().getName(), re.getMessage(), re);
-                    }
-                    catch (NoSuchElementException nsee) {
-                        Log.w(getClass().getName(), nsee.getMessage(), nsee);
+                    catch (RemoteException | NoSuchElementException ge) {
+                        Log.w(getClass().getName(), ge.getMessage(), ge);
                     }
                 }
             }
@@ -204,7 +199,7 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
                 if (status.getStatus().equals(ServiceStatus.Status.FINISHED)) {
                     mainFragmentActivity.mButtonStartInput.setEnabled(true);
 
-                    for (String dialogTag : new ArrayList<String>(mainFragmentActivity.mDialogTags)) {
+                    for (String dialogTag : new ArrayList<>(mainFragmentActivity.mDialogTags)) {
                         mainFragmentActivity.dismissProgressDialog(dialogTag);
                     }
 
@@ -349,7 +344,7 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
         }
 
         if ((getAppSettings() != null) && checkServiceMessageStatusTask()) {
-            for (String dialogTag : new ArrayList<String>(mDialogTags)) {
+            for (String dialogTag : new ArrayList<>(mDialogTags)) {
                 dismissProgressDialog(dialogTag);
             }
 
@@ -362,7 +357,7 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
     protected void onPause() {
         Log.d(AbstractMainFragmentActivity.class.getName(), "onPause");
 
-        for (String dialogTag : new ArrayList<String>(mDialogTags)) {
+        for (String dialogTag : new ArrayList<>(mDialogTags)) {
             dismissProgressDialog(dialogTag);
         }
 
@@ -585,7 +580,7 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
     private class GetDeviceStatusAsyncTask extends AsyncTask<Void, Void, List<Long>> {
         @Override
         protected List<Long> doInBackground(Void... params) {
-            List<Long> result = new ArrayList<Long>(2);
+            List<Long> result = new ArrayList<>(2);
 
             try {
                 result.add(FileUtils.getFileFromApplicationStorage(AbstractMainFragmentActivity.this, "databases" + File.separator + getAppSettings().getDbSettings().getDbName()).lastModified());
@@ -593,28 +588,34 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
             catch (IOException ioe) {
                 Log.w(getClass().getName(), ioe);
 
-                result.add(Long.valueOf(0));
+                result.add(0l);
             }
 
             try {
                 File inputDir = FileUtils.getInputsFolder(AbstractMainFragmentActivity.this);
 
                 if (inputDir.exists()) {
-                    result.add(Long.valueOf(inputDir.listFiles(new FileFilter() {
-                        @Override
-                        public boolean accept(File pathname) {
-                            return pathname.getName().startsWith("input_") && pathname.getName().endsWith(".json");
-                        }
-                    }).length));
+                    result.add(
+                            (long) inputDir.listFiles(
+                                    new FileFilter() {
+                                        @Override
+                                        public boolean accept(File pathname) {
+                                            return pathname.getName()
+                                                    .startsWith("input_") && pathname.getName()
+                                                    .endsWith(".json");
+                                        }
+                                    }
+                            ).length
+                    );
                 }
                 else {
-                    result.add(Long.valueOf(0));
+                    result.add(0l);
                 }
             }
             catch (IOException ioe) {
                 Log.w(getClass().getName(), ioe.getMessage(), ioe);
 
-                result.add(Long.valueOf(0));
+                result.add(0l);
             }
 
             return result;
@@ -633,11 +634,16 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
     }
 
     private class DeviceStatusAdapter extends ArrayAdapter<Long> {
+
         private int mTextViewResourceId;
         private final LayoutInflater mInflater;
 
         public DeviceStatusAdapter(Context context, int textViewResourceId) {
-            super(context, textViewResourceId);
+            super(
+                    context,
+                    textViewResourceId
+            );
+
             mTextViewResourceId = textViewResourceId;
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -647,7 +653,11 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
             View view;
 
             if (convertView == null) {
-                view = mInflater.inflate(mTextViewResourceId, parent, false);
+                view = mInflater.inflate(
+                        mTextViewResourceId,
+                        parent,
+                        false
+                );
             }
             else {
                 view = convertView;
@@ -661,13 +671,19 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
                         ((TextView) view.findViewById(android.R.id.text2)).setText(R.string.synchro_last_synchronization_never);
                     }
                     else {
-                        ((TextView) view.findViewById(android.R.id.text2)).setText(DateTimeFormat.longDate().print(getItem(position)) + " " + DateTimeFormat.mediumTime().print(getItem(position)));
+                        ((TextView) view.findViewById(android.R.id.text2)).setText(
+                                android.text.format.DateFormat.format(
+                                        getResources().getString(R.string.synchro_last_synchronization_date),
+                                        new Date(getItem(position))
+                                )
+                        );
                     }
 
                     break;
                 case 1:
                     ((TextView) view.findViewById(android.R.id.text1)).setText(R.string.synchro_inputs_not_synchronized);
                     ((TextView) view.findViewById(android.R.id.text2)).setText(getItem(position).toString());
+
                     break;
             }
 

@@ -13,7 +13,7 @@ import java.io.IOException;
  */
 public class TilesLayerDataSourceFactory {
 
-    private File mTilesSourcePath;
+    private final File mTilesSourcePath;
 
     public TilesLayerDataSourceFactory(File pTilesSourcePath) {
         this.mTilesSourcePath = pTilesSourcePath;

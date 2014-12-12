@@ -4,7 +4,7 @@ version = "0.2.9"
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "20.0.0"
+    buildToolsVersion "21.1.1"
 
     defaultConfig {
         applicationId "com.makina.ecrins.flora"
@@ -12,6 +12,11 @@ android {
         targetSdkVersion 19
         versionName version
         buildConfigField "String", "BUILD_DATE", "\"" + new Date().getTime() + "\""
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 
     signingConfigs {
@@ -34,15 +39,17 @@ android {
         }
 
         release {
+            // noinspection GroovyAssignabilityCheck
             signingConfig signingConfigs.release
             debuggable false
-            runProguard false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            zipAlign true
+            zipAlignEnabled true
 
             applicationVariants.all { variant ->
-                def file = variant.outputFile
-                variant.outputFile = new File(file.parent, file.name.replace(".apk", "-" + defaultConfig.versionName + ".apk"))
+                variant.outputs.each  { output ->
+                    output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace(".apk", "-" + defaultConfig.versionName + ".apk"))
+                }
             }
         }
     }
@@ -54,7 +61,7 @@ dependencies {
     compile project(':commons')
     compile project(':maps')
 
-    compile 'com.android.support:appcompat-v7:19.+'
+    compile 'com.android.support:appcompat-v7:20.0.0'
 }
 
 task('increaseVersionCode') << {

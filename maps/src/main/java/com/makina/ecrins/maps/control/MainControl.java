@@ -285,7 +285,7 @@ public class MainControl extends AbstractControl implements LocationListener {
      */
     @JavascriptInterface
     public String getZooms() {
-        SortedSet<Integer> zooms = new TreeSet<Integer>();
+        SortedSet<Integer> zooms = new TreeSet<>();
 
         for (String dataSourceName : this.mWebViewFragment.getTilesLayersDataSources()) {
             ITilesLayerDataSource dataSource = this.mWebViewFragment.getTilesLayersDataSource(dataSourceName);

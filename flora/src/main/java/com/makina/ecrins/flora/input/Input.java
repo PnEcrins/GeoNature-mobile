@@ -30,7 +30,7 @@ public class Input extends AbstractInput {
     public static final String KEY_DATE_OBS = "dateobs";
     public static final String KEY_INPUT_TYPE = "input_type";
 
-    private Map<Long, Observer> mObservers;
+    private final Map<Long, Observer> mObservers;
     private Date mDate;
     private InputType mType;
 
@@ -39,15 +39,15 @@ public class Input extends AbstractInput {
 
         mDate = new Date();
         mType = InputType.FLORA;
-        mObservers = new TreeMap<Long, Observer>();
+        mObservers = new TreeMap<>();
     }
 
     public Input(Parcel source) {
         super(source);
 
-        List<Observer> observers = new ArrayList<Observer>();
+        List<Observer> observers = new ArrayList<>();
         source.readTypedList(observers, Observer.CREATOR);
-        mObservers = new TreeMap<Long, Observer>();
+        mObservers = new TreeMap<>();
 
         for (Observer observer : observers) {
             mObservers.put(observer.getObserverId(), observer);
@@ -99,14 +99,14 @@ public class Input extends AbstractInput {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
 
-        dest.writeTypedList(new ArrayList<Observer>(mObservers.values()));
+        dest.writeTypedList(new ArrayList<>(mObservers.values()));
         dest.writeSerializable(mDate);
         dest.writeSerializable(mType);
     }
 
     @Override
     public List<AbstractTaxon> getTaxaFromParcel(Parcel source) {
-        List<Taxon> taxa = new ArrayList<Taxon>();
+        final List<Taxon> taxa = new ArrayList<>();
         source.readTypedList(taxa, Taxon.CREATOR);
 
         return new ArrayList<AbstractTaxon>(taxa);

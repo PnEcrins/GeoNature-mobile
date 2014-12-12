@@ -2,6 +2,7 @@ package com.makina.ecrins.commons.input;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 /**
  * Describes an observer from {@link com.makina.ecrins.commons.input.AbstractInput}.
@@ -48,12 +49,39 @@ public class Observer implements Parcelable, Comparable<Observer> {
 
     @Override
     public boolean equals(Object o) {
-        if ((o != null) && (o.getClass().equals(Observer.class))) {
-            return this.mObserverId == ((Observer) o).getObserverId();
+        if (this == o) {
+            return true;
         }
-        else {
+
+        if (!(o instanceof Observer)) {
             return false;
         }
+
+        Observer observer = (Observer) o;
+
+        if (mObserverId != observer.mObserverId) {
+            return false;
+        }
+
+        if (mFirstname != null ? !mFirstname.equals(observer.mFirstname) : observer.mFirstname != null) {
+            return false;
+        }
+
+        // noinspection RedundantIfStatement
+        if (mLastname != null ? !mLastname.equals(observer.mLastname) : observer.mLastname != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (mObserverId ^ (mObserverId >>> 32));
+        result = 31 * result + (mLastname != null ? mLastname.hashCode() : 0);
+        result = 31 * result + (mFirstname != null ? mFirstname.hashCode() : 0);
+
+        return result;
     }
 
     @Override
@@ -69,7 +97,7 @@ public class Observer implements Parcelable, Comparable<Observer> {
     }
 
     @Override
-    public int compareTo(Observer another) {
+    public int compareTo(@NonNull Observer another) {
         return this.mLastname.compareToIgnoreCase(another.getLastname()) + this.mFirstname.compareToIgnoreCase(another.getFirstname());
     }
 

@@ -2,7 +2,6 @@ package com.makina.ecrins.commons.ui.pager;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -83,7 +82,7 @@ public abstract class AbstractPagerFragmentActivity extends ActionBarActivity
 
                 if (fragment == null) {
                     // no fragment found through getSupportFragmentManager() so try to find it through getPagerFragments()
-                    fragment = (new ArrayList<IValidateFragment>(getPagerFragments().values())).get(i);
+                    fragment = (new ArrayList<>(getPagerFragments().values())).get(i);
                 }
 
                 if (fragment == null) {
@@ -235,7 +234,7 @@ public abstract class AbstractPagerFragmentActivity extends ActionBarActivity
         if ((fragment != null) && (fragment instanceof IValidateFragment)) {
             Log.d(AbstractPagerFragmentActivity.class.getName(), "goToPageByKey : key '" + key + "'");
 
-            mPager.setCurrentItem((new ArrayList<Fragment>(mAdapter.getFragments().values())).lastIndexOf(fragment), true);
+            mPager.setCurrentItem((new ArrayList<>(mAdapter.getFragments().values())).lastIndexOf(fragment), true);
         }
         else {
             Log.w(AbstractPagerFragmentActivity.class.getName(), "goToPageByKey : key '" + key + "' undefined");
@@ -257,13 +256,13 @@ public abstract class AbstractPagerFragmentActivity extends ActionBarActivity
      * @return {@link IValidateFragment} instance
      */
     protected IValidateFragment getPageFragment(Integer position) {
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + ((position == null) ? mPager.getCurrentItem() : position.intValue()));
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + ((position == null) ? mPager.getCurrentItem() : position));
 
         if ((fragment != null) && (fragment instanceof IValidateFragment)) {
             return (IValidateFragment) fragment;
         }
         else {
-            Log.w(AbstractPagerFragmentActivity.class.getName(), "getPageFragment : no fragment found through getSupportFragmentManager() at position " + ((position == null) ? mPager.getCurrentItem() : position.intValue()));
+            Log.w(AbstractPagerFragmentActivity.class.getName(), "getPageFragment : no fragment found through getSupportFragmentManager() at position " + ((position == null) ? mPager.getCurrentItem() : position));
 
             return null;
         }
@@ -277,6 +276,6 @@ public abstract class AbstractPagerFragmentActivity extends ActionBarActivity
      * @see AbstractPagerFragmentActivity#getPageFragment(Integer)
      */
     protected IValidateFragment getPageFragmentByKey(Integer key) {
-        return getPageFragment((new ArrayList<Integer>(mAdapter.getFragments().keySet())).indexOf(key));
+        return getPageFragment((new ArrayList<>(mAdapter.getFragments().keySet())).indexOf(key));
     }
 }

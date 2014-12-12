@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,7 @@ public class TaxaStatusFilterDialogFragment extends DialogFragment implements On
 
     private TaxaStatusArrayAdapter mAdapter;
     private Handler mHandler;
-    private List<TaxonStatus> mStatusFilter = new ArrayList<TaxonStatus>();
+    private List<TaxonStatus> mStatusFilter = new ArrayList<>();
 
     private static boolean sInitialize;
 
@@ -47,6 +48,7 @@ public class TaxaStatusFilterDialogFragment extends DialogFragment implements On
     }
 
     @Override
+    @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         final View view = inflater.inflate(R.layout.dialog_list_items, null);
@@ -55,7 +57,7 @@ public class TaxaStatusFilterDialogFragment extends DialogFragment implements On
 
         mAdapter = new TaxaStatusArrayAdapter(getActivity());
 
-        if (!sInitialize && (savedInstanceState != null)) {
+        if (!sInitialize) {
             mStatusFilter = savedInstanceState.getParcelableArrayList(KEY_FILTER_STATUS);
         }
 
@@ -88,7 +90,7 @@ public class TaxaStatusFilterDialogFragment extends DialogFragment implements On
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         mAdapter.getItem(position).setSelected(!mAdapter.getItem(position).isSelected());
 
-        List<TaxonStatus> taxonStatusFilter = new ArrayList<TaxonStatus>();
+        List<TaxonStatus> taxonStatusFilter = new ArrayList<>();
 
         for (int i = 0; i < mAdapter.getCount(); i++) {
             taxonStatusFilter.add(mAdapter.getItem(i));

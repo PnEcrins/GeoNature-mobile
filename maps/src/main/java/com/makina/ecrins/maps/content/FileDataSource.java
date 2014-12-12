@@ -20,19 +20,19 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Simple {@link ITilesLayerDataSource} filesytem implementation.
+ * Simple {@link ITilesLayerDataSource} filesystem implementation.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
 public class FileDataSource implements ITilesLayerDataSource {
 
     private File mapDirectory = null;
-    private LayerSettings mLayerSettings;
+    private final LayerSettings mLayerSettings;
 
     private JSONObject mMetadata = new JSONObject();
     private int mMinZoom = Integer.MAX_VALUE;
     private int mMaxZoom = 0;
-    private final List<Integer> mZooms = new ArrayList<Integer>();
+    private final List<Integer> mZooms = new ArrayList<>();
 
     public FileDataSource(File sourcePath, LayerSettings pLayerSettings) throws IOException {
         this.mLayerSettings = pLayerSettings;
@@ -49,16 +49,23 @@ public class FileDataSource implements ITilesLayerDataSource {
     @Override
     public JSONObject getMetadata() {
         if (mMetadata.length() == 0) {
-            File fileContentMedata = new File(this.mapDirectory.getAbsolutePath() + File.separator + "metadata.json");
-
             try {
-                mMetadata = new JSONObject(FileUtils.readFileToString(fileContentMedata));
+                mMetadata = new JSONObject(
+                        FileUtils.readFileToString(
+                                new File(
+                                        this.mapDirectory.getAbsolutePath() +
+                                                File.separator +
+                                                "metadata.json"
+                                )
+                        )
+                );
             }
-            catch (JSONException je) {
-                Log.e(getClass().getName(), je.getMessage(), je);
-            }
-            catch (IOException ioe) {
-                Log.e(getClass().getName(), ioe.getMessage(), ioe);
+            catch (JSONException | IOException ge) {
+                Log.e(
+                        getClass().getName(),
+                        ge.getMessage(),
+                        ge
+                );
             }
         }
 
@@ -100,13 +107,13 @@ public class FileDataSource implements ITilesLayerDataSource {
                 String name = (String) getMetadata().get(KEY_NAME);
                 String version = (String) getMetadata().get(KEY_VERSION);
 
-                File contents = new File(this.mapDirectory.getAbsolutePath() + File.separator + version + File.separator + name);
+                final File contents = new File(this.mapDirectory.getAbsolutePath() + File.separator + version + File.separator + name);
 
                 for (File zoomLevel : contents.listFiles()) {
                     mZooms.add(Integer.valueOf(zoomLevel.getName()));
                 }
 
-                Arrays.sort(mZooms.toArray(new Integer[]{}));
+                Arrays.sort(mZooms.toArray(new Integer[mZooms.size()]));
 
                 Log.d(getClass().getName(), mLayerSettings.getName() + " getZooms : " + mZooms.toString());
             }
@@ -152,14 +159,12 @@ public class FileDataSource implements ITilesLayerDataSource {
                 baos.close();
             }
         }
-        catch (JSONException je) {
-            Log.e(getClass().getName(), je.getMessage(), je);
-        }
-        catch (FileNotFoundException fnfe) {
-            Log.e(getClass().getName(), fnfe.getMessage(), fnfe);
-        }
-        catch (IOException ioe) {
-            Log.e(getClass().getName(), ioe.getMessage(), ioe);
+        catch (JSONException | IOException ge) {
+            Log.e(
+                    getClass().getName(),
+                    ge.getMessage(),
+                    ge
+            );
         }
 
         return tileData;

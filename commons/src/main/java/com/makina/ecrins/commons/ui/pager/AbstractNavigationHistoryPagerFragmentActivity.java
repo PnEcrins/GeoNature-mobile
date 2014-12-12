@@ -23,14 +23,14 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity extends Abs
     private static final String KEY_SCROLL_STATE = "scroll_state";
     private static final String KEY_POSITION_OFFSET = "position_offset";
 
-    private final Deque<Integer> mHistory = new ArrayDeque<Integer>();
+    private final Deque<Integer> mHistory = new ArrayDeque<>();
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            mSavedState.putIntegerArrayList(KEY_NAVIGATION_HISTORY, new ArrayList<Integer>(mHistory));
+            mSavedState.putIntegerArrayList(KEY_NAVIGATION_HISTORY, new ArrayList<>(mHistory));
             mSavedState.putBoolean(KEY_HISTORY_PREVIOUS, false);
         }
         else {
@@ -43,7 +43,7 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity extends Abs
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        mSavedState.putIntegerArrayList(KEY_NAVIGATION_HISTORY, new ArrayList<Integer>(mHistory));
+        mSavedState.putIntegerArrayList(KEY_NAVIGATION_HISTORY, new ArrayList<>(mHistory));
 
         super.onSaveInstanceState(outState);
     }
@@ -146,7 +146,7 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity extends Abs
             }
 
             if (((IValidateWithNavigationControlFragment) fragment).getPagingToForwardEnabled()) {
-                mNextButton.setEnabled((fragment == null) || fragment.validate());
+                mNextButton.setEnabled(fragment.validate());
                 mNextButton.setVisibility(View.VISIBLE);
             }
             else {
@@ -197,7 +197,7 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity extends Abs
         int count = 0;
 
         for (Integer pageKey : mHistory) {
-            if (pageKey.intValue() == key) {
+            if (pageKey == key) {
                 count++;
             }
         }

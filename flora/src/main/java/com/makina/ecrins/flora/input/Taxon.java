@@ -28,14 +28,14 @@ public class Taxon extends AbstractTaxon {
     public static final String KEY_PROSPECTING_AREA = "prospecting_area";
     public static final String KEY_PROSPECTING_AREA_FEATURE = "feature";
 
-    private Map<String, Area> mAreas;
+    private final Map<String, Area> mAreas;
     private String mCurrentSelectedAreaId;
     private Feature mProspectingArea;
 
     public Taxon(long pTaxonId) {
         super(pTaxonId);
 
-        mAreas = new TreeMap<String, Area>();
+        mAreas = new TreeMap<>();
         mCurrentSelectedAreaId = null;
         mProspectingArea = null;
     }
@@ -45,9 +45,9 @@ public class Taxon extends AbstractTaxon {
 
         mCurrentSelectedAreaId = null;
 
-        List<Area> areas = new ArrayList<Area>();
+        List<Area> areas = new ArrayList<>();
         source.readTypedList(areas, Area.CREATOR);
-        mAreas = new TreeMap<String, Area>();
+        mAreas = new TreeMap<>();
 
         for (Area area : areas) {
             mAreas.put(area.getFeature()
@@ -149,7 +149,7 @@ public class Taxon extends AbstractTaxon {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
 
-        dest.writeTypedList(new ArrayList<Area>(mAreas.values()));
+        dest.writeTypedList(new ArrayList<>(mAreas.values()));
     }
 
     public static final Parcelable.Creator<Taxon> CREATOR = new Parcelable.Creator<Taxon>() {

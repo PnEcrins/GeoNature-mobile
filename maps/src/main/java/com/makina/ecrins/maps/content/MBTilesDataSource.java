@@ -29,23 +29,22 @@ import java.util.List;
  */
 public class MBTilesDataSource implements ITilesLayerDataSource {
 
-    private File mMbtiles;
-    private LayerSettings mLayerSettings;
-
-    private JSONObject mMetadata = new JSONObject();
+    private final File mMbTiles;
+    private final LayerSettings mLayerSettings;
+    private final JSONObject mMetadata = new JSONObject();
     private int mMinZoom = Integer.MAX_VALUE;
     private int mMaxZoom = 0;
-    private final List<Integer> mZooms = new ArrayList<Integer>();
+    private final List<Integer> mZooms = new ArrayList<>();
 
     public MBTilesDataSource(File sourcePath, LayerSettings pLayerSettings) throws IOException {
         this.mLayerSettings = pLayerSettings;
-        mMbtiles = FileUtils.getFile(sourcePath, pLayerSettings.getName());
+        mMbTiles = FileUtils.getFile(sourcePath, pLayerSettings.getName());
 
-        if (mMbtiles.exists()) {
+        if (mMbTiles.exists()) {
             Log.d(getClass().getName(), "loading MBTiles '" + pLayerSettings.getName() + "'");
         }
         else {
-            throw new FileNotFoundException("unable to load MBTiles file from path '" + mMbtiles + "'");
+            throw new FileNotFoundException("unable to load MBTiles file from path '" + mMbTiles + "'");
         }
     }
 
@@ -158,7 +157,7 @@ public class MBTilesDataSource implements ITilesLayerDataSource {
 
                 if (cursor.moveToFirst()) {
                     while (!cursor.isAfterLast()) {
-                        mZooms.add(Integer.valueOf(cursor.getInt(cursor.getColumnIndex("zooms"))));
+                        mZooms.add(cursor.getInt(cursor.getColumnIndex("zooms")));
 
                         cursor.moveToNext();
                     }
@@ -228,9 +227,10 @@ public class MBTilesDataSource implements ITilesLayerDataSource {
 
     private SQLiteDatabase openDatabase() throws SQLiteException {
         return SQLiteDatabase.openDatabase(
-                mMbtiles.getPath(),
+                mMbTiles.getPath(),
                 new LeaklessCursorFactory(),
-                SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READONLY);
+                SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READONLY
+        );
     }
 
     /**

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -16,7 +17,8 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="10dp"
             android:text="@string/counting_plot"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            tools:ignore="RtlHardcoded"/>
 
         <View
             android:id="@+id/viewSeparatorPlot"
@@ -81,7 +83,8 @@
             android:layout_alignBaseline="@id/editTextCountingPlot"
             android:layout_toLeftOf="@id/editTextCountingPlot"
             android:text="@string/button_counting_minus"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            tools:ignore="RtlHardcoded"/>
 
         <Button
             android:id="@+id/buttonCountingPlusPlot"
@@ -90,7 +93,8 @@
             android:layout_alignBaseline="@id/editTextCountingPlot"
             android:layout_toRightOf="@id/editTextCountingPlot"
             android:text="@string/button_counting_plus"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            tools:ignore="RtlHardcoded"/>
 
         <TextView
             android:id="@+id/textViewElements"
@@ -100,7 +104,8 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
             android:text="@string/counting_elements"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            tools:ignore="RtlHardcoded"/>
 
         <View
             android:id="@+id/viewSeparatorElements"

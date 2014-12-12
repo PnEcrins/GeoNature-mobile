@@ -1,10 +1,16 @@
 package com.makina.ecrins.commons.sync;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
+import android.annotation.SuppressLint;
+import android.app.Service;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
+import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -18,22 +24,18 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.util.Log;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <Code>Service</code> implementation to check server status.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
+@SuppressLint("Registered")
 public class CheckServerService extends Service {
 
     public static final int HANDLER_SYNC_CHECK_SERVER_STATUS = 0;
@@ -128,7 +130,7 @@ public class CheckServerService extends Service {
 
         public IncomingHandler(CheckServerService pCheckServerService) {
             super();
-            mCheckServerService = new WeakReference<CheckServerService>(pCheckServerService);
+            mCheckServerService = new WeakReference<>(pCheckServerService);
         }
 
         @Override
@@ -159,7 +161,7 @@ public class CheckServerService extends Service {
             HttpConnectionParams.setConnectionTimeout(httpParameters, 5000);
             HttpConnectionParams.setSoTimeout(httpParameters, 5000);
 
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+            final List<NameValuePair> nameValuePairs = new ArrayList<>(1);
             nameValuePairs.add(new BasicNameValuePair("token", getSyncSettings().getToken()));
 
             String urlStatus = getSyncSettings().getServerUrl() + getSyncSettings().getStatusUrl();
@@ -174,11 +176,8 @@ public class CheckServerService extends Service {
 
                 return httpResponse.getStatusLine();
             }
-            catch (UnsupportedEncodingException uee) {
-                Log.w(getClass().getName(), uee.getMessage());
-            }
-            catch (ClientProtocolException cpe) {
-                Log.w(getClass().getName(), cpe.getMessage());
+            catch (UnsupportedEncodingException | ClientProtocolException ge) {
+                Log.w(getClass().getName(), ge.getMessage());
             }
             catch (IOException ioe) {
                 Log.w(getClass().getName(), ioe);

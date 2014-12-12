@@ -1,16 +1,17 @@
 package com.makina.ecrins.commons.ui.dialog;
 
-import java.util.Calendar;
-
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.widget.DatePicker;
+
+import java.util.Calendar;
 
 /**
  * Custom <code>Dialog</code> used to choose the date.
@@ -45,6 +46,7 @@ public final class DatePickerDialogFragment extends DialogFragment {
     }
 
     @Override
+    @NonNull
     @SuppressLint("NewApi")
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Calendar current = Calendar.getInstance();

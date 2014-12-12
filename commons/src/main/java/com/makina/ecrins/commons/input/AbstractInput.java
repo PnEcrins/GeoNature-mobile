@@ -4,14 +4,12 @@ import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.Duration;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -30,13 +28,13 @@ public abstract class AbstractInput implements Parcelable {
 
     private long mInputId;
     private String mFeatureId;
-    private Map<Long, AbstractTaxon> mTaxa;
+    private final Map<Long, AbstractTaxon> mTaxa;
     private long mCurrentSelectedTaxonId;
 
     public AbstractInput() {
         mInputId = generateId();
         mFeatureId = null;
-        mTaxa = new TreeMap<Long, AbstractTaxon>();
+        mTaxa = new TreeMap<>();
         mCurrentSelectedTaxonId = -1;
     }
 
@@ -45,7 +43,7 @@ public abstract class AbstractInput implements Parcelable {
         mFeatureId = source.readString();
 
         final List<AbstractTaxon> taxa = getTaxaFromParcel(source);
-        mTaxa = new TreeMap<Long, AbstractTaxon>();
+        mTaxa = new TreeMap<>();
 
         for (AbstractTaxon taxon : taxa) {
             mTaxa.put(taxon.getId(), taxon);
@@ -146,7 +144,7 @@ public abstract class AbstractInput implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(mInputId);
         dest.writeString(mFeatureId);
-        dest.writeTypedList(new ArrayList<AbstractTaxon>(mTaxa.values()));
+        dest.writeTypedList(new ArrayList<>(mTaxa.values()));
     }
 
     public abstract List<AbstractTaxon> getTaxaFromParcel(Parcel source);
@@ -157,6 +155,20 @@ public abstract class AbstractInput implements Parcelable {
      * @return an unique ID
      */
     public static long generateId() {
-        return new Duration(new DateTime(2000, DateTimeConstants.JANUARY, 1, 0, 0, 0), DateTime.now()).getStandardSeconds();
+        final Calendar calendar = Calendar.getInstance();
+        calendar.set(
+                2000,
+                Calendar.JANUARY,
+                1,
+                0,
+                0,
+                0
+        );
+        calendar.set(
+                Calendar.MILLISECOND,
+                0
+        );
+
+        return calendar.getTimeInMillis() / 1000;
     }
 }

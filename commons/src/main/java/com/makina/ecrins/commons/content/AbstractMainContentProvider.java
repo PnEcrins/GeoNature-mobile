@@ -159,6 +159,7 @@ public abstract class AbstractMainContentProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unknown URI : " + uri);
         }
 
+        // use the default sort order if needed
         if (!TextUtils.isEmpty(sortOrder)) {
             defaultSortOrder = sortOrder;
         }

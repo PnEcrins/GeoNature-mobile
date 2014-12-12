@@ -17,7 +17,7 @@ public enum GeoJSONType {
     MULTI_POLYGON("MultiPolygon"),
     GEOMETRY_COLLECTION("GeometryCollection");
 
-    private String value;
+    private final String value;
 
     GeoJSONType(String value) {
         this.value = value;

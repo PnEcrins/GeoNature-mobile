@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -11,7 +12,8 @@
         android:layout_alignParentTop="true"
         android:paddingLeft="10dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textIsSelectable="false"/>
+        android:textIsSelectable="false"
+        tools:ignore="RtlHardcoded,RtlSymmetry"/>
 
     <Button
         android:id="@+id/buttonAddTaxon"
@@ -21,7 +23,8 @@
         android:layout_centerHorizontal="true"
         android:drawableLeft="@drawable/ic_action_add"
         android:text="@string/results_input_add_taxon"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        tools:ignore="RtlHardcoded"/>
 
     <View
         android:id="@+id/viewSeparator"

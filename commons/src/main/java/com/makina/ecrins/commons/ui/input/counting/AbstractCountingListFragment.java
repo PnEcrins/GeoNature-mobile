@@ -42,7 +42,7 @@ public abstract class AbstractCountingListFragment extends ListFragment implemen
     public static final int COUNTING_UNDETERMINED = 6;
 
     private CountingAdapter mAdapter;
-    private SparseIntArray mValues = new SparseIntArray();
+    private final SparseIntArray mValues = new SparseIntArray();
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -87,7 +87,7 @@ public abstract class AbstractCountingListFragment extends ListFragment implemen
             super(context, R.layout.list_item_counting);
             mTextViewResourceId = R.layout.list_item_counting;
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            mTextWatchers = new SparseArray<EditTextWatcher>();
+            mTextWatchers = new SparseArray<>();
         }
 
         @Override
@@ -110,6 +110,8 @@ public abstract class AbstractCountingListFragment extends ListFragment implemen
                     @Override
                     public void onFocusChange(View v, boolean hasFocus) {
                         if (v == editText) {
+
+                            // noinspection StatementWithEmptyBody
                             if (hasFocus) {
                                 // nothing to do ...
                             }
@@ -132,7 +134,7 @@ public abstract class AbstractCountingListFragment extends ListFragment implemen
             final TextView textView = (TextView) view.findViewById(R.id.textViewTaxonCounting);
 
             final ImageView imageView = (ImageView) view.findViewById(R.id.imageViewTaxonCounting);
-            final LayoutParams params = (LayoutParams) imageView.getLayoutParams();
+            final LayoutParams params = imageView.getLayoutParams();
             params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
             params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
             imageView.setLayoutParams(params);
@@ -270,7 +272,7 @@ public abstract class AbstractCountingListFragment extends ListFragment implemen
         public void afterTextChanged(Editable s) {
             Integer oldValue = getValues().get((Integer) mEditText.getTag());
 
-            Log.d(AbstractCountingListFragment.class.getName(), "afterTextChanged " + (Integer) mEditText.getTag() + " " + oldValue);
+            Log.d(AbstractCountingListFragment.class.getName(), "afterTextChanged " + mEditText.getTag() + " " + oldValue);
 
             if (mEditText.getEditableText().length() > 0) {
                 int value = Integer.valueOf(mEditText.getEditableText().toString());

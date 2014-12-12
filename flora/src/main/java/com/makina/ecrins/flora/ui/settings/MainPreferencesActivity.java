@@ -57,15 +57,20 @@ public class MainPreferencesActivity extends PreferenceActivity implements OnSha
 
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
             editor.putLong("default_observer", defaultObserver.getObserverId());
-            editor.commit();
+            editor.apply();
 
             defaultObserverPreference.setSummary(defaultObserver.getLastname() + " " + defaultObserver.getFirstname());
         }
 
-        updateDispayMapDensitySummary(
+        updateDisplayMapDensitySummary(
                 Integer.parseInt(
                         PreferenceManager.getDefaultSharedPreferences(this)
-                                .getString(KEY_LIST_PREFERENCE_DENSITY_DISPLAY_MAP, "0")));
+                                .getString(
+                                        KEY_LIST_PREFERENCE_DENSITY_DISPLAY_MAP,
+                                        "0"
+                                )
+                )
+        );
 
         getAppVersion();
     }
@@ -73,15 +78,18 @@ public class MainPreferencesActivity extends PreferenceActivity implements OnSha
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(KEY_LIST_PREFERENCE_DENSITY_DISPLAY_MAP)) {
-            updateDispayMapDensitySummary(
+            updateDisplayMapDensitySummary(
                     Integer.parseInt(
                             sharedPreferences.getString(
                                     KEY_LIST_PREFERENCE_DENSITY_DISPLAY_MAP,
-                                    "0")));
+                                    "0"
+                            )
+                    )
+            );
         }
     }
 
-    private void updateDispayMapDensitySummary(int density) {
+    private void updateDisplayMapDensitySummary(int density) {
         mDensityDisplayMapListPreference.setSummary(
                 getResources().getStringArray(R.array.viewport_target_density_labels)[density]);
     }

@@ -100,7 +100,9 @@ public class FrequencyTransectFragment extends Fragment implements OnClickListen
         mTextViewFrequencyStepAdvice.setText(
                 String.format(
                         getString(R.string.frequency_transect_step_advice),
-                        Integer.valueOf(0)));
+                        0
+                )
+        );
 
         mEditTextNumberOfTransects = (EditText) view.findViewById(R.id.editTextNumberOfTransects);
         mEditTextNumberOfTransects.setText(
@@ -280,9 +282,7 @@ public class FrequencyTransectFragment extends Fragment implements OnClickListen
             }
         }
         else {
-            mTextViewComputedFrequency.setText(
-                    getString(R.string.frequency_transect_frequency_undefined));
-            ;
+            mTextViewComputedFrequency.setText(getString(R.string.frequency_transect_frequency_undefined));
         }
 
         if (updateEditText) {
@@ -319,7 +319,7 @@ public class FrequencyTransectFragment extends Fragment implements OnClickListen
                     Log.w(FrequencyTransectFragment.class.getName(), "no area selected !");
                 }
                 else {
-                    double computedStep = 0.0; //meters
+                    double computedStep; //meters
 
                     switch (area.getFeature().getGeometry().getType()) {
                         case POINT:
@@ -347,8 +347,7 @@ public class FrequencyTransectFragment extends Fragment implements OnClickListen
                     mTextViewFrequencyStepAdvice.setText(
                             String.format(
                                     getString(R.string.frequency_transect_step_advice),
-                                    Integer.valueOf(Double.valueOf(computedStep * 100)
-                                            .intValue())
+                                    Double.valueOf(computedStep * 100).intValue()
                             )
                     );
                 }

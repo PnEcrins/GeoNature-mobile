@@ -56,7 +56,7 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<Fi
     protected List<Feature> doInBackground(File... params) {
         Log.d(getClass().getName(), "loading features from '" + params[0] + "' ...");
 
-        List<Feature> unities = new ArrayList<Feature>();
+        List<Feature> unities = new ArrayList<>();
         BufferedReader input = null;
 
         try {
@@ -73,7 +73,7 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<Fi
                     Log.d(getClass().getName(), "number of features to load : " + numberOfLines);
 
                     input = new BufferedReader(new FileReader(params[0]));
-                    String unityAsString = null;
+                    String unityAsString;
 
                     Pattern p0 = Pattern.compile("^([0-9]+),([A-Z]+)(\\(.+\\))$");
                     Pattern p2 = Pattern.compile("([0-9]+\\.[0-9]+ [0-9]+\\.[0-9]+)");
@@ -92,7 +92,7 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<Fi
                                         .split("\\),\\(");
 
                                 for (int i = 0; i < polygonsAsString.length; i++) {
-                                    List<Point> polygon = new ArrayList<Point>();
+                                    List<Point> polygon = new ArrayList<>();
                                     Matcher m2 = p2.matcher(polygonsAsString[i]);
 
                                     while (m2.find()) {
@@ -135,8 +135,6 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<Fi
                 }
                 catch (IOException ioe) {
                     Log.e(getClass().getName(), ioe.getMessage(), ioe);
-
-                    return unities;
                 }
             }
         }

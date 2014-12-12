@@ -49,7 +49,7 @@ public abstract class AbstractResultsInputFragment extends Fragment
     private AbstractTaxon mSelectedTaxonForAction;
     private TextView mTextViewTaxaAdded;
 
-    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+    private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             int commentStringResourceId = R.string.action_comment_add;

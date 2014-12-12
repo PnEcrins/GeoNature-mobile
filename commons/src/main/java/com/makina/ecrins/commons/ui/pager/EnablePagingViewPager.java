@@ -26,12 +26,7 @@ public class EnablePagingViewPager extends ViewPager {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (this.mPagingEnabled) {
-            return super.onInterceptTouchEvent(ev);
-        }
-        else {
-            return false;
-        }
+        return this.mPagingEnabled && super.onInterceptTouchEvent(ev);
     }
 
     @Override
@@ -53,12 +48,7 @@ public class EnablePagingViewPager extends ViewPager {
                 break;
         }
 
-        if (this.mPagingEnabled) {
-            return super.onTouchEvent(ev);
-        }
-        else {
-            return false;
-        }
+        return this.mPagingEnabled && super.onTouchEvent(ev);
     }
 
     public void setPagingEnabled(boolean pPagingEnabled) {

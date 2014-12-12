@@ -9,14 +9,16 @@ package com.makina.ecrins.maps.util;
  * It is sometimes called a high-cut filter, or treble cut filter when used in audio applications.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+ *
  * @see <a href="http://blog.thomnichols.org/2011/08/smoothing-sensor-data-with-a-low-pass-filter">http://blog.thomnichols.org/2011/08/smoothing-sensor-data-with-a-low-pass-filter</a>
  */
 public final class LowPassSensorValuesFilter {
 
     /**
      * time smoothing constant for low-pass filter
-     * 0 <= alpha <= 1 ; a smaller value basically means more smoothing
-     * See: http://en.wikipedia.org/wiki/Low-pass_filter#Discrete-time_realization
+     * 0 <= alpha <= 1 ; a smaller value basically means more smoothing.
+     *
+     * @see <a href="http://en.wikipedia.org/wiki/Low-pass_filter#Discrete-time_realization">http://en.wikipedia.org/wiki/Low-pass_filter#Discrete-time_realization</a>
      */
     private static final float ALPHA = 0.15f;
 
@@ -28,10 +30,11 @@ public final class LowPassSensorValuesFilter {
     }
 
     /**
-     * Filter the given input alues against the previous values and return a low-pass filtered result.
+     * Filter the given input values against the previous values and return a low-pass filtered result.
      *
      * @param input  float array to smooth.
      * @param output float array representing the previous values.
+     *
      * @see <a href="http://en.wikipedia.org/wiki/Low-pass_filter#Algorithmic_implementation">http://en.wikipedia.org/wiki/Low-pass_filter#Algorithmic_implementation</a>
      * @see <a href="http://developer.android.com/reference/android/hardware/SensorEvent.html#values">http://developer.android.com/reference/android/hardware/SensorEvent.html#values</a>
      */

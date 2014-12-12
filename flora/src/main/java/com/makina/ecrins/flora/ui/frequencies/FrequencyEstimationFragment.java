@@ -39,7 +39,7 @@ public class FrequencyEstimationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_frequency_estimation, container, false);
 
-        final List<Abacus> abacus = new ArrayList<Abacus>();
+        final List<Abacus> abacus = new ArrayList<>();
         abacus.add(new Abacus(R.drawable.ic_abacus_01, 0.01));
         abacus.add(new Abacus(R.drawable.ic_abacus_02, 0.02));
         abacus.add(new Abacus(R.drawable.ic_abacus_05, 0.05));
@@ -143,7 +143,7 @@ public class FrequencyEstimationFragment extends Fragment {
     private class AbacusAdapter extends ArrayAdapter<Abacus> {
 
         private final LayoutInflater mInflater;
-        private NumberFormat mNumberFormat;
+        private final NumberFormat mNumberFormat;
 
         public AbacusAdapter(Context context, List<Abacus> abacus) {
             super(context, android.R.layout.simple_list_item_1, android.R.id.text1, abacus);
@@ -186,8 +186,8 @@ public class FrequencyEstimationFragment extends Fragment {
 
     private class Abacus {
 
-        private int mResourceId;
-        private double mValue;
+        private final int mResourceId;
+        private final double mValue;
 
         public Abacus(int pResourceId, double pValue) {
             mResourceId = pResourceId;

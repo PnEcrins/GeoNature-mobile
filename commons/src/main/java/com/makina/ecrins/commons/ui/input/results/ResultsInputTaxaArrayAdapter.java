@@ -60,11 +60,11 @@ public class ResultsInputTaxaArrayAdapter extends ArrayAdapter<AbstractTaxon> {
 
         if (getItem(position).getComment().isEmpty()) {
             ((ImageView) view.findViewById(R.id.imageViewTaxonComment)).setImageResource(R.drawable.ic_action_comment_add);
-            ((ImageView) view.findViewById(R.id.imageViewTaxonComment)).setContentDescription(getContext().getString(R.string.action_comment_add));
+            view.findViewById(R.id.imageViewTaxonComment).setContentDescription(getContext().getString(R.string.action_comment_add));
         }
         else {
             ((ImageView) view.findViewById(R.id.imageViewTaxonComment)).setImageResource(R.drawable.ic_action_comment);
-            ((ImageView) view.findViewById(R.id.imageViewTaxonComment)).setContentDescription(getContext().getString(R.string.action_comment_edit));
+            view.findViewById(R.id.imageViewTaxonComment).setContentDescription(getContext().getString(R.string.action_comment_edit));
         }
 
         // sets the background color for the current selected taxon

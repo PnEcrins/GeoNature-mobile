@@ -76,7 +76,7 @@ public final class GeometryUtils implements IMathConstants, IGeoConstants {
                 case POINT:
                     return new Point(new GeoPoint(coordinates, GeoPoint.LON_LAT));
                 case LINE_STRING:
-                    final List<Point> points = new ArrayList<Point>();
+                    final List<Point> points = new ArrayList<>();
 
                     for (int i = 0; i < coordinates.length(); i++) {
                         points.add((Point) createGeometryFromJsonCoordinates(GeoJSONType.POINT, coordinates.getJSONArray(i)));
@@ -84,7 +84,7 @@ public final class GeometryUtils implements IMathConstants, IGeoConstants {
 
                     return new LineString(points);
                 case POLYGON:
-                    final List<LineString> lineStrings = new ArrayList<LineString>();
+                    final List<LineString> lineStrings = new ArrayList<>();
 
                     for (int i = 0; i < coordinates.length(); i++) {
                         lineStrings.add((LineString) createGeometryFromJsonCoordinates(GeoJSONType.LINE_STRING, coordinates.getJSONArray(i)));
@@ -207,8 +207,13 @@ public final class GeometryUtils implements IMathConstants, IGeoConstants {
             default:
                 distance = 0.0;
 
-                Log.w(GeometryUtils.class.getName(), "no implementation found for geometry '" + fromGeometry.getType()
-                        .getValue() + "'");
+                Log.w(
+                        GeometryUtils.class.getName(),
+                        "no implementation found for geometry '" +
+                                fromGeometry.getType().getValue() +
+                                "'"
+                );
+
                 break;
         }
 
@@ -224,7 +229,7 @@ public final class GeometryUtils implements IMathConstants, IGeoConstants {
     public static boolean isValid(IGeometry geometry) {
         Geometry jtsGeometry = createJTSGeometry(geometry);
 
-        return (jtsGeometry == null) ? false : jtsGeometry.isValid();
+        return (jtsGeometry != null) && jtsGeometry.isValid();
     }
 
     /**
@@ -238,12 +243,7 @@ public final class GeometryUtils implements IMathConstants, IGeoConstants {
         Geometry jtsGeometry1 = createJTSGeometry(geometry1);
         Geometry jtsGeometry2 = createJTSGeometry(geometry2);
 
-        if ((jtsGeometry1 != null) && (jtsGeometry2 != null)) {
-            return jtsGeometry2.contains(jtsGeometry1);
-        }
-        else {
-            return false;
-        }
+        return (jtsGeometry1 != null) && (jtsGeometry2 != null) && jtsGeometry2.contains(jtsGeometry1);
     }
 
     private static Geometry createJTSGeometry(IGeometry geometry) {
@@ -322,7 +322,7 @@ public final class GeometryUtils implements IMathConstants, IGeoConstants {
                         );
                     }
 
-                    List<LinearRing> holes = new ArrayList<LinearRing>();
+                    List<LinearRing> holes = new ArrayList<>();
 
                     for (Polygon polygonHole : ((Polygon) geometry).getHoles()) {
                         CoordinateList coordinateListHole = new CoordinateList();

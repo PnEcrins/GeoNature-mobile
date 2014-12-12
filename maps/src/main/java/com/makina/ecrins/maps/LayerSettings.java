@@ -2,6 +2,7 @@ package com.makina.ecrins.maps;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -92,7 +93,7 @@ public class LayerSettings implements Parcelable, Comparable<LayerSettings> {
     }
 
     @Override
-    public int compareTo(LayerSettings another) {
+    public int compareTo(@NonNull LayerSettings another) {
         return mName.compareTo(another.getName());
     }
 

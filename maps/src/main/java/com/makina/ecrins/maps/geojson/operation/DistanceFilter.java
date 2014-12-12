@@ -26,7 +26,7 @@ public class DistanceFilter implements IFeatureFilterVisitor {
     private final double mDistance;
 
     public DistanceFilter(GeoPoint point, double distance) {
-        this.mFeatures = new TreeMap<Double, Feature>();
+        this.mFeatures = new TreeMap<>();
         this.mPoint = point;
         this.mDistance = distance;
     }
@@ -42,7 +42,7 @@ public class DistanceFilter implements IFeatureFilterVisitor {
         }
     }
 
-    public List<Feature> getFiltereredFeatures() {
-        return new ArrayList<Feature>(this.mFeatures.values());
+    public List<Feature> getFilteredFeatures() {
+        return new ArrayList<>(this.mFeatures.values());
     }
 }

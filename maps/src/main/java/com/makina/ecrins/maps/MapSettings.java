@@ -39,15 +39,15 @@ public class MapSettings implements Parcelable {
     private boolean mDisplayScale = true;
     private RenderQualityEnum mRenderQuality = RenderQualityEnum.AUTO;
     private boolean mShowUnitiesLayer = true;
-    private List<Integer> mBbox = new ArrayList<Integer>();
-    private List<GeoPoint> mMaxBounds = new ArrayList<GeoPoint>();
+    private final List<Integer> mBbox = new ArrayList<>();
+    private final List<GeoPoint> mMaxBounds = new ArrayList<>();
     private Polygon mPolygonBounds = null;
     private GeoPoint mCenter;
     private int mZoom = 0;
     private int mMinZoom = 0;
     private int mMaxZoom = 0;
     private int mMinimumZoomPointing = 0;
-    private List<LayerSettings> mLayers = new ArrayList<LayerSettings>();
+    private final List<LayerSettings> mLayers = new ArrayList<>();
     private LayerSettings mUnityLayer = null;
 
     public MapSettings(Parcel source) {
@@ -89,10 +89,18 @@ public class MapSettings implements Parcelable {
         JSONArray maxBoundsJsonArray = json.getJSONArray(KEY_MAX_BOUNDS);
 
         for (int i = 0; i < maxBoundsJsonArray.length(); i++) {
-            mMaxBounds.add(new GeoPoint(maxBoundsJsonArray.getJSONArray(i), GeoPoint.LAT_LON));
+            mMaxBounds.add(
+                    new GeoPoint(
+                            maxBoundsJsonArray.getJSONArray(i),
+                            GeoPoint.LAT_LON
+                    )
+            );
         }
 
-        mCenter = new GeoPoint(json.getJSONArray(KEY_CENTER), GeoPoint.LAT_LON);
+        mCenter = new GeoPoint(
+                json.getJSONArray(KEY_CENTER),
+                GeoPoint.LAT_LON
+        );
 
         if (json.has(KEY_START_ZOOM)) {
             this.mZoom = json.getInt(KEY_START_ZOOM);
@@ -170,7 +178,24 @@ public class MapSettings implements Parcelable {
             GeoPoint southWest = getMaxBounds().get(0);
             GeoPoint northEast = getMaxBounds().get(1);
 
-            mPolygonBounds = new Polygon(Arrays.asList(new Point(southWest), new Point(new GeoPoint(northEast.getLatitudeE6(), southWest.getLongitudeE6())), new Point(northEast), new Point(new GeoPoint(southWest.getLatitudeE6(), northEast.getLongitudeE6()))));
+            mPolygonBounds = new Polygon(
+                    Arrays.asList(
+                            new Point(southWest),
+                            new Point(
+                                    new GeoPoint(
+                                            northEast.getLatitudeE6(),
+                                            southWest.getLongitudeE6()
+                                    )
+                            ),
+                            new Point(northEast),
+                            new Point(
+                                    new GeoPoint(
+                                            southWest.getLatitudeE6(),
+                                            northEast.getLongitudeE6()
+                                    )
+                            )
+                    )
+            );
         }
 
         return mPolygonBounds;

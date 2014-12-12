@@ -89,7 +89,7 @@ public class Feature implements Parcelable {
     }
 
     public JSONObject getJSONObject() throws JSONException {
-        JSONObject json = new JSONObject();
+        final JSONObject json = new JSONObject();
         json.put("id", getId());
         json.put("type", getType().getValue());
         json.put("geometry", (getGeometry() == null) ? new JSONObject() : getGeometry().getJSONObject());
@@ -99,6 +99,7 @@ public class Feature implements Parcelable {
         for (String key : mProperties.keySet()) {
             jsonProperties.put(key, mProperties.get(key));
         }
+
         json.put("properties", jsonProperties);
 
         return json;

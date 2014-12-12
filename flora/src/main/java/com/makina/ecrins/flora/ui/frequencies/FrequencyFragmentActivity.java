@@ -149,7 +149,7 @@ public class FrequencyFragmentActivity extends ActionBarActivity implements OnCl
         switch (((Taxon) ((MainApplication) getApplication()).getInput().getCurrentSelectedTaxon())
                 .getCurrentSelectedArea().getFrequency().getType()) {
             case TRANSECT:
-                List<Integer> actions = new ArrayList<Integer>();
+                List<Integer> actions = new ArrayList<>();
                 Collections.addAll(actions, R.string.choose_action_yes, R.string.choose_action_no);
                 final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment
                         .newInstance(R.string.choose_action_title_quit_step, actions);
@@ -169,7 +169,7 @@ public class FrequencyFragmentActivity extends ActionBarActivity implements OnCl
         public FrequencyFragmentHandler(FrequencyFragmentActivity pFrequencyFragmentActivity) {
             super();
 
-            mFrequencyFragmentActivity = new WeakReference<FrequencyFragmentActivity>(pFrequencyFragmentActivity);
+            mFrequencyFragmentActivity = new WeakReference<>(pFrequencyFragmentActivity);
         }
 
         @Override

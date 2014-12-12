@@ -1,14 +1,14 @@
 package com.makina.ecrins.commons.sync;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Default settings for synchronizing data.
@@ -27,7 +27,7 @@ public class SyncSettings implements Parcelable {
     private String mToken;
     private String mStatusUrl;
     private String mImportUrl;
-    private List<ExportSettings> mExports = new ArrayList<ExportSettings>();
+    private final List<ExportSettings> mExports = new ArrayList<>();
 
     public SyncSettings(Parcel source) {
         mServerUrl = source.readString();

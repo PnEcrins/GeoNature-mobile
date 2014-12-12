@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <string-array name="viewport_target_density_labels">
         <item>@string/viewport_target_density_dpi_auto_label</item>
@@ -7,7 +7,7 @@
         <item>@string/viewport_target_density_dpi_medium_label</item>
         <item>@string/viewport_target_density_dpi_high_label</item>
     </string-array>
-    <string-array name="viewport_target_density_values">
+    <string-array name="viewport_target_density_values" tools:ignore="MissingTranslation">
         <item>0</item>
         <item>1</item>
         <item>2</item>

@@ -30,7 +30,7 @@ public class NetworkConnectivityListener {
      */
     protected NetworkInfo mNetworkInfo;
     protected State mState;
-    protected AtomicBoolean mListening = new AtomicBoolean();
+    protected final AtomicBoolean mListening = new AtomicBoolean();
     protected String mReason;
 
     private ConnectivityManager mConnectivityManager;

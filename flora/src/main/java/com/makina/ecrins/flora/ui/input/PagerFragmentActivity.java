@@ -60,7 +60,7 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
         public PagerFragmentHandler(PagerFragmentActivity pPagerFragmentActivity) {
             super();
 
-            mPagerFragmentActivity = new WeakReference<PagerFragmentActivity>(pPagerFragmentActivity);
+            mPagerFragmentActivity = new WeakReference<>(pPagerFragmentActivity);
         }
 
         @Override
@@ -192,7 +192,7 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
 
     @Override
     protected Map<Integer, IValidateFragment> getPagerFragments() {
-        final Map<Integer, IValidateFragment> fragments = new LinkedHashMap<Integer, IValidateFragment>();
+        final Map<Integer, IValidateFragment> fragments = new LinkedHashMap<>();
 
         WebViewFragment mapAPFragment = new WebViewFragment();
 
@@ -256,7 +256,7 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
 
     protected void showChooseActionDialog() {
         // display a confirmation dialog to choose an action
-        List<Integer> actions = new ArrayList<Integer>();
+        List<Integer> actions = new ArrayList<>();
         Collections.addAll(
                 actions,
                 R.string.alert_dialog_action_start_new_input,

@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class FeatureCollection implements Parcelable {
 
-    private final Map<String, Feature> mFeatures = new HashMap<String, Feature>();
+    private final Map<String, Feature> mFeatures = new HashMap<>();
 
     public FeatureCollection() {
         super();
@@ -33,7 +33,7 @@ public class FeatureCollection implements Parcelable {
     }
 
     public FeatureCollection(Parcel source) {
-        final List<Feature> features = new ArrayList<Feature>();
+        final List<Feature> features = new ArrayList<>();
         source.readTypedList(features, Feature.CREATOR);
 
         for (Feature feature : features) {
@@ -48,7 +48,7 @@ public class FeatureCollection implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedList(new ArrayList<Feature>(mFeatures.values()));
+        dest.writeTypedList(new ArrayList<>(mFeatures.values()));
     }
 
     public GeoJSONType getType() {
@@ -56,7 +56,7 @@ public class FeatureCollection implements Parcelable {
     }
 
     public List<Feature> getFeatures() {
-        return new ArrayList<Feature>(mFeatures.values());
+        return new ArrayList<>(mFeatures.values());
     }
 
     public Feature getFeature(String featureId) {

@@ -2,6 +2,7 @@ package com.makina.ecrins.maps.geojson.geometry;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -125,22 +126,35 @@ public class GeoPoint implements IMathConstants, IGeoConstants, Serializable, Pa
     }
 
     @Override
-    public int compareTo(GeoPoint another) {
-        return Integer.valueOf(mLatitudeE6)
-                .compareTo(another.getLatitudeE6()) + Integer.valueOf(mLongitudeE6)
-                .compareTo(another.getLongitudeE6());
+    public int compareTo(@NonNull GeoPoint another) {
+        if (this == another) {
+            return 0;
+        }
+
+        return Integer.valueOf(mLatitudeE6).compareTo(another.getLatitudeE6()) +
+                Integer.valueOf(mLongitudeE6).compareTo(another.getLongitudeE6());
     }
 
     @Override
     public boolean equals(Object o) {
-        if ((o != null) && (o instanceof GeoPoint)) {
-            return Integer.valueOf(mLatitudeE6)
-                    .equals(((GeoPoint) o).getLatitudeE6()) && Integer.valueOf(mLongitudeE6)
-                    .equals(((GeoPoint) o).getLongitudeE6());
+        if (this == o) {
+            return true;
         }
-        else {
+
+        if (!(o instanceof GeoPoint)) {
             return false;
         }
+
+        GeoPoint geoPoint = (GeoPoint) o;
+
+        return mLatitudeE6 == geoPoint.mLatitudeE6 && mLongitudeE6 == geoPoint.mLongitudeE6;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mLatitudeE6;
+        result = 31 * result + mLongitudeE6;
+        return result;
     }
 
     /**

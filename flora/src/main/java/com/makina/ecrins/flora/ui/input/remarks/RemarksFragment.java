@@ -30,7 +30,7 @@ public class RemarksFragment extends Fragment implements IValidateFragment {
 
     private EditText mEditTextRemarks;
 
-    private TextWatcher mTextWatcher = new TextWatcher() {
+    private final TextWatcher mTextWatcher = new TextWatcher() {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             // nothing to do ...

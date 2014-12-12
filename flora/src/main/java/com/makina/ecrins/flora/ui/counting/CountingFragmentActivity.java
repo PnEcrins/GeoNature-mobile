@@ -151,7 +151,7 @@ public class CountingFragmentActivity extends ActionBarActivity implements OnCli
                 .getCounting()
                 .getType()) {
             case SAMPLING:
-                List<Integer> actions = new ArrayList<Integer>();
+                List<Integer> actions = new ArrayList<>();
                 Collections.addAll(actions, R.string.choose_action_yes, R.string.choose_action_no);
                 final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(R.string.choose_action_title_quit_step, actions);
                 chooseActionDialogFragment.setHandler(mHandler);
@@ -169,7 +169,7 @@ public class CountingFragmentActivity extends ActionBarActivity implements OnCli
         public CountingFragmentHandler(CountingFragmentActivity pCountingFragmentActivity) {
             super();
 
-            mCountingFragmentActivity = new WeakReference<CountingFragmentActivity>(pCountingFragmentActivity);
+            mCountingFragmentActivity = new WeakReference<>(pCountingFragmentActivity);
         }
 
         @Override

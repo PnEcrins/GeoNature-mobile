@@ -22,8 +22,8 @@ public class MockLocationProvider implements IMathConstants, IGeoConstants {
 
     public static final String MOCK_LOCATION_PROVIDER = "mock_location_provider";
 
-    private Context mContext;
-    private LocationManager mLocationManager;
+    private final Context mContext;
+    private final LocationManager mLocationManager;
     private Location mCurrentLocation;
 
     public MockLocationProvider(Context pContext) {
@@ -44,12 +44,7 @@ public class MockLocationProvider implements IMathConstants, IGeoConstants {
     }
 
     public boolean isProviderEnabled() {
-        if (mLocationManager.getProvider(MOCK_LOCATION_PROVIDER) == null) {
-            return false;
-        }
-        else {
-            return mLocationManager.isProviderEnabled(MOCK_LOCATION_PROVIDER);
-        }
+        return mLocationManager.getProvider(MOCK_LOCATION_PROVIDER) != null && mLocationManager.isProviderEnabled(MOCK_LOCATION_PROVIDER);
     }
 
     public void pushLocation(Geolocation geolocation) {
@@ -138,16 +133,7 @@ public class MockLocationProvider implements IMathConstants, IGeoConstants {
                 locationJellyBeanFixMethod.invoke(location);
             }
         }
-        catch (NoSuchMethodException nsme) {
-            // nothing to do ...
-        }
-        catch (IllegalArgumentException iae) {
-            // nothing to do ...
-        }
-        catch (IllegalAccessException iae) {
-            // nothing to do ...
-        }
-        catch (InvocationTargetException ite) {
+        catch (NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException ge) {
             // nothing to do ...
         }
     }

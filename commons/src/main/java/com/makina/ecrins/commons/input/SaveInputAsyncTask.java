@@ -46,6 +46,8 @@ public class SaveInputAsyncTask extends AsyncTask<AbstractInput, Void, Boolean> 
         if ((params != null) && (params.length > 0) && (params[0] != null)) {
             try {
                 File inputDir = FileUtils.getInputsFolder(mContext);
+
+                // noinspection ResultOfMethodCallIgnored
                 inputDir.mkdirs();
 
                 File inputFile = new File(inputDir, "input_" + params[0].getInputId() + ".json");

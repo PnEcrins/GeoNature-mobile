@@ -1,5 +1,6 @@
 package com.makina.ecrins.commons.sync;
 
+import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +29,7 @@ import java.io.IOException;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
+@SuppressLint("Registered")
 public class SyncCommandIntentService extends IntentService {
     /**
      * Command to execute to get application information and export it as a JSON file
@@ -103,14 +105,8 @@ public class SyncCommandIntentService extends IntentService {
 
                 FileUtils.writeStringToFile(FileUtils.getFileFromApplicationStorage(this.mContext, "version_" + this.mContext.getPackageName() + ".json"), packageInfoJson.toString());
             }
-            catch (NameNotFoundException nnfe) {
-                Log.e(getClass().getName(), nnfe.getMessage(), nnfe);
-            }
-            catch (JSONException je) {
-                Log.e(getClass().getName(), je.getMessage(), je);
-            }
-            catch (IOException ioe) {
-                Log.e(getClass().getName(), ioe.getMessage(), ioe);
+            catch (NameNotFoundException | IOException | JSONException ge) {
+                Log.e(getClass().getName(), ge.getMessage(), ge);
             }
 
             return null;
@@ -134,6 +130,7 @@ public class SyncCommandIntentService extends IntentService {
 
                 Log.d(getClass().getName(), "input to delete : " + params[0]);
 
+                // noinspection ResultOfMethodCallIgnored
                 inputFile.delete();
             }
             catch (IOException ioe) {
@@ -169,11 +166,8 @@ public class SyncCommandIntentService extends IntentService {
                     FileUtils.moveFileToDirectory(fileToMove, FileUtils.getFile(FileUtils.getExternalStorageDirectory(mContext), FileUtils.getRelativeSharedPath(mContext), relativePath.toString()), true);
                 }
             }
-            catch (NameNotFoundException nnfe) {
-                Log.e(getClass().getName(), nnfe.getMessage(), nnfe);
-            }
-            catch (IOException ioe) {
-                Log.e(getClass().getName(), ioe.getMessage(), ioe);
+            catch (NameNotFoundException | IOException ge) {
+                Log.e(getClass().getName(), ge.getMessage(), ge);
             }
 
             return null;

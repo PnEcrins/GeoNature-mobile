@@ -66,7 +66,7 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
 
     protected int mZoom;
 
-    private LayoutInflater mInflater;
+    private final LayoutInflater mInflater;
     private View mView = null;
 
     private OnDrawControlListener mOnDrawControlListener;
@@ -515,9 +515,9 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
                     mWebViewFragment.getEditableFeatures()
                             .apply(distanceFilter);
 
-                    if (!distanceFilter.getFiltereredFeatures()
+                    if (!distanceFilter.getFilteredFeatures()
                             .isEmpty()) {
-                        featureFound = distanceFilter.getFiltereredFeatures()
+                        featureFound = distanceFilter.getFilteredFeatures()
                                 .get(0);
                     }
                 }
@@ -569,7 +569,7 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
                             featureAsJson.getString("type")
                                     .equals(GeoJSONType.POLYGON.getValue())) {
                         JSONArray coordinates = featureAsJson.getJSONArray("coordinates");
-                        List<Point> points = new ArrayList<Point>();
+                        List<Point> points = new ArrayList<>();
 
                         for (int i = 0; i < coordinates.length(); i++) {
                             points.add(new Point(new GeoPoint(coordinates.getJSONObject(i)

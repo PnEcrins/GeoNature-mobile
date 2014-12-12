@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollView"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -18,7 +19,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:text="@string/frequency_transect_step_advice"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            tools:ignore="RtlHardcoded"/>
 
         <TextView
             android:id="@+id/textViewNumberOfTransects"
@@ -27,7 +29,8 @@
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/textViewFrequencyStepAdvice"
             android:text="@string/frequency_transect_number_of_transects"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            tools:ignore="RtlHardcoded"/>
 
         <EditText
             android:id="@+id/editTextNumberOfTransects"
@@ -37,7 +40,8 @@
             android:layout_toRightOf="@+id/textViewNumberOfTransects"
             android:ems="3"
             android:inputType="number"
-            android:singleLine="true">
+            android:singleLine="true"
+            tools:ignore="RtlHardcoded">
         </EditText>
 
         <Button
@@ -87,7 +91,8 @@
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/editTextNo"
             android:text="@string/frequency_transect_number_of_steps"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            tools:ignore="RtlHardcoded"/>
 
         <TextView
             android:id="@+id/textViewComputedFrequency"
@@ -97,7 +102,8 @@
             android:layout_below="@+id/textViewNumberOfSteps"
             android:text="@string/frequency_transect_frequency"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            tools:ignore="RtlHardcoded"/>
 
     </RelativeLayout>
 

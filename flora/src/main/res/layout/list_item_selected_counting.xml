@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:minHeight="?android:attr/listPreferredItemHeight">
@@ -12,7 +13,8 @@
         android:layout_centerVertical="true"
         android:clickable="false"
         android:focusable="false"
-        android:focusableInTouchMode="false"/>
+        android:focusableInTouchMode="false"
+        tools:ignore="RtlHardcoded"/>
 
     <TextView
         android:id="@+id/textViewCountingName"
@@ -20,7 +22,8 @@
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@id/radioButton"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textIsSelectable="false"/>
+        android:textIsSelectable="false"
+        tools:ignore="RtlHardcoded"/>
 
     <TextView
         android:id="@+id/textViewCountingValue"
@@ -29,6 +32,7 @@
         android:layout_below="@id/textViewCountingName"
         android:layout_toLeftOf="@id/radioButton"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textIsSelectable="false"/>
+        android:textIsSelectable="false"
+        tools:ignore="RtlHardcoded"/>
 
 </RelativeLayout>

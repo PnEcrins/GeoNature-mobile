@@ -1,5 +1,6 @@
 package com.makina.ecrins.commons.sync;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -46,6 +47,7 @@ import java.util.Locale;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
+@SuppressLint("Registered")
 public class SyncService extends Service {
 
     /**
@@ -109,7 +111,7 @@ public class SyncService extends Service {
     /**
      * keeps track of all current registered clients.
      */
-    protected final List<Messenger> mClients = new ArrayList<Messenger>();
+    protected final List<Messenger> mClients = new ArrayList<>();
 
     /**
      * Target we publish for clients to send messages to IncomingHandler.
@@ -288,7 +290,7 @@ public class SyncService extends Service {
 
         public IncomingHandler(SyncService pSyncService) {
             super();
-            mSyncService = new WeakReference<SyncService>(pSyncService);
+            mSyncService = new WeakReference<>(pSyncService);
         }
 
         @Override
@@ -315,9 +317,12 @@ public class SyncService extends Service {
                 case SyncService.HANDLER_SYNC_PULL_DATA:
                     if (syncService.getPullDataAsyncTask().getStatus().equals(Status.PENDING) && (syncService.getSyncSettings() != null)) {
                         Log.d(getClass().getName(), "handleMessage HANDLER_SYNC_PULL_DATA");
+
                         syncService.mPullDataAsyncTaskStatus = new SyncStatus(SyncStatus.Status.RUNNING, "starting the synchronization process ...");
                         syncService.sendMessage(SyncService.HANDLER_SYNC_STATUS, syncService.getSyncStatus());
-                        syncService.getPullDataAsyncTask().execute(syncService.getSyncSettings().getExports().toArray(new ExportSettings[]{}));
+
+                        final List<ExportSettings> exports = syncService.getSyncSettings().getExports();
+                        syncService.getPullDataAsyncTask().execute(exports.toArray(new ExportSettings[exports.size()]));
                     }
 
                     break;
@@ -393,7 +398,7 @@ public class SyncService extends Service {
             HttpConnectionParams.setConnectionTimeout(httpParameters, 5000);
             //HttpConnectionParams.setSoTimeout(httpParameters, 5000);
 
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+            final List<NameValuePair> nameValuePairs = new ArrayList<>(1);
             nameValuePairs.add(new BasicNameValuePair("token", getSyncSettings().getToken()));
             int currentExport = 0;
 
@@ -420,13 +425,16 @@ public class SyncService extends Service {
                         InputStream inputStream = entity.getContent();
 
                         if (tempFile.exists()) {
+                            // noinspection ResultOfMethodCallIgnored
                             tempFile.delete();
                         }
                         else {
+                            // noinspection ResultOfMethodCallIgnored
                             tempFile.createNewFile();
                         }
 
                         if (copyInputStream(inputStream, new FileOutputStream(tempFile), entity.getContentLength(), currentExport, params.length)) {
+                            // noinspection ResultOfMethodCallIgnored
                             originalFile.delete();
 
                             if (tempFile.renameTo(FileUtils.getFileFromApplicationStorage(SyncService.this, exportSettings.getFile()))) {
@@ -450,6 +458,7 @@ public class SyncService extends Service {
                         }
 
                         if (tempFile.exists()) {
+                            // noinspection ResultOfMethodCallIgnored
                             tempFile.delete();
                         }
 
@@ -563,7 +572,7 @@ public class SyncService extends Service {
             HttpConnectionParams.setConnectionTimeout(httpParameters, 5000);
             //HttpConnectionParams.setSoTimeout(httpParameters, 5000);
 
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            final List<NameValuePair> nameValuePairs = new ArrayList<>(2);
             nameValuePairs.add(new BasicNameValuePair("token", getSyncSettings().getToken()));
             nameValuePairs.add(new BasicNameValuePair("data", "{}"));
 
@@ -689,7 +698,7 @@ public class SyncService extends Service {
             Log.d(getClass().getName(), "content-length : " + contentLength);
 
             final OutputStream out = new OutputStream() {
-                private StringBuilder string = new StringBuilder();
+                private final StringBuilder string = new StringBuilder();
 
                 @Override
                 public void write(int b) throws IOException {

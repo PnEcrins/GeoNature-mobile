@@ -21,7 +21,7 @@ public final class ZoomControl extends AbstractControl implements OnClickListene
     protected ImageButton mImageButtonZoomIn;
     protected ImageButton mImageButtonZoomOut;
 
-    private LayoutInflater mInflater;
+    private final LayoutInflater mInflater;
     private View mView = null;
 
     /**

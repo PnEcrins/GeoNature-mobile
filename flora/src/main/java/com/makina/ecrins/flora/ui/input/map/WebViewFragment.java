@@ -225,7 +225,7 @@ public class WebViewFragment extends AbstractWebViewFragment
     @Override
     public List<Feature> getFeatures() {
         // no features to load
-        return new ArrayList<Feature>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -496,7 +496,7 @@ public class WebViewFragment extends AbstractWebViewFragment
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if ((data != null) && data.moveToFirst()) {
-            final List<Feature> features = new ArrayList<Feature>();
+            final List<Feature> features = new ArrayList<>();
 
             do {
                 try {
@@ -533,7 +533,7 @@ public class WebViewFragment extends AbstractWebViewFragment
             if (isAdded()) {
                 final String featureControlName = ControlUtils
                         .getControlName(FeaturesControl.class);
-                final List<Feature> featuresAreas = new ArrayList<Feature>();
+                final List<Feature> featuresAreas = new ArrayList<>();
 
                 if ((((MainApplication) getActivity().getApplication()).getInput()
                         .getCurrentSelectedTaxon() != null) &&
@@ -594,7 +594,7 @@ public class WebViewFragment extends AbstractWebViewFragment
                 .getInput().getCurrentSelectedTaxon()).getAreas().values().iterator();
 
         while (check && iterator.hasNext()) {
-            check = check && GeometryUtils.contains(
+            check = GeometryUtils.contains(
                     iterator.next().getFeature().getGeometry(),
                     selectedFeature.getGeometry());
         }

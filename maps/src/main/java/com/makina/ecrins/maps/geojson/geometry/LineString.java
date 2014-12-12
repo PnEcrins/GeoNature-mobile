@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class LineString implements IGeometry {
 
-    private List<Point> mPoints = new ArrayList<Point>();
+    private List<Point> mPoints = new ArrayList<>();
 
     public LineString(List<Point> pPoints) {
         this.mPoints = pPoints;
@@ -45,7 +45,7 @@ public class LineString implements IGeometry {
 
     @Override
     public List<IGeometry> getCoordinates() {
-        List<IGeometry> coordinates = new ArrayList<IGeometry>();
+        List<IGeometry> coordinates = new ArrayList<>();
         coordinates.addAll(mPoints);
 
         return coordinates;

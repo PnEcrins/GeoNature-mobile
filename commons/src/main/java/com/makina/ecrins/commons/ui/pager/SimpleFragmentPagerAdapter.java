@@ -17,7 +17,7 @@ import java.util.Map;
 public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
 
     private Context mContext;
-    private final Map<Integer, Fragment> mFragments = new LinkedHashMap<Integer, Fragment>();
+    private final Map<Integer, Fragment> mFragments = new LinkedHashMap<>();
 
     public SimpleFragmentPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
@@ -31,7 +31,7 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return (new ArrayList<Fragment>(mFragments.values())).get(position);
+        return (new ArrayList<>(mFragments.values())).get(position);
     }
 
     @Override

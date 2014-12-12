@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -16,8 +17,8 @@ import com.makina.ecrins.commons.R;
  */
 public class TaxaFilterStatusView extends View {
 
-    private Paint mBgPaints = new Paint();
-    private Paint mLinePaints = new Paint();
+    private final Paint mBgPaints = new Paint();
+    private final Paint mLinePaints = new Paint();
     private int mWidth;
     private int mHeight;
 
@@ -38,7 +39,7 @@ public class TaxaFilterStatusView extends View {
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         super.draw(canvas);
 
         mBgPaints.setAntiAlias(true);

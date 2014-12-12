@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -13,7 +14,8 @@
         android:text="@string/synchro_server_status"
         android:textAllCaps="true"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        tools:ignore="RtlHardcoded"/>
 
     <View
         android:id="@+id/viewSeparator"
@@ -32,7 +34,8 @@
         android:layout_alignLeft="@+id/viewSeparator"
         android:layout_below="@+id/viewSeparator"
         android:contentDescription="@string/synchro_server_hint"
-        android:src="@drawable/ic_action_server"/>
+        android:src="@drawable/ic_action_server"
+        tools:ignore="RtlHardcoded"/>
 
     <TextView
         android:id="@+id/textViewServerStatus"
@@ -41,7 +44,8 @@
         android:layout_alignBottom="@+id/imageViewSynchroServer"
         android:layout_alignRight="@+id/viewSeparator"
         android:layout_alignTop="@+id/imageViewSynchroServer"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:ignore="RtlHardcoded"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -65,7 +69,8 @@
                 android:text="@string/synchro_data_transfer_mobile_server"
                 android:textAllCaps="true"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                tools:ignore="RtlHardcoded"/>
 
             <View
                 android:id="@+id/viewSeparator2"
@@ -84,7 +89,8 @@
                 android:layout_alignLeft="@+id/viewSeparator2"
                 android:layout_below="@+id/viewSeparator2"
                 android:contentDescription="@string/synchro_device_hint"
-                android:src="@drawable/ic_action_device"/>
+                android:src="@drawable/ic_action_device"
+                tools:ignore="RtlHardcoded"/>
 
             <ImageView
                 android:id="@+id/imageViewServerRight"
@@ -93,7 +99,8 @@
                 android:layout_alignRight="@+id/viewSeparator2"
                 android:layout_below="@+id/viewSeparator2"
                 android:contentDescription="@string/synchro_server_hint"
-                android:src="@drawable/ic_action_server"/>
+                android:src="@drawable/ic_action_server"
+                tools:ignore="RtlHardcoded"/>
 
             <ProgressBar
                 android:id="@+id/progressBarDeviceToServer"
@@ -102,7 +109,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/viewSeparator2"
                 android:layout_toLeftOf="@+id/imageViewServerRight"
-                android:layout_toRightOf="@+id/imageViewDeviceLeft"/>
+                android:layout_toRightOf="@+id/imageViewDeviceLeft"
+                tools:ignore="RtlHardcoded"/>
 
             <TextView
                 android:id="@+id/textViewProgressDeviceToServer"
@@ -112,7 +120,8 @@
                 android:layout_toLeftOf="@+id/imageViewServerRight"
                 android:layout_toRightOf="@+id/imageViewDeviceLeft"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textIsSelectable="false"/>
+                android:textIsSelectable="false"
+                tools:ignore="RtlHardcoded"/>
 
             <TextView
                 android:id="@+id/textViewSynchroDataTransferServerToMobile"
@@ -124,7 +133,8 @@
                 android:text="@string/synchro_data_transfer_server_mobile"
                 android:textAllCaps="true"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                tools:ignore="RtlHardcoded"/>
 
             <View
                 android:id="@+id/viewSeparator1"
@@ -143,7 +153,8 @@
                 android:layout_alignLeft="@+id/viewSeparator1"
                 android:layout_below="@+id/viewSeparator1"
                 android:contentDescription="@string/synchro_server_hint"
-                android:src="@drawable/ic_action_server"/>
+                android:src="@drawable/ic_action_server"
+                tools:ignore="RtlHardcoded"/>
 
             <ImageView
                 android:id="@+id/imageViewDeviceRight"
@@ -152,7 +163,8 @@
                 android:layout_alignRight="@+id/viewSeparator1"
                 android:layout_below="@+id/viewSeparator1"
                 android:contentDescription="@string/synchro_device_hint"
-                android:src="@drawable/ic_action_device"/>
+                android:src="@drawable/ic_action_device"
+                tools:ignore="RtlHardcoded"/>
 
             <ProgressBar
                 android:id="@+id/progressBarServerToDevice"
@@ -161,7 +173,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/viewSeparator1"
                 android:layout_toLeftOf="@+id/imageViewDeviceRight"
-                android:layout_toRightOf="@+id/imageViewServerLeft"/>
+                android:layout_toRightOf="@+id/imageViewServerLeft"
+                tools:ignore="RtlHardcoded"/>
 
             <TextView
                 android:id="@+id/textViewProgressServerToDevice"
@@ -171,8 +184,8 @@
                 android:layout_toLeftOf="@+id/imageViewDeviceRight"
                 android:layout_toRightOf="@+id/imageViewServerLeft"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textIsSelectable="false"/>
-
+                android:textIsSelectable="false"
+                tools:ignore="RtlHardcoded"/>
 
         </RelativeLayout>
 

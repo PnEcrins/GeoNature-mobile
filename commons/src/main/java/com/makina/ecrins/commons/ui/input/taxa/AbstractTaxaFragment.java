@@ -1,5 +1,6 @@
 package com.makina.ecrins.commons.ui.input.taxa;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -473,6 +474,7 @@ public abstract class AbstractTaxaFragment extends ListFragment
                         if (textSwitcher.getChildCount() != 2) {
                             textSwitcher.setFactory(new ViewFactory() {
                                 @Override
+                                @SuppressLint("RtlHardcoded")
                                 public View makeView() {
                                     TextView textView = new TextView(getActivity());
                                     textView.setSingleLine();

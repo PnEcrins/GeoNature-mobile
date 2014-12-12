@@ -78,9 +78,9 @@ public abstract class AbstractSettingsService extends Service {
     /**
      * keeps track of all current registered clients.
      */
-    protected final List<Messenger> mClients = new ArrayList<Messenger>();
+    protected final List<Messenger> mClients = new ArrayList<>();
 
-    protected Deque<Message> mMessagesQueue = new ArrayDeque<Message>();
+    protected final Deque<Message> mMessagesQueue = new ArrayDeque<>();
 
     /**
      * Target we publish for clients to send messages to IncomingHandler.
@@ -291,7 +291,7 @@ public abstract class AbstractSettingsService extends Service {
 
         public IncomingHandler(AbstractSettingsService pAbstractSettingsService) {
             super();
-            mAbstractSettingsService = new WeakReference<AbstractSettingsService>(pAbstractSettingsService);
+            mAbstractSettingsService = new WeakReference<>(pAbstractSettingsService);
         }
 
         @Override
@@ -401,11 +401,8 @@ public abstract class AbstractSettingsService extends Service {
                     Log.w(AbstractSettingsService.class.getName(), "unable to load file from path '" + settingsJsonFile.getPath() + "'");
                 }
             }
-            catch (IOException ioe) {
-                Log.w(AbstractSettingsService.class.getName(), ioe.getMessage(), ioe);
-            }
-            catch (JSONException je) {
-                Log.w(AbstractSettingsService.class.getName(), je.getMessage(), je);
+            catch (IOException | JSONException ge) {
+                Log.w(AbstractSettingsService.class.getName(), ge.getMessage(), ge);
             }
 
             return null;

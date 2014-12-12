@@ -54,7 +54,7 @@ public abstract class AbstractObserversFragmentActivity extends ActionBarActivit
 
     public static final String CHOICE_MODE = "choice_mode";
 
-    private final Map<Long, Observer> mSelectedObservers = new TreeMap<Long, Observer>();
+    private final Map<Long, Observer> mSelectedObservers = new TreeMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,9 +132,9 @@ public abstract class AbstractObserversFragmentActivity extends ActionBarActivit
 
         protected Bundle mSavedState;
         protected AlphabetSectionIndexerCursorAdapter mAdapter = null;
-        protected Handler mHandler = new Handler();
+        protected final Handler mHandler = new Handler();
 
-        private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+        private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 if (!((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().isEmpty()) {
@@ -335,7 +335,7 @@ public abstract class AbstractObserversFragmentActivity extends ActionBarActivit
             switch (id) {
                 case AbstractMainContentProvider.OBSERVERS:
                     final StringBuilder selection = new StringBuilder();
-                    final List<String> selectionArgs = new ArrayList<String>();
+                    final List<String> selectionArgs = new ArrayList<>();
 
                     // adding filter
                     selection.append("((");
@@ -462,7 +462,7 @@ public abstract class AbstractObserversFragmentActivity extends ActionBarActivit
                         View view = super.getView(position, convertView, parent);
 
                         if (getItemViewType(position) == TYPE_NORMAL) {
-                            if (((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().containsKey(Long.valueOf(getItemId(position)))) {
+                            if (((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().containsKey(getItemId(position))) {
                                 view.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
                                 ((CheckBox) view.findViewById(android.R.id.checkbox)).setChecked(true);
                             }
@@ -513,7 +513,7 @@ public abstract class AbstractObserversFragmentActivity extends ActionBarActivit
 
                 // sets the current position to the first selected observer
                 if (!((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().isEmpty()) {
-                    ArrayList<Observer> sortedObservers = new ArrayList<Observer>(((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().values());
+                    ArrayList<Observer> sortedObservers = new ArrayList<>(((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().values());
                     Collections.sort(sortedObservers);
                     getListView().setSelection(mAdapter.getItemPosition(sortedObservers.get(0).getObserverId()));
                 }

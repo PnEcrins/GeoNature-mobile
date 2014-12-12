@@ -56,7 +56,7 @@ public class MainApplication extends Application {
         this.mAppSettings = null;
         this.mInput = null;
         this.mDefaultObserver = null;
-        this.mUnities = new ArrayList<Feature>();
+        this.mUnities = new ArrayList<>();
 
         Log.d(getClass().getName(),
                 "default storage " + Environment.getExternalStorageDirectory().getPath());

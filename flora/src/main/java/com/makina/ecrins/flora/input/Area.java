@@ -37,8 +37,8 @@ public class Area implements Parcelable {
     private Frequency mFrequency;
     private long mPhenologyId;
     private Counting mCounting;
-    private List<Long> mSelectedPhysiognomy;
-    private List<Long> mSelectedDisturbances;
+    private final List<Long> mSelectedPhysiognomy;
+    private final List<Long> mSelectedDisturbances;
     private String mComment;
 
     public Area(Feature pFeature) {
@@ -47,8 +47,8 @@ public class Area implements Parcelable {
         mFeature = pFeature;
 
         mPhenologyId = -1;
-        mSelectedPhysiognomy = new ArrayList<Long>();
-        mSelectedDisturbances = new ArrayList<Long>();
+        mSelectedPhysiognomy = new ArrayList<>();
+        mSelectedDisturbances = new ArrayList<>();
 
         // sets the default counting method (i.e. none)
         mCounting = new Counting(CountingType.NONE);
@@ -58,8 +58,8 @@ public class Area implements Parcelable {
 
     public Area(Parcel source) {
         mAreaId = source.readLong();
-        mSelectedPhysiognomy = new ArrayList<Long>();
-        mSelectedDisturbances = new ArrayList<Long>();
+        mSelectedPhysiognomy = new ArrayList<>();
+        mSelectedDisturbances = new ArrayList<>();
 
         mComputedArea = source.readDouble();
         mFeature = source.readParcelable(Feature.class.getClassLoader());

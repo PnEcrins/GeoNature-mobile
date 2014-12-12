@@ -34,14 +34,13 @@ import java.util.TreeSet;
 public class MBTilesSplitDataSource implements ITilesLayerDataSource {
 
     private File mbTilesDirectory = null;
-    private LayerSettings mLayerSettings;
-
-    private JSONObject mMetadata = new JSONObject();
+    private final LayerSettings mLayerSettings;
+    private final JSONObject mMetadata = new JSONObject();
     private int mMinZoom = Integer.MAX_VALUE;
     private int mMaxZoom = 0;
-    private final SortedSet<Integer> mZooms = new TreeSet<Integer>();
+    private final SortedSet<Integer> mZooms = new TreeSet<>();
 
-    private final SparseArray<String> mMbTilesPath = new SparseArray<String>();
+    private final SparseArray<String> mMbTilesPath = new SparseArray<>();
 
     public MBTilesSplitDataSource(File sourcePath, LayerSettings pLayerSettings) throws IOException {
         this.mLayerSettings = pLayerSettings;
@@ -148,7 +147,7 @@ public class MBTilesSplitDataSource implements ITilesLayerDataSource {
 
                     if (cursor.moveToFirst()) {
                         while (!cursor.isAfterLast()) {
-                            mZooms.add(Integer.valueOf(cursor.getInt(cursor.getColumnIndex("zooms"))));
+                            mZooms.add(cursor.getInt(cursor.getColumnIndex("zooms")));
 
                             cursor.moveToNext();
                         }
@@ -164,7 +163,7 @@ public class MBTilesSplitDataSource implements ITilesLayerDataSource {
             Log.d(getClass().getName(), mLayerSettings.getName() + " getZooms : " + mZooms.toString());
         }
 
-        return new ArrayList<Integer>(mZooms);
+        return new ArrayList<>(mZooms);
     }
 
     @Override

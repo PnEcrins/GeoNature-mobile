@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:minHeight="?android:attr/listPreferredItemHeight">
@@ -22,7 +23,8 @@
         android:layout_alignParentTop="true"
         android:contentDescription="@string/taxa_heritage_hint"
         android:src="@drawable/ic_action_taxon_heritage"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        tools:ignore="RtlHardcoded"/>
 
     <TextSwitcher
         android:id="@+id/textSwitcher"
@@ -30,7 +32,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@id/imageViewHeritage"
-        android:layout_toRightOf="@id/viewStatusColor">
+        android:layout_toRightOf="@id/viewStatusColor"
+        tools:ignore="RtlHardcoded">
     </TextSwitcher>
 
     <TextView
@@ -41,7 +44,8 @@
         android:layout_below="@id/textSwitcher"
         android:paddingLeft="10dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:ignore="RtlHardcoded,RtlSymmetry"/>
 
     <TextView
         android:id="@+id/textViewTaxonDate"
@@ -51,7 +55,8 @@
         android:layout_below="@id/textViewTaxonObservers"
         android:paddingLeft="10dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:ignore="RtlHardcoded,RtlSymmetry"/>
 
     <TextView
         android:id="@+id/textViewTaxonMessage"
@@ -60,6 +65,7 @@
         android:layout_alignLeft="@id/textSwitcher"
         android:layout_below="@id/textViewTaxonDate"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:ignore="RtlHardcoded"/>
 
 </RelativeLayout>

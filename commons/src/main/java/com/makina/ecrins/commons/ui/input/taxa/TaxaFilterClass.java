@@ -14,14 +14,14 @@ import java.util.List;
  */
 public class TaxaFilterClass implements Parcelable {
 
-    private SparseArray<TaxonFilterClass> mFilterClasses;
+    private final SparseArray<TaxonFilterClass> mFilterClasses;
 
     public TaxaFilterClass() {
-        this.mFilterClasses = new SparseArray<TaxonFilterClass>();
+        this.mFilterClasses = new SparseArray<>();
     }
 
     public TaxaFilterClass(TaxonFilterClass... filterClasses) {
-        this.mFilterClasses = new SparseArray<TaxonFilterClass>();
+        this.mFilterClasses = new SparseArray<>();
 
         for (TaxonFilterClass filterClass : filterClasses) {
             this.mFilterClasses.put(filterClass.getResourceId(), filterClass);
@@ -39,7 +39,7 @@ public class TaxaFilterClass implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        List<TaxonFilterClass> filterClasses = new ArrayList<TaxonFilterClass>();
+        List<TaxonFilterClass> filterClasses = new ArrayList<>();
 
         for (int i = 0; i < mFilterClasses.size(); i++) {
             filterClasses.add(mFilterClasses.valueAt(i));
@@ -53,7 +53,7 @@ public class TaxaFilterClass implements Parcelable {
         @Override
         public TaxaFilterClass createFromParcel(Parcel source) {
             TaxaFilterClass taxaFilterClass = new TaxaFilterClass();
-            List<TaxonFilterClass> filterClasses = new ArrayList<TaxonFilterClass>();
+            List<TaxonFilterClass> filterClasses = new ArrayList<>();
             source.readTypedList(filterClasses, TaxonFilterClass.CREATOR);
 
             return taxaFilterClass;

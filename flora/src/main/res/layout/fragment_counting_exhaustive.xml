@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -42,7 +43,8 @@
         android:layout_alignBaseline="@id/editTextCountingFertile"
         android:layout_toLeftOf="@id/editTextCountingFertile"
         android:text="@string/button_counting_minus"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        tools:ignore="RtlHardcoded"/>
 
     <Button
         android:id="@+id/buttonCountingPlusFertile"
@@ -51,7 +53,8 @@
         android:layout_alignBaseline="@id/editTextCountingFertile"
         android:layout_toRightOf="@id/editTextCountingFertile"
         android:text="@string/button_counting_plus"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        tools:ignore="RtlHardcoded"/>
 
     <View
         android:id="@+id/viewSeparatorFertile"
@@ -89,7 +92,8 @@
         android:layout_alignBaseline="@id/editTextCountingSterile"
         android:layout_toLeftOf="@id/editTextCountingSterile"
         android:text="@string/button_counting_minus"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        tools:ignore="RtlHardcoded"/>
 
     <Button
         android:id="@+id/buttonCountingPlusSterile"
@@ -98,6 +102,7 @@
         android:layout_alignBaseline="@id/editTextCountingSterile"
         android:layout_toRightOf="@id/editTextCountingSterile"
         android:text="@string/button_counting_plus"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        tools:ignore="RtlHardcoded"/>
 
 </RelativeLayout>

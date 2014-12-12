@@ -33,7 +33,6 @@ public class MainContentProvider extends AbstractMainContentProvider {
 
     @Override
     public AbstractAppSettings getAppSettings() {
-        return MainApplication.getInstance()
-                .getAppSettings();
+        return MainApplication.getInstance().getAppSettings();
     }
 }

@@ -129,7 +129,7 @@ public abstract class AbstractObserversAndDateFragment extends Fragment
             mObserversAdapter.swapCursor(matrixCursor);
         }
         else {
-            mSavedState.putParcelableArrayList(KEY_SELECTED_OBSERVERS, new ArrayList<Observer>(getSelectedObservers().values()));
+            mSavedState.putParcelableArrayList(KEY_SELECTED_OBSERVERS, new ArrayList<>(getSelectedObservers().values()));
             getLoaderManager().restartLoader(0, mSavedState, this);
         }
 
@@ -183,10 +183,10 @@ public abstract class AbstractObserversAndDateFragment extends Fragment
                         MainDatabaseHelper.ObserversColumns.FIRSTNAME
                 };
 
-        List<Observer> selectedObservers = args.getParcelableArrayList(KEY_SELECTED_OBSERVERS);
+        final List<Observer> selectedObservers = args.getParcelableArrayList(KEY_SELECTED_OBSERVERS);
 
-        StringBuilder selection = new StringBuilder();
-        List<String> selectionArgs = new ArrayList<String>();
+        final StringBuilder selection = new StringBuilder();
+        final List<String> selectionArgs = new ArrayList<>();
         selection.append(MainDatabaseHelper.ObserversColumns._ID);
         selection.append(" IN (");
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -19,7 +20,8 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@id/textViewTaxonCounting"
         android:layout_marginLeft="5dp"
-        android:contentDescription="@string/counting_adult_male"/>
+        android:contentDescription="@string/counting_adult_male"
+        tools:ignore="RtlHardcoded"/>
 
     <Button
         android:id="@+id/buttonCountingMinus"
@@ -28,7 +30,8 @@
         android:layout_below="@id/textViewTaxonCounting"
         android:layout_marginLeft="60dp"
         android:text="@string/button_counting_minus"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        tools:ignore="RtlHardcoded"/>
 
     <EditText
         android:id="@+id/editTextCounting"
@@ -41,7 +44,8 @@
         android:focusableInTouchMode="false"
         android:imeOptions="actionDone"
         android:inputType="number"
-        android:singleLine="true"/>
+        android:singleLine="true"
+        tools:ignore="RtlHardcoded"/>
 
     <Button
         android:id="@+id/buttonCountingPlus"
@@ -50,6 +54,7 @@
         android:layout_below="@id/textViewTaxonCounting"
         android:layout_toRightOf="@+id/editTextCounting"
         android:text="@string/button_counting_plus"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        tools:ignore="RtlHardcoded"/>
 
 </RelativeLayout>

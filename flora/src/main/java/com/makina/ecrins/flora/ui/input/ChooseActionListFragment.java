@@ -176,8 +176,9 @@ public class ChooseActionListFragment extends ListFragment implements IValidateW
                 // TODO: go back to previous and valid page in navigation history
                 Log.w(TAG,
                         "refreshView : no area found for taxon " +
-                                ((Taxon) ((MainApplication) getActivity().getApplication())
-                                        .getInput().getCurrentSelectedTaxon()).getId() + " !");
+                                ((MainApplication) getActivity().getApplication())
+                                        .getInput().getCurrentSelectedTaxon()
+                                        .getId() + " !");
             }
         }
         else {

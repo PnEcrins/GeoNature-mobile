@@ -86,7 +86,7 @@ public class SwitchLayersControl extends AbstractControl implements ActionBar.On
         Log.d(getClass().getName(), "updateNavigationList");
 
         if (isControlInitialized()) {
-            List<LayerSettings> selectedLayers = new ArrayList<LayerSettings>();
+            List<LayerSettings> selectedLayers = new ArrayList<>();
 
             for (LayerSettings layerSettings : this.mWebViewFragment.getMapSettings()
                     .getLayers()) {
@@ -99,7 +99,7 @@ public class SwitchLayersControl extends AbstractControl implements ActionBar.On
             }
 
             if ((this.mWebViewFragment.getActionBar() != null) && (this.mWebViewFragment.isMapVisibleToUser())) {
-                mlayersAdapter = new ArrayAdapter<LayerSettings>(this.mWebViewFragment.getActionBar()
+                mlayersAdapter = new ArrayAdapter<>(this.mWebViewFragment.getActionBar()
                         .getThemedContext(), R.layout.support_simple_spinner_dropdown_item, selectedLayers);
                 mlayersAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
 

@@ -43,7 +43,7 @@ public class Point implements IGeometry {
 
     @Override
     public List<IGeometry> getCoordinates() {
-        List<IGeometry> coordinates = new ArrayList<IGeometry>();
+        List<IGeometry> coordinates = new ArrayList<>();
         coordinates.add(this);
 
         return coordinates;

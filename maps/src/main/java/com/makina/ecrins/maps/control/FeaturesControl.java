@@ -164,9 +164,9 @@ public class FeaturesControl extends AbstractControl {
                         feature.apply(distanceFilter);
                     }
 
-                    if (!distanceFilter.getFiltereredFeatures()
+                    if (!distanceFilter.getFilteredFeatures()
                             .isEmpty()) {
-                        featureFound = distanceFilter.getFiltereredFeatures()
+                        featureFound = distanceFilter.getFilteredFeatures()
                                 .get(0);
                     }
                 }

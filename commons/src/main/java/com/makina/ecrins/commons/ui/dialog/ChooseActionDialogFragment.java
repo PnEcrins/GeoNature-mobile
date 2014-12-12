@@ -1,14 +1,12 @@
 package com.makina.ecrins.commons.ui.dialog;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +19,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.makina.ecrins.commons.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Custom <code>Dialog</code> used to select a given action from a <code>ListView</code>
@@ -68,6 +69,7 @@ public class ChooseActionDialogFragment extends DialogFragment implements OnItem
     }
 
     @Override
+    @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         final View view = inflater.inflate(R.layout.dialog_list_items, null);

@@ -49,13 +49,13 @@ public class DisturbancesFragment extends Fragment implements IValidateFragment,
     private ExpandableListView mExpandableListView;
     private TextView mTextViewEmpty;
 
-    protected Handler mHandler = new Handler();
+    protected final Handler mHandler = new Handler();
 
     private boolean mListShown;
     private boolean mIsVisibleToUser = false;
 
     private ActionMode mMode;
-    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+    private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             return false;

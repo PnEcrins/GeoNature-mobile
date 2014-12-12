@@ -7,6 +7,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -67,11 +68,11 @@ public abstract class AbstractWebViewFragment extends Fragment implements IWebVi
     protected LinearLayout mLeftToolbarLayout;
     protected LinearLayout mRightToolbarLayout;
 
-    private Map<String, ITilesLayerDataSource> mTilesLayersDataSources = new HashMap<String, ITilesLayerDataSource>();
-    private Map<String, IControl> mControls = new HashMap<String, IControl>();
+    private final Map<String, ITilesLayerDataSource> mTilesLayersDataSources = new HashMap<>();
+    private final Map<String, IControl> mControls = new HashMap<>();
 
-    private AtomicBoolean mIsMapInitialized = new AtomicBoolean();
-    private AtomicBoolean mIsMapVisibleToUser = new AtomicBoolean(true);
+    private final AtomicBoolean mIsMapInitialized = new AtomicBoolean();
+    private final AtomicBoolean mIsMapVisibleToUser = new AtomicBoolean(true);
 
     private boolean mIsTilesLayersDataSourcesInitialized = false;
 
@@ -129,7 +130,10 @@ public abstract class AbstractWebViewFragment extends Fragment implements IWebVi
         mLayout.addView(mWebView);
 
         mWebView.getSettings().setJavaScriptEnabled(true);
+
+        // noinspection deprecation
         mWebView.getSettings().setRenderPriority(RenderPriority.HIGH);
+
         mWebView.getSettings().setSupportZoom(true);
         mWebView.getSettings().setBuiltInZoomControls(false);
 
@@ -302,7 +306,7 @@ public abstract class AbstractWebViewFragment extends Fragment implements IWebVi
 
     @Override
     public List<String> getTilesLayersDataSources() {
-        return new ArrayList<String>(this.mTilesLayersDataSources.keySet());
+        return new ArrayList<>(this.mTilesLayersDataSources.keySet());
     }
 
     @Override
@@ -360,6 +364,7 @@ public abstract class AbstractWebViewFragment extends Fragment implements IWebVi
     }
 
     @Override
+    @SuppressLint("AddJavascriptInterface")
     public void addControl(IControl control, ViewGroup parent) {
         Log.d(AbstractWebViewFragment.class.getName(), "addControl " + control.getName());
 
@@ -407,7 +412,7 @@ public abstract class AbstractWebViewFragment extends Fragment implements IWebVi
 
     @Override
     public List<String> getControls() {
-        return new ArrayList<String>(this.mControls.keySet());
+        return new ArrayList<>(this.mControls.keySet());
     }
 
     @Override
@@ -525,11 +530,8 @@ public abstract class AbstractWebViewFragment extends Fragment implements IWebVi
                             layerSettings.getName(),
                             tilesLayerDataSourceFactory.getTilesLayerDataSource(layerSettings));
                 }
-                catch (UnsupportedOperationException uoe) {
-                    noTilesSourceFound(layerSettings, uoe);
-                }
-                catch (IOException ioe) {
-                    noTilesSourceFound(layerSettings, ioe);
+                catch (UnsupportedOperationException | IOException ge) {
+                    noTilesSourceFound(layerSettings, ge);
                 }
             }
 
@@ -541,11 +543,8 @@ public abstract class AbstractWebViewFragment extends Fragment implements IWebVi
                             unitiesLayerSettings.getName(),
                             tilesLayerDataSourceFactory.getTilesLayerDataSource(unitiesLayerSettings));
                 }
-                catch (UnsupportedOperationException uoe) {
-                    noTilesSourceFound(unitiesLayerSettings, uoe);
-                }
-                catch (IOException ioe) {
-                    noTilesSourceFound(unitiesLayerSettings, ioe);
+                catch (UnsupportedOperationException | IOException ge) {
+                    noTilesSourceFound(unitiesLayerSettings, ge);
                 }
             }
         }
@@ -593,7 +592,7 @@ public abstract class AbstractWebViewFragment extends Fragment implements IWebVi
         }
 
         @Override
-        public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+        public boolean onConsoleMessage(@NonNull ConsoleMessage consoleMessage) {
             String message = consoleMessage.sourceId() + " (line " + consoleMessage.lineNumber() + ") : " + consoleMessage.message();
 
             switch (consoleMessage.messageLevel()) {

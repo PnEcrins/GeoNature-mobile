@@ -20,15 +20,15 @@ import java.util.concurrent.LinkedBlockingDeque;
  */
 public abstract class AbstractControl implements IControl {
 
-    private static Handler sHandler = new Handler();
+    private static final Handler sHandler = new Handler();
     private static final String MAP_JS_VARIABLE = "lMap";
 
     protected boolean mControlInitialized = false;
     protected IWebViewFragment mWebViewFragment;
 
-    private Context mContext;
+    private final Context mContext;
     private OnIControlListener mControlListener = null;
-    private final BlockingDeque<OnIControlListener> mControlListeners = new LinkedBlockingDeque<AbstractControl.OnIControlListener>();
+    private final BlockingDeque<OnIControlListener> mControlListeners = new LinkedBlockingDeque<>();
 
     public AbstractControl(Context pContext) {
         super();

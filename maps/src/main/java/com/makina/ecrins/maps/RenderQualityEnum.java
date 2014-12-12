@@ -30,8 +30,8 @@ public enum RenderQualityEnum {
      */
     HIGH(3, "high-dpi");
 
-    private int value;
-    private String valueAsString;
+    private final int value;
+    private final String valueAsString;
 
     private RenderQualityEnum(int value, String valueAsString) {
         this.value = value;

@@ -14,7 +14,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -70,7 +69,7 @@ public abstract class AbstractSynchronizationActivity extends ActionBarActivity 
      */
     private boolean mIsSyncServiceBound;
 
-    protected Deque<Message> messagesQueue = new ArrayDeque<Message>();
+    protected final Deque<Message> messagesQueue = new ArrayDeque<>();
 
     protected Bundle mSavedState;
     protected TextView mTextViewServerStatus;
@@ -82,7 +81,7 @@ public abstract class AbstractSynchronizationActivity extends ActionBarActivity 
     /**
      * Class for interacting with the main interface of the service.
      */
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
+    private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.d(AbstractSynchronizationActivity.class.getName(), "onServiceConnected " + name);
@@ -271,7 +270,7 @@ public abstract class AbstractSynchronizationActivity extends ActionBarActivity 
 
     protected void setTextViewProgress() {
         if (mSavedState.containsKey(KEY_SYNC_PULL_DATA_MESSAGE)) {
-            SyncMessage syncMessage = (SyncMessage) mSavedState.getParcelable(KEY_SYNC_PULL_DATA_MESSAGE);
+            SyncMessage syncMessage = mSavedState.getParcelable(KEY_SYNC_PULL_DATA_MESSAGE);
 
             switch (syncMessage.getMessageType()) {
                 case DOWNLOAD_STATUS:
@@ -282,7 +281,7 @@ public abstract class AbstractSynchronizationActivity extends ActionBarActivity 
         }
 
         if (mSavedState.containsKey(KEY_SYNC_PUSH_DATA_MESSAGE)) {
-            SyncMessage syncMessage = (SyncMessage) mSavedState.getParcelable(KEY_SYNC_PUSH_DATA_MESSAGE);
+            SyncMessage syncMessage = mSavedState.getParcelable(KEY_SYNC_PUSH_DATA_MESSAGE);
 
             switch (syncMessage.getMessageType()) {
                 case UPLOAD_STATUS:
@@ -366,7 +365,7 @@ public abstract class AbstractSynchronizationActivity extends ActionBarActivity 
 
         public SynchronizationActivityHandler(AbstractSynchronizationActivity pSynchronizationActivity) {
             super();
-            mSynchronizationActivity = new WeakReference<AbstractSynchronizationActivity>(pSynchronizationActivity);
+            mSynchronizationActivity = new WeakReference<>(pSynchronizationActivity);
         }
 
         @Override
@@ -416,11 +415,8 @@ public abstract class AbstractSynchronizationActivity extends ActionBarActivity 
                         try {
                             synchronizationActivity.mSyncServiceMessenger.send(synchronizationActivity.messagesQueue.removeFirst());
                         }
-                        catch (RemoteException re) {
-                            Log.w(getClass().getName(), re.getMessage(), re);
-                        }
-                        catch (NoSuchElementException nsee) {
-                            Log.w(getClass().getName(), nsee.getMessage(), nsee);
+                        catch (RemoteException | NoSuchElementException ge) {
+                            Log.w(getClass().getName(), ge.getMessage(), ge);
                         }
                     }
 
