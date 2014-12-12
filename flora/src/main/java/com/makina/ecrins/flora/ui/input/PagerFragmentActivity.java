@@ -230,18 +230,21 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
 
     @Override
     public void onBackPressed() {
-        DialogFragment dialogFragment = AlertDialogFragment.newInstance(
+        final DialogFragment dialogFragment = AlertDialogFragment.newInstance(
                 R.string.alert_dialog_confirm_cancel_title,
                 R.string.alert_dialog_confirm_cancel_input_all_message,
-                new DialogInterface.OnClickListener() {
-
+                new AlertDialogFragment.OnAlertDialogListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onPositiveButtonListener(DialogInterface dialog) {
                         PagerFragmentActivity.this.finish();
                     }
-                },
-                null);
 
+                    @Override
+                    public void onNegativeButtonListener(DialogInterface dialog) {
+                        // nothing to do ...
+                    }
+                }
+        );
         dialogFragment.show(getSupportFragmentManager(), ALERT_CANCEL_DIALOG_FRAGMENT);
     }
 

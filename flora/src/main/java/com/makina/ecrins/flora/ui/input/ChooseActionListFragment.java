@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
 import com.makina.ecrins.commons.ui.pager.IValidateWithNavigationControlFragment;
 import com.makina.ecrins.flora.MainApplication;
@@ -253,36 +254,48 @@ public class ChooseActionListFragment extends ListFragment implements IValidateW
     }
 
     private void confirmBeforeDeleteArea(final String areaId) {
-        DialogFragment dialogFragment = AlertDialogFragment
-                .newInstance(R.string.alert_dialog_confirm_delete_area_title,
-                        R.string.alert_dialog_confirm_delete_area_message,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // deletes this area from the current taxon
-                                Log.d(TAG, "delete area '" + areaId + "'");
+        final DialogFragment dialogFragment = AlertDialogFragment.newInstance(
+                R.string.alert_dialog_confirm_delete_area_title,
+                R.string.alert_dialog_confirm_delete_area_message,
+                new AlertDialogFragment.OnAlertDialogListener() {
+                    @Override
+                    public void onPositiveButtonListener(DialogInterface dialog) {
+                        // deletes this area from the current taxon
 
+                        if (BuildConfig.DEBUG) {
+                            Log.d(
+                                    TAG,
+                                    "delete area '" + areaId + "'"
+                            );
+                        }
+
+                        ((Taxon) ((MainApplication) getActivity().getApplication())
+                                .getInput().getCurrentSelectedTaxon()).getAreas()
+                                .remove(areaId);
+                        ((Taxon) ((MainApplication) getActivity().getApplication())
+                                .getInput().getCurrentSelectedTaxon()).setCurrentSelectedAreaId(
                                 ((Taxon) ((MainApplication) getActivity().getApplication())
-                                        .getInput().getCurrentSelectedTaxon()).getAreas()
-                                        .remove(areaId);
-                                ((Taxon) ((MainApplication) getActivity().getApplication())
-                                        .getInput().getCurrentSelectedTaxon())
-                                        .setCurrentSelectedAreaId(((Taxon) ((MainApplication) getActivity()
-                                                .getApplication()).getInput()
-                                                .getCurrentSelectedTaxon())
-                                                .getLastInsertedAreaId());
+                                        .getInput().getCurrentSelectedTaxon()).getLastInsertedAreaId()
+                        );
 
-                                Log.d(TAG,
-                                        "restore previously added area '" +
-                                                ((Taxon) ((MainApplication) getActivity()
-                                                        .getApplication()).getInput()
-                                                        .getCurrentSelectedTaxon())
-                                                        .getCurrentSelectedAreaId() + "'");
-                            }
-                        },
-                        null
-                );
+                        if (BuildConfig.DEBUG) {
+                            Log.d(
+                                    TAG,
+                                    "restore previously added area '" +
+                                            ((Taxon) ((MainApplication) getActivity()
+                                                    .getApplication()).getInput()
+                                                    .getCurrentSelectedTaxon())
+                                                    .getCurrentSelectedAreaId() + "'"
+                            );
+                        }
+                    }
 
+                    @Override
+                    public void onNegativeButtonListener(DialogInterface dialog) {
+                        // nothing to do ...
+                    }
+                }
+        );
         dialogFragment.show(
                 getActivity().getSupportFragmentManager(),
                 ALERT_DIALOG_DELETE_AREA_FRAGMENT);

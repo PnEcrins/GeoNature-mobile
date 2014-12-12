@@ -295,10 +295,12 @@ public abstract class AbstractSynchronizationActivity extends ActionBarActivity 
     protected abstract SyncSettings getSyncSettings();
 
     private void showConfirmDialog() {
-        DialogFragment dialogFragment = AlertDialogFragment.newInstance(R.string.alert_dialog_confirm_cancel_synchro_title, R.string.alert_dialog_confirm_cancel_synchro_message,
-                new DialogInterface.OnClickListener() {
+        final DialogFragment dialogFragment = AlertDialogFragment.newInstance(
+                R.string.alert_dialog_confirm_cancel_synchro_title,
+                R.string.alert_dialog_confirm_cancel_synchro_message,
+                new AlertDialogFragment.OnAlertDialogListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onPositiveButtonListener(DialogInterface dialog) {
                         Message message = Message.obtain();
                         message.what = SyncService.HANDLER_SYNC_CANCEL;
 
@@ -307,7 +309,11 @@ public abstract class AbstractSynchronizationActivity extends ActionBarActivity 
                                 mSyncServiceMessenger.send(message);
                             }
                             catch (RemoteException re) {
-                                Log.w(AbstractSynchronizationActivity.class.getName(), re.getMessage(), re);
+                                Log.w(
+                                        AbstractSynchronizationActivity.class.getName(),
+                                        re.getMessage(),
+                                        re
+                                );
                             }
                         }
                         else {
@@ -316,10 +322,13 @@ public abstract class AbstractSynchronizationActivity extends ActionBarActivity 
 
                         finish();
                     }
-                },
-                null
-        );
 
+                    @Override
+                    public void onNegativeButtonListener(DialogInterface dialog) {
+                        // nothing to do ...
+                    }
+                }
+        );
         dialogFragment.show(getSupportFragmentManager(), ALERT_DIALOG_FRAGMENT);
     }
 

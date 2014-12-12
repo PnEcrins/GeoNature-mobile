@@ -100,29 +100,33 @@ public class TaxaFoundFragment extends Fragment implements IValidateWithNavigati
     }
 
     private void confirmBeforeDeleteAreas() {
-        DialogFragment dialogFragment = AlertDialogFragment
-                .newInstance(R.string.alert_dialog_confirm_delete_areas_title,
-                        R.string.alert_dialog_confirm_delete_areas_message,
-                        new DialogInterface.OnClickListener() {
+        final DialogFragment dialogFragment = AlertDialogFragment.newInstance(
+                R.string.alert_dialog_confirm_delete_areas_title,
+                R.string.alert_dialog_confirm_delete_areas_message,
+                new AlertDialogFragment.OnAlertDialogListener() {
+                    @Override
+                    public void onPositiveButtonListener(DialogInterface dialog) {
+                        Log.d(
+                                TAG,
+                                "delete all areas"
+                        );
 
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Log.d(TAG, "delete all areas");
+                        if (((MainApplication) getActivity().getApplication()).getInput()
+                                .getCurrentSelectedTaxon() != null) {
+                            ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                    .getCurrentSelectedTaxon()).getAreas()
+                                    .clear();
+                        }
 
-                                if (((MainApplication) getActivity().getApplication()).getInput()
-                                        .getCurrentSelectedTaxon() != null) {
-                                    ((Taxon) ((MainApplication) getActivity().getApplication())
-                                            .getInput().getCurrentSelectedTaxon()).getAreas()
-                                            .clear();
-                                }
+                        ((PagerFragmentActivity) getActivity()).goToPageByKey(R.string.pager_fragment_webview_pa_title);
+                    }
 
-                                ((PagerFragmentActivity) getActivity())
-                                        .goToPageByKey(R.string.pager_fragment_webview_pa_title);
-                            }
-                        },
-                        null
-                );
-
+                    @Override
+                    public void onNegativeButtonListener(DialogInterface dialog) {
+                        // nothing to do ...
+                    }
+                }
+        );
         dialogFragment.show(
                 getActivity().getSupportFragmentManager(),
                 ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT);

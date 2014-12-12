@@ -226,12 +226,12 @@ public abstract class AbstractResultsInputFragment extends Fragment
     public abstract AbstractInput getInput();
 
     private void confirmBeforeDeleteTaxon(final AbstractTaxon taxon) {
-        DialogFragment dialogFragment = AlertDialogFragment.newInstance(
+        final DialogFragment dialogFragment = AlertDialogFragment.newInstance(
                 R.string.alert_dialog_confirm_delete_taxon_title,
                 R.string.alert_dialog_confirm_delete_taxon_message,
-                new DialogInterface.OnClickListener() {
+                new AlertDialogFragment.OnAlertDialogListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onPositiveButtonListener(DialogInterface dialog) {
                         // deletes this taxon from the current input
                         getInput().getTaxa().remove(taxon.getId());
 
@@ -251,10 +251,13 @@ public abstract class AbstractResultsInputFragment extends Fragment
 
                         ((AbstractPagerFragmentActivity) getActivity()).validateCurrentPage();
                     }
-                },
-                null
-        );
 
+                    @Override
+                    public void onNegativeButtonListener(DialogInterface dialog) {
+                        // nothing to do ...
+                    }
+                }
+        );
         dialogFragment.show(getActivity().getSupportFragmentManager(), ALERT_DIALOG_DELETE_TAXON_FRAGMENT);
     }
 }

@@ -547,10 +547,12 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
     }
 
     private void confirmBeforeDeleteAllInputs() {
-        DialogFragment dialogFragment = AlertDialogFragment.newInstance(R.string.alert_dialog_confirm_delete_inputs_title, R.string.alert_dialog_confirm_delete_inputs_message,
-                new DialogInterface.OnClickListener() {
+        final DialogFragment dialogFragment = AlertDialogFragment.newInstance(
+                R.string.alert_dialog_confirm_delete_inputs_title,
+                R.string.alert_dialog_confirm_delete_inputs_message,
+                new AlertDialogFragment.OnAlertDialogListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onPositiveButtonListener(DialogInterface dialog) {
                         try {
                             if (FileUtils.deleteQuietly(FileUtils.getInputsFolder(AbstractMainFragmentActivity.this))) {
                                 executeGetDeviceStatusAsyncTask();
@@ -558,13 +560,20 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
                             }
                         }
                         catch (IOException ioe) {
-                            Log.w(AbstractMainFragmentActivity.class.getName(), ioe.getMessage(), ioe);
+                            Log.w(
+                                    AbstractMainFragmentActivity.class.getName(),
+                                    ioe.getMessage(),
+                                    ioe
+                            );
                         }
                     }
-                },
-                null
-        );
 
+                    @Override
+                    public void onNegativeButtonListener(DialogInterface dialog) {
+                        // nothing to do ...
+                    }
+                }
+        );
         dialogFragment.show(getSupportFragmentManager(), ALERT_DIALOG_DELETE_INPUTS_FRAGMENT);
     }
 
