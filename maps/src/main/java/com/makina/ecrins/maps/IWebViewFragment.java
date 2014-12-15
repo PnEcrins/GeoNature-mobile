@@ -6,6 +6,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -82,6 +83,7 @@ public interface IWebViewFragment {
      * @param name the name used by {@link ITilesLayerDataSource} instance to retrieve
      * @return {@link ITilesLayerDataSource} instance for this name
      */
+    @Nullable
     public ITilesLayerDataSource getTilesLayersDataSource(String name);
 
     /**

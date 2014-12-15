@@ -7,9 +7,10 @@ import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.widget.ArrayAdapter;
 
-import com.makina.ecrins.maps.R;
 import com.makina.ecrins.maps.IWebViewFragment;
 import com.makina.ecrins.maps.LayerSettings;
+import com.makina.ecrins.maps.R;
+import com.makina.ecrins.maps.content.ITilesLayerDataSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,12 +89,14 @@ public class SwitchLayersControl extends AbstractControl implements ActionBar.On
         if (isControlInitialized()) {
             List<LayerSettings> selectedLayers = new ArrayList<>();
 
-            for (LayerSettings layerSettings : this.mWebViewFragment.getMapSettings()
-                    .getLayers()) {
-                if (this.mWebViewFragment.getTilesLayersDataSource(layerSettings.getName())
-                        .getZooms()
-                        .contains(this.mWebViewFragment.getMapSettings()
-                                .getZoom())) {
+            for (LayerSettings layerSettings : this.mWebViewFragment.getMapSettings().getLayers()) {
+                final ITilesLayerDataSource tilesLayerDataSource = this.mWebViewFragment.getTilesLayersDataSource(layerSettings.getName());
+
+                if ((tilesLayerDataSource != null) && tilesLayerDataSource.getZooms()
+                        .contains(
+                                this.mWebViewFragment.getMapSettings()
+                                        .getZoom()
+                        )) {
                     selectedLayers.add(layerSettings);
                 }
             }
