@@ -1,8 +1,7 @@
 package com.makina.ecrins.flora.ui.counting;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
@@ -13,11 +12,11 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.makina.ecrins.commons.ui.dialog.ChooseActionDialogFragment;
+import com.makina.ecrins.flora.BuildConfig;
 import com.makina.ecrins.flora.MainApplication;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.input.Taxon;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,8 +30,25 @@ public class CountingFragmentActivity extends ActionBarActivity implements OnCli
 
     private static final String CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT = "choose_quit_action_dialog";
 
-    private CountingFragmentHandler mHandler;
     private Button mButtonFinish;
+
+    private final ChooseActionDialogFragment.OnChooseActionDialogListener mOnChooseActionDialogListener = new ChooseActionDialogFragment.OnChooseActionDialogListener() {
+        @Override
+        public void onItemClick(
+                DialogInterface dialog,
+                int position,
+                int actionResourceId) {
+            switch (actionResourceId) {
+                case R.string.choose_action_yes:
+                    dialog.dismiss();
+                    CountingFragmentActivity.this.finish();
+                    break;
+                case R.string.choose_action_no:
+                    dialog.dismiss();
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,58 +70,82 @@ public class CountingFragmentActivity extends ActionBarActivity implements OnCli
             finish();
         }
         else {
-            FragmentManager fm = getSupportFragmentManager();
+            if (savedInstanceState == null) {
+                final FragmentManager fm = getSupportFragmentManager();
 
-            switch (((Taxon) ((MainApplication) getApplication()).getInput()
-                    .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                    .getCounting()
-                    .getType()) {
-                case EXHAUSTIVE:
-                    Fragment countingExhaustiveFragment = fm.findFragmentByTag(CountingExhaustiveFragment.class.getSimpleName());
+                switch (((Taxon) ((MainApplication) getApplication()).getInput()
+                        .getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                        .getCounting()
+                        .getType()) {
+                    case EXHAUSTIVE:
+                        Fragment countingExhaustiveFragment = fm.findFragmentByTag(CountingExhaustiveFragment.class.getSimpleName());
 
-                    if (countingExhaustiveFragment == null) {
-                        Log.d(CountingFragmentActivity.class.getName(), "create CountingExhaustiveFragment");
+                        if (countingExhaustiveFragment == null) {
+                            if (BuildConfig.DEBUG) {
+                                Log.d(
+                                        CountingFragmentActivity.class.getName(),
+                                        "create CountingExhaustiveFragment"
+                                );
+                            }
 
-                        fm.beginTransaction()
-                                .replace(R.id.fragment_counting_container, new CountingExhaustiveFragment(), CountingExhaustiveFragment.class.getSimpleName())
-                                .commit();
-                    }
-                    else {
-                        fm.beginTransaction()
-                                .replace(R.id.fragment_counting_container, countingExhaustiveFragment)
-                                .commit();
-                    }
+                            fm.beginTransaction()
+                                    .replace(
+                                            R.id.fragment_counting_container,
+                                            new CountingExhaustiveFragment(),
+                                            CountingExhaustiveFragment.class.getSimpleName()
+                                    )
+                                    .commit();
+                        }
+                        else {
+                            fm.beginTransaction()
+                                    .replace(
+                                            R.id.fragment_counting_container,
+                                            countingExhaustiveFragment
+                                    )
+                                    .commit();
+                        }
 
-                    break;
-                case SAMPLING:
-                    Fragment countingSamplingFragment = fm.findFragmentByTag(CountingSamplingFragment.class.getSimpleName());
+                        break;
+                    case SAMPLING:
+                        Fragment countingSamplingFragment = fm.findFragmentByTag(CountingSamplingFragment.class.getSimpleName());
 
-                    if (countingSamplingFragment == null) {
-                        Log.d(CountingFragmentActivity.class.getName(), "create CountingSamplingFragment");
+                        if (countingSamplingFragment == null) {
+                            if (BuildConfig.DEBUG) {
+                                Log.d(
+                                        CountingFragmentActivity.class.getName(),
+                                        "create CountingSamplingFragment"
+                                );
+                            }
 
-                        fm.beginTransaction()
-                                .replace(R.id.fragment_counting_container, new CountingSamplingFragment(), CountingSamplingFragment.class.getSimpleName())
-                                .commit();
-                    }
-                    else {
-                        fm.beginTransaction()
-                                .replace(R.id.fragment_counting_container, countingSamplingFragment)
-                                .commit();
-                    }
+                            fm.beginTransaction()
+                                    .replace(
+                                            R.id.fragment_counting_container,
+                                            new CountingSamplingFragment(),
+                                            CountingSamplingFragment.class.getSimpleName()
+                                    )
+                                    .commit();
+                        }
+                        else {
+                            fm.beginTransaction()
+                                    .replace(
+                                            R.id.fragment_counting_container,
+                                            countingSamplingFragment
+                                    )
+                                    .commit();
+                        }
 
-                    break;
-                default:
-                    // nothing to do at this point, so we finish this activity
-                    finish();
+                        break;
+                    default:
+                        // nothing to do at this point, so we finish this activity
+                        finish();
+                }
             }
 
-            mHandler = new CountingFragmentHandler(this);
-
             // restore ChooseActionDialogFragment state after resume if needed
-            ChooseActionDialogFragment chooseActionDialogFragment = (ChooseActionDialogFragment) getSupportFragmentManager().findFragmentByTag(CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
+            final ChooseActionDialogFragment chooseActionDialogFragment = (ChooseActionDialogFragment) getSupportFragmentManager().findFragmentByTag(CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
 
             if (chooseActionDialogFragment != null) {
-                chooseActionDialogFragment.setHandler(mHandler);
+                chooseActionDialogFragment.setOnChooseActionDialogListener(mOnChooseActionDialogListener);
             }
         }
     }
@@ -151,42 +191,24 @@ public class CountingFragmentActivity extends ActionBarActivity implements OnCli
                 .getCounting()
                 .getType()) {
             case SAMPLING:
-                List<Integer> actions = new ArrayList<>();
-                Collections.addAll(actions, R.string.choose_action_yes, R.string.choose_action_no);
-                final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(R.string.choose_action_title_quit_step, actions);
-                chooseActionDialogFragment.setHandler(mHandler);
-                chooseActionDialogFragment.show(getSupportFragmentManager(), CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
+                final List<Integer> actions = new ArrayList<>();
+                Collections.addAll(
+                        actions,
+                        R.string.choose_action_yes,
+                        R.string.choose_action_no
+                );
+                final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(
+                        R.string.choose_action_title_quit_step,
+                        actions
+                );
+                chooseActionDialogFragment.setOnChooseActionDialogListener(mOnChooseActionDialogListener);
+                chooseActionDialogFragment.show(
+                        getSupportFragmentManager(),
+                        CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT
+                );
                 break;
             default:
                 finish();
-        }
-    }
-
-    private static class CountingFragmentHandler extends Handler {
-
-        private final WeakReference<CountingFragmentActivity> mCountingFragmentActivity;
-
-        public CountingFragmentHandler(CountingFragmentActivity pCountingFragmentActivity) {
-            super();
-
-            mCountingFragmentActivity = new WeakReference<>(pCountingFragmentActivity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            CountingFragmentActivity countingFragmentActivity = mCountingFragmentActivity.get();
-            ChooseActionDialogFragment dialogFragment = (ChooseActionDialogFragment) countingFragmentActivity.getSupportFragmentManager()
-                    .findFragmentByTag(CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
-
-            switch (msg.what) {
-                case R.string.choose_action_yes:
-                    dialogFragment.dismiss();
-                    countingFragmentActivity.finish();
-                    break;
-                case R.string.choose_action_no:
-                    dialogFragment.dismiss();
-                    break;
-            }
         }
     }
 }

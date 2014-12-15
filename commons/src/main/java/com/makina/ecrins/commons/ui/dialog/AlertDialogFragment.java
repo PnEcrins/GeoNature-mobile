@@ -70,7 +70,7 @@ public class AlertDialogFragment extends DialogFragment {
             );
         }
 
-        AlertDialogFragment dialogFragment = new AlertDialogFragment();
+        final AlertDialogFragment dialogFragment = new AlertDialogFragment();
         Bundle args = new Bundle();
         args.putInt(
                 KEY_TITLE,
@@ -94,6 +94,10 @@ public class AlertDialogFragment extends DialogFragment {
         dialogFragment.mOnAlertDialogListener = onAlertDialogListener;
 
         return dialogFragment;
+    }
+
+    public void setOnAlertDialogListener(OnAlertDialogListener pOnAlertDialogListener) {
+        this.mOnAlertDialogListener = pOnAlertDialogListener;
     }
 
     @Override

@@ -15,6 +15,7 @@ import com.makina.ecrins.commons.ui.dialog.ChooseActionDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.ProgressDialogFragment;
 import com.makina.ecrins.commons.ui.pager.AbstractNavigationHistoryPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
+import com.makina.ecrins.flora.BuildConfig;
 import com.makina.ecrins.flora.MainApplication;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.input.Input;
@@ -49,9 +50,59 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
     protected static final String ALERT_CANCEL_DIALOG_FRAGMENT = "alert_cancel_dialog_fragment";
     protected static final String PROGRESS_DIALOG_FRAGMENT = "progress_dialog";
     protected static final String CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT = "choose_quit_action_dialog";
-    protected static final String CHOOSE_CANCEL_ACTION_DIALOG_FRAGMENT = "choose_cancel_action_dialog";
 
     protected static final String KEY_INPUT_SAVED = "input_saved";
+
+    private final AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
+        @Override
+        public void onPositiveButtonListener(DialogInterface dialog) {
+            PagerFragmentActivity.this.finish();
+        }
+
+        @Override
+        public void onNegativeButtonListener(DialogInterface dialog) {
+            // nothing to do ...
+        }
+    };
+
+    private final ChooseActionDialogFragment.OnChooseActionDialogListener mOnChooseActionDialogListener = new ChooseActionDialogFragment.OnChooseActionDialogListener() {
+        @Override
+        public void onItemClick(
+                DialogInterface dialog,
+                int position,
+                int actionResourceId) {
+            switch (actionResourceId) {
+                case R.string.alert_dialog_action_start_new_input:
+                    // instantiates a new Input
+                    ((MainApplication) getApplication()).setInput(new Input());
+
+                    if (BuildConfig.DEBUG) {
+                        Log.d(
+                                TAG,
+                                "start new input: " + ((MainApplication) getApplication()).getInput()
+                                        .getInputId()
+                        );
+                    }
+
+                    goBackInHistory(R.string.pager_fragment_observers_and_date_title);
+
+                    break;
+                case R.string.alert_dialog_action_close_app:
+                    ((MainApplication) getApplication()).setCloseApplication(true);
+                    finish();
+
+                    break;
+                case R.string.alert_dialog_action_cancel_alert_dialog:
+                    final ChooseActionDialogFragment chooseActionDialogFragmentToDismiss = (ChooseActionDialogFragment) getSupportFragmentManager().findFragmentByTag(CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
+
+                    if (chooseActionDialogFragmentToDismiss != null) {
+                        chooseActionDialogFragmentToDismiss.dismiss();
+                    }
+
+                    break;
+            }
+        }
+    };
 
     private static class PagerFragmentHandler extends Handler {
 
@@ -105,38 +156,6 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
                             .show();
 
                     break;
-                case R.string.alert_dialog_action_start_new_input:
-                    // instantiates a new Input
-                    ((MainApplication) pagerFragmentActivity.getApplication())
-                            .setInput(new Input());
-
-                    Log.d(TAG,
-                            "start new input: " +
-                                    ((MainApplication) pagerFragmentActivity.getApplication())
-                                            .getInput().getInputId());
-
-                    pagerFragmentActivity.goBackInHistory(R.string.pager_fragment_observers_and_date_title);
-
-                    break;
-                case R.string.alert_dialog_action_close_app:
-                    ((MainApplication) pagerFragmentActivity.getApplication()).setCloseApplication(true);
-                    pagerFragmentActivity.finish();
-
-                    break;
-                case R.string.alert_dialog_action_cancel_alert_dialog:
-                    ChooseActionDialogFragment chooseActionDialogFragmentToDismiss = (ChooseActionDialogFragment) pagerFragmentActivity
-                            .getSupportFragmentManager()
-                            .findFragmentByTag(CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
-
-                    if (chooseActionDialogFragmentToDismiss != null) {
-                        chooseActionDialogFragmentToDismiss.dismiss();
-                    }
-
-                    break;
-                case R.string.alert_dialog_confirm_cancel_input_all_message:
-                    pagerFragmentActivity.finish();
-
-                    break;
             }
         }
     }
@@ -153,30 +172,32 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
             // instantiates a new Input
             ((MainApplication) getApplication()).setInput(new Input());
 
-            Log.d(TAG,
-                    "onCreate, input: " +
-                            ((MainApplication) getApplication()).getInput().getInputId());
+            if (BuildConfig.DEBUG) {
+                Log.d(
+                        TAG,
+                        "onCreate, input: " + ((MainApplication) getApplication()).getInput()
+                                .getInputId()
+                );
+            }
         }
 
         mHandler = new PagerFragmentHandler(this);
 
-        // restore ChooseActionDialogFragment state after resume if needed
-        ChooseActionDialogFragment chooseActionDialogFragment = (ChooseActionDialogFragment) getSupportFragmentManager()
-                .findFragmentByTag(CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
+        // restore AlertDialogFragment state after resume if needed
+        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getSupportFragmentManager().findFragmentByTag(ALERT_CANCEL_DIALOG_FRAGMENT);
 
-        if (chooseActionDialogFragment != null) {
-            chooseActionDialogFragment.setHandler(mHandler);
+        if (alertDialogFragment != null) {
+            alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
         }
 
         // restore ChooseActionDialogFragment state after resume if needed
-        chooseActionDialogFragment = (ChooseActionDialogFragment) getSupportFragmentManager()
-                .findFragmentByTag(CHOOSE_CANCEL_ACTION_DIALOG_FRAGMENT);
+        final ChooseActionDialogFragment chooseActionDialogFragment = (ChooseActionDialogFragment) getSupportFragmentManager().findFragmentByTag(CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
 
         if (chooseActionDialogFragment != null) {
-            chooseActionDialogFragment.setHandler(mHandler);
+            chooseActionDialogFragment.setOnChooseActionDialogListener(mOnChooseActionDialogListener);
         }
     }
-
+/*
     @Override
     protected void onPause() {
         // FIXME: Careful we dismiss dialog, cause of error after screen rotate, we lost the information of fragment (Activity, tag)
@@ -189,7 +210,7 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
 
         super.onPause();
     }
-
+*/
     @Override
     protected Map<Integer, IValidateFragment> getPagerFragments() {
         final Map<Integer, IValidateFragment> fragments = new LinkedHashMap<>();
@@ -230,49 +251,62 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
 
     @Override
     public void onBackPressed() {
-        final DialogFragment dialogFragment = AlertDialogFragment.newInstance(
+        showAlertDialog(
                 R.string.alert_dialog_confirm_cancel_title,
-                R.string.alert_dialog_confirm_cancel_input_all_message,
-                new AlertDialogFragment.OnAlertDialogListener() {
-                    @Override
-                    public void onPositiveButtonListener(DialogInterface dialog) {
-                        PagerFragmentActivity.this.finish();
-                    }
-
-                    @Override
-                    public void onNegativeButtonListener(DialogInterface dialog) {
-                        // nothing to do ...
-                    }
-                }
+                R.string.alert_dialog_confirm_cancel_input_all_message
         );
-        dialogFragment.show(getSupportFragmentManager(), ALERT_CANCEL_DIALOG_FRAGMENT);
     }
 
-    protected void showProgressDialog(int title, int message, int progressStyle, int max) {
+    protected void showAlertDialog(
+            int titleResourceId,
+            int messageResourceId) {
+        final DialogFragment dialogFragment = AlertDialogFragment.newInstance(
+                titleResourceId,
+                messageResourceId,
+                mOnAlertDialogListener
+        );
+        dialogFragment.show(
+                getSupportFragmentManager(),
+                ALERT_CANCEL_DIALOG_FRAGMENT
+        );
+    }
+
+    protected void showProgressDialog(
+            int titleResourceId,
+            int messageResourceId,
+            int progressStyle,
+            int max) {
         ProgressDialogFragment progressDialogFragment = ProgressDialogFragment.newInstance(
-                title,
-                message,
+                titleResourceId,
+                messageResourceId,
                 progressStyle,
-                max);
-        progressDialogFragment.show(getSupportFragmentManager(), PROGRESS_DIALOG_FRAGMENT);
+                max
+        );
+        progressDialogFragment.show(
+                getSupportFragmentManager(),
+                PROGRESS_DIALOG_FRAGMENT
+        );
     }
 
     protected void showChooseActionDialog() {
         // display a confirmation dialog to choose an action
-        List<Integer> actions = new ArrayList<>();
+        final List<Integer> actions = new ArrayList<>();
         Collections.addAll(
                 actions,
                 R.string.alert_dialog_action_start_new_input,
                 R.string.alert_dialog_action_close_app,
-                R.string.alert_dialog_action_cancel_alert_dialog);
-        ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(
+                R.string.alert_dialog_action_cancel_alert_dialog
+        );
+        final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(
                 R.string.alert_dialog_confirm_quit_finish_title,
                 R.string.alert_dialog_confirm_quit_finish_message,
-                actions);
-        chooseActionDialogFragment.setHandler(mHandler);
+                actions
+        );
+        chooseActionDialogFragment.setOnChooseActionDialogListener(mOnChooseActionDialogListener);
         chooseActionDialogFragment.show(
                 getSupportFragmentManager(),
-                CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
+                CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT
+        );
     }
 
     protected void saveCurrentInput() {

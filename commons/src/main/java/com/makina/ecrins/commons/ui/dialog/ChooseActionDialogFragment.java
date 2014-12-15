@@ -3,9 +3,8 @@ package com.makina.ecrins.commons.ui.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -18,72 +17,89 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Custom <code>Dialog</code> used to select a given action from a <code>ListView</code>
+ * Custom {@code Dialog} as {@code DialogFragment} used to select a given action from a
+ * {@code ListView}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class ChooseActionDialogFragment extends DialogFragment implements OnItemClickListener {
+public class ChooseActionDialogFragment extends DialogFragment {
 
     private static final String KEY_TITLE = "title";
     private static final String KEY_MESSAGE = "message";
     private static final String KEY_ACTIONS = "actions";
 
     private IntResourcesArrayAdapter mAdapter;
-    private Handler mHandler;
+    private OnChooseActionDialogListener mOnChooseActionDialogListener;
 
-    public static ChooseActionDialogFragment newInstance(int title, List<Integer> actions) {
-        Log.d(ChooseActionDialogFragment.class.getName(), "newInstance");
+    public static ChooseActionDialogFragment newInstance(
+            int titleResourceId,
+            final List<Integer> actions) {
+        return newInstance(
+                titleResourceId,
+                0,
+                actions
+        );
+    }
 
-        ChooseActionDialogFragment dialogFragment = new ChooseActionDialogFragment();
+    public static ChooseActionDialogFragment newInstance(
+            int titleResourceId,
+            int messageResourceId,
+            final List<Integer> actions) {
+
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                    ChooseActionDialogFragment.class.getName(),
+                    "newInstance"
+            );
+        }
+
+        final ChooseActionDialogFragment dialogFragment = new ChooseActionDialogFragment();
         Bundle args = new Bundle();
-        args.putInt(KEY_TITLE, title);
-        args.putIntegerArrayList(KEY_ACTIONS, (ArrayList<Integer>) actions);
+        args.putInt(
+                KEY_TITLE,
+                titleResourceId
+        );
+        args.putInt(
+                KEY_MESSAGE,
+                messageResourceId
+        );
+        args.putIntegerArrayList(
+                KEY_ACTIONS,
+                (ArrayList<Integer>) actions
+        );
         dialogFragment.setArguments(args);
         dialogFragment.setCancelable(true);
 
         return dialogFragment;
     }
 
-    public static ChooseActionDialogFragment newInstance(int title, int message, List<Integer> actions) {
-        Log.d(ChooseActionDialogFragment.class.getName(), "newInstance");
-
-        ChooseActionDialogFragment dialogFragment = new ChooseActionDialogFragment();
-        Bundle args = new Bundle();
-        args.putInt(KEY_TITLE, title);
-        args.putInt(KEY_MESSAGE, message);
-        args.putIntegerArrayList(KEY_ACTIONS, (ArrayList<Integer>) actions);
-        dialogFragment.setArguments(args);
-        dialogFragment.setCancelable(true);
-
-        return dialogFragment;
-    }
-
-    public void setHandler(Handler pHandler) {
-        this.mHandler = pHandler;
+    public void setOnChooseActionDialogListener(OnChooseActionDialogListener pOnChooseActionDialogListener) {
+        this.mOnChooseActionDialogListener = pOnChooseActionDialogListener;
     }
 
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        final View view = inflater.inflate(R.layout.dialog_list_items, null);
-        TextView textView = (TextView) view.findViewById(R.id.textViewMessageDialog);
-        int message = getArguments().getInt(KEY_MESSAGE, -1);
+        final View view = View.inflate(getActivity(), R.layout.dialog_list_items, null);
 
-        if (message == -1) {
+        TextView textView = (TextView) view.findViewById(R.id.textViewMessageDialog);
+        int message = getArguments().getInt(KEY_MESSAGE);
+
+        if (message == 0) {
             textView.setVisibility(View.GONE);
         }
         else {
             textView.setText(message);
         }
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        final ListView listView = (ListView) view.findViewById(android.R.id.list);
 
         mAdapter = new IntResourcesArrayAdapter(getActivity());
 
@@ -92,7 +108,24 @@ public class ChooseActionDialogFragment extends DialogFragment implements OnItem
         }
 
         listView.setAdapter(mAdapter);
-        listView.setOnItemClickListener(this);
+        listView.setOnItemClickListener(
+                new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(
+                            AdapterView<?> parent,
+                            View view,
+                            int position,
+                            long id) {
+                        if (mOnChooseActionDialogListener != null) {
+                            mOnChooseActionDialogListener.onItemClick(
+                                    getDialog(),
+                                    position,
+                                    mAdapter.getItem(position)
+                            );
+                        }
+                    }
+                }
+        );
 
         return new AlertDialog.Builder(getActivity())
                 .setIcon(R.drawable.ic_action_choose)
@@ -100,13 +133,6 @@ public class ChooseActionDialogFragment extends DialogFragment implements OnItem
                 .setView(view)
                 .setNegativeButton(R.string.alert_dialog_cancel, null)
                 .create();
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Message message = mHandler.obtainMessage(mAdapter.getItem(position));
-        message.sendToTarget();
-        dismiss();
     }
 
     private class IntResourcesArrayAdapter extends ArrayAdapter<Integer> {
@@ -138,5 +164,21 @@ public class ChooseActionDialogFragment extends DialogFragment implements OnItem
 
             return view;
         }
+    }
+
+    /**
+     * The callback used by {@link com.makina.ecrins.commons.ui.dialog.ChooseActionDialogFragment}.
+     *
+     * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+     */
+    public static interface OnChooseActionDialogListener {
+
+        /**
+         * Invoked when an item in this {@code ListView} has been clicked.
+         */
+        void onItemClick(
+                DialogInterface dialog,
+                int position,
+                int actionResourceId);
     }
 }

@@ -1,8 +1,7 @@
 package com.makina.ecrins.flora.ui.frequencies;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -13,11 +12,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.makina.ecrins.commons.ui.dialog.ChooseActionDialogFragment;
+import com.makina.ecrins.flora.BuildConfig;
 import com.makina.ecrins.flora.MainApplication;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.input.Taxon;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +30,23 @@ public class FrequencyFragmentActivity extends ActionBarActivity implements OnCl
 
     private static final String CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT = "choose_quit_action_dialog";
 
-    private FrequencyFragmentHandler mHandler;
+    private ChooseActionDialogFragment.OnChooseActionDialogListener mOnChooseActionDialogListener = new ChooseActionDialogFragment.OnChooseActionDialogListener() {
+        @Override
+        public void onItemClick(
+                DialogInterface dialog,
+                int position,
+                int actionResourceId) {
+            switch (actionResourceId) {
+                case R.string.choose_action_yes:
+                    dialog.dismiss();
+                    FrequencyFragmentActivity.this.finish();
+                    break;
+                case R.string.choose_action_no:
+                    dialog.dismiss();
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,59 +73,74 @@ public class FrequencyFragmentActivity extends ActionBarActivity implements OnCl
             finish();
         }
         else {
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction transaction = fm.beginTransaction();
+            if (savedInstanceState == null) {
+                final FragmentManager fm = getSupportFragmentManager();
+                final FragmentTransaction transaction = fm.beginTransaction();
 
-            switch (((Taxon) ((MainApplication) getApplication()).getInput()
-                    .getCurrentSelectedTaxon()).getCurrentSelectedArea().getFrequency().getType()) {
-                case ESTIMATION:
-                    Fragment frequencyEstimationFragment = fm
-                            .findFragmentByTag(FrequencyEstimationFragment.class.getSimpleName());
+                switch (((Taxon) ((MainApplication) getApplication()).getInput()
+                        .getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                        .getFrequency()
+                        .getType()) {
+                    case ESTIMATION:
+                        Fragment frequencyEstimationFragment = fm.findFragmentByTag(FrequencyEstimationFragment.class.getSimpleName());
 
-                    if (frequencyEstimationFragment == null) {
-                        Log.d(FrequencyFragmentActivity.class
-                                .getName(), "create FrequencyEstimationFragment");
+                        if (frequencyEstimationFragment == null) {
+                            if (BuildConfig.DEBUG) {
+                                Log.d(
+                                        FrequencyFragmentActivity.class.getName(),
+                                        "create FrequencyEstimationFragment"
+                                );
+                            }
 
-                        transaction
-                                .replace(R.id.fragment_frequency_container, new FrequencyEstimationFragment(), FrequencyEstimationFragment.class
-                                        .getSimpleName());
-                    }
-                    else {
-                        transaction
-                                .replace(R.id.fragment_frequency_container, frequencyEstimationFragment);
-                    }
+                            transaction.replace(
+                                    R.id.fragment_frequency_container,
+                                    new FrequencyEstimationFragment(),
+                                    FrequencyEstimationFragment.class.getSimpleName()
+                            );
+                        }
+                        else {
+                            transaction.replace(
+                                    R.id.fragment_frequency_container,
+                                    frequencyEstimationFragment
+                            );
+                        }
 
-                    transaction.commit();
-                    break;
-                case TRANSECT:
-                    Fragment frequencyTransectFragment = fm
-                            .findFragmentByTag(FrequencyTransectFragment.class.getSimpleName());
+                        transaction.commit();
+                        break;
+                    case TRANSECT:
+                        Fragment frequencyTransectFragment = fm.findFragmentByTag(FrequencyTransectFragment.class.getSimpleName());
 
-                    if (frequencyTransectFragment == null) {
-                        Log.d(FrequencyFragmentActivity.class
-                                .getName(), "create FrequencyTransectFragment");
+                        if (frequencyTransectFragment == null) {
+                            if (BuildConfig.DEBUG) {
+                                Log.d(
+                                        FrequencyFragmentActivity.class.getName(),
+                                        "create FrequencyTransectFragment"
+                                );
+                            }
 
-                        transaction
-                                .replace(R.id.fragment_frequency_container, new FrequencyTransectFragment(), FrequencyTransectFragment.class
-                                        .getSimpleName());
-                    }
-                    else {
-                        transaction
-                                .replace(R.id.fragment_frequency_container, frequencyTransectFragment);
-                    }
+                            transaction.replace(
+                                    R.id.fragment_frequency_container,
+                                    new FrequencyTransectFragment(),
+                                    FrequencyTransectFragment.class.getSimpleName()
+                            );
+                        }
+                        else {
+                            transaction.replace(
+                                    R.id.fragment_frequency_container,
+                                    frequencyTransectFragment
+                            );
+                        }
 
-                    transaction.commit();
-                    break;
+                        transaction.commit();
+                        break;
+                }
             }
 
-            mHandler = new FrequencyFragmentHandler(this);
-
             // restore ChooseActionDialogFragment state after resume if needed
-            ChooseActionDialogFragment chooseActionDialogFragment = (ChooseActionDialogFragment) getSupportFragmentManager()
-                    .findFragmentByTag(CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
+            final ChooseActionDialogFragment chooseActionDialogFragment = (ChooseActionDialogFragment) getSupportFragmentManager().findFragmentByTag(CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
 
             if (chooseActionDialogFragment != null) {
-                chooseActionDialogFragment.setHandler(mHandler);
+                chooseActionDialogFragment.setOnChooseActionDialogListener(mOnChooseActionDialogListener);
             }
         }
     }
@@ -146,48 +176,29 @@ public class FrequencyFragmentActivity extends ActionBarActivity implements OnCl
     }
 
     private void showConfirmDialogIfNeeded() {
-        switch (((Taxon) ((MainApplication) getApplication()).getInput().getCurrentSelectedTaxon())
-                .getCurrentSelectedArea().getFrequency().getType()) {
+        switch (((Taxon) ((MainApplication) getApplication()).getInput()
+                .getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                .getFrequency()
+                .getType()) {
             case TRANSECT:
-                List<Integer> actions = new ArrayList<>();
-                Collections.addAll(actions, R.string.choose_action_yes, R.string.choose_action_no);
-                final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment
-                        .newInstance(R.string.choose_action_title_quit_step, actions);
-                chooseActionDialogFragment.setHandler(mHandler);
-                chooseActionDialogFragment
-                        .show(getSupportFragmentManager(), CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
+                final List<Integer> actions = new ArrayList<>();
+                Collections.addAll(
+                        actions,
+                        R.string.choose_action_yes,
+                        R.string.choose_action_no
+                );
+                final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(
+                        R.string.choose_action_title_quit_step,
+                        actions
+                );
+                chooseActionDialogFragment.setOnChooseActionDialogListener(mOnChooseActionDialogListener);
+                chooseActionDialogFragment.show(
+                        getSupportFragmentManager(),
+                        CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT
+                );
                 break;
             default:
                 finish();
-        }
-    }
-
-    private static class FrequencyFragmentHandler extends Handler {
-
-        private final WeakReference<FrequencyFragmentActivity> mFrequencyFragmentActivity;
-
-        public FrequencyFragmentHandler(FrequencyFragmentActivity pFrequencyFragmentActivity) {
-            super();
-
-            mFrequencyFragmentActivity = new WeakReference<>(pFrequencyFragmentActivity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            FrequencyFragmentActivity frequencyFragmentActivity = mFrequencyFragmentActivity.get();
-            ChooseActionDialogFragment dialogFragment = (ChooseActionDialogFragment) frequencyFragmentActivity
-                    .getSupportFragmentManager()
-                    .findFragmentByTag(CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
-
-            switch (msg.what) {
-                case R.string.choose_action_yes:
-                    dialogFragment.dismiss();
-                    frequencyFragmentActivity.finish();
-                    break;
-                case R.string.choose_action_no:
-                    dialogFragment.dismiss();
-                    break;
-            }
         }
     }
 }
