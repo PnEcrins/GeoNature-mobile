@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AppTest</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="item_list_no_data">No data</string>
+    <string name="menu_item_dialogs">Dialogs</string>
+
+    <string name="button_alert_dialog">Alert Dialog</string>
+    <string name="button_choose_action_dialog">Choose action Dialog</string>
+    <string name="button_comment_dialog">Comment Dialog</string>
+    <string name="button_date_picker_dialog">Date picker Dialog</string>
+    <string name="button_date_time_picker_dialog">Date time picker Dialog</string>
+
+    <string name="alert_dialog_title">Alert dialog title</string>
+    <string name="alert_dialog_message">Alert dialog message</string>
+    <string name="toast_alert_dialog_positive_button">positive button clicked</string>
+    <string name="toast_alert_dialog_negative_button">negative button clicked</string>
+
+    <string name="choose_action_dialog_title">Choose action dialog title</string>
+    <string name="choose_action_dialog_action_1">Action 1</string>
+    <string name="choose_action_dialog_action_2">Action 2</string>
+    <string name="toast_choose_action_dialog_action_selected">action \'%1$s\' selected</string>
+
+    <string name="toast_comment_dialog_positive_button">comment:\n%1$s</string>
+    <string name="toast_comment_dialog_negative_button">negative button clicked</string>
+
+    <string name="toast_calendar_set">selected date:\n%1$s</string>
+
+</resources>
