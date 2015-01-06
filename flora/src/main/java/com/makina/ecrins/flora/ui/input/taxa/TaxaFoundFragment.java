@@ -2,7 +2,6 @@ package com.makina.ecrins.flora.ui.input.taxa;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -14,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
 import com.makina.ecrins.commons.ui.pager.IValidateWithNavigationControlFragment;
+import com.makina.ecrins.flora.BuildConfig;
 import com.makina.ecrins.flora.MainApplication;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.input.Taxon;
@@ -29,6 +29,44 @@ public class TaxaFoundFragment extends Fragment implements IValidateWithNavigati
     private static final String TAG = TaxaFoundFragment.class.getName();
 
     private static final String ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT = "alert_dialog_delete_all_areas";
+
+    private AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
+        @Override
+        public void onPositiveButtonClick(DialogInterface dialog) {
+            if (BuildConfig.DEBUG) {
+                Log.d(
+                        TAG,
+                        "delete all areas"
+                );
+            }
+
+            if (((MainApplication) getActivity().getApplication()).getInput()
+                    .getCurrentSelectedTaxon() != null) {
+                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                        .getCurrentSelectedTaxon()).getAreas()
+                        .clear();
+            }
+
+            ((PagerFragmentActivity) getActivity()).goToPageByKey(R.string.pager_fragment_webview_pa_title);
+        }
+
+        @Override
+        public void onNegativeButtonClick(DialogInterface dialog) {
+            // nothing to do ...
+        }
+    };
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // restore CommentDialogFragment state after resume if needed
+        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT);
+
+        if (alertDialogFragment != null) {
+            alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -100,35 +138,14 @@ public class TaxaFoundFragment extends Fragment implements IValidateWithNavigati
     }
 
     private void confirmBeforeDeleteAreas() {
-        final DialogFragment dialogFragment = AlertDialogFragment.newInstance(
+        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(
                 R.string.alert_dialog_confirm_delete_areas_title,
-                R.string.alert_dialog_confirm_delete_areas_message,
-                new AlertDialogFragment.OnAlertDialogListener() {
-                    @Override
-                    public void onPositiveButtonListener(DialogInterface dialog) {
-                        Log.d(
-                                TAG,
-                                "delete all areas"
-                        );
-
-                        if (((MainApplication) getActivity().getApplication()).getInput()
-                                .getCurrentSelectedTaxon() != null) {
-                            ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                    .getCurrentSelectedTaxon()).getAreas()
-                                    .clear();
-                        }
-
-                        ((PagerFragmentActivity) getActivity()).goToPageByKey(R.string.pager_fragment_webview_pa_title);
-                    }
-
-                    @Override
-                    public void onNegativeButtonListener(DialogInterface dialog) {
-                        // nothing to do ...
-                    }
-                }
+                R.string.alert_dialog_confirm_delete_areas_message
         );
-        dialogFragment.show(
+        alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
+        alertDialogFragment.show(
                 getActivity().getSupportFragmentManager(),
-                ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT);
+                ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT
+        );
     }
 }

@@ -29,7 +29,7 @@ public class AlertDialogFragment extends DialogFragment {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             if (mOnAlertDialogListener != null) {
-                mOnAlertDialogListener.onPositiveButtonListener(dialog);
+                mOnAlertDialogListener.onPositiveButtonClick(dialog);
             }
         }
     };
@@ -38,30 +38,27 @@ public class AlertDialogFragment extends DialogFragment {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             if (mOnAlertDialogListener != null) {
-                mOnAlertDialogListener.onNegativeButtonListener(dialog);
+                mOnAlertDialogListener.onNegativeButtonClick(dialog);
             }
         }
     };
 
     public static AlertDialogFragment newInstance(
             int title,
-            int message,
-            OnAlertDialogListener onAlertDialogListener) {
+            int message) {
 
         return newInstance(
                 title,
                 message,
                 R.string.alert_dialog_ok,
-                R.string.alert_dialog_cancel,
-                onAlertDialogListener);
+                R.string.alert_dialog_cancel);
     }
 
     public static AlertDialogFragment newInstance(
             int title,
             int message,
             int buttonPositiveResourceId,
-            int buttonNegativeResourceId,
-            OnAlertDialogListener onAlertDialogListener) {
+            int buttonNegativeResourceId) {
 
         if (BuildConfig.DEBUG) {
             Log.d(
@@ -71,7 +68,7 @@ public class AlertDialogFragment extends DialogFragment {
         }
 
         final AlertDialogFragment dialogFragment = new AlertDialogFragment();
-        Bundle args = new Bundle();
+        final Bundle args = new Bundle();
         args.putInt(
                 KEY_TITLE,
                 title
@@ -91,7 +88,6 @@ public class AlertDialogFragment extends DialogFragment {
 
         dialogFragment.setArguments(args);
         dialogFragment.setCancelable(false);
-        dialogFragment.mOnAlertDialogListener = onAlertDialogListener;
 
         return dialogFragment;
     }
@@ -124,12 +120,12 @@ public class AlertDialogFragment extends DialogFragment {
          * Invoked when the positive button of the dialog is pressed.
          * @param dialog the dialog that received the click
          */
-        void onPositiveButtonListener(DialogInterface dialog);
+        void onPositiveButtonClick(DialogInterface dialog);
 
         /**
          * Invoked when the negative button of the dialog is pressed.
          * @param dialog the dialog that received the click
          */
-        void onNegativeButtonListener(DialogInterface dialog);
+        void onNegativeButtonClick(DialogInterface dialog);
     }
 }

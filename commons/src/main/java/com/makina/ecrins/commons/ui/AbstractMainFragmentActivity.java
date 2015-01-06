@@ -16,7 +16,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
@@ -144,6 +143,30 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
             Log.d(AbstractMainFragmentActivity.class.getName(), "onServiceDisconnected " + name);
 
             mSettingsServiceMessenger = null;
+        }
+    };
+
+    private AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
+        @Override
+        public void onPositiveButtonClick(DialogInterface dialog) {
+            try {
+                if (FileUtils.deleteQuietly(FileUtils.getInputsFolder(AbstractMainFragmentActivity.this))) {
+                    executeGetDeviceStatusAsyncTask();
+
+                }
+            }
+            catch (IOException ioe) {
+                Log.w(
+                        AbstractMainFragmentActivity.class.getName(),
+                        ioe.getMessage(),
+                        ioe
+                );
+            }
+        }
+
+        @Override
+        public void onNegativeButtonClick(DialogInterface dialog) {
+            // nothing to do ...
         }
     };
 
@@ -275,6 +298,12 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
         else {
             Log.d(AbstractMainFragmentActivity.class.getName(), "onCreate, savedInstanceState initialized");
             mSavedState = savedInstanceState;
+        }
+
+        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_DELETE_INPUTS_FRAGMENT);
+
+        if (alertDialogFragment != null) {
+            alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
         }
 
         // starts the service if needed before binding on it
@@ -547,34 +576,15 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
     }
 
     private void confirmBeforeDeleteAllInputs() {
-        final DialogFragment dialogFragment = AlertDialogFragment.newInstance(
+        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(
                 R.string.alert_dialog_confirm_delete_inputs_title,
-                R.string.alert_dialog_confirm_delete_inputs_message,
-                new AlertDialogFragment.OnAlertDialogListener() {
-                    @Override
-                    public void onPositiveButtonListener(DialogInterface dialog) {
-                        try {
-                            if (FileUtils.deleteQuietly(FileUtils.getInputsFolder(AbstractMainFragmentActivity.this))) {
-                                executeGetDeviceStatusAsyncTask();
-
-                            }
-                        }
-                        catch (IOException ioe) {
-                            Log.w(
-                                    AbstractMainFragmentActivity.class.getName(),
-                                    ioe.getMessage(),
-                                    ioe
-                            );
-                        }
-                    }
-
-                    @Override
-                    public void onNegativeButtonListener(DialogInterface dialog) {
-                        // nothing to do ...
-                    }
-                }
+                R.string.alert_dialog_confirm_delete_inputs_message
         );
-        dialogFragment.show(getSupportFragmentManager(), ALERT_DIALOG_DELETE_INPUTS_FRAGMENT);
+        alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
+        alertDialogFragment.show(
+                getSupportFragmentManager(),
+                ALERT_DIALOG_DELETE_INPUTS_FRAGMENT
+        );
     }
 
     /**

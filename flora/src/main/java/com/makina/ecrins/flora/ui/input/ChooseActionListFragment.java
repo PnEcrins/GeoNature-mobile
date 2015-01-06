@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -56,6 +55,12 @@ public class ChooseActionListFragment extends ListFragment implements IValidateW
             Log.d(TAG, "onCreate, savedInstanceState initialized");
 
             mSavedState = savedInstanceState;
+        }
+
+        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_DELETE_AREA_FRAGMENT);
+
+        if (alertDialogFragment != null) {
+            alertDialogFragment.dismiss();
         }
     }
 
@@ -254,12 +259,14 @@ public class ChooseActionListFragment extends ListFragment implements IValidateW
     }
 
     private void confirmBeforeDeleteArea(final String areaId) {
-        final DialogFragment dialogFragment = AlertDialogFragment.newInstance(
+        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(
                 R.string.alert_dialog_confirm_delete_area_title,
-                R.string.alert_dialog_confirm_delete_area_message,
+                R.string.alert_dialog_confirm_delete_area_message
+        );
+        alertDialogFragment.setOnAlertDialogListener(
                 new AlertDialogFragment.OnAlertDialogListener() {
                     @Override
-                    public void onPositiveButtonListener(DialogInterface dialog) {
+                    public void onPositiveButtonClick(DialogInterface dialog) {
                         // deletes this area from the current taxon
 
                         if (BuildConfig.DEBUG) {
@@ -291,13 +298,14 @@ public class ChooseActionListFragment extends ListFragment implements IValidateW
                     }
 
                     @Override
-                    public void onNegativeButtonListener(DialogInterface dialog) {
+                    public void onNegativeButtonClick(DialogInterface dialog) {
                         // nothing to do ...
                     }
                 }
         );
-        dialogFragment.show(
+        alertDialogFragment.show(
                 getActivity().getSupportFragmentManager(),
-                ALERT_DIALOG_DELETE_AREA_FRAGMENT);
+                ALERT_DIALOG_DELETE_AREA_FRAGMENT
+        );
     }
 }

@@ -2,7 +2,6 @@ package com.makina.ecrins.commons.ui.input.results;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.view.ActionMode;
@@ -49,6 +48,25 @@ public abstract class AbstractResultsInputFragment extends Fragment
     private AbstractTaxon mSelectedTaxonForAction;
     private TextView mTextViewTaxaAdded;
 
+    private final CommentDialogFragment.OnCommentDialogValidateListener mOnCommentDialogValidateListener = new CommentDialogFragment.OnCommentDialogValidateListener() {
+        @Override
+        public void onPositiveButtonClick(
+                DialogInterface dialog,
+                String message) {
+            mSelectedTaxonForAction.setComment(message);
+            getInput().getTaxa()
+                    .put(
+                            mSelectedTaxonForAction.getId(),
+                            mSelectedTaxonForAction
+                    );
+        }
+
+        @Override
+        public void onNegativeButtonClick(DialogInterface dialog) {
+            // nothing to do ...
+        }
+    };
+
     private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -84,17 +102,12 @@ public abstract class AbstractResultsInputFragment extends Fragment
                     return true;
                 case 1:
                     if (mSelectedTaxonForAction != null) {
-                        CommentDialogFragment dialogFragment = CommentDialogFragment.newInstance(
-                                mSelectedTaxonForAction.getComment(),
-                                new CommentDialogFragment.OnCommentDialogValidateListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which, String message) {
-                                        mSelectedTaxonForAction.setComment(message);
-                                        getInput().getTaxa().put(mSelectedTaxonForAction.getId(), mSelectedTaxonForAction);
-                                    }
-                                }, null
+                        final CommentDialogFragment dialogFragment = CommentDialogFragment.newInstance(mSelectedTaxonForAction.getComment());
+                        dialogFragment.setOnCommentDialogValidateListener(mOnCommentDialogValidateListener);
+                        dialogFragment.show(
+                                getActivity().getSupportFragmentManager(),
+                                ALERT_DIALOG_COMMENT_FRAGMENT
                         );
-                        dialogFragment.show(getActivity().getSupportFragmentManager(), ALERT_DIALOG_COMMENT_FRAGMENT);
                     }
 
                     return true;
@@ -115,10 +128,23 @@ public abstract class AbstractResultsInputFragment extends Fragment
     private ActionMode mMode;
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        setHasOptionsMenu(true);
+        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_DELETE_TAXON_FRAGMENT);
+
+        if (alertDialogFragment != null) {
+            if (mSelectedTaxonForAction == null) {
+                alertDialogFragment.dismiss();
+            }
+        }
+
+        // restore CommentDialogFragment state after resume if needed
+        final CommentDialogFragment commentDialogFragment = (CommentDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_COMMENT_FRAGMENT);
+
+        if (commentDialogFragment != null) {
+            commentDialogFragment.setOnCommentDialogValidateListener(mOnCommentDialogValidateListener);
+        }
     }
 
     @Override
@@ -145,21 +171,10 @@ public abstract class AbstractResultsInputFragment extends Fragment
     }
 
     @Override
-    public void onPause() {
-        // FIXME: Careful we dismiss dialog, cause of error after screen rotate, we lost the information of fragment (Activity, tag)
-        DialogFragment fragment = (DialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_DELETE_TAXON_FRAGMENT);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        if (fragment != null) {
-            fragment.dismiss();
-        }
-
-        fragment = (DialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_COMMENT_FRAGMENT);
-
-        if (fragment != null) {
-            fragment.dismiss();
-        }
-
-        super.onPause();
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -226,12 +241,13 @@ public abstract class AbstractResultsInputFragment extends Fragment
     public abstract AbstractInput getInput();
 
     private void confirmBeforeDeleteTaxon(final AbstractTaxon taxon) {
-        final DialogFragment dialogFragment = AlertDialogFragment.newInstance(
+        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(
                 R.string.alert_dialog_confirm_delete_taxon_title,
-                R.string.alert_dialog_confirm_delete_taxon_message,
+                R.string.alert_dialog_confirm_delete_taxon_message);
+        alertDialogFragment.setOnAlertDialogListener(
                 new AlertDialogFragment.OnAlertDialogListener() {
                     @Override
-                    public void onPositiveButtonListener(DialogInterface dialog) {
+                    public void onPositiveButtonClick(DialogInterface dialog) {
                         // deletes this taxon from the current input
                         getInput().getTaxa().remove(taxon.getId());
 
@@ -253,11 +269,11 @@ public abstract class AbstractResultsInputFragment extends Fragment
                     }
 
                     @Override
-                    public void onNegativeButtonListener(DialogInterface dialog) {
+                    public void onNegativeButtonClick(DialogInterface dialog) {
                         // nothing to do ...
                     }
                 }
         );
-        dialogFragment.show(getActivity().getSupportFragmentManager(), ALERT_DIALOG_DELETE_TAXON_FRAGMENT);
+        alertDialogFragment.show(getActivity().getSupportFragmentManager(), ALERT_DIALOG_DELETE_TAXON_FRAGMENT);
     }
 }

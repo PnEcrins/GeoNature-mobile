@@ -13,7 +13,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -134,6 +133,37 @@ public abstract class AbstractSynchronizationActivity extends ActionBarActivity 
         }
     };
 
+    private AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
+        @Override
+        public void onPositiveButtonClick(DialogInterface dialog) {
+            final Message message = Message.obtain();
+            message.what = SyncService.HANDLER_SYNC_CANCEL;
+
+            if (mSyncServiceMessenger != null) {
+                try {
+                    mSyncServiceMessenger.send(message);
+                }
+                catch (RemoteException re) {
+                    Log.w(
+                            AbstractSynchronizationActivity.class.getName(),
+                            re.getMessage(),
+                            re
+                    );
+                }
+            }
+            else {
+                messagesQueue.add(message);
+            }
+
+            finish();
+        }
+
+        @Override
+        public void onNegativeButtonClick(DialogInterface dialog) {
+            // nothing to do ...
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,6 +193,13 @@ public abstract class AbstractSynchronizationActivity extends ActionBarActivity 
         mProgressBarDeviceToServer = (ProgressBar) findViewById(R.id.progressBarDeviceToServer);
         mProgressBarDeviceToServer.setMax(100);
         mTextViewProgressDeviceToServer = (TextView) findViewById(R.id.textViewProgressDeviceToServer);
+
+        // restore AlertDialogFragment state after resume if needed
+        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_FRAGMENT);
+
+        if (alertDialogFragment != null) {
+            alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
+        }
     }
 
     @Override
@@ -295,41 +332,15 @@ public abstract class AbstractSynchronizationActivity extends ActionBarActivity 
     protected abstract SyncSettings getSyncSettings();
 
     private void showConfirmDialog() {
-        final DialogFragment dialogFragment = AlertDialogFragment.newInstance(
+        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(
                 R.string.alert_dialog_confirm_cancel_synchro_title,
-                R.string.alert_dialog_confirm_cancel_synchro_message,
-                new AlertDialogFragment.OnAlertDialogListener() {
-                    @Override
-                    public void onPositiveButtonListener(DialogInterface dialog) {
-                        Message message = Message.obtain();
-                        message.what = SyncService.HANDLER_SYNC_CANCEL;
-
-                        if (mSyncServiceMessenger != null) {
-                            try {
-                                mSyncServiceMessenger.send(message);
-                            }
-                            catch (RemoteException re) {
-                                Log.w(
-                                        AbstractSynchronizationActivity.class.getName(),
-                                        re.getMessage(),
-                                        re
-                                );
-                            }
-                        }
-                        else {
-                            messagesQueue.add(message);
-                        }
-
-                        finish();
-                    }
-
-                    @Override
-                    public void onNegativeButtonListener(DialogInterface dialog) {
-                        // nothing to do ...
-                    }
-                }
+                R.string.alert_dialog_confirm_cancel_synchro_message
         );
-        dialogFragment.show(getSupportFragmentManager(), ALERT_DIALOG_FRAGMENT);
+        alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
+        alertDialogFragment.show(
+                getSupportFragmentManager(),
+                ALERT_DIALOG_FRAGMENT
+        );
     }
 
     /**

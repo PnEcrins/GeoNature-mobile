@@ -22,7 +22,7 @@ import android.widget.ListView;
 import com.makina.ecrins.commons.R;
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.input.Observer;
-import com.makina.ecrins.commons.ui.dialog.DatePickerDialogFragment;
+import com.makina.ecrins.commons.ui.dialog.DateTimePickerDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.OnCalendarSetListener;
 import com.makina.ecrins.commons.ui.observers.AbstractObserversFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
@@ -101,8 +101,16 @@ public abstract class AbstractObserversAndDateFragment extends Fragment
         listCurrenDateView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                DatePickerDialogFragment datePickerDialogFragment = DatePickerDialogFragment.newInstance(System.currentTimeMillis(), AbstractObserversAndDateFragment.this);
-                datePickerDialogFragment.show(AbstractObserversAndDateFragment.this.getActivity().getSupportFragmentManager(), ALERT_DIALOG_CALENDAR_FRAGMENT);
+                final DateTimePickerDialogFragment datePickerDialogFragment = DateTimePickerDialogFragment.newInstance(
+                        System.currentTimeMillis(),
+                        false
+                );
+                datePickerDialogFragment.setOnCalendarSetListener(AbstractObserversAndDateFragment.this);
+                datePickerDialogFragment.show(
+                        AbstractObserversAndDateFragment.this.getActivity()
+                                .getSupportFragmentManager(),
+                        ALERT_DIALOG_CALENDAR_FRAGMENT
+                );
             }
         });
 
@@ -133,7 +141,8 @@ public abstract class AbstractObserversAndDateFragment extends Fragment
             getLoaderManager().restartLoader(0, mSavedState, this);
         }
 
-        DatePickerDialogFragment dialogFragment = (DatePickerDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_CALENDAR_FRAGMENT);
+        final DateTimePickerDialogFragment dialogFragment = (DateTimePickerDialogFragment) getActivity().getSupportFragmentManager()
+                .findFragmentByTag(ALERT_DIALOG_CALENDAR_FRAGMENT);
 
         if (dialogFragment != null) {
             dialogFragment.setOnCalendarSetListener(this);

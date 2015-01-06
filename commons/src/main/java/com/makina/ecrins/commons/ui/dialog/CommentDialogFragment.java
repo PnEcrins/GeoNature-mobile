@@ -7,14 +7,16 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
 
 /**
@@ -26,34 +28,43 @@ public class CommentDialogFragment extends DialogFragment {
 
     private static final String KEY_MESSAGE = "message";
 
-    private static OnCommentDialogValidateListener sOnCommentDialogValidateListener;
-    private static OnClickListener sOnNegativeClickListener;
+    private OnCommentDialogValidateListener mOnCommentDialogValidateListener;
 
-    public static CommentDialogFragment newInstance(String message, OnCommentDialogValidateListener pOnCommentDialogValidateListener, OnClickListener pOnNegativeClickListener) {
-        Log.d(CommentDialogFragment.class.getName(), "newInstance");
+    public static CommentDialogFragment newInstance(@Nullable String message) {
 
-        CommentDialogFragment dialogFragment = new CommentDialogFragment();
-        Bundle args = new Bundle();
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                    CommentDialogFragment.class.getName(),
+                    "newInstance"
+            );
+        }
+
+        final CommentDialogFragment dialogFragment = new CommentDialogFragment();
+        final Bundle args = new Bundle();
         args.putString(KEY_MESSAGE, message);
         dialogFragment.setArguments(args);
 
-        sOnCommentDialogValidateListener = pOnCommentDialogValidateListener;
-        sOnNegativeClickListener = pOnNegativeClickListener;
-
         return dialogFragment;
+    }
+
+    public void setOnCommentDialogValidateListener(OnCommentDialogValidateListener pOnCommentDialogValidateListener) {
+        this.mOnCommentDialogValidateListener = pOnCommentDialogValidateListener;
     }
 
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        final View view = inflater.inflate(R.layout.dialog_comment, null);
+        final View view = View.inflate(
+                getActivity(),
+                R.layout.dialog_comment,
+                null
+        );
 
         final EditText textViewComment = (EditText) view.findViewById(R.id.editTextComment);
 
         int alertDialogTitleResource = R.string.alert_dialog_add_comment_title;
 
-        if (getArguments().containsKey(KEY_MESSAGE) && (!getArguments().getString(KEY_MESSAGE).isEmpty())) {
+        if (getArguments().containsKey(KEY_MESSAGE) && (!TextUtils.isEmpty(getArguments().getString(KEY_MESSAGE)))) {
             textViewComment.setText(getArguments().getString(KEY_MESSAGE));
             alertDialogTitleResource = R.string.alert_dialog_edit_comment_title;
         }
@@ -63,10 +74,16 @@ public class CommentDialogFragment extends DialogFragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
-                    ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(textViewComment, 0);
+                    ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(
+                            textViewComment,
+                            0
+                    );
                 }
                 else {
-                    ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(textViewComment.getWindowToken(), 0);
+                    ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(
+                            textViewComment.getWindowToken(),
+                            0
+                    );
                 }
             }
         });
@@ -74,25 +91,59 @@ public class CommentDialogFragment extends DialogFragment {
         return new AlertDialog.Builder(getActivity())
                 .setTitle(alertDialogTitleResource)
                 .setView(view)
-                .setPositiveButton(R.string.alert_dialog_ok, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        sOnCommentDialogValidateListener.onClick(dialog, which, textViewComment.getText().toString());
-                    }
-                })
-                .setNegativeButton(R.string.alert_dialog_cancel, sOnNegativeClickListener)
+                .setPositiveButton(
+                        R.string.alert_dialog_ok,
+                        new OnClickListener() {
+                            @Override
+                            public void onClick(
+                                    DialogInterface dialog,
+                                    int which) {
+                                if (mOnCommentDialogValidateListener != null) {
+                                    mOnCommentDialogValidateListener.onPositiveButtonClick(
+                                            dialog,
+                                            textViewComment.getText()
+                                                    .toString()
+                                    );
+                                }
+                            }
+                        }
+                )
+                .setNegativeButton(
+                        R.string.alert_dialog_cancel,
+                        new OnClickListener() {
+                            @Override
+                            public void onClick(
+                                    DialogInterface dialog,
+                                    int which) {
+                                if (mOnCommentDialogValidateListener != null) {
+                                    mOnCommentDialogValidateListener.onNegativeButtonClick(dialog);
+                                }
+                            }
+                        }
+                )
                 .create();
     }
 
-    public interface OnCommentDialogValidateListener {
+    /**
+     * The callback used by {@link com.makina.ecrins.commons.ui.dialog.CommentDialogFragment}.
+     *
+     * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+     * @see {@link android.content.DialogInterface.OnClickListener}
+     */
+    public static interface OnCommentDialogValidateListener {
+
         /**
-         * This method will be invoked when a button in the dialog is clicked.
+         * Invoked when the positive button of the dialog is pressed.
          *
          * @param dialog  the dialog that received the click
-         * @param which   the button that was clicked or the position of the item clicked
          * @param message the string message edited from thsi dialog
-         * @see android.content.DialogInterface.OnClickListener#onClick(android.content.DialogInterface, int)
          */
-        public void onClick(DialogInterface dialog, int which, String message);
+        void onPositiveButtonClick(DialogInterface dialog, String message);
+
+        /**
+         * Invoked when the negative button of the dialog is pressed.
+         * @param dialog the dialog that received the click
+         */
+        void onNegativeButtonClick(DialogInterface dialog);
     }
 }

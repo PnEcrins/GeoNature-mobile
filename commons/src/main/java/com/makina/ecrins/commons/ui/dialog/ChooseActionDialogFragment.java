@@ -35,7 +35,7 @@ public class ChooseActionDialogFragment extends DialogFragment {
     private static final String KEY_MESSAGE = "message";
     private static final String KEY_ACTIONS = "actions";
 
-    private IntResourcesArrayAdapter mAdapter;
+    private StringResourcesArrayAdapter mAdapter;
     private OnChooseActionDialogListener mOnChooseActionDialogListener;
 
     public static ChooseActionDialogFragment newInstance(
@@ -61,7 +61,7 @@ public class ChooseActionDialogFragment extends DialogFragment {
         }
 
         final ChooseActionDialogFragment dialogFragment = new ChooseActionDialogFragment();
-        Bundle args = new Bundle();
+        final Bundle args = new Bundle();
         args.putInt(
                 KEY_TITLE,
                 titleResourceId
@@ -72,7 +72,7 @@ public class ChooseActionDialogFragment extends DialogFragment {
         );
         args.putIntegerArrayList(
                 KEY_ACTIONS,
-                (ArrayList<Integer>) actions
+                new ArrayList<>(actions)
         );
         dialogFragment.setArguments(args);
         dialogFragment.setCancelable(true);
@@ -87,7 +87,11 @@ public class ChooseActionDialogFragment extends DialogFragment {
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final View view = View.inflate(getActivity(), R.layout.dialog_list_items, null);
+        final View view = View.inflate(
+                getActivity(),
+                R.layout.dialog_list_items,
+                null
+        );
 
         TextView textView = (TextView) view.findViewById(R.id.textViewMessageDialog);
         int message = getArguments().getInt(KEY_MESSAGE);
@@ -101,10 +105,14 @@ public class ChooseActionDialogFragment extends DialogFragment {
 
         final ListView listView = (ListView) view.findViewById(android.R.id.list);
 
-        mAdapter = new IntResourcesArrayAdapter(getActivity());
+        mAdapter = new StringResourcesArrayAdapter(getActivity());
 
-        for (Integer action : getArguments().getIntegerArrayList(KEY_ACTIONS)) {
-            mAdapter.add(action);
+        final List<Integer> actions = getArguments().getIntegerArrayList(KEY_ACTIONS);
+
+        if (actions != null) {
+            for (Integer action : actions) {
+                mAdapter.add(action);
+            }
         }
 
         listView.setAdapter(mAdapter);
@@ -135,16 +143,29 @@ public class ChooseActionDialogFragment extends DialogFragment {
                 .create();
     }
 
-    private class IntResourcesArrayAdapter extends ArrayAdapter<Integer> {
+    /**
+     * Simple {@code Adapter} using String resources.
+     *
+     * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+     */
+    private class StringResourcesArrayAdapter
+            extends ArrayAdapter<Integer> {
+
         private int mTextViewResourceId;
         private final LayoutInflater mInflater;
 
-        public IntResourcesArrayAdapter(Context context) {
-            this(context, android.R.layout.simple_list_item_1);
+        public StringResourcesArrayAdapter(Context context) {
+            this(
+                    context,
+                    android.R.layout.simple_list_item_1
+            );
         }
 
-        public IntResourcesArrayAdapter(Context context, int textViewResourceId) {
+        public StringResourcesArrayAdapter(
+                Context context,
+                int textViewResourceId) {
             super(context, textViewResourceId);
+
             mTextViewResourceId = textViewResourceId;
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }

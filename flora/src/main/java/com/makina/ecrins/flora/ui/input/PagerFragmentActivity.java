@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -55,12 +54,12 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
 
     private final AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
         @Override
-        public void onPositiveButtonListener(DialogInterface dialog) {
+        public void onPositiveButtonClick(DialogInterface dialog) {
             PagerFragmentActivity.this.finish();
         }
 
         @Override
-        public void onNegativeButtonListener(DialogInterface dialog) {
+        public void onNegativeButtonClick(DialogInterface dialog) {
             // nothing to do ...
         }
     };
@@ -84,20 +83,18 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
                         );
                     }
 
+                    dialog.dismiss();
                     goBackInHistory(R.string.pager_fragment_observers_and_date_title);
 
                     break;
                 case R.string.alert_dialog_action_close_app:
+                    dialog.dismiss();
                     ((MainApplication) getApplication()).setCloseApplication(true);
                     finish();
 
                     break;
                 case R.string.alert_dialog_action_cancel_alert_dialog:
-                    final ChooseActionDialogFragment chooseActionDialogFragmentToDismiss = (ChooseActionDialogFragment) getSupportFragmentManager().findFragmentByTag(CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
-
-                    if (chooseActionDialogFragmentToDismiss != null) {
-                        chooseActionDialogFragmentToDismiss.dismiss();
-                    }
+                    dialog.dismiss();
 
                     break;
             }
@@ -197,20 +194,7 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
             chooseActionDialogFragment.setOnChooseActionDialogListener(mOnChooseActionDialogListener);
         }
     }
-/*
-    @Override
-    protected void onPause() {
-        // FIXME: Careful we dismiss dialog, cause of error after screen rotate, we lost the information of fragment (Activity, tag)
-        DialogFragment fragment = (DialogFragment) getSupportFragmentManager()
-                .findFragmentByTag(ALERT_CANCEL_DIALOG_FRAGMENT);
 
-        if (fragment != null) {
-            fragment.dismiss();
-        }
-
-        super.onPause();
-    }
-*/
     @Override
     protected Map<Integer, IValidateFragment> getPagerFragments() {
         final Map<Integer, IValidateFragment> fragments = new LinkedHashMap<>();
@@ -260,12 +244,12 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
     protected void showAlertDialog(
             int titleResourceId,
             int messageResourceId) {
-        final DialogFragment dialogFragment = AlertDialogFragment.newInstance(
+        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(
                 titleResourceId,
-                messageResourceId,
-                mOnAlertDialogListener
+                messageResourceId
         );
-        dialogFragment.show(
+        alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
+        alertDialogFragment.show(
                 getSupportFragmentManager(),
                 ALERT_CANCEL_DIALOG_FRAGMENT
         );
