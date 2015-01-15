@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textViewSynchroServerStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="20dp"
+        android:text="@string/synchro_server_status"
+        android:textAllCaps="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        tools:ignore="RtlHardcoded"/>
+
+    <View
+        android:id="@+id/viewSeparator"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@+id/textViewSynchroServerStatus"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/darker_gray_translucent"/>
+
+    <ImageView
+        android:id="@+id/imageViewSynchroServer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/viewSeparator"
+        android:layout_below="@+id/viewSeparator"
+        android:contentDescription="@string/synchro_server_hint"
+        android:src="@drawable/ic_action_server"
+        tools:ignore="RtlHardcoded"/>
+
+    <TextView
+        android:id="@+id/textViewServerStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageViewSynchroServer"
+        android:layout_alignRight="@+id/viewSeparator"
+        android:layout_alignTop="@+id/imageViewSynchroServer"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:ignore="RtlHardcoded"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageViewSynchroServer"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:id="@+id/dataTransferContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/dataTransferMobileToServerContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/textViewSynchroDataTransferMobileToServer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/synchro_data_transfer_mobile_server"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold"
+                    tools:ignore="RtlHardcoded"/>
+
+                <View
+                    android:id="@+id/viewSeparator2"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_below="@+id/textViewSynchroDataTransferMobileToServer"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@color/darker_gray_translucent"/>
+
+                <ImageView
+                    android:id="@+id/imageViewDeviceLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/viewSeparator2"
+                    android:layout_below="@+id/viewSeparator2"
+                    android:contentDescription="@string/synchro_device_hint"
+                    android:src="@drawable/ic_action_device"
+                    tools:ignore="RtlHardcoded"/>
+
+                <ImageView
+                    android:id="@+id/imageViewServerRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@+id/viewSeparator2"
+                    android:layout_below="@+id/viewSeparator2"
+                    android:contentDescription="@string/synchro_server_hint"
+                    android:src="@drawable/ic_action_server"
+                    tools:ignore="RtlHardcoded"/>
+
+                <ProgressBar
+                    android:id="@+id/progressBarDeviceToServer"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/viewSeparator2"
+                    android:layout_toLeftOf="@+id/imageViewServerRight"
+                    android:layout_toRightOf="@+id/imageViewDeviceLeft"
+                    tools:ignore="RtlHardcoded"/>
+
+                <TextView
+                    android:id="@+id/textViewProgressDeviceToServer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/progressBarDeviceToServer"
+                    android:layout_toLeftOf="@+id/imageViewServerRight"
+                    android:layout_toRightOf="@+id/imageViewDeviceLeft"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textIsSelectable="false"
+                    tools:ignore="RtlHardcoded"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/dataTransferServerToMobileContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/textViewSynchroDataTransferServerToMobile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="20dp"
+                    android:text="@string/synchro_data_transfer_server_mobile"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold"
+                    tools:ignore="RtlHardcoded"/>
+
+                <View
+                    android:id="@+id/viewSeparator1"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_below="@+id/textViewSynchroDataTransferServerToMobile"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@color/darker_gray_translucent"/>
+
+                <ImageView
+                    android:id="@+id/imageViewServerLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/viewSeparator1"
+                    android:layout_below="@+id/viewSeparator1"
+                    android:contentDescription="@string/synchro_server_hint"
+                    android:src="@drawable/ic_action_server"
+                    tools:ignore="RtlHardcoded"/>
+
+                <ImageView
+                    android:id="@+id/imageViewDeviceRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@+id/viewSeparator1"
+                    android:layout_below="@+id/viewSeparator1"
+                    android:contentDescription="@string/synchro_device_hint"
+                    android:src="@drawable/ic_action_device"
+                    tools:ignore="RtlHardcoded"/>
+
+                <ProgressBar
+                    android:id="@+id/progressBarServerToDevice"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/viewSeparator1"
+                    android:layout_toLeftOf="@+id/imageViewDeviceRight"
+                    android:layout_toRightOf="@+id/imageViewServerLeft"
+                    tools:ignore="RtlHardcoded"/>
+
+                <TextView
+                    android:id="@+id/textViewProgressServerToDevice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/progressBarServerToDevice"
+                    android:layout_toLeftOf="@+id/imageViewDeviceRight"
+                    android:layout_toRightOf="@+id/imageViewServerLeft"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textIsSelectable="false"
+                    tools:ignore="RtlHardcoded"/>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

@@ -369,7 +369,7 @@ public abstract class AbstractWebViewFragment extends Fragment implements IWebVi
         Log.d(AbstractWebViewFragment.class.getName(), "addControl " + control.getName());
 
         if (this.mControls.containsKey(control.getName())) {
-            Log.w(AbstractWebViewFragment.class.getName(), "addControl : '" + control.getName() + "' is already registered");
+            Log.w(AbstractWebViewFragment.class.getName(), "addControl: '" + control.getName() + "' is already registered");
         }
         else {
             this.mWebView.addJavascriptInterface(control, control.getName());

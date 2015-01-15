@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    package="com.makina.ecrins.search"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:sharedUserId="com.makina.ecrins"
+    android:versionCode="152">
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!--
+    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
+    -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <application
+        android:name="com.makina.ecrins.search.MainApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".ui.MainFragmentActivity"
+            android:label="@string/activity_main_title">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+        </activity>
+        <activity
+            android:name=".ui.FeaturesFragmentActivity"
+            android:label="@string/activity_features_title">
+        </activity>
+        <activity
+            android:name=".ui.settings.MainPreferencesActivity"
+            android:label="@string/activity_preferences_title">
+        </activity>
+        <activity
+            android:name=".ui.sync.SynchronizationActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/activity_synchro_title">
+        </activity>
+
+        <provider
+            android:name=".content.MainContentProvider"
+            android:authorities="com.makina.ecrins.search.content.MainContentProvider"
+            android:exported="false"/>
+
+        <service
+            android:name="com.makina.ecrins.search.settings.SettingsService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.makina.ecrins.search.settings.SettingsService"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.makina.ecrins.commons.sync.CheckServerService"
+            android:exported="false"/>
+        <service
+            android:name="com.makina.ecrins.commons.sync.SyncService"
+            android:exported="false"/>
+        <service
+            android:name="com.makina.ecrins.commons.sync.SyncCommandIntentService"
+            android:exported="false"/>
+
+        <receiver
+            android:name="com.makina.ecrins.commons.sync.StartCheckServerServiceReceiver"
+            android:exported="false"/>
+        <receiver
+            android:name="com.makina.ecrins.commons.sync.SyncCommandIntentServiceReceiver"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="com.makina.ecrins.search.INTENT_PACKAGE_INFO"/>
+                <action android:name="com.makina.ecrins.search.INTENT_DELETE_INPUT"/>
+                <action android:name="com.makina.ecrins.search.INTENT_MOVE_FILE_TO_EXTERNAL_STORAGE"/>
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

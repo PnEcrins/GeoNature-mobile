@@ -93,7 +93,7 @@ public class FeaturesControl extends AbstractControl {
 
             final FeatureCollection featureCollection = new FeatureCollection(features);
 
-            Log.d(getClass().getName(), "addFeatures size : " + featureCollection.getFeatures()
+            Log.d(getClass().getName(), "addFeatures size: " + featureCollection.getFeatures()
                     .size());
 
             try {
@@ -113,7 +113,7 @@ public class FeaturesControl extends AbstractControl {
             }
         }
         else {
-            Log.w(getClass().getName(), "addFeatures : Control '" + getName() + "' is not initialized !");
+            Log.w(getClass().getName(), "addFeatures: Control '" + getName() + "' is not initialized !");
         }
     }
 
@@ -129,7 +129,7 @@ public class FeaturesControl extends AbstractControl {
             this.mWebViewFragment.loadUrl(getJSUrlPrefix() + ".clearFeatures()");
         }
         else {
-            Log.w(getClass().getName(), "clearFeatures : control not initialized");
+            Log.w(getClass().getName(), "clearFeatures: Control '" + getName() + "' is not initialized !");
         }
     }
 
