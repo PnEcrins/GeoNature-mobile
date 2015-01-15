@@ -32,7 +32,7 @@ public class FeaturesControl extends AbstractControl {
     private FeatureStyle mFeatureSelectedStyle = new FeatureStyle().setOpacity(0.9);
 
     /**
-     * {@link FeaturesControl} as Singleton.
+     * Default constructor.
      */
     public FeaturesControl(Context pContext) {
         super(pContext);

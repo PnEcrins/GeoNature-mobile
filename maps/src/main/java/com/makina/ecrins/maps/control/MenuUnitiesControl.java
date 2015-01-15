@@ -49,7 +49,7 @@ public final class MenuUnitiesControl extends AbstractControl {
     protected boolean mIsActionMarkerSelected = false;
 
     /**
-     * {@link MenuUnitiesControl} as Singleton.
+     * Default constructor.
      */
     public MenuUnitiesControl(Context pContext) {
         super(pContext);

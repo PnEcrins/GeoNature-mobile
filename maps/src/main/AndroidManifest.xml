@@ -3,7 +3,7 @@
     package="com.makina.ecrins.maps"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:versionCode="440"
+    android:versionCode="466"
     tools:ignore="GradleOverrides">
 
     <application

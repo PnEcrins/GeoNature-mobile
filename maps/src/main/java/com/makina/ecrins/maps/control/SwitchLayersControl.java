@@ -7,6 +7,7 @@ import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.widget.ArrayAdapter;
 
+import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.IWebViewFragment;
 import com.makina.ecrins.maps.LayerSettings;
 import com.makina.ecrins.maps.R;
@@ -25,7 +26,7 @@ public class SwitchLayersControl extends AbstractControl implements ActionBar.On
     private ArrayAdapter<LayerSettings> mlayersAdapter = null;
 
     /**
-     * {@link SwitchLayersControl} as Singleton.
+     * Default constructor.
      */
     public SwitchLayersControl(Context pContext) {
         super(pContext);
@@ -73,7 +74,12 @@ public class SwitchLayersControl extends AbstractControl implements ActionBar.On
      */
     @JavascriptInterface
     public void setZoom(final int zoom) {
-        Log.d(getClass().getName(), "setZoom " + zoom);
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                    SwitchLayersControl.class.getName(),
+                    "setZoom " + zoom
+            );
+        }
 
         getHandler().post(new Runnable() {
             @Override
@@ -84,7 +90,12 @@ public class SwitchLayersControl extends AbstractControl implements ActionBar.On
     }
 
     protected void updateNavigationList() {
-        Log.d(getClass().getName(), "updateNavigationList");
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                    SwitchLayersControl.class.getName(),
+                    "updateNavigationList"
+            );
+        }
 
         if (isControlInitialized()) {
             List<LayerSettings> selectedLayers = new ArrayList<>();
@@ -114,7 +125,12 @@ public class SwitchLayersControl extends AbstractControl implements ActionBar.On
                         .setSelectedNavigationItem(selectedLayers.indexOf(mWebViewFragment.getSelectedLayer()));
             }
             else {
-                Log.d(getClass().getName(), "updateNavigationList, not ready");
+                if (BuildConfig.DEBUG) {
+                    Log.d(
+                            SwitchLayersControl.class.getName(),
+                            "updateNavigationList, not ready"
+                    );
+                }
             }
         }
     }

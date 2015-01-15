@@ -25,7 +25,7 @@ public final class ZoomControl extends AbstractControl implements OnClickListene
     private View mView = null;
 
     /**
-     * {@link ZoomControl} as Singleton.
+     * Default constructor.
      */
     public ZoomControl(Context pContext) {
         super(pContext);
