@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
@@ -170,6 +172,14 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
         }
     };
 
+    private NetworkConnectivityListener.OnNetworkConnectivityChangeListener mOnNetworkConnectivityChangeListener = new NetworkConnectivityListener.OnNetworkConnectivityChangeListener() {
+
+        @Override
+        public void onNetworkConnectivityChange(@Nullable NetworkInfo networkInfo) {
+            mButtonStartSynchronization.setEnabled((networkInfo != null) && networkInfo.isConnected());
+        }
+    };
+
     private static class MainFragmentHandler extends Handler {
         private final WeakReference<AbstractMainFragmentActivity> mMainFragmentActivity;
 
@@ -267,16 +277,6 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
             else if (msg.what == mainFragmentActivity.whatSettingsLoadingFailed()) {
                 mainFragmentActivity.dismissProgressDialog(PROGRESS_DIALOG_SETTINGS_FRAGMENT);
                 Toast.makeText(mainFragmentActivity, String.format(mainFragmentActivity.getString(R.string.message_settings_not_found), msg.obj), Toast.LENGTH_LONG).show();
-            }
-            else if (msg.what == mainFragmentActivity.whatConnectivityChange()) {
-                switch (mainFragmentActivity.mNetworkConnectivityListener.getState()) {
-                    case CONNECTED:
-                        mainFragmentActivity.mButtonStartSynchronization.setEnabled(true);
-                        break;
-                    default:
-                        mainFragmentActivity.mButtonStartSynchronization.setEnabled(false);
-                        break;
-                }
             }
             else {
                 mainFragmentActivity.performMessageStatusTaskHandler(mainFragmentActivity, msg);
@@ -517,8 +517,6 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
 
     protected abstract void setDefaultObserver(Observer observer);
 
-    protected abstract int whatConnectivityChange();
-
     protected abstract int whatSettingsLoadingStart();
 
     protected abstract int whatSettingsLoading();
@@ -528,7 +526,7 @@ public abstract class AbstractMainFragmentActivity extends FragmentActivity
     protected abstract int whatSettingsLoadingLoaded();
 
     protected void startListeningNetworkConnectivity() {
-        mNetworkConnectivityListener.startListening(new MainFragmentHandler(this), whatConnectivityChange());
+        mNetworkConnectivityListener.startListening(mOnNetworkConnectivityChangeListener);
     }
 
     protected void loadDefaultObserver() {

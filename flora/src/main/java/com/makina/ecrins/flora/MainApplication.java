@@ -25,8 +25,6 @@ public class MainApplication extends Application {
     public static final int HANDLER_SETTINGS_LOADED = 12;
     public static final int HANDLER_SETTINGS_LOADED_FAILED = 13;
 
-    public static final int HANDLER_CONNECTIVITY_CHANGE = 30;
-
     private static MainApplication sInstance;
 
     private boolean mCloseApplication;

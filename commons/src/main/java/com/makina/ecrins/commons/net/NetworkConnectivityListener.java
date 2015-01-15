@@ -6,15 +6,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.NetworkInfo.State;
-import android.os.Handler;
-import android.os.Message;
+import android.support.annotation.Nullable;
 import android.util.Log;
+
+import com.makina.ecrins.commons.BuildConfig;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Uses a <code>BroadcastReceiver</code> implementation that provides network connectivity state
+ * Uses a {@code BroadcastReceiver} implementation that provides network connectivity state
  * information, independent of network type (mobile, Wi-Fi, etc.).
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
@@ -22,23 +22,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class NetworkConnectivityListener {
 
     private Context mContext;
-    protected Handler mHandler;
-    protected int mWhat;
 
-    /**
-     * Network connectivity information
-     */
-    protected NetworkInfo mNetworkInfo;
-    protected State mState;
     protected final AtomicBoolean mListening = new AtomicBoolean();
-    protected String mReason;
+    protected OnNetworkConnectivityChangeListener mOnNetworkConnectivityChangeListener;
 
     private ConnectivityManager mConnectivityManager;
     private ConnectivityBroadcastReceiver mReceiver;
 
     public NetworkConnectivityListener(Context pContext) {
         mContext = pContext;
-        mState = State.UNKNOWN;
         mConnectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         mReceiver = new ConnectivityBroadcastReceiver();
     }
@@ -46,30 +38,25 @@ public class NetworkConnectivityListener {
     /**
      * Gets the current state of this listener
      *
-     * @return <code>true</code> if this instance is listening network activity change or not
+     * @return {@code true} if this instance is listening network activity change or not
      */
     public boolean isListening() {
         return mListening.get();
     }
 
-    public State getState() {
-        return mState;
-    }
-
-    public String getReason() {
-        return mReason;
-    }
-
     /**
      * This method starts listening for network connectivity state changes.
      */
-    public synchronized void startListening(Handler pHandler, int pWhat) {
+    public synchronized void startListening(final OnNetworkConnectivityChangeListener pOnNetworkConnectivityChangeListener) {
         if (!mListening.get()) {
-            mHandler = pHandler;
-            mWhat = pWhat;
-            IntentFilter filter = new IntentFilter();
+            this.mOnNetworkConnectivityChangeListener = pOnNetworkConnectivityChangeListener;
+
+            final IntentFilter filter = new IntentFilter();
             filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-            mContext.registerReceiver(mReceiver, filter);
+            mContext.registerReceiver(
+                    mReceiver,
+                    filter
+            );
             mListening.set(true);
         }
     }
@@ -80,10 +67,22 @@ public class NetworkConnectivityListener {
     public synchronized void stopListening() {
         if (mListening.get()) {
             mContext.unregisterReceiver(mReceiver);
-            mNetworkInfo = null;
-            mReason = null;
+            mOnNetworkConnectivityChangeListener = null;
             mListening.set(false);
         }
+    }
+
+    /**
+     * The callback used by {@link com.makina.ecrins.commons.net.NetworkConnectivityListener}.
+     *
+     * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+     */
+    public static interface OnNetworkConnectivityChangeListener {
+
+        /**
+         * Invoked when the state of network connectivity change.
+         */
+        void onNetworkConnectivityChange(@Nullable final NetworkInfo networkInfo);
     }
 
     private class ConnectivityBroadcastReceiver extends BroadcastReceiver {
@@ -93,25 +92,26 @@ public class NetworkConnectivityListener {
             String action = intent.getAction();
 
             if (!action.equals(ConnectivityManager.CONNECTIVITY_ACTION) || !mListening.get()) {
-                Log.w(getClass().getName(), "onReceive() called with " + intent + ", status : " + mState.toString());
+                Log.w(
+                        getClass().getName(),
+                        "onReceive() called with " + intent
+                );
+
                 return;
             }
 
-            boolean noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
+            final NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
 
-            if (noConnectivity) {
-                mState = State.DISCONNECTED;
+            if (BuildConfig.DEBUG) {
+                Log.d(
+                        getClass().getName(),
+                        "onReceive: " + networkInfo.toString()
+                );
             }
-            else {
-                mState = State.CONNECTED;
+
+            if (mOnNetworkConnectivityChangeListener != null) {
+                mOnNetworkConnectivityChangeListener.onNetworkConnectivityChange(networkInfo);
             }
-
-            mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
-            mReason = intent.getStringExtra(ConnectivityManager.EXTRA_REASON);
-            Message message = mHandler.obtainMessage(mWhat);
-            message.sendToTarget();
-
-            Log.d(getClass().getName(), "onReceive : " + mState.toString());
         }
     }
 }

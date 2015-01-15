@@ -102,11 +102,6 @@ public class MainFragmentActivity extends AbstractMainFragmentActivity {
     }
 
     @Override
-    protected int whatConnectivityChange() {
-        return MainApplication.HANDLER_CONNECTIVITY_CHANGE;
-    }
-
-    @Override
     protected int whatSettingsLoadingStart() {
         return MainApplication.HANDLER_SETTINGS_LOADING_START;
     }

@@ -136,7 +136,7 @@ public class CommentDialogFragment extends DialogFragment {
          * Invoked when the positive button of the dialog is pressed.
          *
          * @param dialog  the dialog that received the click
-         * @param message the string message edited from thsi dialog
+         * @param message the string message edited from this dialog
          */
         void onPositiveButtonClick(DialogInterface dialog, String message);
 
