@@ -13,7 +13,6 @@
         android:imeOptions="actionDone"
         android:inputType="textMultiLine|textAutoCorrect"
         android:minLines="4">
-        <requestFocus/>
     </EditText>
 
 </LinearLayout>

@@ -12,7 +12,6 @@ import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -69,24 +68,20 @@ public class CommentDialogFragment extends DialogFragment {
             alertDialogTitleResource = R.string.alert_dialog_edit_comment_title;
         }
 
-        // adding OnFocusChangeListener to this input text to display or hide soft keyboard
-        textViewComment.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(
-                            textViewComment,
-                            0
-                    );
-                }
-                else {
-                    ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(
-                            textViewComment.getWindowToken(),
-                            0
-                    );
-                }
-            }
-        });
+        // show automatically the soft keyboard for the EditText
+        textViewComment.requestFocus();
+        textViewComment.postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(
+                                textViewComment,
+                                InputMethodManager.SHOW_IMPLICIT
+                        );
+                    }
+                },
+                250
+        );
 
         return new AlertDialog.Builder(getActivity())
                 .setTitle(alertDialogTitleResource)
@@ -98,6 +93,8 @@ public class CommentDialogFragment extends DialogFragment {
                             public void onClick(
                                     DialogInterface dialog,
                                     int which) {
+                                hideSoftKeyboard(textViewComment);
+
                                 if (mOnCommentDialogValidateListener != null) {
                                     mOnCommentDialogValidateListener.onPositiveButtonClick(
                                             dialog,
@@ -115,6 +112,8 @@ public class CommentDialogFragment extends DialogFragment {
                             public void onClick(
                                     DialogInterface dialog,
                                     int which) {
+                                hideSoftKeyboard(textViewComment);
+
                                 if (mOnCommentDialogValidateListener != null) {
                                     mOnCommentDialogValidateListener.onNegativeButtonClick(dialog);
                                 }
@@ -122,6 +121,13 @@ public class CommentDialogFragment extends DialogFragment {
                         }
                 )
                 .create();
+    }
+
+    private void hideSoftKeyboard(final EditText editText) {
+        ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(
+                editText.getWindowToken(),
+                0
+        );
     }
 
     /**
