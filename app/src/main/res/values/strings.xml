@@ -12,6 +12,7 @@
     <string name="button_comment_dialog">Comment Dialog</string>
     <string name="button_date_picker_dialog">Date picker Dialog</string>
     <string name="button_date_time_picker_dialog">Date time picker Dialog</string>
+    <string name="button_progress_dialog">Progress Dialog</string>
 
     <string name="alert_dialog_title">Alert dialog title</string>
     <string name="alert_dialog_message">Alert dialog message</string>
@@ -23,6 +24,8 @@
     <string name="choose_action_dialog_action_2">Action 2</string>
     <string name="toast_choose_action_dialog_action_selected">action \'%1$s\' selected</string>
 
+    <string name="progress_dialog_title">Progress dialog title</string>
+    <string name="progress_dialog_message">Progress dialog message</string>
     <string name="toast_comment_dialog_positive_button">comment:\n%1$s</string>
     <string name="toast_comment_dialog_negative_button">negative button clicked</string>
 

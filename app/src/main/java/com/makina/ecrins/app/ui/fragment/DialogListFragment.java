@@ -1,9 +1,12 @@
 package com.makina.ecrins.app.ui.fragment;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +15,18 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.makina.ecrins.app.BuildConfig;
 import com.makina.ecrins.app.R;
 import com.makina.ecrins.app.ui.adapter.StringResourcesArrayAdapter;
+import com.makina.ecrins.app.ui.service.ProgressRequestHandler;
+import com.makina.ecrins.commons.service.AbstractRequestHandler;
+import com.makina.ecrins.commons.service.RequestHandlerServiceClient;
 import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.ChooseActionDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.CommentDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.DateTimePickerDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.OnCalendarSetListener;
+import com.makina.ecrins.commons.ui.dialog.ProgressDialogFragment;
 
 import java.text.DateFormat;
 import java.util.Arrays;
@@ -34,11 +42,14 @@ public class DialogListFragment
         extends Fragment
         implements AbsListView.OnItemClickListener {
 
+    private static final String TAG = DialogListFragment.class.getSimpleName();
+
     protected static final String ALERT_DIALOG_FRAGMENT = "ALERT_DIALOG_FRAGMENT";
     protected static final String CHOOSE_ACTION_DIALOG_FRAGMENT = "CHOOSE_ACTION_DIALOG_FRAGMENT";
     protected static final String COMMENT_DIALOG_FRAGMENT = "COMMENT_DIALOG_FRAGMENT";
     protected static final String DATE_PICKER_DIALOG_FRAGMENT = "DATE_PICKER_DIALOG_FRAGMENT";
     protected static final String DATE_TIME_PICKER_DIALOG_FRAGMENT = "DATE_TIME_PICKER_DIALOG_FRAGMENT";
+    protected static final String PROGRESS_DIALOG_FRAGMENT = "PROGRESS_DIALOG_FRAGMENT";
 
     private AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
         @Override
@@ -129,13 +140,76 @@ public class DialogListFragment
         }
     };
 
+    private RequestHandlerServiceClient.ServiceClientListener mServiceClientListener = new RequestHandlerServiceClient.ServiceClientListener() {
+
+        @Override
+        public void onConnected(@NonNull String token) {
+            if (BuildConfig.DEBUG) {
+                Log.d(
+                        TAG,
+                        "onConnected: " + token
+                );
+            }
+
+            mRequestHandlerServiceClientToken = token;
+        }
+
+        @Override
+        public void onDisconnected() {
+            if (BuildConfig.DEBUG) {
+                Log.d(
+                        TAG,
+                        "onDisconnected"
+                );
+            }
+        }
+
+        @Override
+        public void onHandleMessage(
+                @NonNull Class<? extends AbstractRequestHandler> requestHandlerClass,
+                @NonNull Bundle data) {
+            if (isAdded() && (requestHandlerClass == ProgressRequestHandler.class)) {
+                if (data.containsKey(ProgressRequestHandler.KEY_PROGRESS_START) && data.containsKey(ProgressRequestHandler.KEY_PROGRESS_END) && data.containsKey(ProgressRequestHandler.KEY_PROGRESS_VALUE) && !data.getBoolean(ProgressRequestHandler.KEY_PROGRESS_FINISH, false)) {
+                    // find ProgressDialogFragment to update
+                    ProgressDialogFragment progressDialogFragment = (ProgressDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(PROGRESS_DIALOG_FRAGMENT);
+
+                    if (progressDialogFragment == null) {
+                        progressDialogFragment = ProgressDialogFragment.newInstance(
+                                R.string.progress_dialog_title,
+                                R.string.progress_dialog_message,
+                                ProgressDialog.STYLE_HORIZONTAL,
+                                data.getInt(ProgressRequestHandler.KEY_PROGRESS_END));
+                        progressDialogFragment.show(
+                                getActivity().getSupportFragmentManager(),
+                                PROGRESS_DIALOG_FRAGMENT
+                        );
+                    }
+
+                    progressDialogFragment.setProgress(data.getInt(ProgressRequestHandler.KEY_PROGRESS_VALUE));
+                }
+                else if (data.getBoolean(ProgressRequestHandler.KEY_PROGRESS_FINISH)) {
+                    // find ProgressDialogFragment to update
+                    ProgressDialogFragment progressDialogFragment = (ProgressDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(PROGRESS_DIALOG_FRAGMENT);
+
+                    if (progressDialogFragment != null) {
+                        progressDialogFragment.dismiss();
+                    }
+                }
+            }
+        }
+    };
+
     private final List<Integer> mStringResources = Arrays.asList(
             R.string.button_alert_dialog,
             R.string.button_choose_action_dialog,
             R.string.button_comment_dialog,
             R.string.button_date_picker_dialog,
-            R.string.button_date_time_picker_dialog
+            R.string.button_date_time_picker_dialog,
+            R.string.button_progress_dialog
     );
+
+    private RequestHandlerServiceClient mRequestHandlerServiceClient;
+    private String mRequestHandlerServiceClientToken;
 
     /**
      * The Adapter which will be used to populate the ListView with Views.
@@ -163,6 +237,10 @@ public class DialogListFragment
         super.onCreate(savedInstanceState);
 
         mAdapter = new StringResourcesArrayAdapter(getActivity());
+
+        if (savedInstanceState != null) {
+            mRequestHandlerServiceClientToken = savedInstanceState.getString(AbstractRequestHandler.KEY_CLIENT_TOKEN);
+        }
 
         // restore AlertDialogFragment state after resume if needed
         final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getActivity().getSupportFragmentManager()
@@ -245,6 +323,37 @@ public class DialogListFragment
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        if (mRequestHandlerServiceClient == null) {
+            mRequestHandlerServiceClient = new RequestHandlerServiceClient(getActivity());
+        }
+
+        mRequestHandlerServiceClient.setServiceClientListener(mServiceClientListener);
+        mRequestHandlerServiceClient.connect(mRequestHandlerServiceClientToken);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (mRequestHandlerServiceClient != null) {
+            mRequestHandlerServiceClient.disconnect();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(
+                AbstractRequestHandler.KEY_CLIENT_TOKEN,
+                mRequestHandlerServiceClientToken
+        );
+    }
+
+    @Override
     public void onItemClick(
             AdapterView<?> parent,
             View view,
@@ -308,6 +417,23 @@ public class DialogListFragment
                 dateTimePickerDialogFragment.show(
                         getFragmentManager(),
                         DATE_TIME_PICKER_DIALOG_FRAGMENT
+                );
+
+                break;
+            case R.string.button_progress_dialog:
+                final Bundle data = new Bundle();
+                data.putInt(
+                        ProgressRequestHandler.KEY_PROGRESS_START,
+                        0
+                );
+                data.putInt(
+                        ProgressRequestHandler.KEY_PROGRESS_END,
+                        15
+                );
+
+                mRequestHandlerServiceClient.send(
+                        ProgressRequestHandler.class,
+                        data
                 );
 
                 break;
