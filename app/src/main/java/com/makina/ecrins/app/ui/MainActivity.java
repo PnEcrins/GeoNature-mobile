@@ -1,7 +1,10 @@
 package com.makina.ecrins.app.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.makina.ecrins.app.R;
 import com.makina.ecrins.app.ui.fragment.DialogListFragment;
@@ -21,7 +24,9 @@ public class MainActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(
@@ -29,6 +34,34 @@ public class MainActivity
                             MenuListFragment.newInstance(Arrays.asList(R.string.menu_item_dialogs))
                     )
                     .commit();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                startActivity(
+                        new Intent(
+                                this,
+                                MainPreferencesActivity.class
+                        )
+                );
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

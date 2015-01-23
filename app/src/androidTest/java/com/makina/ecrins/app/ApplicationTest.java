@@ -1,4 +1,4 @@
-package com.makina.pne.ecrins;
+package com.makina.ecrins.app;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
