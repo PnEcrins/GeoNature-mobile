@@ -158,21 +158,15 @@ public class SearchControl
         }
 
         // checks if this location is inside the map or not
-        if (isControlInitialized() && GeometryUtils.contains(
+        mIsItemMarkerFromLocationEnabled = isControlInitialized() && GeometryUtils.contains(
                 new Point(
                         new GeoPoint(
                                 location.getLatitude(),
                                 location.getLongitude()
                         )
                 ),
-                this.mWebViewFragment.getMapSettings()
-                        .getPolygonBounds()
-        )) {
-            mIsItemMarkerFromLocationEnabled = true;
-        }
-        else {
-            mIsItemMarkerFromLocationEnabled = false;
-        }
+                this.mWebViewFragment.getMapSettings().getPolygonBounds()
+        );
 
         if (mWebViewFragment != null) {
             mWebViewFragment.invalidateMenu();

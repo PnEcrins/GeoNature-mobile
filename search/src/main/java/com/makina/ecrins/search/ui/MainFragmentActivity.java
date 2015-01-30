@@ -174,7 +174,6 @@ public class MainFragmentActivity
             }
 
             mSavedState = new Bundle();
-            ((MainApplication) getApplication()).setCloseApplication(false);
         }
         else {
             if (BuildConfig.DEBUG) {
@@ -220,10 +219,6 @@ public class MainFragmentActivity
                     MainFragmentActivity.class.getName(),
                     "onResume"
             );
-        }
-
-        if (((MainApplication) getApplication()).isCloseApplication()) {
-            finish();
         }
 
         if (((MainApplication) getApplication()).getAppSettings() == null) {

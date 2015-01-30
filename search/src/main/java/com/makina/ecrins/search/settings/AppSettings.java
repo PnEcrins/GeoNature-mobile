@@ -17,8 +17,8 @@ import org.json.JSONObject;
 public class AppSettings
         extends AbstractAppSettings {
 
-    public static final String KEY_MAP = "map";
-    public static final String KEY_SEARCH = "search";
+    private static final String KEY_MAP = "map";
+    private static final String KEY_SEARCH = "search";
 
     private MapSettings mMapSettings;
     private SearchSettings mSearchSettings;
@@ -67,7 +67,7 @@ public class AppSettings
     }
 
     public static final Parcelable.Creator<AppSettings> CREATOR = new Parcelable.Creator<AppSettings>() {
-        
+
         @Override
         public AppSettings createFromParcel(Parcel source) {
             return new AppSettings(source);

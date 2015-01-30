@@ -14,9 +14,9 @@ import org.json.JSONObject;
 public class SearchSettings
         implements Parcelable {
 
-    public static final String KEY_MAX_RADIUS = "max_radius";
-    public static final String KEY_DEFAULT_RADIUS = "default_radius";
-    public static final String KEY_MAX_FEATURES_FOUND = "max_features_found";
+    private static final String KEY_MAX_RADIUS = "max_radius";
+    private static final String KEY_DEFAULT_RADIUS = "default_radius";
+    private static final String KEY_MAX_FEATURES_FOUND = "max_features_found";
 
     private int mMaxRadius;
     private int mDefaultRadius;
@@ -75,7 +75,7 @@ public class SearchSettings
     }
 
     public static final Creator<SearchSettings> CREATOR = new Creator<SearchSettings>() {
-        
+
         @Override
         public SearchSettings createFromParcel(Parcel source) {
             return new SearchSettings(source);

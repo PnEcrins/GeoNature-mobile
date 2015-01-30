@@ -3,7 +3,7 @@
 
     <string name="app_name">Search</string>
     <string name="app_version">%1$s (%2$s)\n%3$s</string>
-    
+
     <string name="app_synchro">Synchronization</string>
     <string name="app_settings">Settings</string>
 
@@ -19,7 +19,7 @@
     <string name="preference_category_density_dialog">Choice of rendering</string>
     <string name="preference_category_about">About</string>
     <string name="preference_category_about_app_version">App version</string>
-    
+
     <string name="alert_dialog_confirm_quit_title">Quit ?</string>
     <string name="alert_dialog_confirm_quit_message">Close application ?</string>
     <string name="alert_dialog_search_title">Search for taxa</string>
@@ -30,8 +30,6 @@
     <string name="alert_dialog_feature_distance">distance from given position : %.2f m</string>
     <string name="alert_dialog_feature_distance_undetermined">distance from given position : undefined</string>
     <string name="alert_dialog_button_close">Close</string>
-
-    <string name="features_no_data">No taxa to display</string>
 
     <string name="message_features_found">{0,choice,0#No taxon|1#One taxon|1&lt;{0} taxa} found</string>
     <string name="message_max_features_found">Too many taxa found (%d). Please, refine your search.</string>

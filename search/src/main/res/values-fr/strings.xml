@@ -3,7 +3,7 @@
 
     <string name="app_name">Recherche Flore</string>
     <string name="app_version">%1$s (%2$s)\n%3$s</string>
-    
+
     <string name="app_synchro">Synchronisation</string>
     <string name="app_settings">Paramètres</string>
 
@@ -19,7 +19,7 @@
     <string name="preference_category_density_dialog">Choix du rendu</string>
     <string name="preference_category_about">A propos</string>
     <string name="preference_category_about_app_version">Version de l\'application</string>
-    
+
     <string name="alert_dialog_confirm_quit_title">Quitter ?</string>
     <string name="alert_dialog_confirm_quit_message">Quitter l\'application ?</string>
     <string name="alert_dialog_search_title">Recherche de taxons</string>
@@ -31,14 +31,12 @@
     <string name="alert_dialog_feature_distance_undetermined">distance depuis la position : indéterminée</string>
     <string name="alert_dialog_button_close">Fermer</string>
 
-    <string name="features_no_data">Aucun taxon à afficher</string>
-
     <string name="message_features_found">{0,choice,0#Aucun taxon trouvé|1#Un taxon trouvé|1&lt;{0} taxons trouvés}</string>
     <string name="message_max_features_found">Trop de taxons trouvés (%d). Précisez votre recherche.</string>
 
     <string name="action_list_features">Taxons trouvés</string>
     <string name="action_search_marker">Poser un marqueur pour lancer la recherche</string>
-    <string name="action_marker_from_location">Poser un marqueur depuis la position courante pour lancer la recherche</string>
+    <string name="action_search_marker_from_location">Poser un marqueur depuis la position courante pour lancer la recherche</string>
     <string name="action_search">Recherche de taxons</string>
 
 </resources>

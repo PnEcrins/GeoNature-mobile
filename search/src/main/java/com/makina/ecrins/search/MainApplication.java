@@ -22,7 +22,6 @@ public class MainApplication
 
     private static MainApplication sInstance;
 
-    private boolean mCloseApplication;
     private AppSettings mAppSettings;
 
     public static MainApplication getInstance() {
@@ -34,8 +33,6 @@ public class MainApplication
         super.onCreate();
 
         sInstance = this;
-
-        this.mCloseApplication = false;
 
         /*
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
@@ -53,14 +50,6 @@ public class MainApplication
                 getClass().getName(),
                 "use storage " + FileUtils.getExternalStorageDirectory(this).getPath()
         );
-    }
-
-    public boolean isCloseApplication() {
-        return mCloseApplication;
-    }
-
-    public void setCloseApplication(boolean pCloseApplication) {
-        this.mCloseApplication = pCloseApplication;
     }
 
     public AppSettings getAppSettings() {

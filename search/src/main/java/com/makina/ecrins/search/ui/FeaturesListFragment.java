@@ -28,7 +28,7 @@ public class FeaturesListFragment
 
     public static final String KEY_FEATURES = "features";
 
-    protected ArrayAdapter<Feature> mAdapter;
+    private ArrayAdapter<Feature> mAdapter;
 
     private OnFeatureSelectedListener mOnFeatureSelectedListener;
     private Handler mHandler = new Handler();
