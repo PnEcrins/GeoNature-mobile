@@ -2,7 +2,7 @@
 <manifest
     package="com.makina.ecrins.app"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="96">
+    android:versionCode="134">
 
     <application
         android:allowBackup="true"

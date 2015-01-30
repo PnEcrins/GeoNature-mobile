@@ -101,10 +101,13 @@ public abstract class AbstractObserversAndDateFragment extends Fragment
         listCurrenDateView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final DateTimePickerDialogFragment datePickerDialogFragment = DateTimePickerDialogFragment.newInstance(
-                        System.currentTimeMillis(),
-                        false
-                );
+                final DateTimePickerDialogFragment datePickerDialogFragment = DateTimePickerDialogFragment.Builder.newInstance()
+                        .showTime(false)
+                        .maxDate(
+                                Calendar.getInstance()
+                                        .getTime()
+                        )
+                        .create();
                 datePickerDialogFragment.setOnCalendarSetListener(AbstractObserversAndDateFragment.this);
                 datePickerDialogFragment.show(
                         AbstractObserversAndDateFragment.this.getActivity()

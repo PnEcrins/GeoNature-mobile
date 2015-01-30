@@ -31,6 +31,7 @@ import com.makina.ecrins.commons.ui.dialog.ProgressDialogFragment;
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,6 +44,8 @@ public class DialogListFragment
         implements AbsListView.OnItemClickListener {
 
     private static final String TAG = DialogListFragment.class.getSimpleName();
+
+    private static final String STATE_SELETED_DATE = "STATE_SELETED_DATE";
 
     protected static final String ALERT_DIALOG_FRAGMENT = "ALERT_DIALOG_FRAGMENT";
     protected static final String CHOOSE_ACTION_DIALOG_FRAGMENT = "CHOOSE_ACTION_DIALOG_FRAGMENT";
@@ -127,6 +130,8 @@ public class DialogListFragment
     private OnCalendarSetListener mOnCalendarSetListener = new OnCalendarSetListener() {
         @Override
         public void onCalendarSet(Calendar calendar) {
+            mSelectedDate = calendar.getTime();
+            
             Toast
                     .makeText(
                             getActivity(),
@@ -210,6 +215,7 @@ public class DialogListFragment
 
     private RequestHandlerServiceClient mRequestHandlerServiceClient;
     private String mRequestHandlerServiceClientToken;
+    private Date mSelectedDate;
 
     /**
      * The Adapter which will be used to populate the ListView with Views.
@@ -240,6 +246,7 @@ public class DialogListFragment
 
         if (savedInstanceState != null) {
             mRequestHandlerServiceClientToken = savedInstanceState.getString(AbstractRequestHandler.KEY_CLIENT_TOKEN);
+            mSelectedDate = (Date) savedInstanceState.getSerializable(STATE_SELETED_DATE);
         }
 
         // restore AlertDialogFragment state after resume if needed
@@ -347,6 +354,10 @@ public class DialogListFragment
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        outState.putSerializable(
+                STATE_SELETED_DATE,
+                mSelectedDate
+        );
         outState.putString(
                 AbstractRequestHandler.KEY_CLIENT_TOKEN,
                 mRequestHandlerServiceClientToken
@@ -397,10 +408,13 @@ public class DialogListFragment
 
                 break;
             case R.string.button_date_picker_dialog:
-                final DateTimePickerDialogFragment datePickerDialogFragment = DateTimePickerDialogFragment.newInstance(
-                        System.currentTimeMillis(),
-                        false
-                );
+                final DateTimePickerDialogFragment datePickerDialogFragment = DateTimePickerDialogFragment.Builder.newInstance()
+                        .showTime(false)
+                        .maxDate(
+                                Calendar.getInstance()
+                                        .getTime()
+                        )
+                        .create();
                 datePickerDialogFragment.setOnCalendarSetListener(mOnCalendarSetListener);
                 datePickerDialogFragment.show(
                         getFragmentManager(),
@@ -409,10 +423,28 @@ public class DialogListFragment
 
                 break;
             case R.string.button_date_time_picker_dialog:
-                final DateTimePickerDialogFragment dateTimePickerDialogFragment = DateTimePickerDialogFragment.newInstance(
-                        System.currentTimeMillis(),
-                        true
+                final Calendar now = Calendar.getInstance();
+
+                final Calendar minCalendar = Calendar.getInstance();
+                minCalendar.setTime(now.getTime());
+                minCalendar.add(
+                        Calendar.DAY_OF_MONTH,
+                        -5
                 );
+
+                final Calendar maxCalendar = Calendar.getInstance();
+                maxCalendar.setTime(now.getTime());
+                maxCalendar.add(
+                        Calendar.DAY_OF_MONTH,
+                        5
+                );
+
+                final DateTimePickerDialogFragment dateTimePickerDialogFragment = DateTimePickerDialogFragment.Builder.newInstance()
+                        .currentDate(mSelectedDate)
+                        .minDate(minCalendar.getTime())
+                        .maxDate(maxCalendar.getTime())
+                        .timeInterval(15)
+                        .create();
                 dateTimePickerDialogFragment.setOnCalendarSetListener(mOnCalendarSetListener);
                 dateTimePickerDialogFragment.show(
                         getFragmentManager(),
