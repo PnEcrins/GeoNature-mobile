@@ -3,8 +3,8 @@ apply plugin: 'com.android.application'
 version = "0.0.2"
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         applicationId "com.makina.ecrins.app"
@@ -32,7 +32,7 @@ dependencies {
 
     compile project(':commons')
 
-    compile 'com.android.support:appcompat-v7:20.0.0'
+    compile "com.android.support:appcompat-v7:${rootProject.ext.androidSupportVersion}"
 }
 
 task('increaseVersionCode') << {
