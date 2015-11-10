@@ -334,13 +334,13 @@ public class RequestHandlerServiceClient {
                 return;
             }
 
-            if (abstractRequestHandler instanceof ConnectClientRequestHandler)
+            if (abstractRequestHandler instanceof ConnectClientRequestHandler) {
                 abstractRequestHandler.handleMessageFromClient(
                         msg,
                         new AbstractRequestHandler.RequestHandlerClientListener() {
                             @Override
                             public void onHandleMessage(
-                                    @NonNull Class<? extends AbstractRequestHandler> requestHandlerClass,
+                                    @NonNull AbstractRequestHandler requestHandler,
                                     @NonNull Bundle data) {
                                 requestHandlerServiceClient.mConnected.set(true);
                                 requestHandlerServiceClient.mToken = data.getString(AbstractRequestHandler.KEY_CLIENT_TOKEN);
@@ -351,13 +351,14 @@ public class RequestHandlerServiceClient {
                             }
                         }
                 );
+            }
             else if (abstractRequestHandler instanceof DisconnectClientRequestHandler) {
                 abstractRequestHandler.handleMessageFromClient(
                         msg,
                         new AbstractRequestHandler.RequestHandlerClientListener() {
                             @Override
                             public void onHandleMessage(
-                                    @NonNull Class<? extends AbstractRequestHandler> requestHandlerClass,
+                                    @NonNull AbstractRequestHandler requestHandler,
                                     @NonNull Bundle data) {
                                  if ((requestHandlerServiceClient.mServiceClientListener != null) && data.getBoolean(DisconnectClientRequestHandler.KEY_CLIENT_DISCONNECTED)) {
                                     requestHandlerServiceClient.mServiceClientListener.onDisconnected();
@@ -372,11 +373,11 @@ public class RequestHandlerServiceClient {
                         new AbstractRequestHandler.RequestHandlerClientListener() {
                             @Override
                             public void onHandleMessage(
-                                    @NonNull Class<? extends AbstractRequestHandler> requestHandlerClass,
+                                    @NonNull AbstractRequestHandler requestHandler,
                                     @NonNull Bundle data) {
                                 if (requestHandlerServiceClient.mServiceClientListener != null) {
                                     requestHandlerServiceClient.mServiceClientListener.onHandleMessage(
-                                            requestHandlerClass,
+                                            requestHandler,
                                             data
                                     );
                                 }
@@ -393,7 +394,7 @@ public class RequestHandlerServiceClient {
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static interface ServiceClientListener {
+    public interface ServiceClientListener {
 
         /**
          * After calling {@link com.makina.ecrins.commons.service.RequestHandlerServiceClient#connect()},
@@ -411,12 +412,12 @@ public class RequestHandlerServiceClient {
         /**
          * Called when the {@code Message} was received from {@link RequestHandlerServiceClient}.
          *
-         * @param requestHandlerClass the {@link com.makina.ecrins.commons.service.AbstractRequestHandler}
-         *                            which perform the received {@code Message}
-         * @param data                the {@code Message} data
+         * @param requestHandler the {@link com.makina.ecrins.commons.service.AbstractRequestHandler}
+         *                       which perform the received {@code Message}
+         * @param data           the {@code Message} data
          */
         void onHandleMessage(
-                @NonNull final Class<? extends AbstractRequestHandler> requestHandlerClass,
+                @NonNull final AbstractRequestHandler requestHandler,
                 @NonNull final Bundle data);
     }
 }

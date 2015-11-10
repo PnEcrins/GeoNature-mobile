@@ -16,7 +16,9 @@ import android.util.Log;
 import com.makina.ecrins.commons.BuildConfig;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -43,6 +45,8 @@ public class RequestHandlerService
      */
     private final Map<String, Messenger> mClients = new HashMap<>();
 
+    private final Map<String, List<AbstractRequestHandler>> mRequestHandlers = new HashMap<>();
+
     private final Handler mHandler = new Handler();
 
     private final StopSelfRunnable mStopSelfRunnable = new StopSelfRunnable();
@@ -61,21 +65,25 @@ public class RequestHandlerService
         public void addClient(
                 @NonNull String token,
                 Messenger messenger) {
-            mClients.put(
-                    token,
-                    messenger
-            );
+
+            mClients.put(token,
+                         messenger);
+
+            // initialize an empty list of AbstractRequestHandler used for this token
+            if (mRequestHandlers.get(token) == null) {
+                mRequestHandlers.put(token,
+                                     new ArrayList<AbstractRequestHandler>());
+            }
         }
 
         @Override
         public void removeClient(@NonNull String token) {
+
             mClients.remove(token);
 
             if (BuildConfig.DEBUG) {
-                Log.d(
-                        TAG,
-                        "remaining clients: " + mClients.size()
-                );
+                Log.d(TAG,
+                      "remaining clients: " + mClients.size());
             }
 
             shutdownDelayedIfNoClient();
@@ -85,22 +93,20 @@ public class RequestHandlerService
         public void sendMessage(
                 String token,
                 @NonNull Bundle data) {
-            RequestHandlerService.this.sendMessage(
-                    token,
-                    data
-            );
+
+            RequestHandlerService.this.sendMessage(token,
+                                                   data);
         }
     };
 
     @Override
     public void onCreate() {
+
         super.onCreate();
 
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    TAG,
-                    "onCreate"
-            );
+            Log.d(TAG,
+                  "onCreate");
         }
 
         shutdownDelayedIfNoClient();
@@ -108,11 +114,10 @@ public class RequestHandlerService
 
     @Override
     public IBinder onBind(Intent intent) {
+
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    TAG,
-                    "onBind " + intent
-            );
+            Log.d(TAG,
+                  "onBind " + intent);
         }
 
         return mInMessenger.getBinder();
@@ -120,11 +125,10 @@ public class RequestHandlerService
 
     @Override
     public boolean onUnbind(Intent intent) {
+
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    TAG,
-                    "onUnbind " + intent
-            );
+            Log.d(TAG,
+                  "onUnbind " + intent);
         }
 
         return true;
@@ -132,11 +136,10 @@ public class RequestHandlerService
 
     @Override
     public void onDestroy() {
+
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    TAG,
-                    "onDestroy"
-            );
+            Log.d(TAG,
+                  "onDestroy");
         }
 
         mStopSelfRunnableStarted.set(false);
@@ -153,54 +156,48 @@ public class RequestHandlerService
     void sendMessage(
             final String token,
             @NonNull final Bundle data) {
+
+        if (TextUtils.isEmpty(token)) {
+            Log.w(TAG,
+                  "sendMessage: token is not defined. The Message will not be sent.");
+
+            return;
+        }
+
+        final Messenger messenger = mClients.get(token);
+
+        if (messenger == null) {
+            Log.w(TAG,
+                  "sendMessage: no client registered for token '" +
+                          token +
+                          "'");
+
+            return;
+        }
+
         try {
-            if (TextUtils.isEmpty(token)) {
-                Log.w(
-                        TAG,
-                        "sendMessage: token is not defined. The Message will not be sent."
-                );
-
-                return;
-            }
-
-            final Messenger messenger = mClients.get(token);
-
-            if (messenger == null) {
-                Log.w(
-                        TAG,
-                        "sendMessage: no client registered for token '" + token + "'. The Message will not be sent."
-                );
-
-                return;
-            }
-
             final Message message = Message.obtain();
             message.setData(data);
             messenger.send(message);
         }
         catch (final RemoteException re) {
-            // The client is dead.
-            // Remove it from the list.
-            // We are going through the list from back to front so this is safe to do inside the loop.
+            // The client is dead. Remove it from the list.
             mClients.remove(token);
 
             if (BuildConfig.DEBUG) {
-                Log.d(
-                        TAG,
-                        "sendMessage: client was dead, removing it",
-                        re
-                );
+                Log.d(TAG,
+                      "sendMessage: client was dead, removing it.",
+                      re);
             }
         }
     }
 
     private void shutdownDelayedIfNoClient() {
+
         if (mClients.isEmpty() && !mStopSelfRunnableStarted.getAndSet(true)) {
             // try to stop itself in SERVICE_SHUTDOWN_DELAY
-            mHandler.postDelayed(
-                    mStopSelfRunnable,
-                    SERVICE_SHUTDOWN_DELAY
-            );
+            mHandler.postDelayed(mStopSelfRunnable,
+                                 SERVICE_SHUTDOWN_DELAY);
         }
     }
 
@@ -215,6 +212,7 @@ public class RequestHandlerService
         private final WeakReference<RequestHandlerService> mRequestHandlerServiceWeakReference;
 
         public IncomingHandler(RequestHandlerService pRequestHandlerService) {
+
             super();
 
             mRequestHandlerServiceWeakReference = new WeakReference<>(pRequestHandlerService);
@@ -222,24 +220,53 @@ public class RequestHandlerService
 
         @Override
         public void handleMessage(Message msg) {
+
             final RequestHandlerService requestHandlerService = mRequestHandlerServiceWeakReference.get();
 
             if (requestHandlerService == null) {
-                Log.w(
-                        TAG,
-                        "Service is dead. Ignoring incoming message from clients."
-                );
+                Log.w(TAG,
+                      "Service is dead. Ignoring incoming message from clients.");
 
                 return;
             }
 
-            final AbstractRequestHandler requestHandler = RequestHandlerFactory.getInstance()
-                    .getRequestHandler(
-                            requestHandlerService,
-                            msg
-                    );
+            final Bundle data = msg.peekData();
+
+            if (data == null || (!data.containsKey(AbstractRequestHandler.KEY_HANDLER))) {
+                Log.w(TAG,
+                      "handleMessage: invalid Message " + msg);
+
+                return;
+            }
+
+            AbstractRequestHandler requestHandler = null;
+
+            // try to find an existing instance of the right AbstractRequestHandler for this Message
+            final List<AbstractRequestHandler> requestHandlersForToken = requestHandlerService.mRequestHandlers.get(data.getString(AbstractRequestHandler.KEY_CLIENT_TOKEN));
+
+            // should not be null
+            if (requestHandlersForToken != null) {
+                requestHandler = RequestHandlerFactory.getInstance()
+                                                      .getRequestHandler(msg,
+                                                                         requestHandlersForToken);
+            }
+
+            // try to instantiate the right AbstractRequestHandler for this Message
+            if (requestHandler == null) {
+                requestHandler = RequestHandlerFactory.getInstance()
+                                                      .getRequestHandler(requestHandlerService,
+                                                                         msg);
+            }
 
             if (requestHandler != null) {
+
+                // should not be null
+                if (requestHandlerService.mRequestHandlers.get(data.getString(AbstractRequestHandler.KEY_CLIENT_TOKEN)) != null) {
+                    // add this AbstractRequestHandler instance to this token
+                    requestHandlerService.mRequestHandlers.get(data.getString(AbstractRequestHandler.KEY_CLIENT_TOKEN))
+                                                          .add(requestHandler);
+                }
+
                 requestHandler.setRequestHandlerServiceListener(requestHandlerService.mRequestHandlerServiceListener);
                 requestHandler.handleMessageFromService(msg);
             }
@@ -257,29 +284,24 @@ public class RequestHandlerService
 
         @Override
         public void run() {
+
             if (BuildConfig.DEBUG) {
-                Log.d(
-                        TAG,
-                        "StopSelfRunnable is running"
-                );
+                Log.d(TAG,
+                      "StopSelfRunnable is running");
             }
 
             if (mClients.isEmpty()) {
                 if (BuildConfig.DEBUG) {
-                    Log.d(
-                            TAG,
-                            "StopSelfRunnable finished"
-                    );
+                    Log.d(TAG,
+                          "StopSelfRunnable finished");
                 }
 
                 stopSelf();
             }
             else {
                 if (BuildConfig.DEBUG) {
-                    Log.d(
-                            TAG,
-                            "StopSelfRunnable aborted"
-                    );
+                    Log.d(TAG,
+                          "StopSelfRunnable aborted");
                 }
 
                 mStopSelfRunnableStarted.set(false);

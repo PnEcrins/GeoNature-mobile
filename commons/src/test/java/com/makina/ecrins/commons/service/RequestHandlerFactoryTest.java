@@ -9,6 +9,9 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Unit tests for {@link com.makina.ecrins.commons.service.RequestHandlerFactory} class.
  *
@@ -58,5 +61,44 @@ public class RequestHandlerFactoryTest {
 
         Assert.assertNotNull(disconnectClientRequestHandler);
         Assert.assertTrue(disconnectClientRequestHandler instanceof DisconnectClientRequestHandler);
+    }
+
+    @Test
+    public void testGetRequestHandlerFromList() {
+        final Message message = Message.obtain();
+        final List<AbstractRequestHandler> requestHandlers = new ArrayList<>();
+
+        Assert.assertNull(
+                RequestHandlerFactory.getInstance()
+                        .getRequestHandler(
+                                message,
+                                requestHandlers
+                        )
+        );
+
+        message.getData()
+                .putSerializable(
+                        AbstractRequestHandler.KEY_HANDLER,
+                        ConnectClientRequestHandler.class
+                );
+
+        Assert.assertNull(
+                RequestHandlerFactory.getInstance()
+                        .getRequestHandler(
+                                message,
+                                requestHandlers
+                        )
+        );
+
+        requestHandlers.add(new ConnectClientRequestHandler(Robolectric.application));
+
+        final AbstractRequestHandler connectClientRequestHandler = RequestHandlerFactory.getInstance()
+                .getRequestHandler(
+                        message,
+                        requestHandlers
+                );
+
+        Assert.assertNotNull(connectClientRequestHandler);
+        Assert.assertTrue(connectClientRequestHandler instanceof ConnectClientRequestHandler);
     }
 }

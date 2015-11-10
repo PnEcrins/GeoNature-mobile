@@ -26,14 +26,17 @@ public abstract class AbstractRequestHandler {
     RequestHandlerServiceListener mRequestHandlerServiceListener;
 
     public AbstractRequestHandler(final Context pContext) {
+
         this.mContext = pContext;
     }
 
     public Context getContext() {
+
         return this.mContext;
     }
 
     public void setRequestHandlerServiceListener(@NonNull RequestHandlerServiceListener mRequestHandlerServiceListener) {
+
         this.mRequestHandlerServiceListener = mRequestHandlerServiceListener;
     }
 
@@ -45,6 +48,7 @@ public abstract class AbstractRequestHandler {
      * @return {@code true} if the given {@code Message} is eligible for this instance, {@code false} otherwise
      */
     public boolean checkMessage(@NonNull final Message message) {
+
         final Bundle data = message.peekData();
 
         return (data != null) && data.containsKey(KEY_HANDLER) && data.containsKey(KEY_CLIENT_TOKEN) && ((Class<?>) data.getSerializable(KEY_HANDLER)).isInstance(this);
@@ -52,22 +56,20 @@ public abstract class AbstractRequestHandler {
 
     /**
      * Tries to send a message using {@link com.makina.ecrins.commons.service.AbstractRequestHandler.RequestHandlerServiceListener} instance.
+     *
      * @param data the data as {@code Bundle} to be sent to the receiver
      */
     public void sendMessage(@NonNull final Bundle data) {
+
         if (mRequestHandlerServiceListener == null) {
-            Log.w(
-                    TAG,
-                    "RequestHandlerServiceListener is not defined. The Message will not be sent."
-            );
+            Log.w(TAG,
+                  "RequestHandlerServiceListener is not defined. The Message will not be sent.");
 
             return;
         }
 
-        mRequestHandlerServiceListener.sendMessage(
-                data.getString(KEY_CLIENT_TOKEN),
-                data
-        );
+        mRequestHandlerServiceListener.sendMessage(data.getString(KEY_CLIENT_TOKEN),
+                                                   data);
     }
 
     /**
@@ -85,11 +87,10 @@ public abstract class AbstractRequestHandler {
     protected void handleMessageFromClient(
             Message message,
             @NonNull final RequestHandlerClientListener requestHandlerClientListener) {
+
         if (checkMessage(message)) {
-            requestHandlerClientListener.onHandleMessage(
-                    AbstractRequestHandler.this.getClass(),
-                    message.getData()
-            );
+            requestHandlerClientListener.onHandleMessage(AbstractRequestHandler.this,
+                                                         message.getData());
         }
     }
 
@@ -99,12 +100,12 @@ public abstract class AbstractRequestHandler {
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static interface RequestHandlerServiceListener {
+    public interface RequestHandlerServiceListener {
 
         /**
          * Register a given client with a valid token (e.g. not {@code null}).
          *
-         * @param token the token as key to retrieve the client's {@code Messenger}
+         * @param token     the token as key to retrieve the client's {@code Messenger}
          * @param messenger the client {@code Messenger} used to send {@code Message}
          */
         void addClient(
@@ -135,17 +136,17 @@ public abstract class AbstractRequestHandler {
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static interface RequestHandlerClientListener {
+    public interface RequestHandlerClientListener {
 
         /**
          * Called when the {@code Message} was received from {@link RequestHandlerServiceClient}.
          *
-         * @param requestHandlerClass the {@link com.makina.ecrins.commons.service.AbstractRequestHandler}
-         *                            which perform the received {@code Message}
-         * @param data the {@code Message} data
+         * @param requestHandler the {@link com.makina.ecrins.commons.service.AbstractRequestHandler}
+         *                       which perform the received {@code Message}
+         * @param data           the {@code Message} data
          */
         void onHandleMessage(
-                @NonNull final Class<? extends AbstractRequestHandler> requestHandlerClass,
+                @NonNull final AbstractRequestHandler requestHandler,
                 @NonNull final Bundle data);
     }
 }

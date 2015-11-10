@@ -13,13 +13,15 @@ import com.makina.ecrins.commons.BuildConfig;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class DisconnectClientRequestHandler extends AbstractRequestHandler {
+public class DisconnectClientRequestHandler
+        extends AbstractRequestHandler {
 
     private static final String TAG = DisconnectClientRequestHandler.class.getSimpleName();
 
     public static final String KEY_CLIENT_DISCONNECTED = "KEY_CLIENT_DISCONNECTED";
 
     public DisconnectClientRequestHandler(Context pContext) {
+
         super(pContext);
     }
 
@@ -27,30 +29,25 @@ public class DisconnectClientRequestHandler extends AbstractRequestHandler {
     protected void handleMessageFromService(Message message) {
 
         if (mRequestHandlerServiceListener == null) {
-            Log.w(
-                    TAG,
-                    "RequestHandlerServiceListener is not defined!"
-            );
+            Log.w(TAG,
+                  "RequestHandlerServiceListener is not defined!");
 
             return;
         }
 
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    TAG,
-                    "handleMessage"
-            );
+            Log.d(TAG,
+                  "handleMessage");
         }
 
         if (checkMessage(message)) {
             message.getData()
-                    .putBoolean(
-                            KEY_CLIENT_DISCONNECTED,
-                            true
-                    );
+                   .putBoolean(KEY_CLIENT_DISCONNECTED,
+                               true);
 
             sendMessage(message.getData());
-            mRequestHandlerServiceListener.removeClient(message.getData().getString(KEY_CLIENT_TOKEN));
+            mRequestHandlerServiceListener.removeClient(message.getData()
+                                                               .getString(KEY_CLIENT_TOKEN));
         }
     }
 }

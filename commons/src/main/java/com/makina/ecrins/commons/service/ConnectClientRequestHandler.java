@@ -16,13 +16,15 @@ import java.util.UUID;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class ConnectClientRequestHandler extends AbstractRequestHandler {
+public class ConnectClientRequestHandler
+        extends AbstractRequestHandler {
 
     private static final String TAG = ConnectClientRequestHandler.class.getSimpleName();
 
     public static final String KEY_CLIENT_CONNECTED = "KEY_CLIENT_CONNECTED";
 
     public ConnectClientRequestHandler(Context pContext) {
+
         super(pContext);
     }
 
@@ -30,42 +32,33 @@ public class ConnectClientRequestHandler extends AbstractRequestHandler {
     protected void handleMessageFromService(Message message) {
 
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    TAG,
-                    "handleMessage"
-            );
+            Log.d(TAG,
+                  "handleMessage");
         }
 
         if (mRequestHandlerServiceListener == null) {
-            Log.w(
-                    TAG,
-                    "RequestHandlerServiceListener is not defined!"
-            );
+            Log.w(TAG,
+                  "RequestHandlerServiceListener is not defined!");
 
             return;
         }
 
-        if (TextUtils.isEmpty(message.getData().getString(KEY_CLIENT_TOKEN))) {
+        if (TextUtils.isEmpty(message.getData()
+                                     .getString(KEY_CLIENT_TOKEN))) {
             message.getData()
-                    .putString(
-                            KEY_CLIENT_TOKEN,
-                            UUID.randomUUID()
-                                    .toString()
-                    );
+                   .putString(KEY_CLIENT_TOKEN,
+                              UUID.randomUUID()
+                                  .toString());
         }
 
         if (checkMessage(message)) {
             message.getData()
-                    .putBoolean(
-                            KEY_CLIENT_CONNECTED,
-                            true
-                    );
+                   .putBoolean(KEY_CLIENT_CONNECTED,
+                               true);
 
-            mRequestHandlerServiceListener.addClient(
-                    message.getData()
-                            .getString(KEY_CLIENT_TOKEN),
-                    message.replyTo
-            );
+            mRequestHandlerServiceListener.addClient(message.getData()
+                                                            .getString(KEY_CLIENT_TOKEN),
+                                                     message.replyTo);
             sendMessage(message.getData());
         }
     }
