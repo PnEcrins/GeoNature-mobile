@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.makina.ecrins.app.BuildConfig;
 import com.makina.ecrins.commons.service.AbstractRequestHandler;
+import com.makina.ecrins.commons.service.RequestHandlerStatus;
 
 /**
  * Dummy {@link com.makina.ecrins.commons.service.AbstractRequestHandler} to simulate a background
@@ -19,13 +20,21 @@ public class ProgressRequestHandler extends AbstractRequestHandler {
 
     private static final String TAG = ProgressRequestHandler.class.getSimpleName();
 
+    public static final String KEY_COMMAND = "KEY_COMMAND";
     public static final String KEY_PROGRESS_START = "KEY_PROGRESS_START";
     public static final String KEY_PROGRESS_END = "KEY_PROGRESS_END";
     public static final String KEY_PROGRESS_VALUE = "KEY_PROGRESS_VALUE";
-    public static final String KEY_PROGRESS_FINISH = "KEY_PROGRESS_FINISH";
+    public static final String KEY_STATUS = "KEY_STATUS";
+
+    protected RequestHandlerStatus mStatus;
 
     public ProgressRequestHandler(Context pContext) {
         super(pContext);
+
+        this.mStatus = new RequestHandlerStatus(
+                RequestHandlerStatus.Status.PENDING,
+                ""
+        );
     }
 
     @Override
@@ -34,13 +43,34 @@ public class ProgressRequestHandler extends AbstractRequestHandler {
         if (BuildConfig.DEBUG) {
             Log.d(
                     TAG,
-                    "handleMessage"
+                    "handleMessageFromService"
             );
         }
 
-        if (checkMessage(message) && message.getData().containsKey(KEY_PROGRESS_START) && message.getData().containsKey(KEY_PROGRESS_END)) {
-            new ProgressAsyncTask(message.getData()).execute();
+        if (checkMessage(message) && message.getData().containsKey(KEY_COMMAND)) {
+            switch ((Command) message.getData().getSerializable(KEY_COMMAND)) {
+                case START:
+                    if (message.getData().containsKey(KEY_PROGRESS_START) && message.getData().containsKey(KEY_PROGRESS_END)) {
+                        new ProgressAsyncTask(message.getData()).execute();
+                    }
+
+                    break;
+                case GET_STATUS:
+                    message.getData()
+                            .putParcelable(
+                                    KEY_STATUS,
+                                    mStatus
+                            );
+                    sendMessage(message.getData());
+
+                    break;
+            }
         }
+    }
+
+    public enum Command {
+        START,
+        GET_STATUS
     }
 
     /**
@@ -64,6 +94,17 @@ public class ProgressRequestHandler extends AbstractRequestHandler {
                         "doInBackground"
                 );
             }
+
+            mStatus = new RequestHandlerStatus(
+                    RequestHandlerStatus.Status.RUNNING,
+                    ""
+            );
+            mData.putParcelable(
+                    KEY_STATUS,
+                    mStatus
+            );
+
+            sendMessage(mData);
 
             int start = mData.getInt(KEY_PROGRESS_START);
             int end = mData.getInt(KEY_PROGRESS_END);
@@ -103,9 +144,13 @@ public class ProgressRequestHandler extends AbstractRequestHandler {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            mData.putBoolean(
-                    KEY_PROGRESS_FINISH,
-                    true
+            mStatus = new RequestHandlerStatus(
+                    RequestHandlerStatus.Status.FINISHED,
+                    ""
+            );
+            mData.putParcelable(
+                    KEY_STATUS,
+                    mStatus
             );
 
             sendMessage(mData);

@@ -21,6 +21,7 @@ import com.makina.ecrins.app.ui.adapter.StringResourcesArrayAdapter;
 import com.makina.ecrins.app.ui.service.ProgressRequestHandler;
 import com.makina.ecrins.commons.service.AbstractRequestHandler;
 import com.makina.ecrins.commons.service.RequestHandlerServiceClient;
+import com.makina.ecrins.commons.service.RequestHandlerStatus;
 import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.ChooseActionDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.CommentDialogFragment;
@@ -45,7 +46,7 @@ public class DialogListFragment
 
     private static final String TAG = DialogListFragment.class.getSimpleName();
 
-    private static final String STATE_SELETED_DATE = "STATE_SELETED_DATE";
+    private static final String STATE_SELECTED_DATE = "STATE_SELECTED_DATE";
 
     protected static final String ALERT_DIALOG_FRAGMENT = "ALERT_DIALOG_FRAGMENT";
     protected static final String CHOOSE_ACTION_DIALOG_FRAGMENT = "CHOOSE_ACTION_DIALOG_FRAGMENT";
@@ -131,7 +132,7 @@ public class DialogListFragment
         @Override
         public void onCalendarSet(Calendar calendar) {
             mSelectedDate = calendar.getTime();
-            
+
             Toast
                     .makeText(
                             getActivity(),
@@ -157,6 +158,18 @@ public class DialogListFragment
             }
 
             mRequestHandlerServiceClientToken = token;
+
+            // send Message to get the current status of ProgressRequestHandler
+            final Bundle data = new Bundle();
+            data.putSerializable(
+                    ProgressRequestHandler.KEY_COMMAND,
+                    ProgressRequestHandler.Command.GET_STATUS
+            );
+
+            mRequestHandlerServiceClient.send(
+                    ProgressRequestHandler.class,
+                    data
+            );
         }
 
         @Override
@@ -171,35 +184,10 @@ public class DialogListFragment
 
         @Override
         public void onHandleMessage(
-                @NonNull Class<? extends AbstractRequestHandler> requestHandlerClass,
+                @NonNull AbstractRequestHandler requestHandler,
                 @NonNull Bundle data) {
-            if (isAdded() && (requestHandlerClass == ProgressRequestHandler.class)) {
-                if (data.containsKey(ProgressRequestHandler.KEY_PROGRESS_START) && data.containsKey(ProgressRequestHandler.KEY_PROGRESS_END) && data.containsKey(ProgressRequestHandler.KEY_PROGRESS_VALUE) && !data.getBoolean(ProgressRequestHandler.KEY_PROGRESS_FINISH, false)) {
-                    // find ProgressDialogFragment to update
-                    ProgressDialogFragment progressDialogFragment = (ProgressDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(PROGRESS_DIALOG_FRAGMENT);
-
-                    if (progressDialogFragment == null) {
-                        progressDialogFragment = ProgressDialogFragment.newInstance(
-                                R.string.progress_dialog_title,
-                                R.string.progress_dialog_message,
-                                ProgressDialog.STYLE_HORIZONTAL,
-                                data.getInt(ProgressRequestHandler.KEY_PROGRESS_END));
-                        progressDialogFragment.show(
-                                getActivity().getSupportFragmentManager(),
-                                PROGRESS_DIALOG_FRAGMENT
-                        );
-                    }
-
-                    progressDialogFragment.setProgress(data.getInt(ProgressRequestHandler.KEY_PROGRESS_VALUE));
-                }
-                else if (data.getBoolean(ProgressRequestHandler.KEY_PROGRESS_FINISH)) {
-                    // find ProgressDialogFragment to update
-                    ProgressDialogFragment progressDialogFragment = (ProgressDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(PROGRESS_DIALOG_FRAGMENT);
-
-                    if (progressDialogFragment != null) {
-                        progressDialogFragment.dismiss();
-                    }
-                }
+            if (isAdded() && (requestHandler instanceof ProgressRequestHandler)) {
+                handleMessageForProgressRequestHandler(data);
             }
         }
     };
@@ -246,7 +234,7 @@ public class DialogListFragment
 
         if (savedInstanceState != null) {
             mRequestHandlerServiceClientToken = savedInstanceState.getString(AbstractRequestHandler.KEY_CLIENT_TOKEN);
-            mSelectedDate = (Date) savedInstanceState.getSerializable(STATE_SELETED_DATE);
+            mSelectedDate = (Date) savedInstanceState.getSerializable(STATE_SELECTED_DATE);
         }
 
         // restore AlertDialogFragment state after resume if needed
@@ -355,7 +343,7 @@ public class DialogListFragment
         super.onSaveInstanceState(outState);
 
         outState.putSerializable(
-                STATE_SELETED_DATE,
+                STATE_SELECTED_DATE,
                 mSelectedDate
         );
         outState.putString(
@@ -454,13 +442,17 @@ public class DialogListFragment
                 break;
             case R.string.button_progress_dialog:
                 final Bundle data = new Bundle();
+                data.putSerializable(
+                        ProgressRequestHandler.KEY_COMMAND,
+                        ProgressRequestHandler.Command.START
+                );
                 data.putInt(
                         ProgressRequestHandler.KEY_PROGRESS_START,
                         0
                 );
                 data.putInt(
                         ProgressRequestHandler.KEY_PROGRESS_END,
-                        15
+                        5
                 );
 
                 mRequestHandlerServiceClient.send(
@@ -469,6 +461,50 @@ public class DialogListFragment
                 );
 
                 break;
+        }
+    }
+
+    private void handleMessageForProgressRequestHandler(@NonNull final Bundle data) {
+        if (data.containsKey(ProgressRequestHandler.KEY_STATUS)) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                        "onHandleMessage: ProgressRequestHandler status " + ((RequestHandlerStatus) data.getParcelable(ProgressRequestHandler.KEY_STATUS)).getStatus().name()
+                );
+            }
+
+            switch (((RequestHandlerStatus) data.getParcelable(ProgressRequestHandler.KEY_STATUS)).getStatus()) {
+                case RUNNING:
+                    if (data.containsKey(ProgressRequestHandler.KEY_PROGRESS_START) && data.containsKey(ProgressRequestHandler.KEY_PROGRESS_END)) {
+                        // find ProgressDialogFragment to update
+                        ProgressDialogFragment progressDialogFragment = (ProgressDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(PROGRESS_DIALOG_FRAGMENT);
+
+                        if (progressDialogFragment == null) {
+                            progressDialogFragment = ProgressDialogFragment.newInstance(
+                                    R.string.progress_dialog_title,
+                                    R.string.progress_dialog_message,
+                                    ProgressDialog.STYLE_HORIZONTAL,
+                                    data.getInt(ProgressRequestHandler.KEY_PROGRESS_END));
+                            progressDialogFragment.show(
+                                    getActivity().getSupportFragmentManager(),
+                                    PROGRESS_DIALOG_FRAGMENT
+                            );
+                        }
+
+                        progressDialogFragment.setProgress(data.getInt(ProgressRequestHandler.KEY_PROGRESS_VALUE));
+                    }
+
+                    break;
+                case PENDING:
+                case FINISHED:
+                    // find ProgressDialogFragment to update
+                    ProgressDialogFragment progressDialogFragment = (ProgressDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(PROGRESS_DIALOG_FRAGMENT);
+
+                    if (progressDialogFragment != null) {
+                        progressDialogFragment.dismiss();
+                    }
+
+                    break;
+            }
         }
     }
 }
