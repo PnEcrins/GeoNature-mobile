@@ -7,11 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
 /**
- * Basic implementation of a <code>ProgressDialog</code> as <code>DialogFragment</code>.
+ * Basic implementation of a {@code ProgressDialog} as {@code DialogFragment}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class ProgressDialogFragment extends DialogFragment {
+public class ProgressDialogFragment
+        extends DialogFragment {
 
     private static final String KEY_TITLE = "title";
     private static final String KEY_MESSAGE = "message";
@@ -20,13 +21,22 @@ public class ProgressDialogFragment extends DialogFragment {
 
     private ProgressDialog mProgressDialog;
 
-    public static ProgressDialogFragment newInstance(int title, int message, int progressStyle, int max) {
+    public static ProgressDialogFragment newInstance(
+            int title,
+            int message,
+            int progressStyle,
+            int max) {
+
         ProgressDialogFragment dialogFragment = new ProgressDialogFragment();
         Bundle args = new Bundle();
-        args.putInt(KEY_TITLE, title);
-        args.putInt(KEY_MESSAGE, message);
-        args.putInt(KEY_PROGRESS_STYLE, progressStyle);
-        args.putInt(KEY_MAX, max);
+        args.putInt(KEY_TITLE,
+                    title);
+        args.putInt(KEY_MESSAGE,
+                    message);
+        args.putInt(KEY_PROGRESS_STYLE,
+                    progressStyle);
+        args.putInt(KEY_MAX,
+                    max);
         dialogFragment.setArguments(args);
         dialogFragment.setCancelable(false);
 
@@ -36,6 +46,7 @@ public class ProgressDialogFragment extends DialogFragment {
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setTitle(getText(getArguments().getInt(KEY_TITLE)));
         mProgressDialog.setMessage(getText(getArguments().getInt(KEY_MESSAGE)));
@@ -48,6 +59,7 @@ public class ProgressDialogFragment extends DialogFragment {
     }
 
     public void setProgress(int progress) {
+
         if (mProgressDialog != null) {
             mProgressDialog.setProgress(progress);
         }

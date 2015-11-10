@@ -15,11 +15,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * <code>AsyncTask</code> implementation to save current {@link AbstractInput} as JSON file.
+ * {@code AsyncTask} implementation to save current {@link AbstractInput} as {@code JSON} file.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class SaveInputAsyncTask extends AsyncTask<AbstractInput, Void, Boolean> {
+public class SaveInputAsyncTask
+        extends AsyncTask<AbstractInput, Void, Boolean> {
 
     public static final int HANDLER_INPUT_SAVE_START = 0;
     public static final int HANDLER_INPUT_SAVED = 1;
@@ -28,18 +29,23 @@ public class SaveInputAsyncTask extends AsyncTask<AbstractInput, Void, Boolean> 
     private Context mContext;
     private Handler mHandler;
 
-    public SaveInputAsyncTask(Context pContext, Handler pHandler) {
+    public SaveInputAsyncTask(
+            Context pContext,
+            Handler pHandler) {
+
         super();
         this.mContext = pContext;
         this.mHandler = pHandler;
     }
 
     public void setHandler(Handler pHandler) {
+
         this.mHandler = pHandler;
     }
 
     @Override
     protected Boolean doInBackground(AbstractInput... params) {
+
         Message message = mHandler.obtainMessage(HANDLER_INPUT_SAVE_START);
         message.sendToTarget();
 
@@ -50,21 +56,29 @@ public class SaveInputAsyncTask extends AsyncTask<AbstractInput, Void, Boolean> 
                 // noinspection ResultOfMethodCallIgnored
                 inputDir.mkdirs();
 
-                File inputFile = new File(inputDir, "input_" + params[0].getInputId() + ".json");
+                File inputFile = new File(inputDir,
+                                          "input_" + params[0].getInputId() + ".json");
 
                 FileWriter fileWriter = new FileWriter(inputFile);
-                fileWriter.write(params[0].getJSONObject().toString());
+                fileWriter.write(params[0].getJSONObject()
+                                          .toString());
                 fileWriter.flush();
                 fileWriter.close();
 
-                Log.d(getClass().getName(), "input : " + params[0].getJSONObject().toString());
+                Log.d(getClass().getName(),
+                      "input : " + params[0].getJSONObject()
+                                            .toString());
             }
             catch (IOException ioe) {
-                Log.e(getClass().getName(), ioe.getMessage(), ioe);
+                Log.e(getClass().getName(),
+                      ioe.getMessage(),
+                      ioe);
                 return false;
             }
             catch (JSONException je) {
-                Log.e(getClass().getName(), je.getMessage(), je);
+                Log.e(getClass().getName(),
+                      je.getMessage(),
+                      je);
                 return false;
             }
 
@@ -77,6 +91,7 @@ public class SaveInputAsyncTask extends AsyncTask<AbstractInput, Void, Boolean> 
 
     @Override
     protected void onPostExecute(Boolean result) {
+
         if (result) {
             Message message = mHandler.obtainMessage(HANDLER_INPUT_SAVED);
             message.sendToTarget();

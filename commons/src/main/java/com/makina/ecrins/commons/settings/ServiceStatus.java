@@ -7,7 +7,9 @@ import android.os.Parcelable;
  * Indicates the current status of {@link AbstractSettingsService}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+ * @deprecated use {@link com.makina.ecrins.commons.service.RequestHandlerStatus}
  */
+@Deprecated
 public class ServiceStatus implements Parcelable {
 
     private Status mStatus;

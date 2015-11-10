@@ -13,7 +13,7 @@ import com.makina.ecrins.commons.R;
 import com.makina.ecrins.commons.input.AbstractTaxon;
 
 /**
- * Custom <code>ArrayAdapter</code> used for {@link com.makina.ecrins.commons.ui.input.results.AbstractResultsInputFragment}.
+ * Custom {@code ArrayAdapter} used for {@link com.makina.ecrins.commons.ui.input.results.AbstractResultsInputFragment}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */

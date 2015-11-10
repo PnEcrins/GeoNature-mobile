@@ -29,7 +29,8 @@ import java.util.List;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class ChooseActionDialogFragment extends DialogFragment {
+public class ChooseActionDialogFragment
+        extends DialogFragment {
 
     private static final String KEY_TITLE = "title";
     private static final String KEY_MESSAGE = "message";
@@ -41,11 +42,10 @@ public class ChooseActionDialogFragment extends DialogFragment {
     public static ChooseActionDialogFragment newInstance(
             int titleResourceId,
             final List<Integer> actions) {
-        return newInstance(
-                titleResourceId,
-                0,
-                actions
-        );
+
+        return newInstance(titleResourceId,
+                           0,
+                           actions);
     }
 
     public static ChooseActionDialogFragment newInstance(
@@ -54,26 +54,18 @@ public class ChooseActionDialogFragment extends DialogFragment {
             final List<Integer> actions) {
 
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    ChooseActionDialogFragment.class.getName(),
-                    "newInstance"
-            );
+            Log.d(ChooseActionDialogFragment.class.getName(),
+                  "newInstance");
         }
 
         final ChooseActionDialogFragment dialogFragment = new ChooseActionDialogFragment();
         final Bundle args = new Bundle();
-        args.putInt(
-                KEY_TITLE,
-                titleResourceId
-        );
-        args.putInt(
-                KEY_MESSAGE,
-                messageResourceId
-        );
-        args.putIntegerArrayList(
-                KEY_ACTIONS,
-                new ArrayList<>(actions)
-        );
+        args.putInt(KEY_TITLE,
+                    titleResourceId);
+        args.putInt(KEY_MESSAGE,
+                    messageResourceId);
+        args.putIntegerArrayList(KEY_ACTIONS,
+                                 new ArrayList<>(actions));
         dialogFragment.setArguments(args);
         dialogFragment.setCancelable(true);
 
@@ -81,17 +73,17 @@ public class ChooseActionDialogFragment extends DialogFragment {
     }
 
     public void setOnChooseActionDialogListener(OnChooseActionDialogListener pOnChooseActionDialogListener) {
+
         this.mOnChooseActionDialogListener = pOnChooseActionDialogListener;
     }
 
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final View view = View.inflate(
-                getActivity(),
-                R.layout.dialog_list_items,
-                null
-        );
+
+        final View view = View.inflate(getActivity(),
+                                       R.layout.dialog_list_items,
+                                       null);
 
         TextView textView = (TextView) view.findViewById(R.id.textViewMessageDialog);
         int message = getArguments().getInt(KEY_MESSAGE);
@@ -116,31 +108,28 @@ public class ChooseActionDialogFragment extends DialogFragment {
         }
 
         listView.setAdapter(mAdapter);
-        listView.setOnItemClickListener(
-                new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(
-                            AdapterView<?> parent,
-                            View view,
-                            int position,
-                            long id) {
-                        if (mOnChooseActionDialogListener != null) {
-                            mOnChooseActionDialogListener.onItemClick(
-                                    getDialog(),
-                                    position,
-                                    mAdapter.getItem(position)
-                            );
-                        }
-                    }
-                }
-        );
+        listView.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(
+                    AdapterView<?> parent,
+                    View view,
+                    int position,
+                    long id) {
 
-        return new AlertDialog.Builder(getActivity())
-                .setIcon(R.drawable.ic_action_choose)
-                .setTitle(getArguments().getInt(KEY_TITLE))
-                .setView(view)
-                .setNegativeButton(R.string.alert_dialog_cancel, null)
-                .create();
+                if (mOnChooseActionDialogListener != null) {
+                    mOnChooseActionDialogListener.onItemClick(getDialog(),
+                                                              position,
+                                                              mAdapter.getItem(position));
+                }
+            }
+        });
+
+        return new AlertDialog.Builder(getActivity()).setIcon(R.drawable.ic_action_choose)
+                                                     .setTitle(getArguments().getInt(KEY_TITLE))
+                                                     .setView(view)
+                                                     .setNegativeButton(R.string.alert_dialog_cancel,
+                                                                        null)
+                                                     .create();
     }
 
     /**
@@ -155,27 +144,34 @@ public class ChooseActionDialogFragment extends DialogFragment {
         private final LayoutInflater mInflater;
 
         public StringResourcesArrayAdapter(Context context) {
-            this(
-                    context,
-                    android.R.layout.simple_list_item_1
-            );
+
+            this(context,
+                 android.R.layout.simple_list_item_1);
         }
 
         public StringResourcesArrayAdapter(
                 Context context,
                 int textViewResourceId) {
-            super(context, textViewResourceId);
+
+            super(context,
+                  textViewResourceId);
 
             mTextViewResourceId = textViewResourceId;
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(
+                int position,
+                View convertView,
+                ViewGroup parent) {
+
             View view;
 
             if (convertView == null) {
-                view = mInflater.inflate(mTextViewResourceId, parent, false);
+                view = mInflater.inflate(mTextViewResourceId,
+                                         parent,
+                                         false);
             }
             else {
                 view = convertView;
@@ -192,7 +188,7 @@ public class ChooseActionDialogFragment extends DialogFragment {
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static interface OnChooseActionDialogListener {
+    public interface OnChooseActionDialogListener {
 
         /**
          * Invoked when an item in this {@code ListView} has been clicked.

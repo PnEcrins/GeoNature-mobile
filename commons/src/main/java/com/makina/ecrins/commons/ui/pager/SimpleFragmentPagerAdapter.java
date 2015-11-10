@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Basic implementation of <code>FragmentPagerAdapter </code> used by {@link AbstractPagerFragmentActivity}.
+ * Basic implementation of {@code FragmentPagerAdapter} used by {@link AbstractPagerFragmentActivity}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */

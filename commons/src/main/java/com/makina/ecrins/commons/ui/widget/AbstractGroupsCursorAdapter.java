@@ -14,7 +14,7 @@ import android.widget.SimpleCursorTreeAdapter;
 import java.io.Serializable;
 
 /**
- * Simple groups adapter used for {@link ExpandableListView}.
+ * Simple groups adapter used for {@code ExpandableListView}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */

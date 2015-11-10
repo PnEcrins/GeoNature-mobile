@@ -6,7 +6,7 @@ import java.util.Calendar;
  * The callback used to indicate the user changed the date and the time.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
- * @see {@link DateTimePickerDialogFragment}, {@link DatePickerDialogFragment}
+ * @see {@link DateTimePickerDialogFragment}
  */
 public interface OnCalendarSetListener {
 
@@ -15,5 +15,5 @@ public interface OnCalendarSetListener {
      *
      * @param calendar the updated calendar
      */
-    public void onCalendarSet(Calendar calendar);
+    void onCalendarSet(Calendar calendar);
 }

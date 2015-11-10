@@ -20,7 +20,8 @@ import java.util.TreeMap;
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
 @SuppressLint("ParcelCreator")
-public abstract class AbstractInput implements Parcelable {
+public abstract class AbstractInput
+        implements Parcelable {
 
     public static final String KEY_ID = "id";
     public static final String KEY_INITIAL_INPUT = "initial_input";
@@ -32,6 +33,7 @@ public abstract class AbstractInput implements Parcelable {
     private long mCurrentSelectedTaxonId;
 
     public AbstractInput() {
+
         mInputId = generateId();
         mFeatureId = null;
         mTaxa = new TreeMap<>();
@@ -39,6 +41,7 @@ public abstract class AbstractInput implements Parcelable {
     }
 
     public AbstractInput(Parcel source) {
+
         mInputId = source.readLong();
         mFeatureId = source.readString();
 
@@ -46,31 +49,38 @@ public abstract class AbstractInput implements Parcelable {
         mTaxa = new TreeMap<>();
 
         for (AbstractTaxon taxon : taxa) {
-            mTaxa.put(taxon.getId(), taxon);
+            mTaxa.put(taxon.getId(),
+                      taxon);
         }
 
         mCurrentSelectedTaxonId = -1;
     }
 
     public long getInputId() {
+
         return mInputId;
     }
 
     public String getFeatureId() {
+
         return mFeatureId;
     }
 
     public void setFeatureId(String pFeatureId) {
+
         this.mFeatureId = pFeatureId;
     }
 
     /**
-     * Gets a <code>Map</code> of all registered {@link AbstractTaxon} for this {@link com.makina.ecrins.commons.input.AbstractInput}.
+     * Gets a {@code Map} of all registered {@link AbstractTaxon} for this
+     * {@link com.makina.ecrins.commons.input.AbstractInput}.
      *
-     * @return a <code>Map</code> of all registered {@link AbstractTaxon}
+     * @return a {@code Map} of all registered {@link AbstractTaxon}
+     *
      * @see AbstractTaxon#getId()
      */
     public Map<Long, AbstractTaxon> getTaxa() {
+
         return mTaxa;
     }
 
@@ -78,9 +88,11 @@ public abstract class AbstractInput implements Parcelable {
      * Gets the currently selected {@link AbstractTaxon} for this input.
      *
      * @return the selected {@link AbstractTaxon}
+     *
      * @see AbstractTaxon#getId()
      */
     public long getCurrentSelectedTaxonId() {
+
         return mCurrentSelectedTaxonId;
     }
 
@@ -88,19 +100,23 @@ public abstract class AbstractInput implements Parcelable {
      * Sets the currently selected {@link AbstractTaxon} for this input.
      *
      * @param pCurrentSelectedTaxonId the selected {@link AbstractTaxon}
+     *
      * @see AbstractTaxon#getId()
      */
     public void setCurrentSelectedTaxonId(long pCurrentSelectedTaxonId) {
+
         this.mCurrentSelectedTaxonId = pCurrentSelectedTaxonId;
     }
 
     /**
-     * Gets the last inserted {@link AbstractTaxon} for this input or -1 if none was added.
+     * Gets the last inserted {@link AbstractTaxon} for this input or {@code -1} if none was added.
      *
      * @return the last inserted {@link AbstractTaxon}
+     *
      * @see AbstractTaxon#getId()
      */
     public long getLastInsertedTaxonId() {
+
         if (this.mTaxa.isEmpty()) {
             return -1;
         }
@@ -112,17 +128,21 @@ public abstract class AbstractInput implements Parcelable {
     /**
      * Gets the currently selected {@link AbstractTaxon} for this input.
      *
-     * @return the selected {@link AbstractTaxon} or <code>null</code> if none was selected.
+     * @return the selected {@link AbstractTaxon} or {@code null} if none was selected.
      */
     public AbstractTaxon getCurrentSelectedTaxon() {
+
         return getTaxa().get(getCurrentSelectedTaxonId());
     }
 
     public JSONObject getJSONObject() throws JSONException {
+
         JSONObject json = new JSONObject();
 
-        json.put(KEY_ID, mInputId);
-        json.put(KEY_INITIAL_INPUT, "nomade");
+        json.put(KEY_ID,
+                 mInputId);
+        json.put(KEY_INITIAL_INPUT,
+                 "nomade");
 
         JSONArray jsonTaxa = new JSONArray();
 
@@ -130,18 +150,23 @@ public abstract class AbstractInput implements Parcelable {
             jsonTaxa.put(taxon.getJSONObject());
         }
 
-        json.put(KEY_TAXA, jsonTaxa);
+        json.put(KEY_TAXA,
+                 jsonTaxa);
 
         return json;
     }
 
     @Override
     public int describeContents() {
+
         return 0;
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(
+            Parcel dest,
+            int flags) {
+
         dest.writeLong(mInputId);
         dest.writeString(mFeatureId);
         dest.writeTypedList(new ArrayList<>(mTaxa.values()));
@@ -155,19 +180,16 @@ public abstract class AbstractInput implements Parcelable {
      * @return an unique ID
      */
     public static long generateId() {
+
         final Calendar calendar = Calendar.getInstance();
-        calendar.set(
-                2000,
-                Calendar.JANUARY,
-                1,
-                0,
-                0,
-                0
-        );
-        calendar.set(
-                Calendar.MILLISECOND,
-                0
-        );
+        calendar.set(2000,
+                     Calendar.JANUARY,
+                     1,
+                     0,
+                     0,
+                     0);
+        calendar.set(Calendar.MILLISECOND,
+                     0);
 
         return calendar.getTimeInMillis() / 1000;
     }

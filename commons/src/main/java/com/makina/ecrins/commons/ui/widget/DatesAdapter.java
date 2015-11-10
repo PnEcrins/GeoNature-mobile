@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.util.Date;
 
 /**
- * Custom <code>ArrayAdapter</code> for <code>Date</code> instances.
+ * Custom {@code ArrayAdapter} for {@code Date} instances.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */

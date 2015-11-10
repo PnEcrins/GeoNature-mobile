@@ -206,12 +206,7 @@ public abstract class AbstractObserversFragmentActivity extends ActionBarActivit
             // give some text to display if there is no data
             setEmptyText(getString(R.string.observers_no_data));
 
-            if ((getArguments() != null) && (getArguments().containsKey(CHOICE_MODE))) {
-                getListView().setChoiceMode(getArguments().getInt(CHOICE_MODE));
-            }
-            else {
-                getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-            }
+            setChoiceMode(getArguments());
 
             ((AbstractObserversFragmentActivity) getActivity()).initializeSelection();
 
@@ -521,7 +516,11 @@ public abstract class AbstractObserversFragmentActivity extends ActionBarActivit
         }
 
         private boolean isSingleChoice() {
-            return (getArguments() == null) || ((getArguments().containsKey(CHOICE_MODE)) && (getArguments().getInt(CHOICE_MODE) == ListView.CHOICE_MODE_SINGLE));
+            return getListView().getChoiceMode() == ListView.CHOICE_MODE_SINGLE;
+        }
+
+        private void setChoiceMode(final Bundle args) {
+            getListView().setChoiceMode((args != null) ? args.getInt(CHOICE_MODE, ListView.CHOICE_MODE_SINGLE) : ListView.CHOICE_MODE_SINGLE);
         }
     }
 }

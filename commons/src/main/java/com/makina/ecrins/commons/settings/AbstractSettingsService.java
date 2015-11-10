@@ -29,7 +29,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <Code>Service</code> implementation to execute in background {@link com.makina.ecrins.commons.settings.AbstractSettingsService.LoadSettingsFromFileAsyncTask} implementation.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+ * @deprecated use instead {@link com.makina.ecrins.commons.service.RequestHandlerService} with
+ * {@link com.makina.ecrins.commons.settings.AbstractLoadSettingsRequestHandler} 
  */
+@Deprecated
 public abstract class AbstractSettingsService extends Service {
 
     /**

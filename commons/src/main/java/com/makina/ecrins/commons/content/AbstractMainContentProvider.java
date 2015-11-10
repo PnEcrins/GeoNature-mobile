@@ -12,18 +12,22 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.settings.AbstractAppSettings;
 
 import java.io.IOException;
 
 /**
- * Simple <code>ContentProvider</code> implementation.
+ * Simple {@code ContentProvider} implementation.
  * <p/>
  * Uses {@link MainDatabaseHelper}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public abstract class AbstractMainContentProvider extends ContentProvider {
+public abstract class AbstractMainContentProvider
+        extends ContentProvider {
+
+    private static final String TAG = AbstractMainContentProvider.class.getName();
 
     // used for the UriMacher
     public static final int OBSERVERS = 10;
@@ -63,7 +67,11 @@ public abstract class AbstractMainContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        Log.d(getClass().getName(), "onCreate");
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onCreate");
+        }
 
         initializeUriMatcher();
 
@@ -71,8 +79,17 @@ public abstract class AbstractMainContentProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Log.d(getClass().getName(), "query : " + uri);
+    public Cursor query(
+            Uri uri,
+            String[] projection,
+            String selection,
+            String[] selectionArgs,
+            String sortOrder) {
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "query : " + uri);
+        }
 
         final StringBuilder groupBy = new StringBuilder();
         String defaultSortOrder = null;
@@ -166,45 +183,66 @@ public abstract class AbstractMainContentProvider extends ContentProvider {
 
         try {
             SQLiteDatabase db = getDatabaseHelper().getReadableDatabase();
-            Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, (groupBy.length() == 0) ? null : groupBy.toString(), null, defaultSortOrder);
+            Cursor cursor = queryBuilder.query(db,
+                                               projection,
+                                               selection,
+                                               selectionArgs,
+                                               (groupBy.length() == 0) ? null : groupBy.toString(),
+                                               null,
+                                               defaultSortOrder);
 
             // make sure that potential listeners are getting notified
-            cursor.setNotificationUri(getContext().getContentResolver(), uri);
+            cursor.setNotificationUri(getContext().getContentResolver(),
+                                      uri);
 
             return cursor;
         }
         catch (IOException ioe) {
-            Log.e(getClass().getName(), ioe.getMessage(), ioe);
+            Log.e(TAG,
+                  ioe.getMessage(),
+                  ioe);
 
             return null;
         }
         catch (SQLiteException se) {
-            Log.e(getClass().getName(), se.getMessage(), se);
+            Log.e(TAG,
+                  se.getMessage(),
+                  se);
 
             return null;
         }
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(
+            Uri uri,
+            ContentValues values) {
         // nothing to do ...
         return null;
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(
+            Uri uri,
+            ContentValues values,
+            String selection,
+            String[] selectionArgs) {
         // nothing to do ...
         return 0;
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(
+            Uri uri,
+            String selection,
+            String[] selectionArgs) {
         // nothing to do ...
         return 0;
     }
 
     @Override
     public String getType(Uri uri) {
+
         return null;
     }
 
@@ -213,30 +251,70 @@ public abstract class AbstractMainContentProvider extends ContentProvider {
     public abstract AbstractAppSettings getAppSettings();
 
     private MainDatabaseHelper getDatabaseHelper() throws IOException {
+
         if (mDatabase == null) {
-            mDatabase = new MainDatabaseHelper(getContext(), getAppSettings().getDbSettings().getDbName(), getAppSettings().getDbSettings().getDbVersion());
+            mDatabase = new MainDatabaseHelper(getContext(),
+                                               getAppSettings().getDbSettings()
+                                                               .getDbName(),
+                                               getAppSettings().getDbSettings()
+                                                               .getDbVersion());
         }
 
         return mDatabase;
     }
 
     private void initializeUriMatcher() {
-        sURIMatcher.addURI(getAuthority(), PATH_OBSERVERS, OBSERVERS);
-        sURIMatcher.addURI(getAuthority(), PATH_OBSERVERS + "/#", OBSERVER_ID);
-        sURIMatcher.addURI(getAuthority(), PATH_TAXA, TAXA);
-        sURIMatcher.addURI(getAuthority(), PATH_TAXA_UNITY + "/#", TAXA_BY_UNITY);
-        sURIMatcher.addURI(getAuthority(), PATH_CRITERIA, CRITERIA);
-        sURIMatcher.addURI(getAuthority(), PATH_CRITERIA_CLASS + "/#", CRITERIA_BY_CLASS);
-        sURIMatcher.addURI(getAuthority(), PATH_ENVIRONMENTS, ENVIRONMENTS);
-        sURIMatcher.addURI(getAuthority(), PATH_INCLINES, INCLINES);
-        sURIMatcher.addURI(getAuthority(), PATH_INCLINES + "/#", INCLINE_ID);
-        sURIMatcher.addURI(getAuthority(), PATH_PHENOLOGY, PHENOLOGY);
-        sURIMatcher.addURI(getAuthority(), PATH_PHYSIOGNOMY_GROUPS, PHYSIOGNOMY_GROUPS);
-        sURIMatcher.addURI(getAuthority(), PATH_PHYSIOGNOMY_GROUPS + "/*", PHYSIOGNOMY_BY_GROUP);
-        sURIMatcher.addURI(getAuthority(), PATH_DISTURBANCES_CLASSIFICATIONS, DISTURBANCES_CLASSIFICATIONS);
-        sURIMatcher.addURI(getAuthority(), PATH_DISTURBANCES_CLASSIFICATIONS + "/*", DISTURBANCES_BY_CLASSIFICATION);
-        sURIMatcher.addURI(getAuthority(), PATH_PROSPECTING_AREAS_TAXON + "/#", PROSPECTING_AREAS_BY_TAXON);
-        sURIMatcher.addURI(getAuthority(), PATH_SEARCH, SEARCH);
-        sURIMatcher.addURI(getAuthority(), PATH_SEARCH + "/*", SEARCH_TAXON);
+
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_OBSERVERS,
+                           OBSERVERS);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_OBSERVERS + "/#",
+                           OBSERVER_ID);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_TAXA,
+                           TAXA);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_TAXA_UNITY + "/#",
+                           TAXA_BY_UNITY);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_CRITERIA,
+                           CRITERIA);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_CRITERIA_CLASS + "/#",
+                           CRITERIA_BY_CLASS);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_ENVIRONMENTS,
+                           ENVIRONMENTS);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_INCLINES,
+                           INCLINES);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_INCLINES + "/#",
+                           INCLINE_ID);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_PHENOLOGY,
+                           PHENOLOGY);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_PHYSIOGNOMY_GROUPS,
+                           PHYSIOGNOMY_GROUPS);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_PHYSIOGNOMY_GROUPS + "/*",
+                           PHYSIOGNOMY_BY_GROUP);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_DISTURBANCES_CLASSIFICATIONS,
+                           DISTURBANCES_CLASSIFICATIONS);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_DISTURBANCES_CLASSIFICATIONS + "/*",
+                           DISTURBANCES_BY_CLASSIFICATION);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_PROSPECTING_AREAS_TAXON + "/#",
+                           PROSPECTING_AREAS_BY_TAXON);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_SEARCH,
+                           SEARCH);
+        sURIMatcher.addURI(getAuthority(),
+                           PATH_SEARCH + "/*",
+                           SEARCH_TAXON);
     }
 }

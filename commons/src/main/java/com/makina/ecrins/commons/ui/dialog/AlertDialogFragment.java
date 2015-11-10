@@ -16,7 +16,8 @@ import com.makina.ecrins.commons.R;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class AlertDialogFragment extends DialogFragment {
+public class AlertDialogFragment
+        extends DialogFragment {
 
     private static final String KEY_TITLE = "title";
     private static final String KEY_MESSAGE = "message";
@@ -26,8 +27,12 @@ public class AlertDialogFragment extends DialogFragment {
     private OnAlertDialogListener mOnAlertDialogListener;
 
     private final DialogInterface.OnClickListener mOnPositiveOnClickListener = new DialogInterface.OnClickListener() {
+
         @Override
-        public void onClick(DialogInterface dialog, int which) {
+        public void onClick(
+                DialogInterface dialog,
+                int which) {
+
             if (mOnAlertDialogListener != null) {
                 mOnAlertDialogListener.onPositiveButtonClick(dialog);
             }
@@ -36,7 +41,10 @@ public class AlertDialogFragment extends DialogFragment {
 
     private final DialogInterface.OnClickListener mOnNegativeOnClickListener = new DialogInterface.OnClickListener() {
         @Override
-        public void onClick(DialogInterface dialog, int which) {
+        public void onClick(
+                DialogInterface dialog,
+                int which) {
+
             if (mOnAlertDialogListener != null) {
                 mOnAlertDialogListener.onNegativeButtonClick(dialog);
             }
@@ -47,11 +55,10 @@ public class AlertDialogFragment extends DialogFragment {
             int title,
             int message) {
 
-        return newInstance(
-                title,
-                message,
-                R.string.alert_dialog_ok,
-                R.string.alert_dialog_cancel);
+        return newInstance(title,
+                           message,
+                           R.string.alert_dialog_ok,
+                           R.string.alert_dialog_cancel);
     }
 
     public static AlertDialogFragment newInstance(
@@ -61,30 +68,20 @@ public class AlertDialogFragment extends DialogFragment {
             int buttonNegativeResourceId) {
 
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    AlertDialogFragment.class.getName(),
-                    "newInstance"
-            );
+            Log.d(AlertDialogFragment.class.getName(),
+                  "newInstance");
         }
 
         final AlertDialogFragment dialogFragment = new AlertDialogFragment();
         final Bundle args = new Bundle();
-        args.putInt(
-                KEY_TITLE,
-                title
-        );
-        args.putInt(
-                KEY_MESSAGE,
-                message
-        );
-        args.putInt(
-                KEY_BUTTON_POSITIVE,
-                buttonPositiveResourceId
-        );
-        args.putInt(
-                KEY_BUTTON_NEGATIVE,
-                buttonNegativeResourceId
-        );
+        args.putInt(KEY_TITLE,
+                    title);
+        args.putInt(KEY_MESSAGE,
+                    message);
+        args.putInt(KEY_BUTTON_POSITIVE,
+                    buttonPositiveResourceId);
+        args.putInt(KEY_BUTTON_NEGATIVE,
+                    buttonNegativeResourceId);
 
         dialogFragment.setArguments(args);
         dialogFragment.setCancelable(false);
@@ -93,19 +90,22 @@ public class AlertDialogFragment extends DialogFragment {
     }
 
     public void setOnAlertDialogListener(OnAlertDialogListener pOnAlertDialogListener) {
+
         this.mOnAlertDialogListener = pOnAlertDialogListener;
     }
 
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new AlertDialog.Builder(getActivity())
-                .setIcon(R.drawable.ic_action_alert)
-                .setTitle(getArguments().getInt(KEY_TITLE))
-                .setMessage(getArguments().getInt(KEY_MESSAGE))
-                .setPositiveButton(getArguments().getInt(KEY_BUTTON_POSITIVE), mOnPositiveOnClickListener)
-                .setNegativeButton(getArguments().getInt(KEY_BUTTON_NEGATIVE), mOnNegativeOnClickListener)
-                .create();
+
+        return new AlertDialog.Builder(getActivity()).setIcon(R.drawable.ic_action_alert)
+                                                     .setTitle(getArguments().getInt(KEY_TITLE))
+                                                     .setMessage(getArguments().getInt(KEY_MESSAGE))
+                                                     .setPositiveButton(getArguments().getInt(KEY_BUTTON_POSITIVE),
+                                                                        mOnPositiveOnClickListener)
+                                                     .setNegativeButton(getArguments().getInt(KEY_BUTTON_NEGATIVE),
+                                                                        mOnNegativeOnClickListener)
+                                                     .create();
     }
 
     /**
@@ -114,16 +114,18 @@ public class AlertDialogFragment extends DialogFragment {
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      * @see {@link android.content.DialogInterface.OnClickListener}
      */
-    public static interface OnAlertDialogListener {
+    public interface OnAlertDialogListener {
 
         /**
          * Invoked when the positive button of the dialog is pressed.
+         *
          * @param dialog the dialog that received the click
          */
         void onPositiveButtonClick(DialogInterface dialog);
 
         /**
          * Invoked when the negative button of the dialog is pressed.
+         *
          * @param dialog the dialog that received the click
          */
         void onNegativeButtonClick(DialogInterface dialog);

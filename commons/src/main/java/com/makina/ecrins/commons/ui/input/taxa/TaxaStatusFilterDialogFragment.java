@@ -19,11 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Custom <code>Dialog</code> used to select the statuses of taxa as filter.
+ * Custom {@code Dialog} used to select the statuses of taxa as filter.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class TaxaStatusFilterDialogFragment extends DialogFragment implements OnItemClickListener {
+public class TaxaStatusFilterDialogFragment
+        extends DialogFragment
+        implements OnItemClickListener {
 
     private static final String KEY_FILTER_STATUS = "filter_status";
 

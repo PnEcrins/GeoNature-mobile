@@ -11,7 +11,7 @@ import android.view.View;
 import com.makina.ecrins.commons.R;
 
 /**
- * Custom <code>View</code> displaying the current status filter for taxa.
+ * Custom {@code View} displaying the current status filter for taxa.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */

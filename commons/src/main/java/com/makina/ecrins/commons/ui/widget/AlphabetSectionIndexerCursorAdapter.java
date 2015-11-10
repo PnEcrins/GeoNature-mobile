@@ -18,7 +18,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * <code>SimpleCursorAdapter</code> custom implementation that use an <code>AlphabetIndexer</code> widget to keep track of the section indices.
+ * {@code SimpleCursorAdapter} custom implementation that use an {@code AlphabetIndexer} widget to
+ * keep track of the section indices.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */

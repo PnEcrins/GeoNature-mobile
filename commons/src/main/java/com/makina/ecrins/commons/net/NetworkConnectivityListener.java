@@ -30,6 +30,7 @@ public class NetworkConnectivityListener {
     private ConnectivityBroadcastReceiver mReceiver;
 
     public NetworkConnectivityListener(Context pContext) {
+
         mContext = pContext;
         mConnectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         mReceiver = new ConnectivityBroadcastReceiver();
@@ -41,6 +42,7 @@ public class NetworkConnectivityListener {
      * @return {@code true} if this instance is listening network activity change or not
      */
     public boolean isListening() {
+
         return mListening.get();
     }
 
@@ -48,15 +50,14 @@ public class NetworkConnectivityListener {
      * This method starts listening for network connectivity state changes.
      */
     public synchronized void startListening(final OnNetworkConnectivityChangeListener pOnNetworkConnectivityChangeListener) {
+
         if (!mListening.get()) {
             this.mOnNetworkConnectivityChangeListener = pOnNetworkConnectivityChangeListener;
 
             final IntentFilter filter = new IntentFilter();
             filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-            mContext.registerReceiver(
-                    mReceiver,
-                    filter
-            );
+            mContext.registerReceiver(mReceiver,
+                                      filter);
             mListening.set(true);
         }
     }
@@ -65,6 +66,7 @@ public class NetworkConnectivityListener {
      * This method stops this class from listening for network changes.
      */
     public synchronized void stopListening() {
+
         if (mListening.get()) {
             mContext.unregisterReceiver(mReceiver);
             mOnNetworkConnectivityChangeListener = null;
@@ -77,7 +79,7 @@ public class NetworkConnectivityListener {
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static interface OnNetworkConnectivityChangeListener {
+    public interface OnNetworkConnectivityChangeListener {
 
         /**
          * Invoked when the state of network connectivity change.
@@ -85,17 +87,19 @@ public class NetworkConnectivityListener {
         void onNetworkConnectivityChange(@Nullable final NetworkInfo networkInfo);
     }
 
-    private class ConnectivityBroadcastReceiver extends BroadcastReceiver {
+    private class ConnectivityBroadcastReceiver
+            extends BroadcastReceiver {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(
+                Context context,
+                Intent intent) {
+
             String action = intent.getAction();
 
             if (!action.equals(ConnectivityManager.CONNECTIVITY_ACTION) || !mListening.get()) {
-                Log.w(
-                        getClass().getName(),
-                        "onReceive() called with " + intent
-                );
+                Log.w(getClass().getName(),
+                      "onReceive() called with " + intent);
 
                 return;
             }
@@ -103,10 +107,8 @@ public class NetworkConnectivityListener {
             final NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
 
             if (BuildConfig.DEBUG) {
-                Log.d(
-                        getClass().getName(),
-                        "onReceive: " + networkInfo.toString()
-                );
+                Log.d(getClass().getName(),
+                      "onReceive: " + networkInfo.toString());
             }
 
             if (mOnNetworkConnectivityChangeListener != null) {

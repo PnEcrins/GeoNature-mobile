@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Selected observer and current date as first <code>Fragment</code> used by
+ * Selected observer and current date as first {@code Fragment} used by
  * {@link com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>

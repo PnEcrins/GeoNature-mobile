@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 /**
- * This is a custom <code>ViewPager</code> implementation allowing disabling paging / swiping controls.
+ * This is a custom {@code ViewPager} implementation allowing disabling paging / swiping controls.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */

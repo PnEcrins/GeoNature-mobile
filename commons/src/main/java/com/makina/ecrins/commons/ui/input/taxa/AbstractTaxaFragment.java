@@ -36,6 +36,7 @@ import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.ViewSwitcher.ViewFactory;
 
+import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.input.AbstractInput;
@@ -58,6 +59,8 @@ public abstract class AbstractTaxaFragment extends ListFragment
         implements
         IValidateFragment,
         LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final String TAG = AbstractTaxaFragment.class.getName();
 
     public static final int HANDLER_TAXA_FILTER_STATUS = 0;
 
@@ -83,7 +86,13 @@ public abstract class AbstractTaxaFragment extends ListFragment
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Log.d(AbstractTaxaFragment.class.getName(), "onCreate, savedInstanceState null");
+
+            if (BuildConfig.DEBUG) {
+                Log.d(
+                        TAG,
+                        "onCreate, savedInstanceState null"
+                );
+            }
 
             mSavedState = new Bundle();
             mSavedState.putString(KEY_SELECTED_UNITY, getInput().getFeatureId());
@@ -93,7 +102,12 @@ public abstract class AbstractTaxaFragment extends ListFragment
             mSavedState.putBoolean(KEY_DISPLAY_TAXON_DETAILS, PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("taxa_display_details", true));
         }
         else {
-            Log.d(AbstractTaxaFragment.class.getName(), "onCreate, savedInstanceState initialized");
+            if (BuildConfig.DEBUG) {
+                Log.d(
+                        TAG,
+                        "onCreate, savedInstanceState initialized"
+                );
+            }
 
             mSavedState = savedInstanceState;
         }
@@ -136,7 +150,12 @@ public abstract class AbstractTaxaFragment extends ListFragment
 
     @Override
     public void onPause() {
-        Log.d(AbstractTaxaFragment.class.getName(), "onPause");
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                    TAG,
+                    "onPause"
+            );
+        }
 
         getLoaderManager().destroyLoader(0);
         mAdapter = null;
@@ -179,7 +198,12 @@ public abstract class AbstractTaxaFragment extends ListFragment
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
-                Log.d(AbstractTaxaFragment.class.getName(), "onMenuItemActionCollapse");
+                if (BuildConfig.DEBUG) {
+                    Log.d(
+                            TAG,
+                            "onMenuItemActionCollapse"
+                    );
+                }
 
                 // clear the search filter on collapse
                 mAdapter.getFilter().filter(null);
@@ -225,8 +249,12 @@ public abstract class AbstractTaxaFragment extends ListFragment
         long taxonClassId = cursor.getLong(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns.CLASS_ID));
         int classCount = cursor.getInt(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns.NUMBER));
 
-        Log.d(AbstractTaxaFragment.class.getName(), "onListItemClick : " + selectedTaxonId);
-        Log.d(AbstractTaxaFragment.class.getName(), "selected class : " + taxonClassId);
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                    TAG,
+                    "onListItemClick: " + selectedTaxonId + ", selected class:" + taxonClassId
+            );
+        }
 
         // replace the previous selection by this one
         if (mSavedState.getParcelable(KEY_SELECTED_TAXON) != null) {
@@ -267,13 +295,23 @@ public abstract class AbstractTaxaFragment extends ListFragment
 
     @Override
     public void refreshView() {
-        Log.d(AbstractTaxaFragment.class.getName(), "refreshView");
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                    TAG,
+                    "refreshView"
+            );
+        }
 
         ((AbstractPagerFragmentActivity) getActivity()).getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         // clear all filters, restore previously selected taxon
         if (mSavedState.containsKey(KEY_SELECTED_TAXON) && getInput().getCurrentSelectedTaxonId() == -1) {
-            Log.d(AbstractTaxaFragment.class.getName(), "clear filters");
+            if (BuildConfig.DEBUG) {
+                Log.d(
+                        TAG,
+                        "clear filters"
+                );
+            }
 
             mSavedState.remove(KEY_SELECTED_TAXON);
             mSavedState.putSerializable(KEY_SWITCH_LABEL, LabelSwitcher.FRENCH);
@@ -288,7 +326,12 @@ public abstract class AbstractTaxaFragment extends ListFragment
         if (getInput().getTaxa().get(getInput().getCurrentSelectedTaxonId()) != null) {
             mSavedState.putParcelable(KEY_SELECTED_TAXON, getInput().getTaxa().get(getInput().getCurrentSelectedTaxonId()));
 
-            Log.d(AbstractTaxaFragment.class.getName(), "restore selected taxon : " + ((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getTaxonId());
+            if (BuildConfig.DEBUG) {
+                Log.d(
+                        TAG,
+                        "restore selected taxon: " + ((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getTaxonId()
+                );
+            }
         }
 
         // remove 'KEY_SELECTED_UNITY' key if no feature was selected
@@ -555,12 +598,24 @@ public abstract class AbstractTaxaFragment extends ListFragment
                         TextView textViewTaxonDate = (TextView) view;
                         String dateString = cursor.getString(columnIndex);
 
-                        if (dateString != null) {
+                        if (!TextUtils.isEmpty(dateString)) {
                             try {
-                                textViewTaxonDate.setText(DateFormat.getLongDateFormat(getActivity()).format((new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())).parse(dateString)));
+                                textViewTaxonDate.setText(
+                                        DateFormat.getLongDateFormat(getActivity())
+                                                .format(
+                                                        (new SimpleDateFormat(
+                                                                "yyyy/MM/dd",
+                                                                Locale.getDefault()
+                                                        )).parse(dateString)
+                                                )
+                                );
                             }
                             catch (ParseException pe) {
-                                Log.w(getClass().getName(), pe.getMessage(), pe);
+                                Log.w(
+                                        TAG,
+                                        pe.getMessage(),
+                                        pe
+                                );
                             }
                         }
                         else {

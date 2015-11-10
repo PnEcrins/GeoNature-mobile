@@ -1,8 +1,5 @@
 package com.makina.ecrins.commons.content;
 
-import java.io.File;
-import java.io.IOException;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
@@ -14,25 +11,43 @@ import android.database.sqlite.SQLiteQuery;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.util.FileUtils;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
- * Simple <code>SQLiteOpenHelper</code> implementation.
+ * Simple {@code SQLiteOpenHelper} implementation.
  * <p/>
  * Try to open database from a given path.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class MainDatabaseHelper extends SQLiteOpenHelper {
+public class MainDatabaseHelper
+        extends SQLiteOpenHelper {
+
+    private static final String TAG = MainDatabaseHelper.class.getName();
 
     private File mDatabaseFile;
 
-    public MainDatabaseHelper(Context context, String databaseName, int databaseVersion) throws IOException {
-        super(context, databaseName, null, databaseVersion);
+    public MainDatabaseHelper(
+            Context context,
+            String databaseName,
+            int databaseVersion) throws IOException {
 
-        mDatabaseFile = FileUtils.getFileFromApplicationStorage(context, "databases" + File.separator + databaseName);
+        super(context,
+              databaseName,
+              null,
+              databaseVersion);
 
-        Log.d(getClass().getName(), "MainDatabaseHelper using database '" + mDatabaseFile.getAbsolutePath() + "'");
+        mDatabaseFile = FileUtils.getFileFromApplicationStorage(context,
+                                                                "databases" + File.separator + databaseName);
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "MainDatabaseHelper using database '" + mDatabaseFile.getAbsolutePath() + "'");
+        }
     }
 
     @Override
@@ -41,44 +56,76 @@ public class MainDatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(
+            SQLiteDatabase db,
+            int oldVersion,
+            int newVersion) {
         // do nothing ...
     }
 
     @Override
     public synchronized SQLiteDatabase getReadableDatabase() {
-        return SQLiteDatabase.openDatabase(mDatabaseFile.getPath(), new LeaklessCursorFactory(), SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READONLY);
+
+        return SQLiteDatabase.openDatabase(mDatabaseFile.getPath(),
+                                           new LeaklessCursorFactory(),
+                                           SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READONLY);
     }
 
     /**
-     * Custom implementation of <code>CursorFactory</code> that use {@link com.makina.ecrins.commons.content.MainDatabaseHelper.LeaklessCursor} to close automatically database instance.
+     * Custom implementation of {@code CursorFactory} that use
+     * {@link com.makina.ecrins.commons.content.MainDatabaseHelper.LeaklessCursor} to close
+     * automatically database instance.
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static class LeaklessCursorFactory implements CursorFactory {
+    public static class LeaklessCursorFactory
+            implements CursorFactory {
+
         @Override
-        public Cursor newCursor(SQLiteDatabase db, SQLiteCursorDriver masterQuery, String editTable, SQLiteQuery query) {
-            return new LeaklessCursor(db, masterQuery, editTable, query);
+        public Cursor newCursor(
+                SQLiteDatabase db,
+                SQLiteCursorDriver masterQuery,
+                String editTable,
+                SQLiteQuery query) {
+
+            return new LeaklessCursor(db,
+                                      masterQuery,
+                                      editTable,
+                                      query);
         }
     }
 
     /**
-     * Custom implementation of <code>SQLiteCursor</code> to close automatically database instance.
+     * Custom implementation of {@code SQLiteCursor} to close automatically database instance.
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static class LeaklessCursor extends SQLiteCursor {
+    public static class LeaklessCursor
+            extends SQLiteCursor {
+
         final SQLiteDatabase mDatabase;
 
         @SuppressWarnings("deprecation")
-        public LeaklessCursor(SQLiteDatabase db, SQLiteCursorDriver driver, String editTable, SQLiteQuery query) {
-            super(db, driver, editTable, query);
+        public LeaklessCursor(
+                SQLiteDatabase db,
+                SQLiteCursorDriver driver,
+                String editTable,
+                SQLiteQuery query) {
+
+            super(db,
+                  driver,
+                  editTable,
+                  query);
             this.mDatabase = db;
         }
 
         @Override
         public void close() {
-            Log.d(getClass().getName(), "Closing LeaklessCursor : '" + mDatabase.getPath() + "'");
+
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      "Closing LeaklessCursor : '" + mDatabase.getPath() + "'");
+            }
 
             mDatabase.close();
 
@@ -87,11 +134,13 @@ public class MainDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * <code>observers</code> SQLite table.
+     * {@code observers} SQLite table.
      *
      * @author @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static final class ObserversColumns implements BaseColumns {
+    public static final class ObserversColumns
+            implements BaseColumns {
+
         private ObserversColumns() {
 
         }
@@ -106,11 +155,13 @@ public class MainDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * <code>taxa</code> SQLite table.
+     * {@code taxa} SQLite table.
      *
      * @author @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static final class TaxaColumns implements BaseColumns {
+    public static final class TaxaColumns
+            implements BaseColumns {
+
         private TaxaColumns() {
 
         }
@@ -129,11 +180,13 @@ public class MainDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * <code>taxa_unities</code> SQLite table.
+     * {@code taxa_unities} SQLite table.
      *
      * @author @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static final class TaxaUnitiesColumns implements BaseColumns {
+    public static final class TaxaUnitiesColumns
+            implements BaseColumns {
+
         private TaxaUnitiesColumns() {
 
         }
@@ -150,11 +203,13 @@ public class MainDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * <code>criterion</code> SQLite table.
+     * {@code criterion} SQLite table.
      *
      * @author @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static final class CriteriaColumns implements BaseColumns {
+    public static final class CriteriaColumns
+            implements BaseColumns {
+
         private CriteriaColumns() {
 
         }
@@ -168,11 +223,13 @@ public class MainDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * <code>environments</code> SQLite table.
+     * {@code environments} SQLite table.
      *
      * @author @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static final class EnvironmentsColumns implements BaseColumns {
+    public static final class EnvironmentsColumns
+            implements BaseColumns {
+
         private EnvironmentsColumns() {
 
         }
@@ -184,11 +241,13 @@ public class MainDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * <code>inclines</code> SQLite table.
+     * {@code inclines} SQLite table.
      *
      * @author @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static final class InclinesColumns implements BaseColumns {
+    public static final class InclinesColumns
+            implements BaseColumns {
+
         private InclinesColumns() {
 
         }
@@ -201,11 +260,13 @@ public class MainDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * <code>phenology</code> SQLite table.
+     * {@code phenology} SQLite table.
      *
      * @author @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static final class PhenologyColumns implements BaseColumns {
+    public static final class PhenologyColumns
+            implements BaseColumns {
+
         private PhenologyColumns() {
 
         }
@@ -218,11 +279,13 @@ public class MainDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * <code>physiognomy</code> SQLite table.
+     * {@code physiognomy} SQLite table.
      *
      * @author @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static final class PhysiognomyColumns implements BaseColumns {
+    public static final class PhysiognomyColumns
+            implements BaseColumns {
+
         private PhysiognomyColumns() {
 
         }
@@ -235,11 +298,13 @@ public class MainDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * <code>disturbances</code> SQLite table.
+     * {@code disturbances} SQLite table.
      *
      * @author @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static final class DisturbancesColumns implements BaseColumns {
+    public static final class DisturbancesColumns
+            implements BaseColumns {
+
         private DisturbancesColumns() {
 
         }
@@ -253,11 +318,13 @@ public class MainDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * <code>prospecting_areas</code> SQLite table.
+     * {@code prospecting_areas} SQLite table.
      *
      * @author @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static final class ProspectingAreasColumns implements BaseColumns {
+    public static final class ProspectingAreasColumns
+            implements BaseColumns {
+
         private ProspectingAreasColumns() {
 
         }
@@ -270,11 +337,13 @@ public class MainDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * <code>search</code> SQLite table.
+     * {@code search} SQLite table.
      *
      * @author @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static final class SearchColumns implements BaseColumns {
+    public static final class SearchColumns
+            implements BaseColumns {
+
         private SearchColumns() {
 
         }
