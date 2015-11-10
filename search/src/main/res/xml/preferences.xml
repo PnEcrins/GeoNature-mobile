@@ -24,5 +24,5 @@
             android:title="@string/preference_category_about_app_version"
             android:selectable="false"/>
     </PreferenceCategory>
-    
+
 </PreferenceScreen>
