@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 19
+        targetSdkVersion rootProject.ext.compileSdkVersion
         versionName version
     }
 

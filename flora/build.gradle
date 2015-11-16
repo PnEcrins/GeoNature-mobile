@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "com.makina.ecrins.flora"
         minSdkVersion 10
-        targetSdkVersion 19
+        targetSdkVersion rootProject.ext.compileSdkVersion
         versionName version
         buildConfigField "String", "BUILD_DATE", "\"" + new Date().getTime() + "\""
     }
@@ -39,7 +39,6 @@ android {
         }
 
         release {
-            // noinspection GroovyAssignabilityCheck
             signingConfig signingConfigs.release
             debuggable false
             minifyEnabled false
@@ -48,6 +47,7 @@ android {
 
             applicationVariants.all { variant ->
                 variant.outputs.each  { output ->
+                    // noinspection GroovyAssignabilityCheck
                     output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace(".apk", "-" + defaultConfig.versionName + ".apk"))
                 }
             }
