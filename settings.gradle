@@ -1,1 +1,1 @@
-include ':commons', ':maps', ':flora', ':app', ':search'
+include ':commons', ':maps', ':app', ':flora', ':search', ':mortality'

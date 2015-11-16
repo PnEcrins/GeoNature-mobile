@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/commons/commons.iml" filepath="$PROJECT_DIR$/commons/commons.iml" />
       <module fileurl="file://$PROJECT_DIR$/flora/flora.iml" filepath="$PROJECT_DIR$/flora/flora.iml" />
       <module fileurl="file://$PROJECT_DIR$/maps/maps.iml" filepath="$PROJECT_DIR$/maps/maps.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mortality/mortality.iml" filepath="$PROJECT_DIR$/mortality/mortality.iml" />
       <module fileurl="file://$PROJECT_DIR$/pne-android.iml" filepath="$PROJECT_DIR$/pne-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/search/search.iml" filepath="$PROJECT_DIR$/search/search.iml" />
     </modules>

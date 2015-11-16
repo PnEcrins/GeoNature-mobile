@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/commons" />
             <option value="$PROJECT_DIR$/flora" />
             <option value="$PROJECT_DIR$/maps" />
+            <option value="$PROJECT_DIR$/mortality" />
             <option value="$PROJECT_DIR$/search" />
           </set>
         </option>
