@@ -59,7 +59,7 @@ public class MainApplication extends Application {
         Log.d(getClass().getName(),
                 "default storage " + Environment.getExternalStorageDirectory().getPath());
         Log.d(getClass().getName(),
-                "use storage " + FileUtils.getExternalStorageDirectory(this).getPath());
+                "use storage " + FileUtils.getExternalStorageDirectory().getPath());
     }
 
     public boolean isCloseApplication() {

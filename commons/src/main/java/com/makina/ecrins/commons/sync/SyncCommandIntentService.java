@@ -161,9 +161,9 @@ public class SyncCommandIntentService extends IntentService {
 
                 File fileToMove = FileUtils.getFile(Environment.getExternalStorageDirectory(), FileUtils.getRelativeSharedPath(mContext) + params[0]);
 
-                if (fileToMove.exists() && !Environment.getExternalStorageDirectory().getAbsolutePath().equals(FileUtils.getExternalStorageDirectory(mContext).getAbsolutePath())) {
-                    FileUtils.deleteQuietly(FileUtils.getFile(FileUtils.getExternalStorageDirectory(mContext), FileUtils.getRelativeSharedPath(mContext) + params[0]));
-                    FileUtils.moveFileToDirectory(fileToMove, FileUtils.getFile(FileUtils.getExternalStorageDirectory(mContext), FileUtils.getRelativeSharedPath(mContext), relativePath.toString()), true);
+                if (fileToMove.exists() && !Environment.getExternalStorageDirectory().getAbsolutePath().equals(FileUtils.getExternalStorageDirectory().getAbsolutePath())) {
+                    FileUtils.deleteQuietly(FileUtils.getFile(FileUtils.getExternalStorageDirectory(), FileUtils.getRelativeSharedPath(mContext) + params[0]));
+                    FileUtils.moveFileToDirectory(fileToMove, FileUtils.getFile(FileUtils.getExternalStorageDirectory(), FileUtils.getRelativeSharedPath(mContext), relativePath.toString()), true);
                 }
             }
             catch (NameNotFoundException | IOException ge) {

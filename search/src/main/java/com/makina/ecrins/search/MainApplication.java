@@ -48,7 +48,7 @@ public class MainApplication
         );
         Log.d(
                 getClass().getName(),
-                "use storage " + FileUtils.getExternalStorageDirectory(this).getPath()
+                "use storage " + FileUtils.getExternalStorageDirectory().getPath()
         );
     }
 
