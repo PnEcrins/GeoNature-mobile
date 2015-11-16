@@ -44,7 +44,6 @@
         android:layout_toLeftOf="@+id/imageViewTaxonComment"
         android:layout_toRightOf="@id/radioButton"
         android:orientation="vertical"
-        android:textAppearance="?android:attr/textAppearanceMedium"
         android:visibility="gone"
         tools:ignore="RtlHardcoded">
     </LinearLayout>
