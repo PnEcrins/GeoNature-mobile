@@ -181,16 +181,20 @@ public abstract class AbstractInput
      */
     public static long generateId() {
 
-        final Calendar calendar = Calendar.getInstance();
-        calendar.set(2000,
+        final Calendar now = Calendar.getInstance();
+        now.set(Calendar.MILLISECOND,
+                     0);
+
+        final Calendar start = Calendar.getInstance();
+        start.set(2000,
                      Calendar.JANUARY,
                      1,
                      0,
                      0,
                      0);
-        calendar.set(Calendar.MILLISECOND,
+        start.set(Calendar.MILLISECOND,
                      0);
 
-        return calendar.getTimeInMillis() / 1000;
+        return (now.getTimeInMillis() - start.getTimeInMillis()) / 1000;
     }
 }
