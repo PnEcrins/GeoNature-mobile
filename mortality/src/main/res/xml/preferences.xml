@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/preference_category_observers">
+        <PreferenceScreen
+            android:key="default_observer"
+            android:title="@string/preference_category_observers_default_observer">
+            <intent android:action="com.makina.ecrins.mortality.ui.observers.ObserversFragmentActivity"/>
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/preference_category_pointing">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pointing_display_scale"
+            android:title="@string/preference_category_pointing_display_scale"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/preference_category_density">
+        <ListPreference
+            android:defaultValue="0"
+            android:dialogTitle="@string/preference_category_density_dialog"
+            android:entries="@array/viewport_target_density_labels"
+            android:entryValues="@array/viewport_target_density_values"
+            android:key="density_display_map"
+            android:persistent="true"
+            android:shouldDisableView="false"
+            android:title="@string/preference_category_density_title"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

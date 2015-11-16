@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="app_name">Mortality</string>
+    
+    <string name="activity_main_title">Mortality</string>
+    <string name="activity_synchro_title">Data synchronization</string>
+    <string name="activity_preferences_title">Settings</string>
+    <string name="activity_observers_title">Observers</string>
+    
+    <string name="preference_category_observers">Observers</string>
+    <string name="preference_category_observers_default_observer">Default observer</string>
+    <string name="preference_category_pointing">Pointing</string>
+    <string name="preference_category_pointing_display_scale">Display the map scale</string>
+    <string name="preference_category_density">Quality</string>
+    <string name="preference_category_density_title">Quality rendering of map</string>
+    <string name="preference_category_density_dialog">Choice of rendering</string>
+    
+    <string name="pager_fragment_webview_title">Pointing</string>
+    <string name="pager_fragment_counting_title">Sex &#38; age</string>
+    <string name="pager_fragment_additional_information_title">Additional information</string>
+    
+    <string name="observers_and_date_date_format">MMMM dd, yyyy</string>
+    
+    <string name="message_saving_current_input_failed">Unable to save your input</string>
+    
+    <string name="progress_message_saving_current_input">Saving current input &#8230;</string>
+    
+    <string name="alert_dialog_confirm_cancel_title">Cancelling ?</string>
+    <string name="alert_dialog_confirm_cancel_input_all_message">Cancelling all the current entry ?</string>
+    <string name="alert_dialog_confirm_cancel_input_current_taxon_message">Cancelling the current taxon for this entry ?</string>
+    <string name="alert_dialog_confirm_quit_title">Quit ?</string>
+    <string name="alert_dialog_confirm_quit_go_home_message">Save and go back to home ?</string>
+    <string name="alert_dialog_confirm_quit_finish_message">Save and quit ?</string>
+    
+    <string name="taxa_class_amphibia_hint">Amphibia</string>
+    <string name="taxa_class_mammalia_hint">Mammalia</string>
+    <string name="taxa_class_aves_hint">Aves</string>
+    <string name="taxa_class_osteichthyes_hint">Osteichthyes</string>
+    <string name="taxa_class_reptilia_hint">Reptilia</string>
+    
+    <string name="counting_no_data">No counting to display</string>
+    <string name="counting_adult_male">Adult male</string>
+    <string name="counting_adult_female">Adult female</string>
+    <string name="counting_adult_undetermined">Unknown adult</string>
+    <string name="counting_not_adult">Not adult</string>
+    <string name="counting_young">Young</string>
+    <string name="counting_yearling">Yearling</string>
+    <string name="counting_undetermined">Sex and age undetermined</string>
+    
+    <string name="additional_information_sample_taken">Sample taken</string>
+    <string name="additional_information_hint">Add a comment</string>
+    <string name="additional_information_hint_mandatory">Add a comment (mandatory)</string>
+    
+    <string name="results_sample_taken">Sample taken</string>
+    
+</resources>

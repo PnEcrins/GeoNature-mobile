@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassAmphibia"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_amphibia_hint"
+        android:src="@drawable/ic_action_amphibia"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassMammalia"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toRightOf="@+id/taxaFilterClassAmphibia"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_mammalia_hint"
+        android:src="@drawable/ic_action_mammalia"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassAves"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toRightOf="@+id/taxaFilterClassMammalia"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_aves_hint"
+        android:src="@drawable/ic_action_aves"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassOsteichthyes"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toRightOf="@+id/taxaFilterClassAves"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_osteichthyes_hint"
+        android:src="@drawable/ic_action_osteichthyes"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassReptilia"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toRightOf="@+id/taxaFilterClassOsteichthyes"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_reptilia_hint"
+        android:src="@drawable/ic_action_reptilia"/>
+
+    <View
+        android:id="@+id/viewSeparator"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:alpha="0.5"
+        android:background="@android:color/darker_gray"/>
+
+</RelativeLayout>
