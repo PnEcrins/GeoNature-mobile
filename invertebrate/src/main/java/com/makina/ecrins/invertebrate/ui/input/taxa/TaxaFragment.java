@@ -474,7 +474,7 @@ public class TaxaFragment
     public void onClick(View v) {
 
         if (v.getId() == R.id.taxaFilterStatusView) {
-            TaxaStatusFilterDialogFragment dialogFragment = TaxaStatusFilterDialogFragment.newInstance();
+            final TaxaStatusFilterDialogFragment dialogFragment = TaxaStatusFilterDialogFragment.newInstance();
             dialogFragment.setHandler(new TaxaHandler(TaxaFragment.this));
             dialogFragment.getStatusFilter()
                           .clear();
@@ -502,7 +502,7 @@ public class TaxaFragment
                 (v.getId() == R.id.taxaFilterClassAnnelida) ||
                 (v.getId() == R.id.taxaFilterClassGastropoda) ||
                 (v.getId() == R.id.taxaFilterClassLamellibranchia)) {
-            TaxaFilterClass.TaxonFilterClass filterClass = ((TaxaFilterClass) getSavedInstanceState().getParcelable(KEY_FILTER_CLASSES)).getFilterClasses()
+            final TaxaFilterClass.TaxonFilterClass filterClass = ((TaxaFilterClass) getSavedInstanceState().getParcelable(KEY_FILTER_CLASSES)).getFilterClasses()
                                                                                                                                         .get(v.getId());
 
             if (filterClass.isSelected()) {

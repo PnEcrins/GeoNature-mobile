@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Simple{@link AbstractSettingsService} implementation
+ * Simple {@link AbstractSettingsService} implementation
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */

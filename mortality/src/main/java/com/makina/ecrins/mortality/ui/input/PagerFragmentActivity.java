@@ -49,6 +49,7 @@ public class PagerFragmentActivity
     private final AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
         @Override
         public void onPositiveButtonClick(DialogInterface dialog) {
+
             PagerFragmentActivity.this.finish();
         }
 
@@ -200,7 +201,7 @@ public class PagerFragmentActivity
     @Override
     protected Map<Integer, IValidateFragment> getPagerFragments() {
 
-        Map<Integer, IValidateFragment> fragments = new LinkedHashMap<Integer, IValidateFragment>();
+        final Map<Integer, IValidateFragment> fragments = new LinkedHashMap<>();
 
         fragments.put(R.string.pager_fragment_observers_and_date_title,
                       new ObserversAndDateFragment());

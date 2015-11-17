@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * Selected observer and current date as first <code>Fragment</code> used by {@link PagerFragmentActivity}.
+ * Selected observer and current date as first {@ode Fragment} used by {@link PagerFragmentActivity}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
