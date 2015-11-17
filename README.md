@@ -1,6 +1,8 @@
 # PNE mobile applications
 [Mobile applications](https://gitlab.makina-corpus.net/geobi-ecrins/pne-android) about:
 
+* Fauna
+* Invertebrate
 * Mortality
 * Flora
 * Search
