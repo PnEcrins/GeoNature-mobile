@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.makina.ecrins.commons.ui.input.taxa.TaxaFilterStatusView
+        android:id="@+id/taxaFilterStatusView"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_alignParentRight="true"
+        android:clickable="true"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassMalacostraca"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_malacostraca_hint"
+        android:src="@drawable/ic_action_lobster"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassInsecta"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toRightOf="@+id/taxaFilterClassMalacostraca"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_insecta_hint"
+        android:src="@drawable/ic_action_fly"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassMyriapoda"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toRightOf="@+id/taxaFilterClassInsecta"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_myriapoda_hint"
+        android:src="@drawable/ic_action_millipede"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassArachnida"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toRightOf="@+id/taxaFilterClassMyriapoda"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_arachnida_hint"
+        android:src="@drawable/ic_action_spider"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassAnnelida"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toRightOf="@+id/taxaFilterClassArachnida"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_annelida_hint"
+        android:src="@drawable/ic_action_leech"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassLamellibranchia"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toRightOf="@+id/taxaFilterClassGastropoda"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_lamellibranchia_hint"
+        android:src="@drawable/ic_action_mussel"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassGastropoda"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toRightOf="@+id/taxaFilterClassAnnelida"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_gastropoda_hint"
+        android:src="@drawable/ic_action_snail"/>
+
+    <View
+        android:id="@+id/viewActionSeparator1"
+        android:layout_width="1dp"
+        android:layout_height="27dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_toLeftOf="@+id/taxaFilterStatusView"
+        android:alpha="0.5"
+        android:background="@android:color/darker_gray"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterHeritageView"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/viewActionSeparator1"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_heritage_hint"
+        android:src="@drawable/ic_action_taxon_heritage"/>
+
+    <View
+        android:id="@+id/viewSeparator"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:alpha="0.5"
+        android:background="@android:color/darker_gray"/>
+
+</RelativeLayout>
