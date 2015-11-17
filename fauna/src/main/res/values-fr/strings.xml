@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="app_name">Faune</string>
+    
+    <string name="activity_main_title">Faune</string>
+    <string name="activity_synchro_title">Synchronisation des données</string>
+    <string name="activity_preferences_title">Paramètres</string>
+    <string name="activity_observers_title">Observateurs</string>
+    
+    <string name="preference_category_observers">Observateurs</string>
+    <string name="preference_category_observers_default_observer">Observateur par défaut</string>
+    <string name="preference_category_pointing">Pointage</string>
+    <string name="preference_category_pointing_display_geographic_units">Afficher les unités geographiques</string>
+    <string name="preference_category_pointing_display_scale">Afficher l\'échelle</string>
+    <string name="preference_category_taxa">Taxons</string>
+    <string name="preference_category_taxa_display_details">Afficher les details pour chaque taxon</string>
+    <string name="preference_category_density">Qualité</string>
+    <string name="preference_category_density_title">Qualité du rendu de la carte</string>
+    <string name="preference_category_density_dialog">Choix du rendu</string>
+    
+    <string name="pager_fragment_webview_title">Pointage</string>
+    
+    <string name="observers_and_date_date_format">dd MMMM yyyy</string>
+    
+    <string name="message_unities_not_found">Erreur lors du chargement des unités \'%1$s\'</string>
+    <string name="message_saving_current_input_failed">Erreur lors de la sauvegarde de la saisie</string>
+    
+    <string name="progress_message_loading_unities">Chargement des unités &#8230;</string>
+    <string name="progress_message_saving_current_input">Sauvegarde de la saisie &#8230;</string>
+    
+    <string name="alert_dialog_confirm_cancel_title">Annuler ?</string>
+    <string name="alert_dialog_confirm_cancel_input_all_message">Abandonner toute la saisie ?</string>
+    <string name="alert_dialog_confirm_cancel_input_current_taxon_message">Annuler la saisie du taxon en cours ?</string>
+    <string name="alert_dialog_confirm_quit_title">Quitter ?</string>
+    <string name="alert_dialog_confirm_quit_go_home_message">Sauvegarder et retourner à l\'accueil ?</string>
+    <string name="alert_dialog_confirm_quit_finish_message">Sauvegarder et quitter ?</string>
+    
+    <string name="taxa_class_amphibia_hint">amphibiens</string>
+    <string name="taxa_class_mammalia_hint">mammifères</string>
+    <string name="taxa_class_aves_hint">oiseaux</string>
+    <string name="taxa_class_osteichthyes_hint">poissons</string>
+    <string name="taxa_class_reptilia_hint">reptiles</string>
+    
+    <plurals name="results_input_selected_taxon_counting">
+        <item quantity="one">Dénombrement : 1</item>
+        <item quantity="other">Dénombrement : %d</item>
+    </plurals>
+    <string name="results_input_selected_taxon_criterion">Critère : %1$s</string>
+    
+</resources>

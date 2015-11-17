@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="512"
+   height="512"
+   id="svg3043"
+   version="1.1"
+   inkscape:version="0.48.2 r9819"
+   sodipodi:docname="male_female_symbol.svg"
+   inkscape:export-filename="/Users/sgrimault/Desktop/male_female_symbol.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <metadata
+     id="metadata3051">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs3049" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1498"
+     inkscape:window-height="885"
+     id="namedview3047"
+     showgrid="true"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:zoom="1.17"
+     inkscape:cx="167.42047"
+     inkscape:cy="289.55786"
+     inkscape:window-x="105"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer4">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3112"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="94,435"
+       id="guide3155" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="418,345"
+       id="guide3157" />
+  </sodipodi:namedview>
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="male_female"
+     style="display:none">
+    <g
+       id="g3161"
+       transform="matrix(6.7252201,0,0,6.7252201,81.144296,-2937.3127)"
+       style="stroke:#333333">
+      <path
+         style="fill:none;stroke:#333333;stroke-width:4.89327288"
+         inkscape:connector-curvature="0"
+         id="path3045"
+         d="m 31.759643,454.92774 a 18.090285,18.090285 0 1 0 2.965617,2.96562 z m 0,0 1.482809,1.48281 16.310912,-16.31092 m -13.345292,0 h 13.345292 v 13.3453" />
+      <path
+         style="fill:none;stroke:#333333;stroke-width:4.92788458"
+         inkscape:connector-curvature="0"
+         d="M 29.813702,499.68029 H 11.08774 m 9.362981,9.85577 V 487.0649 a 18.036058,18.036058 0 1 1 0.09856,0"
+         id="path3103" />
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="male"
+     style="display:none">
+    <path
+       style="fill:none;stroke:#333333;stroke-width:38.6003952"
+       inkscape:connector-curvature="0"
+       id="path3145"
+       d="m 301.4347,187.17113 a 142.70453,142.70453 0 1 0 23.39422,23.39422 z m 0,0 11.69707,11.69715 L 441.7998,70.200145 m -105.2738,0 H 441.7998 V 175.47405" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="male_and_female">
+    <g
+       id="g3001"
+       transform="matrix(0.85077404,0,0,0.85077404,16.804877,103.15849)">
+      <path
+         style="fill:none;stroke:#333333;stroke-width:38.6003952;display:inline"
+         inkscape:connector-curvature="0"
+         id="path2992"
+         d="m 397.63471,22.071075 a 142.70453,142.70453 0 1 0 23.39422,23.39422 z m 0,0 11.69707,11.69715 128.66803,-128.668139 m -105.2738,0 h 105.2738 V 10.373995" />
+      <path
+         style="fill:none;stroke:#333333;stroke-width:38.94230652;display:inline"
+         inkscape:connector-curvature="0"
+         d="M 240.60079,376.14422 H 92.620142 m 73.990268,77.88463 V 276.45187 a 142.52885,142.52885 0 1 1 0.77918,0"
+         id="path2996" />
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="female"
+     style="display:none">
+    <path
+       style="fill:none;stroke:#333333;stroke-width:38.94230652;display:inline"
+       inkscape:connector-curvature="0"
+       d="M 329.60078,409.43244 H 181.62003 m 73.99037,77.88463 V 309.74009 a 142.52885,142.52885 0 1 1 0.77919,0"
+       id="path3152" />
+  </g>
+</svg>

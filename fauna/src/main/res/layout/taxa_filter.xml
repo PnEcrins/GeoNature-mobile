@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.makina.ecrins.commons.ui.input.taxa.TaxaFilterStatusView
+        android:id="@+id/taxaFilterStatusView"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_alignParentRight="true"
+        android:clickable="true"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassAmphibia"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_amphibia_hint"
+        android:src="@drawable/ic_action_amphibia"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassMammalia"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toRightOf="@+id/taxaFilterClassAmphibia"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_mammalia_hint"
+        android:src="@drawable/ic_action_mammalia"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassAves"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toRightOf="@+id/taxaFilterClassMammalia"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_aves_hint"
+        android:src="@drawable/ic_action_aves"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassOsteichthyes"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toRightOf="@+id/taxaFilterClassAves"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_osteichthyes_hint"
+        android:src="@drawable/ic_action_osteichthyes"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterClassReptilia"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toRightOf="@+id/taxaFilterClassOsteichthyes"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_class_reptilia_hint"
+        android:src="@drawable/ic_action_reptilia"/>
+
+    <View
+        android:id="@+id/viewActionSeparator1"
+        android:layout_width="1dp"
+        android:layout_height="27dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_toLeftOf="@+id/taxaFilterStatusView"
+        android:alpha="0.5"
+        android:background="@android:color/darker_gray"/>
+
+    <ImageButton
+        android:id="@+id/taxaFilterHeritageView"
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/viewActionSeparator1"
+        android:clickable="true"
+        android:contentDescription="@string/taxa_heritage_hint"
+        android:src="@drawable/ic_action_taxon_heritage"/>
+
+    <View
+        android:id="@+id/viewSeparator"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:alpha="0.5"
+        android:background="@android:color/darker_gray"/>
+
+</RelativeLayout>
