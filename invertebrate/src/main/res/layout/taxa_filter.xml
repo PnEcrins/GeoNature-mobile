@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.makina.ecrins.mobile.commons.ui.input.taxa.TaxaFilterStatusView
+    <com.makina.ecrins.commons.ui.input.taxa.TaxaFilterStatusView
         android:id="@+id/taxaFilterStatusView"
         android:layout_width="32dip"
         android:layout_height="32dip"
