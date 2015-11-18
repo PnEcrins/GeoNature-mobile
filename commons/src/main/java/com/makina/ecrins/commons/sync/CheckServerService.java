@@ -12,31 +12,24 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
+import com.makina.ecrins.commons.BuildConfig;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.HttpURLConnection;
 
 /**
- * <Code>Service</code> implementation to check server status.
+ * {@code Service} implementation to check server status.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
 @SuppressLint("Registered")
-public class CheckServerService extends Service {
+public class CheckServerService
+        extends Service {
+
+    private static final String TAG = CheckServerService.class.getName();
 
     public static final int HANDLER_SYNC_CHECK_SERVER_STATUS = 0;
     public static final int HANDLER_SYNC_SERVER_STATUS_PENDING = 1;
@@ -53,16 +46,24 @@ public class CheckServerService extends Service {
 
     @Override
     public void onCreate() {
+
         super.onCreate();
 
         mSyncSettings = null;
 
-        Log.d(getClass().getName(), "onCreate");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onCreate");
+        }
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(getClass().getName(), "onBind " + intent);
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onBind " + intent);
+        }
 
         Bundle extras = intent.getExtras();
 
@@ -80,13 +81,19 @@ public class CheckServerService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.d(getClass().getName(), "onUnbind");
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onUnbind");
+        }
+
         mOutMessenger = null;
 
         return super.onUnbind(intent);
     }
 
     protected SyncSettings getSyncSettings() {
+
         return mSyncSettings;
     }
 
@@ -96,6 +103,7 @@ public class CheckServerService extends Service {
      * @return a new instance of {@link com.makina.ecrins.commons.sync.CheckServerService.CheckServerStatusAsyncTask}
      */
     protected CheckServerStatusAsyncTask getAsyncTask() {
+
         return new CheckServerStatusAsyncTask();
     }
 
@@ -112,6 +120,7 @@ public class CheckServerService extends Service {
      *             </p>
      */
     private void sendMessage(int what) {
+
         Message message = Message.obtain();
         message.what = what;
 
@@ -120,85 +129,102 @@ public class CheckServerService extends Service {
                 mOutMessenger.send(message);
             }
             catch (RemoteException re) {
-                Log.w(getClass().getName(), re.getMessage(), re);
+                Log.w(TAG,
+                      re.getMessage(),
+                      re);
             }
         }
     }
 
-    private static class IncomingHandler extends Handler {
+    private static class IncomingHandler
+            extends Handler {
+
         private final WeakReference<CheckServerService> mCheckServerService;
 
         public IncomingHandler(CheckServerService pCheckServerService) {
+
             super();
             mCheckServerService = new WeakReference<>(pCheckServerService);
         }
 
         @Override
         public void handleMessage(Message msg) {
+
             CheckServerService checkServerService = mCheckServerService.get();
 
             switch (msg.what) {
                 case CheckServerService.HANDLER_SYNC_CHECK_SERVER_STATUS:
-                    Log.d(getClass().getName(), "handleMessage HANDLER_SYNC_CHECK_SERVER_STATUS");
-                    checkServerService.getAsyncTask().execute();
+
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "handleMessage HANDLER_SYNC_CHECK_SERVER_STATUS");
+                    }
+
+                    checkServerService.getAsyncTask()
+                                      .execute();
                     break;
             }
         }
     }
 
     /**
-     * <code>AsyncTask</code> basic implementation to check server status.
+     * {@code AsyncTask} basic implementation to check server status.
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    private class CheckServerStatusAsyncTask extends AsyncTask<Void, Void, StatusLine> {
-        @Override
-        protected StatusLine doInBackground(Void... params) {
-            sendMessage(CheckServerService.HANDLER_SYNC_SERVER_STATUS_PENDING);
+    private class CheckServerStatusAsyncTask
+            extends AsyncTask<Void, Void, JSONObject> {
 
-            final DefaultHttpClient client = new DefaultHttpClient();
-            final HttpParams httpParameters = client.getParams();
-            HttpConnectionParams.setConnectionTimeout(httpParameters, 5000);
-            HttpConnectionParams.setSoTimeout(httpParameters, 5000);
+        private final WebAPIClient webAPIClient;
 
-            final List<NameValuePair> nameValuePairs = new ArrayList<>(1);
-            nameValuePairs.add(new BasicNameValuePair("token", getSyncSettings().getToken()));
+        public CheckServerStatusAsyncTask() {
 
-            String urlStatus = getSyncSettings().getServerUrl() + getSyncSettings().getStatusUrl();
-
-            Log.d(getClass().getName(), "url to check : " + urlStatus);
-
-            HttpPost httpPost = new HttpPost(urlStatus);
-
-            try {
-                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                HttpResponse httpResponse = client.execute(httpPost);
-
-                return httpResponse.getStatusLine();
-            }
-            catch (UnsupportedEncodingException | ClientProtocolException ge) {
-                Log.w(getClass().getName(), ge.getMessage());
-            }
-            catch (IOException ioe) {
-                Log.w(getClass().getName(), ioe);
-            }
-
-            return null;
+            this.webAPIClient = new WebAPIClient();
         }
 
         @Override
-        protected void onPostExecute(StatusLine result) {
+        protected JSONObject doInBackground(Void... params) {
+
+            sendMessage(CheckServerService.HANDLER_SYNC_SERVER_STATUS_PENDING);
+
+            JSONObject response = null;
+
+            try {
+                final HttpURLConnection httpURLConnection = this.webAPIClient.post(getSyncSettings().getServerUrl() + getSyncSettings().getStatusUrl(),
+                                                                                   getSyncSettings().getToken(),
+                                                                                   null);
+                httpURLConnection.connect();
+
+                switch (httpURLConnection.getResponseCode()) {
+                    case HttpURLConnection.HTTP_OK:
+                        response = this.webAPIClient.readInputStreamAsJson(httpURLConnection.getInputStream());
+                        break;
+                    default:
+                        break;
+                }
+
+                httpURLConnection.disconnect();
+            }
+            catch (IOException ioe) {
+                Log.w(TAG,
+                      ioe.getMessage());
+            }
+
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject result) {
+
             if (result == null) {
                 sendMessage(CheckServerService.HANDLER_SYNC_SERVER_STATUS_KO);
             }
             else {
-                switch (result.getStatusCode()) {
-                    case HttpStatus.SC_OK:
-                        sendMessage(CheckServerService.HANDLER_SYNC_SERVER_STATUS_OK);
-                        break;
-                    default:
-                        sendMessage(CheckServerService.HANDLER_SYNC_SERVER_STATUS_KO);
-                        break;
+                if (this.webAPIClient.checkStatus(result)) {
+                    sendMessage(CheckServerService.HANDLER_SYNC_SERVER_STATUS_OK);
+                }
+                else {
+                    sendMessage(CheckServerService.HANDLER_SYNC_SERVER_STATUS_KO);
                 }
             }
         }
