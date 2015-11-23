@@ -218,7 +218,7 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
             mWebViewFragment.invalidateMenu();
 
             // for debugging purpose only
-            if (this.mIsActionMarkerFromLocationSelected && DebugUtils.isDebuggable(mWebViewFragment.getContext()) && DebugUtils.hasAccessMockLocationPermission(mWebViewFragment.getContext())) {
+            if (this.mIsActionMarkerFromLocationSelected && DebugUtils.isDebuggable(mWebViewFragment.getContext())) {
                 mWebViewFragment.getMockLocationProvider()
                         .pushRandomLocationFromCurrentLocation(50.0);
             }

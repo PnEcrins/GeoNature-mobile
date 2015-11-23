@@ -49,7 +49,7 @@ public class MainControl extends AbstractControl implements LocationListener {
 
                 mWebViewFragment.requestLocationUpdates(MainControl.this);
 
-                if (DebugUtils.isDebuggable(mWebViewFragment.getContext()) && DebugUtils.hasAccessMockLocationPermission(mWebViewFragment.getContext())) {
+                if (DebugUtils.isDebuggable(mWebViewFragment.getContext())) {
                     mWebViewFragment.getMockLocationProvider()
                             .pushLocation(new Geolocation(6.027559215973642, 44.772039260501735, 10));
                 }

@@ -17,6 +17,7 @@ import com.makina.ecrins.fauna.content.MainContentProvider;
 import com.makina.ecrins.fauna.settings.AppSettings;
 import com.makina.ecrins.fauna.settings.SettingsService;
 import com.makina.ecrins.fauna.ui.input.PagerFragmentActivity;
+import com.makina.ecrins.fauna.ui.settings.MainPreferencesActivity;
 import com.makina.ecrins.fauna.ui.sync.SynchronizationActivity;
 import com.makina.ecrins.maps.geojson.Feature;
 

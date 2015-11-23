@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <string name="preference_category_observers_no_default_set">Non défini</string>
+    <string name="preference_category_about">A propos</string>
+    <string name="preference_category_about_app_version">Version de l\'application</string>
+
     <string name="synchro_device_status">Etat du terminal</string>
     <string name="synchro_last_synchronization">Dernière synchronisation</string>
     <string name="synchro_last_synchronization_date">le EEE dd MMM yyyy à kk:mm:ss</string>

@@ -1,4 +1,4 @@
-package com.makina.ecrins.search.ui.settings;
+package com.makina.ecrins.mortality.ui.settings;
 
 import com.makina.ecrins.commons.ui.settings.AbstractPreferencesActivity;
 import com.makina.ecrins.commons.ui.settings.AbstractPreferencesFragment;

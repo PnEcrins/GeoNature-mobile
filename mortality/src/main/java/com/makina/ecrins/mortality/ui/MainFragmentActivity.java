@@ -15,6 +15,7 @@ import com.makina.ecrins.mortality.content.MainContentProvider;
 import com.makina.ecrins.mortality.settings.AppSettings;
 import com.makina.ecrins.mortality.settings.SettingsService;
 import com.makina.ecrins.mortality.ui.input.PagerFragmentActivity;
+import com.makina.ecrins.mortality.ui.settings.MainPreferencesActivity;
 import com.makina.ecrins.mortality.ui.sync.SynchronizationActivity;
 
 /**

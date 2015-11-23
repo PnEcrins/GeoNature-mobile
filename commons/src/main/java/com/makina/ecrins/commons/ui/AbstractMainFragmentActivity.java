@@ -18,12 +18,12 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -69,11 +69,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public abstract class AbstractMainFragmentActivity extends FragmentActivity
-        implements
-        OnClickListener,
-        OnItemLongClickListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class AbstractMainFragmentActivity
+        extends AppCompatActivity
+        implements OnClickListener,
+                   OnItemLongClickListener,
+                   LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String ALERT_DIALOG_DELETE_INPUTS_FRAGMENT = "alert_dialog_delete_inputs";
 

@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">Flore prioritaire</string>
-    <string name="app_version">%1$s (%2$s)\n%3$s</string>
 
     <string name="activity_main_title">Flore prioritaire</string>
     <string name="activity_synchro_title">Synchronisation des données</string>
@@ -20,8 +19,6 @@
     <string name="preference_category_density">Qualité</string>
     <string name="preference_category_density_title">Qualité du rendu de la carte</string>
     <string name="preference_category_density_dialog">Choix du rendu</string>
-    <string name="preference_category_about">A propos</string>
-    <string name="preference_category_about_app_version">Version de l\'application</string>
 
     <string name="pager_fragment_taxa_found_title">Avez vous trouvé l\'espèce ?</string>
     <string name="pager_fragment_webview_ap_title">Carte (AP)</string>

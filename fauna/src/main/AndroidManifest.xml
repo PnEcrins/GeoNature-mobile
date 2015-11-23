@@ -2,7 +2,7 @@
     package="com.makina.ecrins.fauna"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:sharedUserId="com.makina.ecrins"
-    android:versionCode="94">
+    android:versionCode="121">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.MainPreferencesActivity"
+            android:name=".ui.settings.MainPreferencesActivity"
             android:label="@string/activity_preferences_title">
         </activity>
         <activity

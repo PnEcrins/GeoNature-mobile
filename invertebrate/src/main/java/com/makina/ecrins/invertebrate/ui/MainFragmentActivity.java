@@ -17,6 +17,7 @@ import com.makina.ecrins.invertebrate.content.MainContentProvider;
 import com.makina.ecrins.invertebrate.settings.AppSettings;
 import com.makina.ecrins.invertebrate.settings.SettingsService;
 import com.makina.ecrins.invertebrate.ui.input.PagerFragmentActivity;
+import com.makina.ecrins.invertebrate.ui.settings.MainPreferencesActivity;
 import com.makina.ecrins.invertebrate.ui.sync.SynchronizationActivity;
 import com.makina.ecrins.maps.geojson.Feature;
 

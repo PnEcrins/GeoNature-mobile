@@ -166,7 +166,7 @@ public abstract class AbstractTaxaFragment extends ListFragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         final MenuItem menuItemSearch = menu.add(Menu.NONE, 0, Menu.NONE, R.string.action_search);
-        menuItemSearch.setIcon(R.drawable.abc_ic_search);
+        menuItemSearch.setIcon(R.drawable.ic_action_search);
         MenuItemCompat.setShowAsAction(menuItemSearch, MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 
         SearchView searchView = new SearchView(((AbstractPagerFragmentActivity) getActivity()).getSupportActionBar().getThemedContext());

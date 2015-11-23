@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">Flora</string>
-    <string name="app_version">%1$s (%2$s)\n%3$s</string>
 
     <string name="activity_main_title">Flora</string>
     <string name="activity_synchro_title">Data synchronization</string>
@@ -20,8 +19,6 @@
     <string name="preference_category_density">Quality</string>
     <string name="preference_category_density_title">Quality rendering of map</string>
     <string name="preference_category_density_dialog">Choice of rendering</string>
-    <string name="preference_category_about">About</string>
-    <string name="preference_category_about_app_version">App version</string>
 
     <string name="pager_fragment_taxa_found_title">Did you find the specie ?</string>
     <string name="pager_fragment_webview_ap_title">Map (AP)</string>

@@ -13,7 +13,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.animation.AlphaAnimation;
@@ -35,7 +35,9 @@ import java.util.NoSuchElementException;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public abstract class AbstractSynchronizationActivity extends ActionBarActivity {
+public abstract class AbstractSynchronizationActivity
+        extends AppCompatActivity {
+
     private static final String ALERT_DIALOG_FRAGMENT = "alert_dialog_cancel_input";
 
     protected static final String KEY_SERVICE_INITIALIZED = "service_initialized";

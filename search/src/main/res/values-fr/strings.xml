@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">Recherche Flore</string>
-    <string name="app_version">%1$s (%2$s)\n%3$s</string>
 
     <string name="app_synchro">Synchronisation</string>
     <string name="app_settings">Paramètres</string>
@@ -17,8 +16,6 @@
     <string name="preference_category_density">Qualité</string>
     <string name="preference_category_density_title">Qualité du rendu de la carte</string>
     <string name="preference_category_density_dialog">Choix du rendu</string>
-    <string name="preference_category_about">A propos</string>
-    <string name="preference_category_about_app_version">Version de l\'application</string>
 
     <string name="alert_dialog_confirm_quit_title">Quitter ?</string>
     <string name="alert_dialog_confirm_quit_message">Quitter l\'application ?</string>

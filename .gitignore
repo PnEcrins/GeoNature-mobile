@@ -2,6 +2,7 @@
 local.properties
 gradle.properties
 .idea/libraries
+.idea/runConfigurations.xml
 .idea/workspace.xml
 .DS_Store
 build

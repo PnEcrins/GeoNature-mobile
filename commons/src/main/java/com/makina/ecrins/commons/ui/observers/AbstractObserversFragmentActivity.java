@@ -13,7 +13,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.SearchView;
 import android.text.Html;
@@ -50,7 +50,8 @@ import java.util.regex.Pattern;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public abstract class AbstractObserversFragmentActivity extends ActionBarActivity {
+public abstract class AbstractObserversFragmentActivity
+        extends AppCompatActivity {
 
     public static final String CHOICE_MODE = "choice_mode";
 
@@ -220,7 +221,7 @@ public abstract class AbstractObserversFragmentActivity extends ActionBarActivit
         @Override
         public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
             final MenuItem menuItemSearch = menu.add(Menu.NONE, 0, Menu.NONE, R.string.action_search);
-            menuItemSearch.setIcon(R.drawable.abc_ic_search);
+            menuItemSearch.setIcon(R.drawable.ic_action_search);
             MenuItemCompat.setShowAsAction(menuItemSearch, MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 
             SearchView searchView = new SearchView(((AbstractObserversFragmentActivity) getActivity()).getSupportActionBar().getThemedContext());
