@@ -57,7 +57,7 @@ public class MountPointUtils {
 
         // try to found the secondary external storage using System environment
         final List<MountPoint> mountPoints = getMountPointsFromSystemEnv();
-        final Iterator<MountPoint> mountPointIterator = mountPoints.iterator();
+        Iterator<MountPoint> mountPointIterator = mountPoints.iterator();
         MountPoint externalMountPoint = null;
 
         while (mountPointIterator.hasNext() && (externalMountPoint == null)) {
@@ -70,6 +70,7 @@ public class MountPointUtils {
         if (externalMountPoint == null) {
             mountPoints.clear();
             mountPoints.addAll(getMountPointsFromVold());
+            mountPointIterator = mountPoints.iterator();
 
             while (mountPointIterator.hasNext() && (externalMountPoint == null)) {
                 MountPoint mountPoint = mountPointIterator.next();
