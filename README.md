@@ -7,6 +7,10 @@
 * Flora
 * Search
 
+## Prerequisites
+* [JDK 7](https://jdk7.java.net/download.html)
+* [Android SDK](http://developer.android.com/sdk/index.html)
+
 ## Main features
 * Read and manage local tileset as *MBTiles* format (SQLite)
 * Use [Leaflet](http://leafletjs.com/) for displaying offline maps
