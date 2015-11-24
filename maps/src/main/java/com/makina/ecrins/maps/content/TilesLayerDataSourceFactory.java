@@ -30,25 +30,24 @@ public class TilesLayerDataSourceFactory {
     public ITilesLayerDataSource getTilesLayerDataSource(LayerSettings pLayerSettings) throws UnsupportedOperationException, IOException {
         ITilesLayerDataSource tileLayerDataSource;
 
-        if (pLayerSettings.getSource()
-                .equals(LayerSettings.SOURCE_MBTILES)) {
-            // try to load MBTiles data source implementation
-            tileLayerDataSource = new MBTilesDataSource(mTilesSourcePath, pLayerSettings);
-        }
-        else if (pLayerSettings.getSource()
-                .equals(LayerSettings.SOURCE_MBTILES_SPLIT)) {
-            tileLayerDataSource = new MBTilesSplitDataSource(mTilesSourcePath, pLayerSettings);
-        }
-        else if (pLayerSettings.getSource()
-                .equals(LayerSettings.SOURCE_DIR)) {
-            tileLayerDataSource = new FileDataSource(mTilesSourcePath, pLayerSettings);
-        }
-        else if (pLayerSettings.getSource()
-                .equals(LayerSettings.SOURCE_HTTP)) {
-            throw new UnsupportedOperationException("no implementation found for '" + pLayerSettings.getName() + "' (source : " + pLayerSettings.getSource() + ")");
-        }
-        else {
-            throw new UnsupportedOperationException("no implementation found for '" + pLayerSettings.getName() + "' (source : " + pLayerSettings.getSource() + ")");
+        switch (pLayerSettings.getSource()) {
+            case LayerSettings.SOURCE_MBTILES:
+                // try to load MBTiles data source implementation
+                tileLayerDataSource = new MBTilesDataSource(mTilesSourcePath,
+                                                            pLayerSettings);
+                break;
+            case LayerSettings.SOURCE_MBTILES_SPLIT:
+                tileLayerDataSource = new MBTilesSplitDataSource(mTilesSourcePath,
+                                                                 pLayerSettings);
+                break;
+            case LayerSettings.SOURCE_DIR:
+                tileLayerDataSource = new FileDataSource(mTilesSourcePath,
+                                                         pLayerSettings);
+                break;
+            case LayerSettings.SOURCE_HTTP:
+                throw new UnsupportedOperationException("no implementation found for '" + pLayerSettings.getName() + "' (source : " + pLayerSettings.getSource() + ")");
+            default:
+                throw new UnsupportedOperationException("no implementation found for '" + pLayerSettings.getName() + "' (source : " + pLayerSettings.getSource() + ")");
         }
 
         return tileLayerDataSource;
