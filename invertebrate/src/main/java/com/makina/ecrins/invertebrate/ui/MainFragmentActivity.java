@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.makina.ecrins.commons.input.Observer;
 import com.makina.ecrins.commons.settings.AbstractAppSettings;
+import com.makina.ecrins.commons.settings.AbstractSettingsService;
 import com.makina.ecrins.commons.ui.AbstractMainFragmentActivity;
 import com.makina.ecrins.invertebrate.MainApplication;
 import com.makina.ecrins.invertebrate.R;
@@ -87,9 +88,9 @@ public class MainFragmentActivity
     }
 
     @Override
-    protected String getSettingsServiceAction() {
+    protected Class<? extends AbstractSettingsService> getSettingsServiceClass() {
 
-        return SettingsService.class.getName();
+        return SettingsService.class;
     }
 
     @Override

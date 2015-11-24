@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.makina.ecrins.commons.input.Observer;
 import com.makina.ecrins.commons.settings.AbstractAppSettings;
+import com.makina.ecrins.commons.settings.AbstractSettingsService;
 import com.makina.ecrins.commons.ui.AbstractMainFragmentActivity;
 import com.makina.ecrins.fauna.MainApplication;
 import com.makina.ecrins.fauna.R;
@@ -87,9 +88,9 @@ public class MainFragmentActivity
     }
 
     @Override
-    protected String getSettingsServiceAction() {
+    protected Class<? extends AbstractSettingsService> getSettingsServiceClass() {
 
-        return SettingsService.class.getName();
+        return SettingsService.class;
     }
 
     @Override
@@ -129,11 +130,10 @@ public class MainFragmentActivity
             case MainApplication.HANDLER_UNITIES_LOADED_FAILED:
                 mainFragmentActivity.dismissProgressDialog(PROGRESS_DIALOG_UNITIES_FRAGMENT);
                 Toast.makeText(mainFragmentActivity,
-                               String.format(mainFragmentActivity.getString(R.string.message_unities_not_found),
-                                             msg.obj),
+                               mainFragmentActivity.getString(R.string.message_unities_not_found,
+                                                              msg.obj),
                                Toast.LENGTH_LONG)
-                     .show();
-                break;
+                     .show(); break;
         }
     }
 

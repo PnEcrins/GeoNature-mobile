@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.makina.ecrins.commons.input.Observer;
 import com.makina.ecrins.commons.settings.AbstractAppSettings;
+import com.makina.ecrins.commons.settings.AbstractSettingsService;
 import com.makina.ecrins.commons.ui.AbstractMainFragmentActivity;
 import com.makina.ecrins.mortality.MainApplication;
 import com.makina.ecrins.mortality.R;
@@ -80,9 +81,9 @@ public class MainFragmentActivity
     }
 
     @Override
-    protected String getSettingsServiceAction() {
+    protected Class<? extends AbstractSettingsService> getSettingsServiceClass() {
 
-        return SettingsService.class.getName();
+        return SettingsService.class;
     }
 
     @Override

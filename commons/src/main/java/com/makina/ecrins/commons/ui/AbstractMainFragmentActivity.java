@@ -308,8 +308,10 @@ public abstract class AbstractMainFragmentActivity
 
         // starts the service if needed before binding on it
         if (!mSavedState.containsKey(KEY_SERVICE_INITIALIZED)) {
-            startService(new Intent(getSettingsServiceAction()));
-            mSavedState.putBoolean(KEY_SERVICE_INITIALIZED, true);
+            startService(new Intent(this,
+                                    getSettingsServiceClass()));
+            mSavedState.putBoolean(KEY_SERVICE_INITIALIZED,
+                                   true);
         }
 
         mButtonStartInput = (Button) findViewById(R.id.buttonStartInput);
@@ -505,7 +507,7 @@ public abstract class AbstractMainFragmentActivity
 
     protected abstract void setAppSettings(AbstractAppSettings appSettings);
 
-    protected abstract String getSettingsServiceAction();
+    protected abstract Class<? extends AbstractSettingsService> getSettingsServiceClass();
 
     protected abstract boolean checkServiceMessageStatusTask();
 
@@ -548,7 +550,11 @@ public abstract class AbstractMainFragmentActivity
      * Establish a connection with the service.
      */
     private void doBindService() {
-        mIsSettingsServiceBound = bindService(new Intent(getSettingsServiceAction()), mServiceConnection, Context.BIND_AUTO_CREATE);
+
+        mIsSettingsServiceBound = bindService(new Intent(this,
+                                                         getSettingsServiceClass()),
+                                              mServiceConnection,
+                                              Context.BIND_AUTO_CREATE);
     }
 
     private void doUnbindService() {
