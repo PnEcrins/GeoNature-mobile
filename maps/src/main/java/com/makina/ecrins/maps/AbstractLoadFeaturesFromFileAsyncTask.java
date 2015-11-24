@@ -21,16 +21,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * <code>AsyncTask</code> implementation to load all {@link Feature} from a given file
+ * {@code AsyncTask} implementation to load all {@link Feature} from a given file
  * (<a href="http://en.wikipedia.org/wiki/Well-known_text">WKT format</a>).
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<File, Integer, List<Feature>> {
+public abstract class AbstractLoadFeaturesFromFileAsyncTask
+        extends AsyncTask<File, Integer, List<Feature>> {
+
+    private static final String TAG = AbstractLoadFeaturesFromFileAsyncTask.class.getSimpleName();
 
     private String mFilename;
 
     public AbstractLoadFeaturesFromFileAsyncTask() {
+
         super();
 
         this.mFilename = "";
@@ -44,9 +48,14 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<Fi
 
     protected abstract int whatLoadingLoaded();
 
-    protected abstract void sendMessage(int what, Object obj);
+    protected abstract void sendMessage(
+            int what,
+            Object obj);
 
-    protected abstract void sendProgress(int what, int progress, int max);
+    protected abstract void sendProgress(
+            int what,
+            int progress,
+            int max);
 
     /*
      * (non-Javadoc)
@@ -54,7 +63,13 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<Fi
      */
     @Override
     protected List<Feature> doInBackground(File... params) {
-        Log.d(getClass().getName(), "loading features from '" + params[0] + "' ...");
+
+        this.mFilename = params[0].getName();
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "loading features from '" + params[0] + "' ...");
+        }
 
         List<Feature> unities = new ArrayList<>();
         BufferedReader input = null;
@@ -63,14 +78,18 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<Fi
             if (params[0].exists()) {
                 // count the number of lines (i.e. the number of unities to load)
                 int numberOfLines = FileUtils.readLines(params[0])
-                        .size();
+                                             .size();
 
                 if (numberOfLines > 0) {
                     int currentLine = 0;
 
-                    sendMessage(whatLoadingStart(), numberOfLines);
+                    sendMessage(whatLoadingStart(),
+                                numberOfLines);
 
-                    Log.d(getClass().getName(), "number of features to load : " + numberOfLines);
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "number of features to load: " + numberOfLines);
+                    }
 
                     input = new BufferedReader(new FileReader(params[0]));
                     String unityAsString;
@@ -79,7 +98,8 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<Fi
                     Pattern p2 = Pattern.compile("([0-9]+\\.[0-9]+ [0-9]+\\.[0-9]+)");
 
                     while ((unityAsString = input.readLine()) != null) {
-                        publishProgress(currentLine, numberOfLines);
+                        publishProgress(currentLine,
+                                        numberOfLines);
 
                         Matcher m0 = p0.matcher(unityAsString);
 
@@ -89,7 +109,7 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<Fi
 
                             if (geometry.equalsIgnoreCase(GeoJSONType.POLYGON.getValue())) {
                                 String[] polygonsAsString = m0.group(3)
-                                        .split("\\),\\(");
+                                                              .split("\\),\\(");
 
                                 for (int i = 0; i < polygonsAsString.length; i++) {
                                     List<Point> polygon = new ArrayList<>();
@@ -97,8 +117,9 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<Fi
 
                                     while (m2.find()) {
                                         String[] coordinates = m2.group()
-                                                .split(" ");
-                                        polygon.add(new Point(new GeoPoint(Double.valueOf(coordinates[1]), Double.valueOf(coordinates[0]))));
+                                                                 .split(" ");
+                                        polygon.add(new Point(new GeoPoint(Double.valueOf(coordinates[1]),
+                                                                           Double.valueOf(coordinates[0]))));
                                     }
 
                                     // build the main polygon
@@ -120,11 +141,14 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<Fi
                 }
             }
             else {
-                Log.w(getClass().getName(), "unable to load features from path '" + params[0].getPath() + "'");
+                Log.w(TAG,
+                      "unable to load features from path '" + params[0].getPath() + "'");
             }
         }
         catch (IOException ioe) {
-            Log.e(getClass().getName(), ioe.getMessage(), ioe);
+            Log.e(TAG,
+                  ioe.getMessage(),
+                  ioe);
 
             return unities;
         }
@@ -134,12 +158,17 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<Fi
                     input.close();
                 }
                 catch (IOException ioe) {
-                    Log.e(getClass().getName(), ioe.getMessage(), ioe);
+                    Log.e(TAG,
+                          ioe.getMessage(),
+                          ioe);
                 }
             }
         }
 
-        Log.d(getClass().getName(), unities.size() + " features loaded");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  unities.size() + " features loaded");
+        }
 
         return unities;
     }
@@ -150,7 +179,10 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<Fi
      */
     @Override
     protected void onProgressUpdate(Integer... values) {
-        sendProgress(whatLoading(), values[0], values[1]);
+
+        sendProgress(whatLoading(),
+                     values[0],
+                     values[1]);
     }
 
     /*
@@ -159,11 +191,14 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask extends AsyncTask<Fi
      */
     @Override
     protected void onPostExecute(List<Feature> result) {
+
         if (result.isEmpty()) {
-            sendMessage(whatLoadingFailed(), this.mFilename);
+            sendMessage(whatLoadingFailed(),
+                        this.mFilename);
         }
         else {
-            sendMessage(whatLoadingLoaded(), result);
+            sendMessage(whatLoadingLoaded(),
+                        result);
         }
     }
 }
