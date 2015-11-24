@@ -1,6 +1,7 @@
 package com.makina.ecrins.mortality.ui.observers;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import com.makina.ecrins.commons.content.AbstractMainContentProvider;
 import com.makina.ecrins.commons.input.InputType;
@@ -22,17 +23,18 @@ public class ObserversFragmentActivity
         return InputType.MORTALITY.getKey();
     }
 
+    @NonNull
     @Override
     public Uri getLoaderUri(
             int id,
-            long selectedOberverId) {
+            long selectedObserverId) {
 
         switch (id) {
             case AbstractMainContentProvider.OBSERVERS:
                 return MainContentProvider.CONTENT_OBSERVERS_URI;
             case AbstractMainContentProvider.OBSERVER_ID:
                 return Uri.withAppendedPath(MainContentProvider.CONTENT_OBSERVERS_URI,
-                                            Long.toString(selectedOberverId));
+                                            Long.toString(selectedObserverId));
             default:
                 throw new IllegalArgumentException("Unknown loader: " + id);
         }

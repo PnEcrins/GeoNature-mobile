@@ -2,6 +2,7 @@ package com.makina.ecrins.commons.ui.widget;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import com.makina.ecrins.commons.R;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -59,7 +61,9 @@ public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter imp
         sectionToPosition = new TreeMap<>();
         sectionToOffset = new SparseIntArray();
 
-        initializeSectionsIndexer(c);
+        if (c != null) {
+            initializeSectionsIndexer(c);
+        }
     }
 
     @Override
@@ -190,7 +194,15 @@ public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter imp
                 return getCount();
             }
 
+            if (mIndexer == null) {
+                return 0;
+            }
+
             return mIndexer.getPositionForSection(usedSectionNumbers[i]) + sectionToOffset.get(usedSectionNumbers[i]);
+        }
+
+        if (mIndexer == null) {
+            return 0;
         }
 
         return mIndexer.getPositionForSection(section) + sectionToOffset.get(section);
@@ -211,6 +223,10 @@ public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter imp
 
     @Override
     public Object[] getSections() {
+        if (mIndexer == null) {
+            return Collections.EMPTY_LIST.toArray();
+        }
+
         return mIndexer.getSections();
     }
 
@@ -251,8 +267,11 @@ public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter imp
         return this.mSelectedItemPosition;
     }
 
-    private void initializeSectionsIndexer(Cursor cursor) {
-        mIndexer = new AlphabetIndexer(cursor, cursor.getColumnIndexOrThrow(this.mSortedColumnIndex), ALPHABET);
+    private void initializeSectionsIndexer(@NonNull final Cursor cursor) {
+
+        mIndexer = new AlphabetIndexer(cursor,
+                                       cursor.getColumnIndexOrThrow(this.mSortedColumnIndex),
+                                       ALPHABET);
 
         sectionToPosition.clear();
         sectionToOffset.clear();

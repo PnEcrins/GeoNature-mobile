@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
@@ -13,6 +14,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.SearchView;
@@ -46,7 +48,7 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 /**
- * Lists all {@link com.makina.ecrins.commons.input.Observer}.
+ * Lists all {@link com.makina.ecrins.commons.input.Observer}s.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
@@ -61,7 +63,11 @@ public abstract class AbstractObserversFragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        final ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         FragmentManager fm = getSupportFragmentManager();
 
@@ -89,6 +95,7 @@ public abstract class AbstractObserversFragmentActivity
      *
      * @return a list as a {@link Map}
      */
+    @NonNull
     public Map<Long, Observer> getSelectedObservers() {
         return mSelectedObservers;
     }
@@ -110,10 +117,11 @@ public abstract class AbstractObserversFragmentActivity
      * @param id                the ID whose loader is to be created (
      *                          {@link com.makina.ecrins.commons.content.AbstractMainContentProvider#OBSERVERS} or
      *                          {@link com.makina.ecrins.commons.content.AbstractMainContentProvider#OBSERVER_ID})
-     * @param selectedOberverId the current selected {@link Observer}
+     * @param selectedObserverId the current selected {@link Observer}
      * @return the URI to use
      */
-    public abstract Uri getLoaderUri(int id, long selectedOberverId);
+    @NonNull
+    public abstract Uri getLoaderUri(int id, long selectedObserverId);
 
     /**
      * Updates {@link #getSelectedObservers()} before loading the list view.
@@ -222,9 +230,10 @@ public abstract class AbstractObserversFragmentActivity
         public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
             final MenuItem menuItemSearch = menu.add(Menu.NONE, 0, Menu.NONE, R.string.action_search);
             menuItemSearch.setIcon(R.drawable.ic_action_search);
-            MenuItemCompat.setShowAsAction(menuItemSearch, MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+            MenuItemCompat.setShowAsAction(menuItemSearch,
+                                           MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 
-            SearchView searchView = new SearchView(((AbstractObserversFragmentActivity) getActivity()).getSupportActionBar().getThemedContext());
+            final SearchView searchView = new SearchView(getActivity());
             searchView.setQueryHint(getString(R.string.observers_search_hint));
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
@@ -321,12 +330,12 @@ public abstract class AbstractObserversFragmentActivity
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            final String[] projection =
-                    {
-                            MainDatabaseHelper.ObserversColumns._ID,
-                            MainDatabaseHelper.ObserversColumns.LASTNAME,
-                            MainDatabaseHelper.ObserversColumns.FIRSTNAME
-                    };
+
+            final String[] projection = {
+                    MainDatabaseHelper.ObserversColumns._ID,
+                    MainDatabaseHelper.ObserversColumns.LASTNAME,
+                    MainDatabaseHelper.ObserversColumns.FIRSTNAME
+            };
 
             switch (id) {
                 case AbstractMainContentProvider.OBSERVERS:
