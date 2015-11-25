@@ -11,6 +11,7 @@
             backward-compatibility can go here.
         -->
 
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorSecondary">#ddd</item>
 
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
