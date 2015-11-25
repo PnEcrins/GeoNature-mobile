@@ -31,6 +31,13 @@ public class WebViewFragment
         implements IValidateFragment {
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        reload();
+    }
+
+    @Override
     public int getResourceTitle() {
 
         return R.string.pager_fragment_webview_title;
@@ -59,8 +66,6 @@ public class WebViewFragment
 
         Log.d(getClass().getName(),
               "refreshView");
-
-        reload();
     }
 
     @Override
