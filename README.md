@@ -46,7 +46,7 @@ KEY_PASSWORD=keypassword
 After this preparation, the release build can be invoked with the following command:
 
 ```
-mvn clean assembleRelease
+./gradlew clean assembleRelease
 ```
 
 which will in turn sign and zipalign all apks.
