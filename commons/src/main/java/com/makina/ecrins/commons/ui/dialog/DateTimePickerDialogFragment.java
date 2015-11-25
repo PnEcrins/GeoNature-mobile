@@ -2,7 +2,6 @@ package com.makina.ecrins.commons.ui.dialog;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -11,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -106,20 +106,21 @@ public final class DateTimePickerDialogFragment
             mSelectedDateCalendar.setTime(minDate);
         }
 
-        final AlertDialog dialog = new AlertDialog.Builder(getActivity()).setView(view)
-                                                                         .setPositiveButton(R.string.alert_dialog_ok,
-                                                                                            new OnClickListener() {
-                                                                                                @Override
-                                                                                                public void onClick(
-                                                                                                        DialogInterface dialog,
-                                                                                                        int which) {
+        final AlertDialog dialog = new AlertDialog.Builder(getActivity(),
+                                                           R.style.CommonsDialogStyle).setView(view)
+                                                                                      .setPositiveButton(R.string.alert_dialog_ok,
+                                                                                                         new OnClickListener() {
+                                                                                                             @Override
+                                                                                                             public void onClick(
+                                                                                                                     DialogInterface dialog,
+                                                                                                                     int which) {
 
-                                                                                                    mOnCalendarSetListener.onCalendarSet(mSelectedDateCalendar);
-                                                                                                }
-                                                                                            })
-                                                                         .setNegativeButton(R.string.alert_dialog_cancel,
-                                                                                            null)
-                                                                         .create();
+                                                                                                                 mOnCalendarSetListener.onCalendarSet(mSelectedDateCalendar);
+                                                                                                             }
+                                                                                                         })
+                                                                                      .setNegativeButton(R.string.alert_dialog_cancel,
+                                                                                                         null)
+                                                                                      .create();
 
         configureDatePicker((DatePicker) view.findViewById(R.id.datePicker1),
                             dialog,
@@ -254,20 +255,20 @@ public final class DateTimePickerDialogFragment
         }
 
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-                                                @Override
-                                                public void onTimeChanged(
-                                                        TimePicker view,
-                                                        int hourOfDay,
-                                                        int minute) {
+            @Override
+            public void onTimeChanged(
+                    TimePicker view,
+                    int hourOfDay,
+                    int minute) {
 
-                                                    mSelectedDateCalendar.set(Calendar.HOUR_OF_DAY,
-                                                                              hourOfDay);
-                                                    mSelectedDateCalendar.set(Calendar.MINUTE,
-                                                                              minute * timeInterval);
+                mSelectedDateCalendar.set(Calendar.HOUR_OF_DAY,
+                                          hourOfDay);
+                mSelectedDateCalendar.set(Calendar.MINUTE,
+                                          minute * timeInterval);
 
-                                                    setDialogTitle(dialog);
-                                                }
-                                            });
+                setDialogTitle(dialog);
+            }
+        });
 
         timePicker.setCurrentHour(mSelectedDateCalendar.get(Calendar.HOUR_OF_DAY));
         timePicker.setCurrentMinute(mSelectedDateCalendar.get(Calendar.MINUTE) / timeInterval);

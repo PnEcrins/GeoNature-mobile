@@ -1,12 +1,12 @@
 package com.makina.ecrins.commons.ui.dialog;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -124,12 +124,13 @@ public class ChooseActionDialogFragment
             }
         });
 
-        return new AlertDialog.Builder(getActivity()).setIcon(R.drawable.ic_action_choose)
-                                                     .setTitle(getArguments().getInt(KEY_TITLE))
-                                                     .setView(view)
-                                                     .setNegativeButton(R.string.alert_dialog_cancel,
-                                                                        null)
-                                                     .create();
+        return new AlertDialog.Builder(getActivity(),
+                                       R.style.CommonsDialogStyle).setIcon(R.drawable.ic_action_choose)
+                                                                  .setTitle(getArguments().getInt(KEY_TITLE))
+                                                                  .setView(view)
+                                                                  .setNegativeButton(R.string.alert_dialog_cancel,
+                                                                                     null)
+                                                                  .create();
     }
 
     /**

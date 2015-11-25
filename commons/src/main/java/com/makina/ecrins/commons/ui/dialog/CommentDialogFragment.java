@@ -1,6 +1,5 @@
 package com.makina.ecrins.commons.ui.dialog;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -80,39 +80,40 @@ public class CommentDialogFragment
                                     },
                                     250);
 
-        return new AlertDialog.Builder(getActivity()).setTitle(alertDialogTitleResource)
-                                                     .setView(view)
-                                                     .setPositiveButton(R.string.alert_dialog_ok,
-                                                                        new OnClickListener() {
-                                                                            @Override
-                                                                            public void onClick(
-                                                                                    DialogInterface dialog,
-                                                                                    int which) {
+        return new AlertDialog.Builder(getActivity(),
+                                       R.style.CommonsDialogStyle).setTitle(alertDialogTitleResource)
+                                                                  .setView(view)
+                                                                  .setPositiveButton(R.string.alert_dialog_ok,
+                                                                                     new OnClickListener() {
+                                                                                         @Override
+                                                                                         public void onClick(
+                                                                                                 DialogInterface dialog,
+                                                                                                 int which) {
 
-                                                                                hideSoftKeyboard(textViewComment);
+                                                                                             hideSoftKeyboard(textViewComment);
 
-                                                                                if (mOnCommentDialogValidateListener != null) {
-                                                                                    mOnCommentDialogValidateListener.onPositiveButtonClick(dialog,
-                                                                                                                                           textViewComment.getText()
-                                                                                                                                                          .toString());
-                                                                                }
-                                                                            }
-                                                                        })
-                                                     .setNegativeButton(R.string.alert_dialog_cancel,
-                                                                        new OnClickListener() {
-                                                                            @Override
-                                                                            public void onClick(
-                                                                                    DialogInterface dialog,
-                                                                                    int which) {
+                                                                                             if (mOnCommentDialogValidateListener != null) {
+                                                                                                 mOnCommentDialogValidateListener.onPositiveButtonClick(dialog,
+                                                                                                                                                        textViewComment.getText()
+                                                                                                                                                                       .toString());
+                                                                                             }
+                                                                                         }
+                                                                                     })
+                                                                  .setNegativeButton(R.string.alert_dialog_cancel,
+                                                                                     new OnClickListener() {
+                                                                                         @Override
+                                                                                         public void onClick(
+                                                                                                 DialogInterface dialog,
+                                                                                                 int which) {
 
-                                                                                hideSoftKeyboard(textViewComment);
+                                                                                             hideSoftKeyboard(textViewComment);
 
-                                                                                if (mOnCommentDialogValidateListener != null) {
-                                                                                    mOnCommentDialogValidateListener.onNegativeButtonClick(dialog);
-                                                                                }
-                                                                            }
-                                                                        })
-                                                     .create();
+                                                                                             if (mOnCommentDialogValidateListener != null) {
+                                                                                                 mOnCommentDialogValidateListener.onNegativeButtonClick(dialog);
+                                                                                             }
+                                                                                         }
+                                                                                     })
+                                                                  .create();
     }
 
     private void hideSoftKeyboard(final EditText editText) {
