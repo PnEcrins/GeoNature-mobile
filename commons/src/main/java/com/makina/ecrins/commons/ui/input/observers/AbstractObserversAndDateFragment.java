@@ -202,7 +202,7 @@ public abstract class AbstractObserversAndDateFragment extends Fragment
         selection.append(MainDatabaseHelper.ObserversColumns._ID);
         selection.append(" IN (");
 
-        if (selectedObservers.isEmpty()) {
+        if ((selectedObservers == null) || selectedObservers.isEmpty()) {
             selection.append("?)");
             selectionArgs.add(Long.valueOf(-1).toString());
         }

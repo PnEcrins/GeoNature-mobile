@@ -43,7 +43,7 @@ public class SyncCommandIntentService extends IntentService {
 
     /**
      * Command to execute to move a given file to external storage directory used by this context
-     * according to {@link com.makina.ecrins.commons.util.FileUtils#getExternalStorageDirectory(android.content.Context)}.
+     * according to {@link com.makina.ecrins.commons.util.FileUtils#getExternalStorageDirectory()}.
      */
     public static final String INTENT_MOVE_FILE_TO_EXTERNAL_STORAGE = "INTENT_MOVE_FILE_TO_EXTERNAL_STORAGE";
 

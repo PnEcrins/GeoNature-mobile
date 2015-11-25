@@ -2,6 +2,7 @@ package com.makina.ecrins.commons.content;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -9,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -80,7 +82,7 @@ public abstract class AbstractMainContentProvider
 
     @Override
     public Cursor query(
-            Uri uri,
+            @NonNull final Uri uri,
             String[] projection,
             String selection,
             String[] selectionArgs,
@@ -191,9 +193,13 @@ public abstract class AbstractMainContentProvider
                                                null,
                                                defaultSortOrder);
 
-            // make sure that potential listeners are getting notified
-            cursor.setNotificationUri(getContext().getContentResolver(),
-                                      uri);
+            final Context context = getContext();
+
+            if (context != null) {
+                // make sure that potential listeners are getting notified
+                cursor.setNotificationUri(context.getContentResolver(),
+                                          uri);
+            }
 
             return cursor;
         }
@@ -215,7 +221,7 @@ public abstract class AbstractMainContentProvider
 
     @Override
     public Uri insert(
-            Uri uri,
+            @NonNull final Uri uri,
             ContentValues values) {
         // nothing to do ...
         return null;
@@ -223,7 +229,7 @@ public abstract class AbstractMainContentProvider
 
     @Override
     public int update(
-            Uri uri,
+            @NonNull final Uri uri,
             ContentValues values,
             String selection,
             String[] selectionArgs) {
@@ -233,7 +239,7 @@ public abstract class AbstractMainContentProvider
 
     @Override
     public int delete(
-            Uri uri,
+            @NonNull final Uri uri,
             String selection,
             String[] selectionArgs) {
         // nothing to do ...
@@ -241,7 +247,7 @@ public abstract class AbstractMainContentProvider
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull final Uri uri) {
 
         return null;
     }

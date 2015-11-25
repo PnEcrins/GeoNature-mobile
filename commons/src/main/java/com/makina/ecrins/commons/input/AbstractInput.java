@@ -3,6 +3,7 @@ package com.makina.ecrins.commons.input;
 import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -79,6 +80,7 @@ public abstract class AbstractInput
      *
      * @see AbstractTaxon#getId()
      */
+    @NonNull
     public Map<Long, AbstractTaxon> getTaxa() {
 
         return mTaxa;
