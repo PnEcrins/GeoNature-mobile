@@ -1,5 +1,5 @@
-# PNE mobile applications
-[Mobile applications](https://gitlab.makina-corpus.net/geobi-ecrins/pne-android) about:
+# GeoNature-mobile
+[Mobile applications](https://github.com/PnEcrins/GeoNature-mobile) about:
 
 * Fauna
 * Invertebrate
@@ -66,8 +66,8 @@ You can combine a full build and deploy the application in a same command:
 ```
 
 ## Project information
-* Source: [https://gitorious.makina-corpus.net/geobi-ecrins/pne-android](https://gitorious.makina-corpus.net/geobi-ecrins/pne-android)
-* Documentation : [https://gitorious.makina-corpus.net/geobi-ecrins/pne-android](https://gitorious.makina-corpus.net/geobi-ecrins/pne-android)
+* Source: [https://github.com/PnEcrins/GeoNature-mobile](https://github.com/PnEcrins/GeoNature-mobile)
+* Documentation : [https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs](https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs)
 
 ## Offline Maps
 Map layers can be provided in [MBTiles](http://mapbox.com/developers/mbtiles/) format.
