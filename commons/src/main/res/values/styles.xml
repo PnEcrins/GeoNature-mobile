@@ -5,6 +5,7 @@
     <style name="CommonsBaseTheme" parent="Theme.AppCompat">
         <!-- Customize your theme here. -->
 
+        <!-- main theme colors -->
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorSecondary">#ddd</item>
 

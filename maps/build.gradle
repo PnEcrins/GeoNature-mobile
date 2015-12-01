@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-version = "0.4.9"
+version = "0.5.0"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion

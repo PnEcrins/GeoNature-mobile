@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- main theme colors -->
     <color name="colorAccent">@color/holo_blue_light</color>
 
     <color name="darker_gray_translucent">#80aaaaaa</color>
