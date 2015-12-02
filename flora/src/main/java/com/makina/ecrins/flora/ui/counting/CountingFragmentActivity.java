@@ -4,7 +4,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +26,9 @@ import java.util.List;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class CountingFragmentActivity extends ActionBarActivity implements OnClickListener {
+public class CountingFragmentActivity
+        extends AppCompatActivity
+        implements OnClickListener {
 
     private static final String CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT = "choose_quit_action_dialog";
 
@@ -38,6 +40,7 @@ public class CountingFragmentActivity extends ActionBarActivity implements OnCli
                 DialogInterface dialog,
                 int position,
                 int actionResourceId) {
+
             switch (actionResourceId) {
                 case R.string.choose_action_yes:
                     dialog.dismiss();
@@ -52,6 +55,7 @@ public class CountingFragmentActivity extends ActionBarActivity implements OnCli
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_counting);
@@ -62,11 +66,9 @@ public class CountingFragmentActivity extends ActionBarActivity implements OnCli
         mButtonFinish.setOnClickListener(this);
 
         if ((((MainApplication) getApplication()).getInput()
-                .getCurrentSelectedTaxon() == null) ||
-                ((((MainApplication) getApplication()).getInput()
-                        .getCurrentSelectedTaxon() != null) &&
-                        (((Taxon) ((MainApplication) getApplication()).getInput()
-                                .getCurrentSelectedTaxon()).getCurrentSelectedArea() == null))) {
+                                                 .getCurrentSelectedTaxon() == null) || ((((MainApplication) getApplication()).getInput()
+                                                                                                                              .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getApplication()).getInput()
+                                                                                                                                                                                                                   .getCurrentSelectedTaxon()).getCurrentSelectedArea() == null))) {
             finish();
         }
         else {
@@ -74,35 +76,29 @@ public class CountingFragmentActivity extends ActionBarActivity implements OnCli
                 final FragmentManager fm = getSupportFragmentManager();
 
                 switch (((Taxon) ((MainApplication) getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                        .getCounting()
-                        .getType()) {
+                                                                     .getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                                                                .getCounting()
+                                                                                                .getType()) {
                     case EXHAUSTIVE:
                         Fragment countingExhaustiveFragment = fm.findFragmentByTag(CountingExhaustiveFragment.class.getSimpleName());
 
                         if (countingExhaustiveFragment == null) {
                             if (BuildConfig.DEBUG) {
-                                Log.d(
-                                        CountingFragmentActivity.class.getName(),
-                                        "create CountingExhaustiveFragment"
-                                );
+                                Log.d(CountingFragmentActivity.class.getName(),
+                                      "create CountingExhaustiveFragment");
                             }
 
                             fm.beginTransaction()
-                                    .replace(
-                                            R.id.fragment_counting_container,
-                                            new CountingExhaustiveFragment(),
-                                            CountingExhaustiveFragment.class.getSimpleName()
-                                    )
-                                    .commit();
+                              .replace(R.id.fragment_counting_container,
+                                       new CountingExhaustiveFragment(),
+                                       CountingExhaustiveFragment.class.getSimpleName())
+                              .commit();
                         }
                         else {
                             fm.beginTransaction()
-                                    .replace(
-                                            R.id.fragment_counting_container,
-                                            countingExhaustiveFragment
-                                    )
-                                    .commit();
+                              .replace(R.id.fragment_counting_container,
+                                       countingExhaustiveFragment)
+                              .commit();
                         }
 
                         break;
@@ -111,27 +107,21 @@ public class CountingFragmentActivity extends ActionBarActivity implements OnCli
 
                         if (countingSamplingFragment == null) {
                             if (BuildConfig.DEBUG) {
-                                Log.d(
-                                        CountingFragmentActivity.class.getName(),
-                                        "create CountingSamplingFragment"
-                                );
+                                Log.d(CountingFragmentActivity.class.getName(),
+                                      "create CountingSamplingFragment");
                             }
 
                             fm.beginTransaction()
-                                    .replace(
-                                            R.id.fragment_counting_container,
-                                            new CountingSamplingFragment(),
-                                            CountingSamplingFragment.class.getSimpleName()
-                                    )
-                                    .commit();
+                              .replace(R.id.fragment_counting_container,
+                                       new CountingSamplingFragment(),
+                                       CountingSamplingFragment.class.getSimpleName())
+                              .commit();
                         }
                         else {
                             fm.beginTransaction()
-                                    .replace(
-                                            R.id.fragment_counting_container,
-                                            countingSamplingFragment
-                                    )
-                                    .commit();
+                              .replace(R.id.fragment_counting_container,
+                                       countingSamplingFragment)
+                              .commit();
                         }
 
                         break;
@@ -152,11 +142,13 @@ public class CountingFragmentActivity extends ActionBarActivity implements OnCli
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()) {
             case android.R.id.home:
                 showConfirmDialogIfNeeded();
@@ -168,11 +160,13 @@ public class CountingFragmentActivity extends ActionBarActivity implements OnCli
 
     @Override
     public void onBackPressed() {
+
         showConfirmDialogIfNeeded();
     }
 
     @Override
     public void onClick(View v) {
+
         switch (v.getId()) {
             case R.id.buttonFinish:
                 showConfirmDialogIfNeeded();
@@ -181,31 +175,27 @@ public class CountingFragmentActivity extends ActionBarActivity implements OnCli
     }
 
     protected void enableFinish(boolean enabled) {
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(enabled);
         mButtonFinish.setEnabled(enabled);
     }
 
     private void showConfirmDialogIfNeeded() {
+
         switch (((Taxon) ((MainApplication) getApplication()).getInput()
-                .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                .getCounting()
-                .getType()) {
+                                                             .getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                                                        .getCounting()
+                                                                                        .getType()) {
             case SAMPLING:
                 final List<Integer> actions = new ArrayList<>();
-                Collections.addAll(
-                        actions,
-                        R.string.choose_action_yes,
-                        R.string.choose_action_no
-                );
-                final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(
-                        R.string.choose_action_title_quit_step,
-                        actions
-                );
+                Collections.addAll(actions,
+                                   R.string.choose_action_yes,
+                                   R.string.choose_action_no);
+                final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(R.string.choose_action_title_quit_step,
+                                                                                                                     actions);
                 chooseActionDialogFragment.setOnChooseActionDialogListener(mOnChooseActionDialogListener);
-                chooseActionDialogFragment.show(
-                        getSupportFragmentManager(),
-                        CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT
-                );
+                chooseActionDialogFragment.show(getSupportFragmentManager(),
+                                                CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
                 break;
             default:
                 finish();

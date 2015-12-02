@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +26,9 @@ import java.util.List;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class FrequencyFragmentActivity extends ActionBarActivity implements OnClickListener {
+public class FrequencyFragmentActivity
+        extends AppCompatActivity
+        implements OnClickListener {
 
     private static final String CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT = "choose_quit_action_dialog";
 
@@ -36,6 +38,7 @@ public class FrequencyFragmentActivity extends ActionBarActivity implements OnCl
                 DialogInterface dialog,
                 int position,
                 int actionResourceId) {
+
             switch (actionResourceId) {
                 case R.string.choose_action_yes:
                     dialog.dismiss();
@@ -50,6 +53,7 @@ public class FrequencyFragmentActivity extends ActionBarActivity implements OnCl
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_frequency);
@@ -58,18 +62,18 @@ public class FrequencyFragmentActivity extends ActionBarActivity implements OnCl
 
         findViewById(R.id.buttonFinish).setOnClickListener(this);
 
-        if ((((MainApplication) getApplication()).getInput().getCurrentSelectedTaxon() == null) ||
+        if ((((MainApplication) getApplication()).getInput()
+                                                 .getCurrentSelectedTaxon() == null) ||
                 ((((MainApplication) getApplication()).getInput()
-                        .getCurrentSelectedTaxon() != null) &&
-                        (((Taxon) ((MainApplication) getApplication()).getInput()
-                                .getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) ||
+                                                      .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getApplication()).getInput()
+                                                                                                                                           .getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) ||
                 ((((MainApplication) getApplication()).getInput()
-                        .getCurrentSelectedTaxon() != null) &&
+                                                      .getCurrentSelectedTaxon() != null) &&
                         (((Taxon) ((MainApplication) getApplication()).getInput()
-                                .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
+                                                                      .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
                         (((Taxon) ((MainApplication) getApplication()).getInput()
-                                .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                .getFrequency() == null))) {
+                                                                      .getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                                                                 .getFrequency() == null))) {
             finish();
         }
         else {
@@ -78,31 +82,25 @@ public class FrequencyFragmentActivity extends ActionBarActivity implements OnCl
                 final FragmentTransaction transaction = fm.beginTransaction();
 
                 switch (((Taxon) ((MainApplication) getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                        .getFrequency()
-                        .getType()) {
+                                                                     .getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                                                                .getFrequency()
+                                                                                                .getType()) {
                     case ESTIMATION:
                         Fragment frequencyEstimationFragment = fm.findFragmentByTag(FrequencyEstimationFragment.class.getSimpleName());
 
                         if (frequencyEstimationFragment == null) {
                             if (BuildConfig.DEBUG) {
-                                Log.d(
-                                        FrequencyFragmentActivity.class.getName(),
-                                        "create FrequencyEstimationFragment"
-                                );
+                                Log.d(FrequencyFragmentActivity.class.getName(),
+                                      "create FrequencyEstimationFragment");
                             }
 
-                            transaction.replace(
-                                    R.id.fragment_frequency_container,
-                                    new FrequencyEstimationFragment(),
-                                    FrequencyEstimationFragment.class.getSimpleName()
-                            );
+                            transaction.replace(R.id.fragment_frequency_container,
+                                                new FrequencyEstimationFragment(),
+                                                FrequencyEstimationFragment.class.getSimpleName());
                         }
                         else {
-                            transaction.replace(
-                                    R.id.fragment_frequency_container,
-                                    frequencyEstimationFragment
-                            );
+                            transaction.replace(R.id.fragment_frequency_container,
+                                                frequencyEstimationFragment);
                         }
 
                         transaction.commit();
@@ -112,23 +110,17 @@ public class FrequencyFragmentActivity extends ActionBarActivity implements OnCl
 
                         if (frequencyTransectFragment == null) {
                             if (BuildConfig.DEBUG) {
-                                Log.d(
-                                        FrequencyFragmentActivity.class.getName(),
-                                        "create FrequencyTransectFragment"
-                                );
+                                Log.d(FrequencyFragmentActivity.class.getName(),
+                                      "create FrequencyTransectFragment");
                             }
 
-                            transaction.replace(
-                                    R.id.fragment_frequency_container,
-                                    new FrequencyTransectFragment(),
-                                    FrequencyTransectFragment.class.getSimpleName()
-                            );
+                            transaction.replace(R.id.fragment_frequency_container,
+                                                new FrequencyTransectFragment(),
+                                                FrequencyTransectFragment.class.getSimpleName());
                         }
                         else {
-                            transaction.replace(
-                                    R.id.fragment_frequency_container,
-                                    frequencyTransectFragment
-                            );
+                            transaction.replace(R.id.fragment_frequency_container,
+                                                frequencyTransectFragment);
                         }
 
                         transaction.commit();
@@ -147,11 +139,13 @@ public class FrequencyFragmentActivity extends ActionBarActivity implements OnCl
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()) {
             case android.R.id.home:
                 showConfirmDialogIfNeeded();
@@ -163,11 +157,13 @@ public class FrequencyFragmentActivity extends ActionBarActivity implements OnCl
 
     @Override
     public void onBackPressed() {
+
         showConfirmDialogIfNeeded();
     }
 
     @Override
     public void onClick(View v) {
+
         switch (v.getId()) {
             case R.id.buttonFinish:
                 showConfirmDialogIfNeeded();
@@ -176,26 +172,21 @@ public class FrequencyFragmentActivity extends ActionBarActivity implements OnCl
     }
 
     private void showConfirmDialogIfNeeded() {
+
         switch (((Taxon) ((MainApplication) getApplication()).getInput()
-                .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                .getFrequency()
-                .getType()) {
+                                                             .getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                                                        .getFrequency()
+                                                                                        .getType()) {
             case TRANSECT:
                 final List<Integer> actions = new ArrayList<>();
-                Collections.addAll(
-                        actions,
-                        R.string.choose_action_yes,
-                        R.string.choose_action_no
-                );
-                final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(
-                        R.string.choose_action_title_quit_step,
-                        actions
-                );
+                Collections.addAll(actions,
+                                   R.string.choose_action_yes,
+                                   R.string.choose_action_no);
+                final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(R.string.choose_action_title_quit_step,
+                                                                                                                     actions);
                 chooseActionDialogFragment.setOnChooseActionDialogListener(mOnChooseActionDialogListener);
-                chooseActionDialogFragment.show(
-                        getSupportFragmentManager(),
-                        CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT
-                );
+                chooseActionDialogFragment.show(getSupportFragmentManager(),
+                                                CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
                 break;
             default:
                 finish();

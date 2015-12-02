@@ -45,7 +45,8 @@ public interface IWebViewFragment {
      * Retrieve a reference to this activity's ActionBar.
      *
      * @return the Activity's ActionBar, or <code>null</code> if it does not have one
-     * @see android.support.v7.app.ActionBarActivity#getSupportActionBar()
+     *
+     * @see android.support.v7.app.AppCompatActivity#getSupportActionBar()
      */
     public ActionBar getActionBar();
 
@@ -81,6 +82,7 @@ public interface IWebViewFragment {
      * Gets {@link ITilesLayerDataSource} instance for a given name.
      *
      * @param name the name used by {@link ITilesLayerDataSource} instance to retrieve
+     *
      * @return {@link ITilesLayerDataSource} instance for this name
      */
     @Nullable
@@ -104,6 +106,7 @@ public interface IWebViewFragment {
      * Loads the given URL.
      *
      * @param url the URL of the resource to load
+     *
      * @see WebView#loadUrl(String)
      */
     public void loadUrl(String url);
@@ -136,7 +139,9 @@ public interface IWebViewFragment {
      * @param control {@link IControl} instance to add
      * @param parent  the {@link ViewGroup} to use for adding {@link IControl#getView(boolean)}
      */
-    public void addControl(IControl control, ViewGroup parent);
+    public void addControl(
+            IControl control,
+            ViewGroup parent);
 
     /**
      * Removes the given {@link IControl} from the map.
@@ -156,6 +161,7 @@ public interface IWebViewFragment {
      * Returns the {@link IControl} instance registered for a given name.
      *
      * @param name the name used by the registered {@link IControl}
+     *
      * @return the {@link IControl} instance for this name
      */
     public IControl getControl(String name);
@@ -164,6 +170,7 @@ public interface IWebViewFragment {
      * Returns <code>true</code> if this {@link IControl#getName()} is registered or not.
      *
      * @param name the name of the registered {@link IControl} to find
+     *
      * @return <code>true</code> if this {@link IControl#getName()} is registered or not, <code>false</code> otherwise
      */
     public boolean hasControl(String name);
@@ -191,7 +198,9 @@ public interface IWebViewFragment {
      * @param geolocation     the current {@link Geolocation}
      * @param selectedFeature the selected {@link Feature} to update (may be <code>null</code>)
      */
-    public void setSelectedFeature(Geolocation geolocation, Feature selectedFeature);
+    public void setSelectedFeature(
+            Geolocation geolocation,
+            Feature selectedFeature);
 
     /**
      * Gets all editable {@link Feature}s as {@link FeatureCollection}.
@@ -221,6 +230,7 @@ public interface IWebViewFragment {
      * </p>
      *
      * @param selectedFeature the selected {@link Feature} to update
+     *
      * @return <code>true</code> if the given {@link Feature} was successfully updated or added, <code>false</code> otherwise
      */
     public boolean addOrUpdateEditableFeature(Feature selectedFeature);
@@ -232,6 +242,7 @@ public interface IWebViewFragment {
      * </p>
      *
      * @param featureId the {@link Feature#getId()} used to identify the {@link Feature} to delete
+     *
      * @return <code>true</code> if the given {@link Feature} was successfully deleted <code>false</code> otherwise
      */
     public boolean deleteEditableFeature(String featureId);

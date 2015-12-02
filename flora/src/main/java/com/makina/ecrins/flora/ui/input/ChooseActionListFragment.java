@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +28,9 @@ import com.makina.ecrins.flora.input.Taxon;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class ChooseActionListFragment extends ListFragment implements IValidateWithNavigationControlFragment {
+public class ChooseActionListFragment
+        extends ListFragment
+        implements IValidateWithNavigationControlFragment {
 
     private static final String TAG = ChooseActionListFragment.class.getName();
 
@@ -42,22 +44,28 @@ public class ChooseActionListFragment extends ListFragment implements IValidateW
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Log.d(TAG, "onCreate, savedInstanceState null");
+            Log.d(TAG,
+                  "onCreate, savedInstanceState null");
 
             mSavedState = new Bundle();
-            mSavedState.putInt(KEY_DEFAULT_SCREEN_OFF_TIMEOUT, Settings.System.getInt(getActivity()
-                    .getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, DEFAULT_SCREEN_OFF_TIMEOUT));
+            mSavedState.putInt(KEY_DEFAULT_SCREEN_OFF_TIMEOUT,
+                               Settings.System.getInt(getActivity().getContentResolver(),
+                                                      Settings.System.SCREEN_OFF_TIMEOUT,
+                                                      DEFAULT_SCREEN_OFF_TIMEOUT));
         }
         else {
-            Log.d(TAG, "onCreate, savedInstanceState initialized");
+            Log.d(TAG,
+                  "onCreate, savedInstanceState initialized");
 
             mSavedState = savedInstanceState;
         }
 
-        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_DELETE_AREA_FRAGMENT);
+        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getActivity().getSupportFragmentManager()
+                                                                                           .findFragmentByTag(ALERT_DIALOG_DELETE_AREA_FRAGMENT);
 
         if (alertDialogFragment != null) {
             alertDialogFragment.dismiss();
@@ -65,56 +73,72 @@ public class ChooseActionListFragment extends ListFragment implements IValidateW
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_choose_action, container, false);
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState) {
+
+        return inflater.inflate(R.layout.fragment_choose_action,
+                                container,
+                                false);
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onViewCreated(
+            View view,
+            Bundle savedInstanceState) {
+
+        super.onViewCreated(view,
+                            savedInstanceState);
 
         if (getListAdapter() == null) {
-            mAdapter = new ActionItemArrayAdapter(getActivity(), android.R.layout.simple_list_item_1);
+            mAdapter = new ActionItemArrayAdapter(getActivity(),
+                                                  android.R.layout.simple_list_item_1);
             mAdapter.add(new ActionItem() {
                 @Override
                 public String getName() {
+
                     return getString(R.string.choose_action_pause);
                 }
 
                 @Override
                 public void performAction() {
-                    Settings.System.putInt(getActivity()
-                            .getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, 1000);
+
+                    Settings.System.putInt(getActivity().getContentResolver(),
+                                           Settings.System.SCREEN_OFF_TIMEOUT,
+                                           1000);
                 }
             });
             mAdapter.add(new ActionItem() {
                 @Override
                 public String getName() {
+
                     return getString(R.string.choose_action_area);
                 }
 
                 @Override
                 public void performAction() {
+
                     if (((MainApplication) getActivity().getApplication()).getInput()
-                            .getCurrentSelectedTaxon() != null) {
+                                                                          .getCurrentSelectedTaxon() != null) {
                         ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                .getCurrentSelectedTaxon()).setCurrentSelectedAreaId(null);
+                                                                                   .getCurrentSelectedTaxon()).setCurrentSelectedAreaId(null);
                     }
 
-                    ((PagerFragmentActivity) getActivity())
-                            .goToPageByKey(R.string.pager_fragment_webview_ap_title);
+                    ((PagerFragmentActivity) getActivity()).goToPageByKey(R.string.pager_fragment_webview_ap_title);
                 }
             });
             mAdapter.add(new ActionItem() {
                 @Override
                 public String getName() {
+
                     return getString(R.string.choose_action_finish);
                 }
 
                 @Override
                 public void performAction() {
-                    ((PagerFragmentActivity) getActivity())
-                            .goToPageByKey(R.string.pager_fragment_webview_pa_title);
+
+                    ((PagerFragmentActivity) getActivity()).goToPageByKey(R.string.pager_fragment_webview_pa_title);
                 }
             });
 
@@ -124,7 +148,9 @@ public class ChooseActionListFragment extends ListFragment implements IValidateW
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        Log.d(TAG, "onSaveInstanceState");
+
+        Log.d(TAG,
+              "onSaveInstanceState");
 
         outState.putAll(mSavedState);
 
@@ -132,80 +158,90 @@ public class ChooseActionListFragment extends ListFragment implements IValidateW
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    public void onListItemClick(
+            ListView l,
+            View v,
+            int position,
+            long id) {
+
         if (mAdapter != null) {
-            mAdapter.getItem(position).performAction();
+            mAdapter.getItem(position)
+                    .performAction();
         }
     }
 
     @Override
     public int getResourceTitle() {
+
         return R.string.pager_fragment_choose_action_title;
     }
 
     @Override
     public boolean getPagingEnabled() {
+
         return true;
     }
 
     @Override
     public boolean validate() {
+
         return true;
     }
 
     @Override
     public void refreshView() {
-        Log.d(TAG, "refreshView");
 
-        ((ActionBarActivity) getActivity()).getSupportActionBar()
-                .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        Log.d(TAG,
+              "refreshView");
+
+        ((AppCompatActivity) getActivity()).getSupportActionBar()
+                                           .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         // restore default settings
-        Settings.System.putInt(getActivity()
-                .getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, mSavedState
-                .getInt(KEY_DEFAULT_SCREEN_OFF_TIMEOUT, DEFAULT_SCREEN_OFF_TIMEOUT));
+        Settings.System.putInt(getActivity().getContentResolver(),
+                               Settings.System.SCREEN_OFF_TIMEOUT,
+                               mSavedState.getInt(KEY_DEFAULT_SCREEN_OFF_TIMEOUT,
+                                                  DEFAULT_SCREEN_OFF_TIMEOUT));
 
         if ((((MainApplication) getActivity().getApplication()).getInput()
-                .getCurrentSelectedTaxon() != null) &&
-                (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) {
+                                                               .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                                                                                                  .getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) {
             // restore the previously added Area for this Taxon
             ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon())
-                    .setCurrentSelectedAreaId(((Taxon) ((MainApplication) getActivity()
-                            .getApplication()).getInput().getCurrentSelectedTaxon())
-                            .getLastInsertedAreaId());
+                                                                       .getCurrentSelectedTaxon()).setCurrentSelectedAreaId(((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                                                                                                                       .getCurrentSelectedTaxon()).getLastInsertedAreaId());
 
             if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon()).getCurrentSelectedArea() == null) {
+                                                                           .getCurrentSelectedTaxon()).getCurrentSelectedArea() == null) {
                 // should never occur !
                 // TODO: go back to previous and valid page in navigation history
                 Log.w(TAG,
-                        "refreshView : no area found for taxon " +
-                                ((MainApplication) getActivity().getApplication())
-                                        .getInput().getCurrentSelectedTaxon()
-                                        .getId() + " !");
+                      "refreshView : no area found for taxon " +
+                              ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                .getCurrentSelectedTaxon()
+                                                                                .getId() + " !");
             }
         }
         else {
             // an Area was already added and edited for this Taxon, so perform a full consistency check to keep or not this Area.
             if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon()).getAreas()
-                    .size() > (((PagerFragmentActivity) getActivity())
-                    .countPagesInHistory(getResourceTitle()) + 1)) {
-                confirmBeforeDeleteArea(((Taxon) ((MainApplication) getActivity().getApplication())
-                        .getInput().getCurrentSelectedTaxon()).getCurrentSelectedAreaId());
+                                                                           .getCurrentSelectedTaxon()).getAreas()
+                                                                                                      .size() > (((PagerFragmentActivity) getActivity()).countPagesInHistory(getResourceTitle()) + 1)) {
+                confirmBeforeDeleteArea(((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                                   .getCurrentSelectedTaxon()).getCurrentSelectedAreaId());
             }
         }
     }
 
     @Override
     public boolean getPagingToForwardEnabled() {
+
         return false;
     }
 
     @Override
     public boolean getPagingToPreviousEnabled() {
+
         return true;
     }
 
@@ -229,24 +265,35 @@ public class ChooseActionListFragment extends ListFragment implements IValidateW
         public void performAction();
     }
 
-    private class ActionItemArrayAdapter extends ArrayAdapter<ActionItem> {
+    private class ActionItemArrayAdapter
+            extends ArrayAdapter<ActionItem> {
 
         private final LayoutInflater mInflater;
         private final int mResourceId;
 
-        public ActionItemArrayAdapter(Context context, int resource) {
-            super(context, resource);
+        public ActionItemArrayAdapter(
+                Context context,
+                int resource) {
+
+            super(context,
+                  resource);
 
             mResourceId = resource;
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(
+                int position,
+                View convertView,
+                ViewGroup parent) {
+
             View view;
 
             if (convertView == null) {
-                view = mInflater.inflate(mResourceId, parent, false);
+                view = mInflater.inflate(mResourceId,
+                                         parent,
+                                         false);
             }
             else {
                 view = convertView;
@@ -259,53 +306,40 @@ public class ChooseActionListFragment extends ListFragment implements IValidateW
     }
 
     private void confirmBeforeDeleteArea(final String areaId) {
-        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(
-                R.string.alert_dialog_confirm_delete_area_title,
-                R.string.alert_dialog_confirm_delete_area_message
-        );
-        alertDialogFragment.setOnAlertDialogListener(
-                new AlertDialogFragment.OnAlertDialogListener() {
-                    @Override
-                    public void onPositiveButtonClick(DialogInterface dialog) {
-                        // deletes this area from the current taxon
 
-                        if (BuildConfig.DEBUG) {
-                            Log.d(
-                                    TAG,
-                                    "delete area '" + areaId + "'"
-                            );
-                        }
+        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(R.string.alert_dialog_confirm_delete_area_title,
+                                                                                        R.string.alert_dialog_confirm_delete_area_message);
+        alertDialogFragment.setOnAlertDialogListener(new AlertDialogFragment.OnAlertDialogListener() {
+                                                         @Override
+                                                         public void onPositiveButtonClick(DialogInterface dialog) {
+                                                             // deletes this area from the current taxon
 
-                        ((Taxon) ((MainApplication) getActivity().getApplication())
-                                .getInput().getCurrentSelectedTaxon()).getAreas()
-                                .remove(areaId);
-                        ((Taxon) ((MainApplication) getActivity().getApplication())
-                                .getInput().getCurrentSelectedTaxon()).setCurrentSelectedAreaId(
-                                ((Taxon) ((MainApplication) getActivity().getApplication())
-                                        .getInput().getCurrentSelectedTaxon()).getLastInsertedAreaId()
-                        );
+                                                             if (BuildConfig.DEBUG) {
+                                                                 Log.d(TAG,
+                                                                       "delete area '" + areaId + "'");
+                                                             }
 
-                        if (BuildConfig.DEBUG) {
-                            Log.d(
-                                    TAG,
-                                    "restore previously added area '" +
-                                            ((Taxon) ((MainApplication) getActivity()
-                                                    .getApplication()).getInput()
-                                                    .getCurrentSelectedTaxon())
-                                                    .getCurrentSelectedAreaId() + "'"
-                            );
-                        }
-                    }
+                                                             ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                                                        .getCurrentSelectedTaxon()).getAreas()
+                                                                                                                                                   .remove(areaId);
+                                                             ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                                                        .getCurrentSelectedTaxon()).setCurrentSelectedAreaId(((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                                                                                                                                                                        .getCurrentSelectedTaxon()).getLastInsertedAreaId());
 
-                    @Override
-                    public void onNegativeButtonClick(DialogInterface dialog) {
-                        // nothing to do ...
-                    }
-                }
-        );
-        alertDialogFragment.show(
-                getActivity().getSupportFragmentManager(),
-                ALERT_DIALOG_DELETE_AREA_FRAGMENT
-        );
+                                                             if (BuildConfig.DEBUG) {
+                                                                 Log.d(TAG,
+                                                                       "restore previously added area '" +
+                                                                               ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                                                                          .getCurrentSelectedTaxon()).getCurrentSelectedAreaId() + "'");
+                                                             }
+                                                         }
+
+                                                         @Override
+                                                         public void onNegativeButtonClick(DialogInterface dialog) {
+                                                             // nothing to do ...
+                                                         }
+                                                     });
+        alertDialogFragment.show(getActivity().getSupportFragmentManager(),
+                                 ALERT_DIALOG_DELETE_AREA_FRAGMENT);
     }
 }
