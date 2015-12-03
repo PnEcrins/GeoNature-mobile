@@ -2,6 +2,7 @@ package com.makina.ecrins.invertebrate.ui.input.map;
 
 import android.util.Log;
 
+import com.makina.ecrins.commons.model.MountPoint;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.util.FileUtils;
 import com.makina.ecrins.invertebrate.MainApplication;
@@ -32,6 +33,7 @@ public class WebViewFragment
 
     @Override
     public void onResume() {
+
         super.onResume();
 
         reload();
@@ -124,7 +126,7 @@ public class WebViewFragment
     @Override
     protected File getTilesSourcePath() throws IOException {
 
-        return FileUtils.getFileFromApplicationStorage(getActivity(),
-                                                       "databases");
+        return FileUtils.getDatabaseFolder(getActivity(),
+                                           MountPoint.StorageType.EXTERNAL);
     }
 }

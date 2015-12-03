@@ -63,7 +63,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/viewSeparator1"
         android:layout_centerHorizontal="true"
-        android:singleLine="true"
+        android:padding="10dp"
         android:text="@string/message_device_status_waiting"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:visibility="gone"/>

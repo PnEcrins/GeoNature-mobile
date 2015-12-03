@@ -12,6 +12,7 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.makina.ecrins.commons.BuildConfig;
+import com.makina.ecrins.commons.model.MountPoint;
 import com.makina.ecrins.commons.util.FileUtils;
 
 import java.io.File;
@@ -19,7 +20,7 @@ import java.io.IOException;
 
 /**
  * Simple {@code SQLiteOpenHelper} implementation.
- * <p/>
+ * <p>
  * Try to open database from a given path.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
@@ -41,8 +42,9 @@ public class MainDatabaseHelper
               null,
               databaseVersion);
 
-        mDatabaseFile = FileUtils.getFileFromApplicationStorage(context,
-                                                                "databases" + File.separator + databaseName);
+        mDatabaseFile = FileUtils.getFile(FileUtils.getDatabaseFolder(context,
+                                                                      MountPoint.StorageType.INTERNAL),
+                                          databaseName);
 
         if (BuildConfig.DEBUG) {
             Log.d(TAG,

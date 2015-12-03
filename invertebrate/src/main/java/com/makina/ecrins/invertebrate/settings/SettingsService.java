@@ -2,6 +2,7 @@ package com.makina.ecrins.invertebrate.settings;
 
 import android.util.Log;
 
+import com.makina.ecrins.commons.model.MountPoint;
 import com.makina.ecrins.commons.settings.AbstractAppSettings;
 import com.makina.ecrins.commons.settings.AbstractSettingsService;
 import com.makina.ecrins.commons.settings.IServiceMessageStatusTask;
@@ -51,8 +52,9 @@ public class SettingsService
                                                                                     .getStatus()
                                                                                     .equals(ServiceStatus.Status.PENDING)) {
             try {
-                File unities = FileUtils.getFileFromApplicationStorage(this,
-                                                                       "unities.wkt");
+                File unities = FileUtils.getFile(FileUtils.getRootFolder(this,
+                                                                         MountPoint.StorageType.EXTERNAL),
+                                                 "unities.wkt");
                 mLoadUnitiesFromFileAsyncTask.execute(unities);
             }
             catch (IOException ioe) {

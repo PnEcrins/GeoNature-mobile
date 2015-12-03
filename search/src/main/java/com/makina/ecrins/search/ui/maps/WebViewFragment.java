@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
+import com.makina.ecrins.commons.model.MountPoint;
 import com.makina.ecrins.commons.util.FileUtils;
 import com.makina.ecrins.maps.AbstractWebViewFragment;
 import com.makina.ecrins.maps.MapSettings;
@@ -304,8 +305,8 @@ public class WebViewFragment
     @Override
     protected File getTilesSourcePath() throws IOException {
 
-        return FileUtils.getFileFromApplicationStorage(getActivity(),
-                                                       "databases");
+        return FileUtils.getDatabaseFolder(getActivity(),
+                                           MountPoint.StorageType.EXTERNAL);
     }
 
     @Override

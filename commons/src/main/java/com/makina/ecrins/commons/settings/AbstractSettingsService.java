@@ -11,6 +11,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.makina.ecrins.commons.model.MountPoint;
 import com.makina.ecrins.commons.util.FileUtils;
 
 import org.json.JSONException;
@@ -30,10 +31,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  * @deprecated use instead {@link com.makina.ecrins.commons.service.RequestHandlerService} with
- * {@link com.makina.ecrins.commons.settings.AbstractLoadSettingsRequestHandler} 
+ * {@link com.makina.ecrins.commons.settings.AbstractLoadSettingsRequestHandler}
  */
 @Deprecated
-public abstract class AbstractSettingsService extends Service {
+public abstract class AbstractSettingsService
+        extends Service {
 
     /**
      * Command to the service to register a client, receiving callbacks from the service.
@@ -76,7 +78,8 @@ public abstract class AbstractSettingsService extends Service {
 
     private final AtomicBoolean mSettingsTaskInvoked = new AtomicBoolean();
     private final AtomicBoolean mTaskInvoked = new AtomicBoolean();
-    private ServiceStatus mServiceStatus = new ServiceStatus(ServiceStatus.Status.PENDING, "");
+    private ServiceStatus mServiceStatus = new ServiceStatus(ServiceStatus.Status.PENDING,
+                                                             "");
 
     /**
      * keeps track of all current registered clients.
@@ -92,28 +95,36 @@ public abstract class AbstractSettingsService extends Service {
 
     @Override
     public void onCreate() {
+
         super.onCreate();
 
-        Log.d(getClass().getName(), "onCreate");
+        Log.d(getClass().getName(),
+              "onCreate");
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(getClass().getName(), "onBind " + intent);
+
+        Log.d(getClass().getName(),
+              "onBind " + intent);
 
         return mInMessenger.getBinder();
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.d(getClass().getName(), "onUnbind " + intent);
+
+        Log.d(getClass().getName(),
+              "onUnbind " + intent);
 
         return true;
     }
 
     @Override
     public void onDestroy() {
-        Log.d(getClass().getName(), "onDestroy");
+
+        Log.d(getClass().getName(),
+              "onDestroy");
 
         super.onDestroy();
     }
@@ -124,12 +135,15 @@ public abstract class AbstractSettingsService extends Service {
      * @return a new instance of {@link com.makina.ecrins.commons.settings.AbstractSettingsService.LoadSettingsFromFileAsyncTask}
      */
     protected LoadSettingsFromFileAsyncTask getLoadSettingsFromFileAsyncTask() {
+
         if (mLoadSettingsFromFileAsyncTask == null) {
-            Log.d(getClass().getName(), "getLoadSettingsFromFileAsyncTask : create new instance");
+            Log.d(getClass().getName(),
+                  "getLoadSettingsFromFileAsyncTask : create new instance");
             mLoadSettingsFromFileAsyncTask = new LoadSettingsFromFileAsyncTask(this);
         }
         else {
-            Log.d(getClass().getName(), "getLoadSettingsFromFileAsyncTask : initialized");
+            Log.d(getClass().getName(),
+                  "getLoadSettingsFromFileAsyncTask : initialized");
         }
 
         return mLoadSettingsFromFileAsyncTask;
@@ -146,8 +160,15 @@ public abstract class AbstractSettingsService extends Service {
      * @param progress the current progress as a value
      * @param max      the max value
      */
-    protected void sendProgress(int what, int progress, int max) {
-        Message message = Message.obtain(null, what, progress, max);
+    protected void sendProgress(
+            int what,
+            int progress,
+            int max) {
+
+        Message message = Message.obtain(null,
+                                         what,
+                                         progress,
+                                         max);
 
         if (mClients.isEmpty()) {
             mMessagesQueue.add(message);
@@ -155,7 +176,8 @@ public abstract class AbstractSettingsService extends Service {
         else {
             for (int i = mClients.size() - 1; i >= 0; i--) {
                 try {
-                    mClients.get(i).send(message);
+                    mClients.get(i)
+                            .send(message);
                 }
                 catch (RemoteException re) {
                     // The client is dead.
@@ -173,8 +195,12 @@ public abstract class AbstractSettingsService extends Service {
      * @param what custom message code so that the recipient can identify what this message is about
      * @param obj  object message to send to the recipient
      */
-    protected void sendMessage(int what, Object obj) {
-        Message message = Message.obtain(null, what);
+    protected void sendMessage(
+            int what,
+            Object obj) {
+
+        Message message = Message.obtain(null,
+                                         what);
 
         if (obj != null) {
             message.obj = obj;
@@ -186,7 +212,8 @@ public abstract class AbstractSettingsService extends Service {
         else {
             for (int i = mClients.size() - 1; i >= 0; i--) {
                 try {
-                    mClients.get(i).send(message);
+                    mClients.get(i)
+                            .send(message);
                 }
                 catch (RemoteException re) {
                     // The client is dead.
@@ -204,13 +231,15 @@ public abstract class AbstractSettingsService extends Service {
      * @param message the {@link android.os.Message} instance to send to the recipient
      */
     protected void sendMessage(Message message) {
+
         if (mClients.isEmpty()) {
             mMessagesQueue.add(message);
         }
         else {
             for (int i = mClients.size() - 1; i >= 0; i--) {
                 try {
-                    mClients.get(i).send(message);
+                    mClients.get(i)
+                            .send(message);
                 }
                 catch (RemoteException re) {
                     // The client is dead.
@@ -228,33 +257,68 @@ public abstract class AbstractSettingsService extends Service {
      * @return {@link ServiceStatus} instance describing the current status
      */
     protected ServiceStatus getServiceStatus() {
+
         if (getServiceMessageStatusTask() == null) {
-            Log.d(getClass().getName(), "getServiceStatus : " + getLoadSettingsFromFileAsyncTask().getServiceStatus().getStatus().name());
+            Log.d(getClass().getName(),
+                  "getServiceStatus : " + getLoadSettingsFromFileAsyncTask().getServiceStatus()
+                                                                            .getStatus()
+                                                                            .name());
             mServiceStatus = getLoadSettingsFromFileAsyncTask().getServiceStatus();
         }
         else {
-            Log.d(getClass().getName(), "getServiceStatus : " + getLoadSettingsFromFileAsyncTask().getServiceStatus().getStatus().name() + " " + getServiceMessageStatusTask().getServiceStatus().getStatus().name());
+            Log.d(getClass().getName(),
+                  "getServiceStatus : " + getLoadSettingsFromFileAsyncTask().getServiceStatus()
+                                                                            .getStatus()
+                                                                            .name() + " " + getServiceMessageStatusTask().getServiceStatus()
+                                                                                                                         .getStatus()
+                                                                                                                         .name());
 
-            mServiceStatus = new ServiceStatus(ServiceStatus.Status.PENDING, ServiceStatus.Status.PENDING.name());
+            mServiceStatus = new ServiceStatus(ServiceStatus.Status.PENDING,
+                                               ServiceStatus.Status.PENDING.name());
 
-            if (getLoadSettingsFromFileAsyncTask().getServiceStatus().getStatus().equals(ServiceStatus.Status.RUNNING) || getServiceMessageStatusTask().getServiceStatus().getStatus().equals(ServiceStatus.Status.RUNNING)) {
-                mServiceStatus = new ServiceStatus(ServiceStatus.Status.RUNNING, ServiceStatus.Status.RUNNING.name());
+            if (getLoadSettingsFromFileAsyncTask().getServiceStatus()
+                                                  .getStatus()
+                                                  .equals(ServiceStatus.Status.RUNNING) || getServiceMessageStatusTask().getServiceStatus()
+                                                                                                                        .getStatus()
+                                                                                                                        .equals(ServiceStatus.Status.RUNNING)) {
+                mServiceStatus = new ServiceStatus(ServiceStatus.Status.RUNNING,
+                                                   ServiceStatus.Status.RUNNING.name());
             }
 
-            if (getLoadSettingsFromFileAsyncTask().getServiceStatus().getStatus().equals(ServiceStatus.Status.ABORTED) || getServiceMessageStatusTask().getServiceStatus().getStatus().equals(ServiceStatus.Status.ABORTED)) {
-                mServiceStatus = new ServiceStatus(ServiceStatus.Status.ABORTED, ServiceStatus.Status.ABORTED.name());
+            if (getLoadSettingsFromFileAsyncTask().getServiceStatus()
+                                                  .getStatus()
+                                                  .equals(ServiceStatus.Status.ABORTED) || getServiceMessageStatusTask().getServiceStatus()
+                                                                                                                        .getStatus()
+                                                                                                                        .equals(ServiceStatus.Status.ABORTED)) {
+                mServiceStatus = new ServiceStatus(ServiceStatus.Status.ABORTED,
+                                                   ServiceStatus.Status.ABORTED.name());
             }
 
-            if (getLoadSettingsFromFileAsyncTask().getServiceStatus().getStatus().equals(ServiceStatus.Status.FINISHED) && getServiceMessageStatusTask().getServiceStatus().getStatus().equals(ServiceStatus.Status.FINISHED_WITH_ERRORS)) {
-                mServiceStatus = new ServiceStatus(ServiceStatus.Status.FINISHED_WITH_ERRORS, ServiceStatus.Status.FINISHED_WITH_ERRORS.name());
+            if (getLoadSettingsFromFileAsyncTask().getServiceStatus()
+                                                  .getStatus()
+                                                  .equals(ServiceStatus.Status.FINISHED) && getServiceMessageStatusTask().getServiceStatus()
+                                                                                                                         .getStatus()
+                                                                                                                         .equals(ServiceStatus.Status.FINISHED_WITH_ERRORS)) {
+                mServiceStatus = new ServiceStatus(ServiceStatus.Status.FINISHED_WITH_ERRORS,
+                                                   ServiceStatus.Status.FINISHED_WITH_ERRORS.name());
             }
 
-            if (getLoadSettingsFromFileAsyncTask().getServiceStatus().getStatus().equals(ServiceStatus.Status.FINISHED_WITH_ERRORS) && getServiceMessageStatusTask().getServiceStatus().getStatus().equals(ServiceStatus.Status.FINISHED)) {
-                mServiceStatus = new ServiceStatus(ServiceStatus.Status.FINISHED_WITH_ERRORS, ServiceStatus.Status.FINISHED_WITH_ERRORS.name());
+            if (getLoadSettingsFromFileAsyncTask().getServiceStatus()
+                                                  .getStatus()
+                                                  .equals(ServiceStatus.Status.FINISHED_WITH_ERRORS) && getServiceMessageStatusTask().getServiceStatus()
+                                                                                                                                     .getStatus()
+                                                                                                                                     .equals(ServiceStatus.Status.FINISHED)) {
+                mServiceStatus = new ServiceStatus(ServiceStatus.Status.FINISHED_WITH_ERRORS,
+                                                   ServiceStatus.Status.FINISHED_WITH_ERRORS.name());
             }
 
-            if (getLoadSettingsFromFileAsyncTask().getServiceStatus().getStatus().equals(ServiceStatus.Status.FINISHED) && getServiceMessageStatusTask().getServiceStatus().getStatus().equals(ServiceStatus.Status.FINISHED)) {
-                mServiceStatus = new ServiceStatus(ServiceStatus.Status.FINISHED, ServiceStatus.Status.FINISHED.name());
+            if (getLoadSettingsFromFileAsyncTask().getServiceStatus()
+                                                  .getStatus()
+                                                  .equals(ServiceStatus.Status.FINISHED) && getServiceMessageStatusTask().getServiceStatus()
+                                                                                                                         .getStatus()
+                                                                                                                         .equals(ServiceStatus.Status.FINISHED)) {
+                mServiceStatus = new ServiceStatus(ServiceStatus.Status.FINISHED,
+                                                   ServiceStatus.Status.FINISHED.name());
             }
         }
 
@@ -277,8 +341,13 @@ public abstract class AbstractSettingsService extends Service {
      * Checks the current status before stopping the service.
      */
     protected void checkStatusAndStop() {
-        if (mMessagesQueue.isEmpty() && (mServiceStatus.getStatus().equals(ServiceStatus.Status.ABORTED) || mServiceStatus.getStatus().equals(ServiceStatus.Status.FINISHED) || mServiceStatus.getStatus().equals(ServiceStatus.Status.FINISHED_WITH_ERRORS))) {
-            Log.d(getClass().getName(), "stopSelf");
+
+        if (mMessagesQueue.isEmpty() && (mServiceStatus.getStatus()
+                                                       .equals(ServiceStatus.Status.ABORTED) || mServiceStatus.getStatus()
+                                                                                                              .equals(ServiceStatus.Status.FINISHED) || mServiceStatus.getStatus()
+                                                                                                                                                                      .equals(ServiceStatus.Status.FINISHED_WITH_ERRORS))) {
+            Log.d(getClass().getName(),
+                  "stopSelf");
 
             stopSelf();
         }
@@ -289,37 +358,47 @@ public abstract class AbstractSettingsService extends Service {
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    private static class IncomingHandler extends Handler {
+    private static class IncomingHandler
+            extends Handler {
+
         private final WeakReference<AbstractSettingsService> mAbstractSettingsService;
 
         public IncomingHandler(AbstractSettingsService pAbstractSettingsService) {
+
             super();
             mAbstractSettingsService = new WeakReference<>(pAbstractSettingsService);
         }
 
         @Override
         public void handleMessage(Message msg) {
+
             AbstractSettingsService abstractSettingsService = mAbstractSettingsService.get();
 
             switch (msg.what) {
                 case AbstractSettingsService.HANDLER_REGISTER_CLIENT:
-                    Log.d(getClass().getName(), "handleMessage HANDLER_REGISTER_CLIENT");
+                    Log.d(getClass().getName(),
+                          "handleMessage HANDLER_REGISTER_CLIENT");
 
                     if (abstractSettingsService.mClients.add(msg.replyTo)) {
-                        abstractSettingsService.sendMessage(AbstractSettingsService.HANDLER_STATUS, abstractSettingsService.getServiceStatus());
-                        abstractSettingsService.sendMessage(AbstractSettingsService.HANDLER_CLIENT_REGISTERED, msg.replyTo);
+                        abstractSettingsService.sendMessage(AbstractSettingsService.HANDLER_STATUS,
+                                                            abstractSettingsService.getServiceStatus());
+                        abstractSettingsService.sendMessage(AbstractSettingsService.HANDLER_CLIENT_REGISTERED,
+                                                            msg.replyTo);
                     }
                     else {
-                        Log.w(getClass().getName(), "AbstractSettingsService.HANDLER_REGISTER_CLIENT : failed to register client");
+                        Log.w(getClass().getName(),
+                              "AbstractSettingsService.HANDLER_REGISTER_CLIENT : failed to register client");
                     }
 
                     break;
                 case AbstractSettingsService.HANDLER_UNREGISTER_CLIENT:
-                    Log.d(getClass().getName(), "handleMessage HANDLER_UNREGISTER_CLIENT");
+                    Log.d(getClass().getName(),
+                          "handleMessage HANDLER_UNREGISTER_CLIENT");
                     abstractSettingsService.mClients.remove(msg.replyTo);
                     break;
                 case AbstractSettingsService.HANDLER_GET_PENDING_MESSAGES:
-                    Log.d(getClass().getName(), "handleMessage HANDLER_GET_PENDING_MESSAGES " + abstractSettingsService.mMessagesQueue.size());
+                    Log.d(getClass().getName(),
+                          "handleMessage HANDLER_GET_PENDING_MESSAGES " + abstractSettingsService.mMessagesQueue.size());
 
                     // tries to send all awaiting messages
                     while (!abstractSettingsService.mMessagesQueue.isEmpty()) {
@@ -328,26 +407,43 @@ public abstract class AbstractSettingsService extends Service {
 
                     break;
                 case AbstractSettingsService.HANDLER_LOAD_SETTINGS:
-                    Log.d(getClass().getName(), "handleMessage HANDLER_LOAD_SETTINGS " + abstractSettingsService.mSettingsTaskInvoked.get() + " " + abstractSettingsService.getLoadSettingsFromFileAsyncTask().getServiceStatus().getStatus().name());
+                    Log.d(getClass().getName(),
+                          "handleMessage HANDLER_LOAD_SETTINGS " + abstractSettingsService.mSettingsTaskInvoked.get() + " " + abstractSettingsService.getLoadSettingsFromFileAsyncTask()
+                                                                                                                                                     .getServiceStatus()
+                                                                                                                                                     .getStatus()
+                                                                                                                                                     .name());
 
-                    if ((!abstractSettingsService.mSettingsTaskInvoked.getAndSet(true)) && abstractSettingsService.getLoadSettingsFromFileAsyncTask().getServiceStatus().getStatus().equals(ServiceStatus.Status.PENDING)) {
-                        Log.d(getClass().getName(), "handleMessage HANDLER_LOAD_SETTINGS execute");
-                        abstractSettingsService.sendMessage(AbstractSettingsService.HANDLER_STATUS, abstractSettingsService.getServiceStatus());
-                        abstractSettingsService.getLoadSettingsFromFileAsyncTask().execute(abstractSettingsService.getSettingsFilename());
+                    if ((!abstractSettingsService.mSettingsTaskInvoked.getAndSet(true)) && abstractSettingsService.getLoadSettingsFromFileAsyncTask()
+                                                                                                                  .getServiceStatus()
+                                                                                                                  .getStatus()
+                                                                                                                  .equals(ServiceStatus.Status.PENDING)) {
+                        Log.d(getClass().getName(),
+                              "handleMessage HANDLER_LOAD_SETTINGS execute");
+                        abstractSettingsService.sendMessage(AbstractSettingsService.HANDLER_STATUS,
+                                                            abstractSettingsService.getServiceStatus());
+                        abstractSettingsService.getLoadSettingsFromFileAsyncTask()
+                                               .execute(abstractSettingsService.getSettingsFilename());
                     }
                     else {
-                        Log.d(getClass().getName(), "handleMessage HANDLER_LOAD_SETTINGS already invoked");
+                        Log.d(getClass().getName(),
+                              "handleMessage HANDLER_LOAD_SETTINGS already invoked");
                     }
 
                     break;
                 case AbstractSettingsService.HANDLER_EXECUTE_TASK:
-                    if (!abstractSettingsService.mTaskInvoked.getAndSet(true) && (abstractSettingsService.getServiceMessageStatusTask() != null) && abstractSettingsService.getServiceMessageStatusTask().getServiceStatus().getStatus().equals(ServiceStatus.Status.PENDING)) {
-                        Log.d(getClass().getName(), "handleMessage HANDLER_EXECUTE_TASK execute");
-                        abstractSettingsService.sendMessage(AbstractSettingsService.HANDLER_STATUS, abstractSettingsService.getServiceStatus());
+                    if (!abstractSettingsService.mTaskInvoked.getAndSet(true) && (abstractSettingsService.getServiceMessageStatusTask() != null) && abstractSettingsService.getServiceMessageStatusTask()
+                                                                                                                                                                           .getServiceStatus()
+                                                                                                                                                                           .getStatus()
+                                                                                                                                                                           .equals(ServiceStatus.Status.PENDING)) {
+                        Log.d(getClass().getName(),
+                              "handleMessage HANDLER_EXECUTE_TASK execute");
+                        abstractSettingsService.sendMessage(AbstractSettingsService.HANDLER_STATUS,
+                                                            abstractSettingsService.getServiceStatus());
                         abstractSettingsService.executeServiceMessageStatusTask();
                     }
                     else {
-                        Log.d(getClass().getName(), "handleMessage HANDLER_EXECUTE_TASK already invoked");
+                        Log.d(getClass().getName(),
+                              "handleMessage HANDLER_EXECUTE_TASK already invoked");
                     }
 
                     break;
@@ -360,12 +456,17 @@ public abstract class AbstractSettingsService extends Service {
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    private class LoadSettingsFromFileAsyncTask extends AsyncTask<String, Void, AbstractAppSettings> implements IServiceMessageStatusTask {
-        private volatile ServiceStatus mServiceStatus = new ServiceStatus(ServiceStatus.Status.PENDING, "");
+    private class LoadSettingsFromFileAsyncTask
+            extends AsyncTask<String, Void, AbstractAppSettings>
+            implements IServiceMessageStatusTask {
+
+        private volatile ServiceStatus mServiceStatus = new ServiceStatus(ServiceStatus.Status.PENDING,
+                                                                          "");
         private Context mContext;
         private String mFilename;
 
         public LoadSettingsFromFileAsyncTask(Context pContext) {
+
             super();
             this.mContext = pContext;
             this.mFilename = "";
@@ -373,6 +474,7 @@ public abstract class AbstractSettingsService extends Service {
 
         @Override
         public ServiceStatus getServiceStatus() {
+
             return mServiceStatus;
         }
 
@@ -382,18 +484,30 @@ public abstract class AbstractSettingsService extends Service {
          */
         @Override
         protected AbstractAppSettings doInBackground(String... params) {
+
             this.mFilename = params[0];
 
-            Log.d(AbstractSettingsService.class.getName(), "loading global settings from '" + mFilename + "' ...");
+            Log.d(AbstractSettingsService.class.getName(),
+                  "loading global settings from '" + mFilename + "' ...");
 
-            mServiceStatus = new ServiceStatus(ServiceStatus.Status.RUNNING, "");
-            sendMessage(whatSettingsLoadingStart(), null);
+            mServiceStatus = new ServiceStatus(ServiceStatus.Status.RUNNING,
+                                               "");
+            sendMessage(whatSettingsLoadingStart(),
+                        null);
 
             try {
-                File settingsJsonFile = FileUtils.getFileFromApplicationStorage(mContext, this.mFilename);
+                // noinspection ResultOfMethodCallIgnored
+                FileUtils.getRootFolder(mContext,
+                                        MountPoint.StorageType.INTERNAL)
+                         .mkdirs();
+
+                File settingsJsonFile = FileUtils.getFile(FileUtils.getRootFolder(mContext,
+                                                                                  MountPoint.StorageType.INTERNAL),
+                                                          this.mFilename);
 
                 if (settingsJsonFile.exists()) {
-                    Log.d(AbstractSettingsService.class.getName(), "load file '" + settingsJsonFile.getPath() + "'");
+                    Log.d(AbstractSettingsService.class.getName(),
+                          "load file '" + settingsJsonFile.getPath() + "'");
 
                     String settingsAsJsonString = FileUtils.readFileToString(settingsJsonFile);
                     JSONObject settingsJsonObject = new JSONObject(settingsAsJsonString);
@@ -401,11 +515,14 @@ public abstract class AbstractSettingsService extends Service {
                     return getSettingsFromJsonObject(settingsJsonObject);
                 }
                 else {
-                    Log.w(AbstractSettingsService.class.getName(), "unable to load file from path '" + settingsJsonFile.getPath() + "'");
+                    Log.w(AbstractSettingsService.class.getName(),
+                          "unable to load file from path '" + settingsJsonFile.getPath() + "'");
                 }
             }
             catch (IOException | JSONException ge) {
-                Log.w(AbstractSettingsService.class.getName(), ge.getMessage(), ge);
+                Log.w(AbstractSettingsService.class.getName(),
+                      ge.getMessage(),
+                      ge);
             }
 
             return null;
@@ -413,16 +530,22 @@ public abstract class AbstractSettingsService extends Service {
 
         @Override
         protected void onPostExecute(AbstractAppSettings result) {
+
             if (result == null) {
-                mServiceStatus = new ServiceStatus(ServiceStatus.Status.FINISHED_WITH_ERRORS, this.mFilename);
-                sendMessage(whatSettingsLoadingFailed(), this.mFilename);
+                mServiceStatus = new ServiceStatus(ServiceStatus.Status.FINISHED_WITH_ERRORS,
+                                                   this.mFilename);
+                sendMessage(whatSettingsLoadingFailed(),
+                            this.mFilename);
             }
             else {
-                mServiceStatus = new ServiceStatus(ServiceStatus.Status.FINISHED, "");
-                sendMessage(whatSettingsLoadingLoaded(), result);
+                mServiceStatus = new ServiceStatus(ServiceStatus.Status.FINISHED,
+                                                   "");
+                sendMessage(whatSettingsLoadingLoaded(),
+                            result);
             }
 
-            sendMessage(AbstractSettingsService.HANDLER_STATUS, AbstractSettingsService.this.getServiceStatus());
+            sendMessage(AbstractSettingsService.HANDLER_STATUS,
+                        AbstractSettingsService.this.getServiceStatus());
             checkStatusAndStop();
         }
     }

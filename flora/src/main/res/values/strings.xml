@@ -48,7 +48,6 @@
     <string name="alert_dialog_confirm_quit_finish_title">Choose an action</string>
     <string name="alert_dialog_action_start_new_input">Start a new prospection</string>
     <string name="alert_dialog_action_close_app">Close application</string>
-    <string name="alert_dialog_action_cancel_alert_dialog">Cancel this dialog</string>
     <string name="alert_dialog_confirm_quit_finish_message">Your Prospecting area has been saved.</string>
     <string name="alert_dialog_confirm_quit_finish_step_message">Save and quit this step ?</string>
 

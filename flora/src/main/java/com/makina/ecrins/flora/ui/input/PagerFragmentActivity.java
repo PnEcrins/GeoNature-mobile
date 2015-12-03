@@ -93,10 +93,6 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
                     finish();
 
                     break;
-                case R.string.alert_dialog_action_cancel_alert_dialog:
-                    dialog.dismiss();
-
-                    break;
             }
         }
     };
@@ -278,8 +274,7 @@ public class PagerFragmentActivity extends AbstractNavigationHistoryPagerFragmen
         Collections.addAll(
                 actions,
                 R.string.alert_dialog_action_start_new_input,
-                R.string.alert_dialog_action_close_app,
-                R.string.alert_dialog_action_cancel_alert_dialog
+                R.string.alert_dialog_action_close_app
         );
         final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(
                 R.string.alert_dialog_confirm_quit_finish_title,

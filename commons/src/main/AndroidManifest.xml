@@ -3,7 +3,7 @@
     package="com.makina.ecrins.commons"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:versionCode="717"
+    android:versionCode="727"
     tools:ignore="GradleOverrides">
 
     <application

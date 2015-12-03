@@ -43,6 +43,7 @@ import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.input.Observer;
+import com.makina.ecrins.commons.model.MountPoint;
 import com.makina.ecrins.commons.net.NetworkConnectivityListener;
 import com.makina.ecrins.commons.settings.AbstractAppSettings;
 import com.makina.ecrins.commons.settings.AbstractSettingsService;
@@ -118,8 +119,12 @@ public abstract class AbstractMainFragmentActivity
      */
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d(AbstractMainFragmentActivity.class.getName(), "onServiceConnected " + name);
+        public void onServiceConnected(
+                ComponentName name,
+                IBinder service) {
+
+            Log.d(AbstractMainFragmentActivity.class.getName(),
+                  "onServiceConnected " + name);
 
             // This is called when the connection with the service has been established, giving us the service object we can use to interact with the service.
             // We are communicating with our service through an IDL interface, so get a client-side representation of that from the raw service object.
@@ -127,14 +132,17 @@ public abstract class AbstractMainFragmentActivity
 
             // We want to monitor the service for as long as we are connected to it.
             try {
-                Message msg = Message.obtain(null, AbstractSettingsService.HANDLER_REGISTER_CLIENT);
+                Message msg = Message.obtain(null,
+                                             AbstractSettingsService.HANDLER_REGISTER_CLIENT);
                 msg.replyTo = mMessenger;
                 mSettingsServiceMessenger.send(msg);
             }
             catch (RemoteException re) {
                 // In this case the service has crashed before we could even do anything with it.
                 // We can count on soon being disconnected (and then reconnected if it can be restarted) so there is no need to do anything here.
-                Log.w(AbstractMainFragmentActivity.class.getName(), re.getMessage(), re);
+                Log.w(AbstractMainFragmentActivity.class.getName(),
+                      re.getMessage(),
+                      re);
             }
         }
 
@@ -142,7 +150,8 @@ public abstract class AbstractMainFragmentActivity
         public void onServiceDisconnected(ComponentName name) {
             // This is called when the connection with the service has been unexpectedly disconnected -- that is, its process crashed.
 
-            Log.d(AbstractMainFragmentActivity.class.getName(), "onServiceDisconnected " + name);
+            Log.d(AbstractMainFragmentActivity.class.getName(),
+                  "onServiceDisconnected " + name);
 
             mSettingsServiceMessenger = null;
         }
@@ -151,6 +160,7 @@ public abstract class AbstractMainFragmentActivity
     private AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
         @Override
         public void onPositiveButtonClick(DialogInterface dialog) {
+
             try {
                 if (FileUtils.deleteQuietly(FileUtils.getInputsFolder(AbstractMainFragmentActivity.this))) {
                     executeGetDeviceStatusAsyncTask();
@@ -158,11 +168,9 @@ public abstract class AbstractMainFragmentActivity
                 }
             }
             catch (IOException ioe) {
-                Log.w(
-                        AbstractMainFragmentActivity.class.getName(),
-                        ioe.getMessage(),
-                        ioe
-                );
+                Log.w(AbstractMainFragmentActivity.class.getName(),
+                      ioe.getMessage(),
+                      ioe);
             }
         }
 
@@ -176,41 +184,51 @@ public abstract class AbstractMainFragmentActivity
 
         @Override
         public void onNetworkConnectivityChange(@Nullable NetworkInfo networkInfo) {
+
             mButtonStartSynchronization.setEnabled((networkInfo != null) && networkInfo.isConnected());
         }
     };
 
-    private static class MainFragmentHandler extends Handler {
+    private static class MainFragmentHandler
+            extends Handler {
+
         private final WeakReference<AbstractMainFragmentActivity> mMainFragmentActivity;
 
         public MainFragmentHandler(AbstractMainFragmentActivity pMainFragmentActivity) {
+
             super();
             mMainFragmentActivity = new WeakReference<>(pMainFragmentActivity);
         }
 
         @Override
         public void handleMessage(Message msg) {
+
             AbstractMainFragmentActivity mainFragmentActivity = mMainFragmentActivity.get();
 
             if (msg.what == AbstractSettingsService.HANDLER_CLIENT_REGISTERED) {
-                Log.d(getClass().getName(), "handleMessage HANDLER_CLIENT_REGISTERED " + mainFragmentActivity.messagesQueue.size());
+                Log.d(getClass().getName(),
+                      "handleMessage HANDLER_CLIENT_REGISTERED " + mainFragmentActivity.messagesQueue.size());
 
                 // tries to retrieve all pending messages
                 Message messageGetPendingMessages = Message.obtain();
                 messageGetPendingMessages.what = AbstractSettingsService.HANDLER_GET_PENDING_MESSAGES;
 
                 if (mainFragmentActivity.mSettingsServiceMessenger != null) {
-                    Log.d(getClass().getName(), "send message HANDLER_GET_PENDING_MESSAGES");
+                    Log.d(getClass().getName(),
+                          "send message HANDLER_GET_PENDING_MESSAGES");
 
                     try {
                         mainFragmentActivity.mSettingsServiceMessenger.send(messageGetPendingMessages);
                     }
                     catch (RemoteException re) {
-                        Log.w(getClass().getName(), re.getMessage(), re);
+                        Log.w(getClass().getName(),
+                              re.getMessage(),
+                              re);
                     }
                 }
                 else {
-                    Log.d(getClass().getName(), "mSyncServiceMessenger null : add message HANDLER_GET_PENDING_MESSAGES");
+                    Log.d(getClass().getName(),
+                          "mSyncServiceMessenger null : add message HANDLER_GET_PENDING_MESSAGES");
                     mainFragmentActivity.messagesQueue.add(messageGetPendingMessages);
                 }
 
@@ -220,16 +238,22 @@ public abstract class AbstractMainFragmentActivity
                         mainFragmentActivity.mSettingsServiceMessenger.send(mainFragmentActivity.messagesQueue.removeFirst());
                     }
                     catch (RemoteException | NoSuchElementException ge) {
-                        Log.w(getClass().getName(), ge.getMessage(), ge);
+                        Log.w(getClass().getName(),
+                              ge.getMessage(),
+                              ge);
                     }
                 }
             }
             else if (msg.what == AbstractSettingsService.HANDLER_STATUS) {
                 ServiceStatus status = (ServiceStatus) msg.obj;
-                Log.d(getClass().getName(), "HANDLER_STATUS : " + status.getStatus().name());
-                mainFragmentActivity.mSavedState.putParcelable(KEY_SERVICE_STATUS, status);
+                Log.d(getClass().getName(),
+                      "HANDLER_STATUS : " + status.getStatus()
+                                                  .name());
+                mainFragmentActivity.mSavedState.putParcelable(KEY_SERVICE_STATUS,
+                                                               status);
 
-                if (status.getStatus().equals(ServiceStatus.Status.FINISHED)) {
+                if (status.getStatus()
+                          .equals(ServiceStatus.Status.FINISHED)) {
                     mainFragmentActivity.mButtonStartInput.setEnabled(true);
 
                     for (String dialogTag : new ArrayList<>(mainFragmentActivity.mDialogTags)) {
@@ -240,13 +264,12 @@ public abstract class AbstractMainFragmentActivity
                 }
             }
             else if (msg.what == mainFragmentActivity.whatSettingsLoadingStart()) {
-                mainFragmentActivity.showProgressDialog(
-                        PROGRESS_DIALOG_SETTINGS_FRAGMENT,
-                        R.string.progress_title,
-                        R.string.progress_message_loading_settings,
-                        ProgressDialog.STYLE_SPINNER,
-                        0,
-                        0);
+                mainFragmentActivity.showProgressDialog(PROGRESS_DIALOG_SETTINGS_FRAGMENT,
+                                                        R.string.progress_title,
+                                                        R.string.progress_message_loading_settings,
+                                                        ProgressDialog.STYLE_SPINNER,
+                                                        0,
+                                                        0);
             }
             else if (msg.what == mainFragmentActivity.whatSettingsLoadingLoaded()) {
                 mainFragmentActivity.dismissProgressDialog(PROGRESS_DIALOG_SETTINGS_FRAGMENT);
@@ -260,43 +283,59 @@ public abstract class AbstractMainFragmentActivity
                 messageExecuteTask.what = AbstractSettingsService.HANDLER_EXECUTE_TASK;
 
                 if (mainFragmentActivity.mSettingsServiceMessenger != null) {
-                    Log.d(getClass().getName(), "send message HANDLER_EXECUTE_TASK");
+                    Log.d(getClass().getName(),
+                          "send message HANDLER_EXECUTE_TASK");
 
                     try {
                         mainFragmentActivity.mSettingsServiceMessenger.send(messageExecuteTask);
                     }
                     catch (RemoteException re) {
-                        Log.w(getClass().getName(), re.getMessage(), re);
+                        Log.w(getClass().getName(),
+                              re.getMessage(),
+                              re);
                     }
                 }
                 else {
-                    Log.d(getClass().getName(), "mSyncServiceMessenger null : add message HANDLER_EXECUTE_TASK");
+                    Log.d(getClass().getName(),
+                          "mSyncServiceMessenger null : add message HANDLER_EXECUTE_TASK");
                     mainFragmentActivity.messagesQueue.add(messageExecuteTask);
                 }
             }
             else if (msg.what == mainFragmentActivity.whatSettingsLoadingFailed()) {
                 mainFragmentActivity.dismissProgressDialog(PROGRESS_DIALOG_SETTINGS_FRAGMENT);
-                Toast.makeText(mainFragmentActivity, String.format(mainFragmentActivity.getString(R.string.message_settings_not_found), msg.obj), Toast.LENGTH_LONG).show();
+                final String warningMessage = mainFragmentActivity.getString(R.string.message_settings_not_found,
+                                                                             msg.obj);
+
+                Toast.makeText(mainFragmentActivity,
+                               warningMessage,
+                               Toast.LENGTH_LONG)
+                     .show();
+
+                ((TextView) mainFragmentActivity.findViewById(android.R.id.empty)).setText(warningMessage);
             }
             else {
-                mainFragmentActivity.performMessageStatusTaskHandler(mainFragmentActivity, msg);
+                mainFragmentActivity.performMessageStatusTaskHandler(mainFragmentActivity,
+                                                                     msg);
             }
         }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            Log.d(AbstractMainFragmentActivity.class.getName(), "onCreate, savedInstanceState null");
+            Log.d(AbstractMainFragmentActivity.class.getName(),
+                  "onCreate, savedInstanceState null");
             mSavedState = new Bundle();
             setCloseApplication(false);
         }
         else {
-            Log.d(AbstractMainFragmentActivity.class.getName(), "onCreate, savedInstanceState initialized");
+            Log.d(AbstractMainFragmentActivity.class.getName(),
+                  "onCreate, savedInstanceState initialized");
             mSavedState = savedInstanceState;
         }
 
@@ -322,7 +361,8 @@ public abstract class AbstractMainFragmentActivity
 
         mListViewDeviceStatus = (ListView) findViewById(R.id.listViewDeviceStatus);
         mListViewDeviceStatus.setEmptyView(findViewById(android.R.id.empty));
-        mDeviceStatusAdapter = new DeviceStatusAdapter(this, android.R.layout.simple_list_item_2);
+        mDeviceStatusAdapter = new DeviceStatusAdapter(this,
+                                                       android.R.layout.simple_list_item_2);
         mListViewDeviceStatus.setAdapter(mDeviceStatusAdapter);
 
         // only in debug mode
@@ -337,9 +377,11 @@ public abstract class AbstractMainFragmentActivity
 
     @Override
     protected void onResume() {
+
         super.onResume();
 
-        Log.d(AbstractMainFragmentActivity.class.getName(), "onResume");
+        Log.d(AbstractMainFragmentActivity.class.getName(),
+              "onResume");
 
         if (isCloseApplication()) {
             finish();
@@ -355,17 +397,21 @@ public abstract class AbstractMainFragmentActivity
             messageLoadSettings.what = AbstractSettingsService.HANDLER_LOAD_SETTINGS;
 
             if (mSettingsServiceMessenger != null) {
-                Log.d(AbstractMainFragmentActivity.class.getName(), "send message HANDLER_LOAD_SETTINGS");
+                Log.d(AbstractMainFragmentActivity.class.getName(),
+                      "send message HANDLER_LOAD_SETTINGS");
 
                 try {
                     mSettingsServiceMessenger.send(messageLoadSettings);
                 }
                 catch (RemoteException re) {
-                    Log.w(AbstractMainFragmentActivity.class.getName(), re.getMessage(), re);
+                    Log.w(AbstractMainFragmentActivity.class.getName(),
+                          re.getMessage(),
+                          re);
                 }
             }
             else {
-                Log.d(AbstractMainFragmentActivity.class.getName(), "mSyncServiceMessenger null : add message HANDLER_LOAD_SETTINGS");
+                Log.d(AbstractMainFragmentActivity.class.getName(),
+                      "mSyncServiceMessenger null : add message HANDLER_LOAD_SETTINGS");
                 messagesQueue.add(messageLoadSettings);
             }
         }
@@ -386,7 +432,9 @@ public abstract class AbstractMainFragmentActivity
 
     @Override
     protected void onPause() {
-        Log.d(AbstractMainFragmentActivity.class.getName(), "onPause");
+
+        Log.d(AbstractMainFragmentActivity.class.getName(),
+              "onPause");
 
         for (String dialogTag : new ArrayList<>(mDialogTags)) {
             dismissProgressDialog(dialogTag);
@@ -400,7 +448,9 @@ public abstract class AbstractMainFragmentActivity
 
     @Override
     protected void onDestroy() {
-        Log.d(AbstractMainFragmentActivity.class.getName(), "onDestroy");
+
+        Log.d(AbstractMainFragmentActivity.class.getName(),
+              "onDestroy");
 
         if (isFinishing()) {
             mSavedState.remove(KEY_SERVICE_INITIALIZED);
@@ -414,6 +464,7 @@ public abstract class AbstractMainFragmentActivity
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+
         outState.putAll(mSavedState);
 
         super.onSaveInstanceState(outState);
@@ -421,14 +472,24 @@ public abstract class AbstractMainFragmentActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuItem menuItem = menu.add(Menu.NONE, 0, Menu.NONE, R.string.action_settings).setIcon(R.drawable.ic_action_settings);
-        MenuItemCompat.setShowAsAction(menuItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+
+        MenuItem menuItem = menu.add(Menu.NONE,
+                                     0,
+                                     Menu.NONE,
+                                     R.string.action_settings)
+                                .setIcon(R.drawable.ic_action_settings);
+        MenuItemCompat.setShowAsAction(menuItem,
+                                       MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
 
         return true;
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, final long id) {
+    public boolean onItemLongClick(
+            AdapterView<?> parent,
+            View view,
+            int position,
+            final long id) {
         // confirms before delete all inputs
         if (position == 1) {
             confirmBeforeDeleteAllInputs();
@@ -438,25 +499,39 @@ public abstract class AbstractMainFragmentActivity
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] projection =
-                {
-                        MainDatabaseHelper.ObserversColumns._ID,
-                        MainDatabaseHelper.ObserversColumns.LASTNAME,
-                        MainDatabaseHelper.ObserversColumns.FIRSTNAME
-                };
+    public Loader<Cursor> onCreateLoader(
+            int id,
+            Bundle args) {
 
-        return new CursorLoader(this, getObserverLoaderUri(args.getLong(KEY_SELECTED_OBSERVER)), projection, null, null, null);
+        String[] projection = {
+                MainDatabaseHelper.ObserversColumns._ID,
+                MainDatabaseHelper.ObserversColumns.LASTNAME,
+                MainDatabaseHelper.ObserversColumns.FIRSTNAME
+        };
+
+        return new CursorLoader(this,
+                                getObserverLoaderUri(args.getLong(KEY_SELECTED_OBSERVER)),
+                                projection,
+                                null,
+                                null,
+                                null);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(
+            Loader<Cursor> loader,
+            Cursor data) {
+
         if ((data != null) && data.moveToFirst()) {
-            setDefaultObserver(new Observer(data.getLong(data.getColumnIndex(MainDatabaseHelper.ObserversColumns._ID)), data.getString(data.getColumnIndex(MainDatabaseHelper.ObserversColumns.LASTNAME)), data.getString(data.getColumnIndex(MainDatabaseHelper.ObserversColumns.FIRSTNAME))));
-            Log.d(AbstractMainFragmentActivity.class.getName(), "onLoadFinished, default observer : " + getDefaultObserver().getObserverId());
+            setDefaultObserver(new Observer(data.getLong(data.getColumnIndex(MainDatabaseHelper.ObserversColumns._ID)),
+                                            data.getString(data.getColumnIndex(MainDatabaseHelper.ObserversColumns.LASTNAME)),
+                                            data.getString(data.getColumnIndex(MainDatabaseHelper.ObserversColumns.FIRSTNAME))));
+            Log.d(AbstractMainFragmentActivity.class.getName(),
+                  "onLoadFinished, default observer : " + getDefaultObserver().getObserverId());
         }
         else {
-            Log.w(AbstractMainFragmentActivity.class.getName(), "onLoadFinished, unable to fetch the default observer from database");
+            Log.w(AbstractMainFragmentActivity.class.getName(),
+                  "onLoadFinished, unable to fetch the default observer from database");
         }
     }
 
@@ -465,27 +540,44 @@ public abstract class AbstractMainFragmentActivity
         // nothing to do ...
     }
 
-    public void showProgressDialog(String tag, int title, int message, int progressStyle, int progress, int max) {
+    public void showProgressDialog(
+            String tag,
+            int title,
+            int message,
+            int progressStyle,
+            int progress,
+            int max) {
+
         ProgressDialogFragment dialogFragment = (ProgressDialogFragment) getSupportFragmentManager().findFragmentByTag(tag);
 
         if (dialogFragment != null) {
             dialogFragment.setProgress(progress);
         }
         else {
-            if (!mDialogTags.contains(tag) && mIsActivityCreated.get() && !isFinishing() && (!((ServiceStatus) mSavedState.getParcelable(KEY_SERVICE_STATUS)).getStatus().equals(ServiceStatus.Status.FINISHED) && !((ServiceStatus) mSavedState.getParcelable(KEY_SERVICE_STATUS)).getStatus().equals(ServiceStatus.Status.FINISHED_WITH_ERRORS) && !((ServiceStatus) mSavedState.getParcelable(KEY_SERVICE_STATUS)).getStatus().equals(ServiceStatus.Status.ABORTED))) {
-                Log.d(AbstractMainFragmentActivity.class.getName(), "showProgressDialog create " + tag);
+            if (!mDialogTags.contains(tag) && mIsActivityCreated.get() && !isFinishing() && (!((ServiceStatus) mSavedState.getParcelable(KEY_SERVICE_STATUS)).getStatus()
+                                                                                                                                                             .equals(ServiceStatus.Status.FINISHED) && !((ServiceStatus) mSavedState.getParcelable(KEY_SERVICE_STATUS)).getStatus()
+                                                                                                                                                                                                                                                                       .equals(ServiceStatus.Status.FINISHED_WITH_ERRORS) && !((ServiceStatus) mSavedState.getParcelable(KEY_SERVICE_STATUS)).getStatus()
+                                                                                                                                                                                                                                                                                                                                                                                             .equals(ServiceStatus.Status.ABORTED))) {
+                Log.d(AbstractMainFragmentActivity.class.getName(),
+                      "showProgressDialog create " + tag);
 
                 mDialogTags.add(tag);
 
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ProgressDialogFragment progressDialogFragment = ProgressDialogFragment.newInstance(title, message, progressStyle, max);
-                progressDialogFragment.show(ft, tag);
+                ProgressDialogFragment progressDialogFragment = ProgressDialogFragment.newInstance(title,
+                                                                                                   message,
+                                                                                                   progressStyle,
+                                                                                                   max);
+                progressDialogFragment.show(ft,
+                                            tag);
             }
         }
     }
 
     public void dismissProgressDialog(String tag) {
-        Log.d(AbstractMainFragmentActivity.class.getName(), "dismissProgressDialog " + tag);
+
+        Log.d(AbstractMainFragmentActivity.class.getName(),
+              "dismissProgressDialog " + tag);
 
         ProgressDialogFragment dialogFragment = (ProgressDialogFragment) getSupportFragmentManager().findFragmentByTag(tag);
 
@@ -511,7 +603,9 @@ public abstract class AbstractMainFragmentActivity
 
     protected abstract boolean checkServiceMessageStatusTask();
 
-    protected abstract void performMessageStatusTaskHandler(AbstractMainFragmentActivity mainFragmentActivity, Message msg);
+    protected abstract void performMessageStatusTaskHandler(
+            AbstractMainFragmentActivity mainFragmentActivity,
+            Message msg);
 
     protected abstract Uri getObserverLoaderUri(long ObserverId);
 
@@ -528,21 +622,31 @@ public abstract class AbstractMainFragmentActivity
     protected abstract int whatSettingsLoadingLoaded();
 
     protected void startListeningNetworkConnectivity() {
+
         mNetworkConnectivityListener.startListening(mOnNetworkConnectivityChangeListener);
     }
 
     protected void loadDefaultObserver() {
-        long defaultObserverId = PreferenceManager.getDefaultSharedPreferences(this).getLong("default_observer", -1);
 
-        Log.d(AbstractMainFragmentActivity.class.getName(), "loadDefaultObserver : " + defaultObserverId);
+        long defaultObserverId = PreferenceManager.getDefaultSharedPreferences(this)
+                                                  .getLong("default_observer",
+                                                           -1);
 
-        if ((defaultObserverId != -1) && (mSavedState.getLong(KEY_SELECTED_OBSERVER, -1) != defaultObserverId)) {
-            mSavedState.putLong(KEY_SELECTED_OBSERVER, defaultObserverId);
-            getSupportLoaderManager().restartLoader(0, mSavedState, this);
+        Log.d(AbstractMainFragmentActivity.class.getName(),
+              "loadDefaultObserver : " + defaultObserverId);
+
+        if ((defaultObserverId != -1) && (mSavedState.getLong(KEY_SELECTED_OBSERVER,
+                                                              -1) != defaultObserverId)) {
+            mSavedState.putLong(KEY_SELECTED_OBSERVER,
+                                defaultObserverId);
+            getSupportLoaderManager().restartLoader(0,
+                                                    mSavedState,
+                                                    this);
         }
     }
 
     protected void executeGetDeviceStatusAsyncTask() {
+
         new GetDeviceStatusAsyncTask().execute();
     }
 
@@ -558,18 +662,22 @@ public abstract class AbstractMainFragmentActivity
     }
 
     private void doUnbindService() {
+
         if (mIsSettingsServiceBound) {
             // If we have received the service, and hence registered with it, then now is the time to unregister.
             if (mSettingsServiceMessenger != null) {
                 try {
-                    Message msg = Message.obtain(null, AbstractSettingsService.HANDLER_UNREGISTER_CLIENT);
+                    Message msg = Message.obtain(null,
+                                                 AbstractSettingsService.HANDLER_UNREGISTER_CLIENT);
                     // this is needed to unregister the message used by this client
                     msg.replyTo = mMessenger;
                     mSettingsServiceMessenger.send(msg);
                 }
                 catch (RemoteException re) {
                     // There is nothing special we need to do if the service has crashed.
-                    Log.w(AbstractMainFragmentActivity.class.getName(), re.getMessage(), re);
+                    Log.w(AbstractMainFragmentActivity.class.getName(),
+                          re.getMessage(),
+                          re);
                 }
             }
 
@@ -580,15 +688,12 @@ public abstract class AbstractMainFragmentActivity
     }
 
     private void confirmBeforeDeleteAllInputs() {
-        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(
-                R.string.alert_dialog_confirm_delete_inputs_title,
-                R.string.alert_dialog_confirm_delete_inputs_message
-        );
+
+        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(R.string.alert_dialog_confirm_delete_inputs_title,
+                                                                                        R.string.alert_dialog_confirm_delete_inputs_message);
         alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
-        alertDialogFragment.show(
-                getSupportFragmentManager(),
-                ALERT_DIALOG_DELETE_INPUTS_FRAGMENT
-        );
+        alertDialogFragment.show(getSupportFragmentManager(),
+                                 ALERT_DIALOG_DELETE_INPUTS_FRAGMENT);
     }
 
     /**
@@ -600,16 +705,24 @@ public abstract class AbstractMainFragmentActivity
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    private class GetDeviceStatusAsyncTask extends AsyncTask<Void, Void, List<Long>> {
+    private class GetDeviceStatusAsyncTask
+            extends AsyncTask<Void, Void, List<Long>> {
+
         @Override
         protected List<Long> doInBackground(Void... params) {
+
             List<Long> result = new ArrayList<>(2);
 
             try {
-                result.add(FileUtils.getFileFromApplicationStorage(AbstractMainFragmentActivity.this, "databases" + File.separator + getAppSettings().getDbSettings().getDbName()).lastModified());
+                result.add(FileUtils.getFile(FileUtils.getDatabaseFolder(AbstractMainFragmentActivity.this,
+                                                                         MountPoint.StorageType.INTERNAL),
+                                             getAppSettings().getDbSettings()
+                                                             .getDbName())
+                                    .lastModified());
             }
             catch (IOException ioe) {
-                Log.w(getClass().getName(), ioe);
+                Log.w(getClass().getName(),
+                      ioe);
 
                 result.add(0l);
             }
@@ -618,25 +731,24 @@ public abstract class AbstractMainFragmentActivity
                 File inputDir = FileUtils.getInputsFolder(AbstractMainFragmentActivity.this);
 
                 if (inputDir.exists()) {
-                    result.add(
-                            (long) inputDir.listFiles(
-                                    new FileFilter() {
-                                        @Override
-                                        public boolean accept(File pathname) {
-                                            return pathname.getName()
-                                                    .startsWith("input_") && pathname.getName()
-                                                    .endsWith(".json");
-                                        }
-                                    }
-                            ).length
-                    );
+                    result.add((long) inputDir.listFiles(new FileFilter() {
+                        @Override
+                        public boolean accept(File pathname) {
+
+                            return pathname.getName()
+                                           .startsWith("input_") && pathname.getName()
+                                                                            .endsWith(".json");
+                        }
+                    }).length);
                 }
                 else {
                     result.add(0l);
                 }
             }
             catch (IOException ioe) {
-                Log.w(getClass().getName(), ioe.getMessage(), ioe);
+                Log.w(getClass().getName(),
+                      ioe.getMessage(),
+                      ioe);
 
                 result.add(0l);
             }
@@ -646,6 +758,7 @@ public abstract class AbstractMainFragmentActivity
 
         @Override
         protected void onPostExecute(List<Long> result) {
+
             mDeviceStatusAdapter.clear();
 
             for (Long value : result) {
@@ -656,31 +769,35 @@ public abstract class AbstractMainFragmentActivity
         }
     }
 
-    private class DeviceStatusAdapter extends ArrayAdapter<Long> {
+    private class DeviceStatusAdapter
+            extends ArrayAdapter<Long> {
 
         private int mTextViewResourceId;
         private final LayoutInflater mInflater;
 
-        public DeviceStatusAdapter(Context context, int textViewResourceId) {
-            super(
-                    context,
-                    textViewResourceId
-            );
+        public DeviceStatusAdapter(
+                Context context,
+                int textViewResourceId) {
+
+            super(context,
+                  textViewResourceId);
 
             mTextViewResourceId = textViewResourceId;
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(
+                int position,
+                View convertView,
+                ViewGroup parent) {
+
             View view;
 
             if (convertView == null) {
-                view = mInflater.inflate(
-                        mTextViewResourceId,
-                        parent,
-                        false
-                );
+                view = mInflater.inflate(mTextViewResourceId,
+                                         parent,
+                                         false);
             }
             else {
                 view = convertView;
@@ -694,12 +811,8 @@ public abstract class AbstractMainFragmentActivity
                         ((TextView) view.findViewById(android.R.id.text2)).setText(R.string.synchro_last_synchronization_never);
                     }
                     else {
-                        ((TextView) view.findViewById(android.R.id.text2)).setText(
-                                android.text.format.DateFormat.format(
-                                        getResources().getString(R.string.synchro_last_synchronization_date),
-                                        new Date(getItem(position))
-                                )
-                        );
+                        ((TextView) view.findViewById(android.R.id.text2)).setText(android.text.format.DateFormat.format(getResources().getString(R.string.synchro_last_synchronization_date),
+                                                                                                                         new Date(getItem(position))));
                     }
 
                     break;

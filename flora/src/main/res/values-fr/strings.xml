@@ -48,7 +48,6 @@
     <string name="alert_dialog_confirm_quit_finish_title">Que voulez vous faire ?</string>
     <string name="alert_dialog_action_start_new_input">Démarrer une nouvelle prospection</string>
     <string name="alert_dialog_action_close_app">Fermer l\'application</string>
-    <string name="alert_dialog_action_cancel_alert_dialog">Annuler cette boite de dialogue</string>
     <string name="alert_dialog_confirm_quit_finish_message">Votre zone de prospection a bien été enregistrée.</string>
     <string name="alert_dialog_confirm_quit_finish_step_message">Sauvegarder et quitter cette étape ?</string>
 

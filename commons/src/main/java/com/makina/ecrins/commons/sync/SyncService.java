@@ -14,6 +14,7 @@ import android.util.Log;
 
 import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
+import com.makina.ecrins.commons.model.MountPoint;
 import com.makina.ecrins.commons.util.FileUtils;
 
 import org.json.JSONObject;
@@ -571,10 +572,12 @@ public class SyncService
 
                     switch (httpURLConnection.getResponseCode()) {
                         case HttpURLConnection.HTTP_OK:
-                            File originalFile = FileUtils.getFileFromApplicationStorage(SyncService.this,
-                                                                                        exportSettings.getFile());
-                            File tempFile = FileUtils.getFileFromApplicationStorage(SyncService.this,
-                                                                                    exportSettings.getFile() + ".tmp");
+                            File originalFile = FileUtils.getFile(FileUtils.getRootFolder(SyncService.this,
+                                                                                          MountPoint.StorageType.INTERNAL),
+                                                                  exportSettings.getFile());
+                            File tempFile = FileUtils.getFile(FileUtils.getRootFolder(SyncService.this,
+                                                                                      MountPoint.StorageType.INTERNAL),
+                                                              exportSettings.getFile() + ".tmp");
 
                             if (tempFile.exists()) {
                                 // noinspection ResultOfMethodCallIgnored
@@ -593,8 +596,9 @@ public class SyncService
                                 // noinspection ResultOfMethodCallIgnored
                                 originalFile.delete();
 
-                                if (tempFile.renameTo(FileUtils.getFileFromApplicationStorage(SyncService.this,
-                                                                                              exportSettings.getFile()))) {
+                                if (tempFile.renameTo(FileUtils.getFile(FileUtils.getRootFolder(SyncService.this,
+                                                                                                MountPoint.StorageType.INTERNAL),
+                                                                        exportSettings.getFile()))) {
                                     sendMessage(SyncService.HANDLER_SYNC_MESSAGE,
                                                 new SyncMessage(SyncMessage.MessageType.DOWNLOAD_STATUS,
                                                                 new SyncStatus(SyncStatus.Status.RUNNING,

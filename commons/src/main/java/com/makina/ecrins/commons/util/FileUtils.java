@@ -19,8 +19,7 @@ public class FileUtils
         extends org.apache.commons.io.FileUtils {
 
     /**
-     * {@link com.makina.ecrins.commons.util.FileUtils} instances should NOT be constructed in
-     * standard programming.
+     * {@link FileUtils} instances should NOT be constructed in standard programming.
      */
     private FileUtils() {
 
@@ -33,8 +32,7 @@ public class FileUtils
      *
      * @return the relative path
      *
-     * @throws android.content.pm.PackageManager.NameNotFoundException if the relative path cannot
-     * be found
+     * @throws NameNotFoundException if the relative path cannot be found
      */
     @NonNull
     public static String getRelativeSharedPath(Context context) throws NameNotFoundException {
@@ -56,32 +54,32 @@ public class FileUtils
         final MountPoint externalMountPoint = MountPointUtils.getExternalStorage();
 
         if ((externalMountPoint == null) || !MountPointUtils.isMounted(externalMountPoint)) {
-            return MountPointUtils.getInternalStorage().getMountPath();
+            return MountPointUtils.getInternalStorage()
+                                  .getMountPath();
         }
 
         return externalMountPoint.getMountPath();
     }
 
     /**
-     * Gets a given filename as {@code File} according to the current application storage used
-     * (default or external storage).
+     * Gets the root folder as {@code File} used by this context.
      *
-     * @param context  the current context
-     * @param filename filename to load
+     * @param context     the current context
+     * @param storageType the {@link MountPoint.StorageType} to use
      *
-     * @return the filename to load as {@code File}
+     * @return the root folder as {@code File}
      *
-     * @throws java.io.IOException if the given filename cannot be load as {@code File}
+     * @throws IOException
      */
     @NonNull
-    public static File getFileFromApplicationStorage(
+    public static File getRootFolder(
             Context context,
-            String filename) throws IOException {
-
-        final File externalStorageDirectory = getExternalStorageDirectory();
+            @NonNull MountPoint.StorageType storageType) throws IOException {
 
         try {
-            return new File(externalStorageDirectory.getPath() + File.separator + getRelativeSharedPath(context) + filename);
+            return FileUtils.getFile((storageType == MountPoint.StorageType.EXTERNAL) ? getExternalStorageDirectory() : MountPointUtils.getInternalStorage()
+                                                                                                                                       .getMountPath(),
+                                     getRelativeSharedPath(context));
         }
         catch (NameNotFoundException nnfe) {
             throw new IOException(nnfe);
@@ -89,18 +87,41 @@ public class FileUtils
     }
 
     /**
-     * Gets the inputs folder as {@code File} used by this context.
+     * Gets the {@code inputs/} folder as {@code File} used by this context.
      * The relative path used is {@code inputs/&lt;package_name&gt;}
      *
      * @param context the current context
      *
-     * @return the inputs folder as {@code File}
+     * @return the {@code inputs/} folder as {@code File}
      *
-     * @throws java.io.IOException
+     * @throws IOException
      */
+    @NonNull
     public static File getInputsFolder(Context context) throws IOException {
 
-        return getFileFromApplicationStorage(context,
-                                             "inputs/" + context.getPackageName());
+        return FileUtils.getFile(getRootFolder(context,
+                                               MountPoint.StorageType.INTERNAL),
+                                 "inputs",
+                                 context.getPackageName());
+    }
+
+    /**
+     * Gets the {@code databases/} folder as {@code File} used by this context.
+     *
+     * @param context     the current context
+     * @param storageType the {@link MountPoint.StorageType} to use
+     *
+     * @return the {@code databases/} folder
+     *
+     * @throws IOException
+     */
+    @NonNull
+    public static File getDatabaseFolder(
+            Context context,
+            @NonNull MountPoint.StorageType storageType) throws IOException {
+
+        return FileUtils.getFile(getRootFolder(context,
+                                               storageType),
+                                 "databases");
     }
 }
