@@ -59,9 +59,6 @@
         <service
             android:name="com.makina.ecrins.commons.sync.SyncService"
             android:exported="false"/>
-        <service
-            android:name="com.makina.ecrins.commons.sync.SyncCommandIntentService"
-            android:exported="false"/>
 
         <receiver
             android:name="com.makina.ecrins.commons.sync.StartCheckServerServiceReceiver"
