@@ -1,11 +1,10 @@
 package com.makina.ecrins.flora;
 
 import android.app.Application;
-import android.os.Environment;
 import android.util.Log;
 
 import com.makina.ecrins.commons.input.Observer;
-import com.makina.ecrins.commons.util.FileUtils;
+import com.makina.ecrins.commons.util.MountPointUtils;
 import com.makina.ecrins.flora.input.Input;
 import com.makina.ecrins.flora.settings.AppSettings;
 import com.makina.ecrins.maps.geojson.Feature;
@@ -56,10 +55,10 @@ public class MainApplication extends Application {
         this.mDefaultObserver = null;
         this.mUnities = new ArrayList<>();
 
-        Log.d(getClass().getName(),
-                "default storage " + Environment.getExternalStorageDirectory().getPath());
-        Log.d(getClass().getName(),
-                "use storage " + FileUtils.getExternalStorageDirectory().getPath());
+        Log.i(getClass().getName(),
+              "internal storage: " + MountPointUtils.getInternalStorage());
+        Log.i(getClass().getName(),
+              "external storage: " + MountPointUtils.getExternalStorage());
     }
 
     public boolean isCloseApplication() {

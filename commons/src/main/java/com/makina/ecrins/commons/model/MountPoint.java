@@ -14,7 +14,10 @@ import java.io.File;
 public class MountPoint
         implements Parcelable {
 
+    @NonNull
     private final File mountPath;
+
+    @NonNull
     private final StorageType storageType;
 
     public MountPoint(
@@ -44,12 +47,45 @@ public class MountPoint
     }
 
     /**
+     * Returns a boolean indicating whether this {@link MountPoint} is available.
+     *
+     * @return {@code true} if this {@link MountPoint} is available, {@code false} otherwise.
+     *
+     * @see File#exists()
+     */
+    public boolean exists() {
+        return mountPath.exists();
+    }
+
+    /**
+     * Indicates whether the current context is allowed to read from this {@link MountPoint}.
+     *
+     * @return {@code true} if this {@link MountPoint} can be read, {@code false} otherwise.
+     *
+     * @see File#canRead()
+     */
+    public boolean canRead() {
+        return mountPath.canRead();
+    }
+
+    /**
+     * Indicates whether the current context is allowed to write to this {@link MountPoint}.
+     *
+     * @return {@code true} if this {@link MountPoint} can be written, {@code false} otherwise.
+     *
+     * @see File#canWrite()
+     */
+    public boolean canWrite() {
+        return mountPath.canWrite();
+    }
+
+    /**
      * Returns the total size in bytes of the partition containing this path.
      *
      * @return the total size in bytes of the partition containing this path or 0 if this path does
      * not exist
      *
-     * @see java.io.File#getTotalSpace()
+     * @see File#getTotalSpace()
      */
     public long getTotalSpace() {
 
@@ -62,11 +98,23 @@ public class MountPoint
      * @return the number of free bytes on the partition containing this path or 0 if this path does
      * not exist
      *
-     * @see java.io.File#getFreeSpace()
+     * @see File#getFreeSpace()
      */
     public long getFreeSpace() {
 
         return mountPath.getFreeSpace();
+    }
+
+    @Override
+    public String toString() {
+
+        return "MountPoint{" +
+                "mountPath=" + mountPath +
+                ", storageType=" + storageType +
+                ", exists=" + mountPath.exists() +
+                ", canRead=" + mountPath.canRead() +
+                ", canWrite=" + mountPath.canWrite() +
+                '}';
     }
 
     @Override

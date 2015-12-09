@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.os.EnvironmentCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -108,24 +107,6 @@ public class MountPointUtils {
         }
 
         return mountPoints;
-    }
-
-    /**
-     * Check if the given {@link MountPoint} is mounted or not:
-     * <ul>
-     * <li>{@code Environment.MEDIA_MOUNTED}</li>
-     * <li>{@code Environment.MEDIA_MOUNTED_READ_ONLY}</li>
-     * </ul>
-     *
-     * @param mountPoint the given {@link MountPoint} to check
-     *
-     * @return {@code true} if the gieven {@link MountPoint} is mounted, {@code false} otherwise
-     */
-    public static boolean isMounted(@NonNull final MountPoint mountPoint) {
-
-        final String storageState = EnvironmentCompat.getStorageState(mountPoint.getMountPath());
-
-        return storageState.equals(Environment.MEDIA_MOUNTED) || storageState.equals(Environment.MEDIA_MOUNTED_READ_ONLY);
     }
 
     /**

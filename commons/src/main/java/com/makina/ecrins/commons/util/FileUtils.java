@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.makina.ecrins.commons.model.MountPoint;
 
@@ -17,6 +18,8 @@ import java.io.IOException;
  */
 public class FileUtils
         extends org.apache.commons.io.FileUtils {
+
+    private static final String TAG = FileUtils.class.getName();
 
     /**
      * {@link FileUtils} instances should NOT be constructed in standard programming.
@@ -53,7 +56,10 @@ public class FileUtils
 
         final MountPoint externalMountPoint = MountPointUtils.getExternalStorage();
 
-        if ((externalMountPoint == null) || !MountPointUtils.isMounted(externalMountPoint)) {
+        if ((externalMountPoint == null) || !externalMountPoint.canRead()) {
+            Log.w(TAG,
+                  "getExternalStorageDirectory: external mount point is not available: " + externalMountPoint + ". Use default: " + MountPointUtils.getInternalStorage());
+
             return MountPointUtils.getInternalStorage()
                                   .getMountPath();
         }
