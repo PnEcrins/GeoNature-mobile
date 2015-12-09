@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:sharedUserId="com.makina.ecrins"
-    android:versionCode="208">
+    android:versionCode="209">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -51,16 +51,6 @@
             android:authorities="com.makina.ecrins.search.content.MainContentProvider"
             android:exported="false"/>
 
-        <!--
-        <service
-            android:name="com.makina.ecrins.search.settings.SettingsService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.makina.ecrins.search.settings.SettingsService"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </service>
-        -->
         <service android:name="com.makina.ecrins.commons.service.RequestHandlerService"
                  android:exported="false"/>
         <service
@@ -76,15 +66,6 @@
         <receiver
             android:name="com.makina.ecrins.commons.sync.StartCheckServerServiceReceiver"
             android:exported="false"/>
-        <receiver
-            android:name="com.makina.ecrins.commons.sync.SyncCommandIntentServiceReceiver"
-            tools:ignore="ExportedReceiver">
-            <intent-filter>
-                <action android:name="com.makina.ecrins.search.INTENT_PACKAGE_INFO"/>
-                <action android:name="com.makina.ecrins.search.INTENT_DELETE_INPUT"/>
-                <action android:name="com.makina.ecrins.search.INTENT_MOVE_FILE_TO_EXTERNAL_STORAGE"/>
-            </intent-filter>
-        </receiver>
 
     </application>
 

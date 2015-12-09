@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:sharedUserId="com.makina.ecrins"
-    android:versionCode="81"
+    android:versionCode="82"
     tools:ignore="GradleOverrides">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -82,13 +82,6 @@
         <receiver
             android:name="com.makina.ecrins.commons.sync.StartCheckServerServiceReceiver"
             android:exported="false"/>
-        <receiver android:name="com.makina.ecrins.commons.sync.SyncCommandIntentServiceReceiver">
-            <intent-filter>
-                <action android:name="com.makina.ecrins.mortality.INTENT_PACKAGE_INFO"/>
-                <action android:name="com.makina.ecrins.mortality.INTENT_DELETE_INPUT"/>
-                <action android:name="com.makina.ecrins.mortality.INTENT_MOVE_FILE_TO_EXTERNAL_STORAGE"/>
-            </intent-filter>
-        </receiver>
 
     </application>
 
