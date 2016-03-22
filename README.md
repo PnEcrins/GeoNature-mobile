@@ -1,18 +1,31 @@
 # GeoNature-mobile
 [Mobile applications](https://github.com/PnEcrins/GeoNature-mobile) about:
 
-* Fauna
-* Invertebrate
-* Mortality
-* Flora
-* Search
+* Fauna (Saisie contact Faune vertébré)
+* Invertebrate (Saisie contact Faune invertébré)
+* Mortality (Saisie contact Faune mortalité)
+* Flora (Saisie Flore prioritaire)
+* Search (Recherche flore)
 
-.. image :: https://github.com/PnEcrins/GeoNature/raw/master/docs/images/schema-geonature-environnement.jpg
+GeoNature est une application de saisie et de synthèse des observations faune et flore : https://github.com/PnEcrins/GeoNature
 
-GeoNature est Application de saisie et de synthèse des observations faune et flore : https://github.com/PnEcrins/GeoNature
 GeoNature-mobile permet de saisir 4 de ces protocoles sur appareil mobile Android.
-Pour pouvoir importer les données saisies sur mobile dans la BDD PostgreSQL de GeoNature, une API est nécessaire : https://github.com/PnEcrins/GeoNature-mobile-webapi
+
+Pour pouvoir importer les données saisies avec Geonature-mobile dans la BDD PostgreSQL de GeoNature, une API est nécessaire : https://github.com/PnEcrins/GeoNature-mobile-webapi
+
 La synchronisation de ces données peut être faite par le réseau (wifi ou 3G) ou en connectant le mobile en USB à un PC connecté à internet. Dans ce cas, une application de synchronisation des données soit être installée sur le PC : https://github.com/PnEcrins/GeoNature-mobile-sync, 
+
+![GeoNature schema general](https://github.com/PnEcrins/GeoNature/raw/master/docs/images/schema-geonature-environnement.jpg)
+
+Il est possible de déployer les applications Android en utilisant les APK disponibles dans https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/install
+
+Il vous faut ensuite compléter les fichiers JSON de configuration comme indiqué dans la documentation (https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/configuration_development.odt)
+
+Il vous faut aussi intégrer les fichiers SIG (fonds carto au format MBTILES et limites des unités géographiques) sur la carte SD du mobile (https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/install/V1.0.0/external%20card).
+
+La génération des tuiles MBTILES est détaillée dans la documentation (https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/tuilage-mbtiles.txt)
+
+# Development
 
 ## Prerequisites
 * [JDK 7](https://jdk7.java.net/download.html)
