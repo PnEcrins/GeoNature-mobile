@@ -7,6 +7,13 @@
 * Flora
 * Search
 
+.. image :: https://github.com/PnEcrins/GeoNature/raw/master/docs/images/schema-geonature-environnement.jpg
+
+GeoNature est Application de saisie et de synthèse des observations faune et flore : https://github.com/PnEcrins/GeoNature
+GeoNature-mobile permet de saisir 4 de ces protocoles sur appareil mobile Android.
+Pour pouvoir importer les données saisies sur mobile dans la BDD PostgreSQL de GeoNature, une API est nécessaire : https://github.com/PnEcrins/GeoNature-mobile-webapi
+La synchronisation de ces données peut être faite par le réseau (wifi ou 3G) ou en connectant le mobile en USB à un PC connecté à internet. Dans ce cas, une application de synchronisation des données soit être installée sur le PC : https://github.com/PnEcrins/GeoNature-mobile-sync, 
+
 ## Prerequisites
 * [JDK 7](https://jdk7.java.net/download.html)
 * [Android SDK](http://developer.android.com/sdk/index.html)
