@@ -11,9 +11,15 @@ GeoNature est une application de saisie et de synthèse des observations faune e
 
 GeoNature-mobile permet de saisir 4 de ces protocoles sur appareil mobile Android.
 
-Pour pouvoir importer les données saisies avec Geonature-mobile dans la BDD PostgreSQL de GeoNature, une API est nécessaire : https://github.com/PnEcrins/GeoNature-mobile-webapi
+![GeoNature-mobile screenshot](https://github.com/PnEcrins/GeoNature/raw/master/docs/images/screen-contact-faune-nomade.jpg)
 
-La synchronisation de ces données peut être faite par le réseau (wifi ou 3G) ou en connectant le mobile en USB à un PC connecté à internet. Dans ce cas, une application de synchronisation des données soit être installée sur le PC : https://github.com/PnEcrins/GeoNature-mobile-sync, 
+![GeoNature-mobile screenshot 2](https://github.com/PnEcrins/GeoNature/raw/master/docs/images/screen-applis.jpg)
+
+![GeoNature-mobile screenshot 3](https://github.com/PnEcrins/GeoNature/raw/master/docs/images/screen-applis-02.jpg)
+
+Pour pouvoir importer les données saisies avec Geonature-mobile dans la BDD PostgreSQL de GeoNature, une web-API doit être installée sur le serveur : https://github.com/PnEcrins/GeoNature-mobile-webapi
+
+La synchronisation de ces données peut être faite par le réseau (wifi ou 3G) ou en connectant le mobile en USB à un PC connecté à internet. Dans ce cas, une application de synchronisation des données soit être installée sur le PC : https://github.com/PnEcrins/GeoNature-mobile-sync 
 
 ![GeoNature schema general](https://github.com/PnEcrins/GeoNature/raw/master/docs/images/schema-geonature-environnement.jpg)
 
@@ -24,6 +30,8 @@ Il vous faut ensuite compléter les fichiers JSON de configuration comme indiqu�
 Il vous faut aussi intégrer les fichiers SIG (fonds carto au format MBTILES et limites des unités géographiques) sur la carte SD du mobile (https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/install/V1.0.0/external%20card).
 
 La génération des tuiles MBTILES est détaillée dans la documentation (https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/tuilage-mbtiles.txt)
+
+![GeoNature-mobile illustrations](https://github.com/PnEcrins/GeoNature/raw/master/docs/images/illustration-geonature-mobile.jpg)
 
 # Development
 
