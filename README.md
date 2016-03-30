@@ -11,11 +11,11 @@ GeoNature est une application de saisie et de synthèse des observations faune e
 
 GeoNature-mobile permet de saisir 4 de ces protocoles sur appareil mobile Android.
 
-![GeoNature-mobile screenshot](https://github.com/PnEcrins/GeoNature/raw/master/docs/images/screen-contact-faune-nomade.jpg)
+![GeoNature-mobile screenshot](https://raw.githubusercontent.com/PnEcrins/GeoNature-mobile/master/docs/images/screen-contact-faune-nomade.jpg)
 
-![GeoNature-mobile screenshot 2](https://github.com/PnEcrins/GeoNature/raw/master/docs/images/screen-applis.jpg)
+![GeoNature-mobile screenshot 2](https://raw.githubusercontent.com/PnEcrins/GeoNature-mobile/master/docs/images/screen-applis.jpg)
 
-![GeoNature-mobile screenshot 3](https://github.com/PnEcrins/GeoNature/raw/master/docs/images/screen-applis-02.jpg)
+![GeoNature-mobile screenshot 3](https://raw.githubusercontent.com/PnEcrins/GeoNature-mobile/master/docs/images/screen-applis-02.jpg)
 
 Pour pouvoir importer les données saisies avec Geonature-mobile dans la BDD PostgreSQL de GeoNature, une web-API doit être installée sur le serveur : https://github.com/PnEcrins/GeoNature-mobile-webapi
 
@@ -31,7 +31,7 @@ Il vous faut aussi intégrer les fichiers SIG (fonds carto au format MBTILES et 
 
 La génération des tuiles MBTILES est détaillée dans la documentation (https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/tuilage-mbtiles.txt)
 
-![GeoNature-mobile illustrations](https://github.com/PnEcrins/GeoNature/raw/master/docs/images/illustration-geonature-mobile.jpg)
+![GeoNature-mobile illustrations](https://raw.githubusercontent.com/PnEcrins/GeoNature-mobile/master/docs/images/illustration-geonature-mobile.jpg)
 
 # Development
 
