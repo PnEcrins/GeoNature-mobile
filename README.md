@@ -152,4 +152,4 @@ mb-util /tmp/tiles/scan/ scan.mbtiles
 ```
 
 ## License
-&copy; Makina Corpus 2012 - 2015
+&copy; Makina Corpus / Parc national des Ecrins 2012 - 2015
