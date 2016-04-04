@@ -28,11 +28,11 @@ Une fois fait, on peut lancer le build global pour générer toutes les applicat
 ```
 
 Les APKs générés se trouvent dans le répertoire `build/outputs/apk/` de chaque module :
-* fauna : fauna-release-<version>.apk
-* flora : flora-release-<version>.apk
-* invertebrate : invertebrate-release-<version>.apk
-* mortality : mortality-release-<version>.apk
-* search : search-release-<version>.apk
+* **fauna** : fauna-release-<version>.apk
+* **flora** : flora-release-<version>.apk
+* **invertebrate** : invertebrate-release-<version>.apk
+* **mortality** : mortality-release-<version>.apk
+* **search** : search-release-<version>.apk
 
 ## Fichiers de configuration des applications
 
@@ -42,11 +42,11 @@ settings_<nom_du_module>.json
 ```
 
 Ce qui donne :
-* fauna : settings_fauna.json
-* flora : settings_flora.json
-* invertebrate : settings_invertebrate.json
-* mortality : settings_mortality.json
-* search : settings_search.json
+* **fauna** : settings_fauna.json
+* **flora** : settings_flora.json
+* **invertebrate** : settings_invertebrate.json
+* **mortality** : settings_mortality.json
+* **search** : settings_search.json
 
 Chaque fichier de configuration doit suivre la structure suivante :
 ```
@@ -136,44 +136,45 @@ Ce module est une bibliothèque Android offrant les fonctionnalités et services
 
 ### Services Android déclarés
 
-Le module commons offre un ensemble de Service Android pour les applications :
-* SettingsService : Pour charger au démarrage de chaque application son fichier de configuration ainsi qu'éventuellement d'autres données (comme le fichier unities.wkt)
-* CheckServerService : Pour vérifier si le serveur de synchronisation est disponible ou non
-* SyncService : Service de synchronisation des données locales
-* SyncCommandIntentService : Permet d'exécuter des commandes en dehors des applications. Ce service est utilisé par l'application de synchronisation desktop pour :
+Le module `commons` offre un ensemble de Service Android pour les applications :
+* `SettingsService` : Pour charger au démarrage de chaque application son fichier de configuration ainsi qu'éventuellement d'autres données (comme le fichier unities.wkt)
+* `CheckServerService` : Pour vérifier si le serveur de synchronisation est disponible ou non
+* `SyncService` : Service de synchronisation des données locales
+* `SyncCommandIntentService` : Permet d'exécuter des commandes en dehors des applications. Ce service est utilisé par l'application de synchronisation desktop pour :
 	* Récupérer les informations relatives à chaque application installée sur le terminal (ID de l'application, numéro de version, etc.)
 	* Supprimer les saisies stockées localement sur le terminal une fois que la synchronisation s'est bien déroulée via l'application de synchronisation desktop
-	* Déplacer les fichiers à synchroniser au bon emplacement sur le terminal si celui-ci possède une carte SD externe. Cette commande est importante car l'application de synchronisation desktop embarque un client adb pour communiquer avec le terminal en USB et de pouvoir exécuter des commandes. Mais il n'a pas les permissions suffisantes pour pouvoir accéder en écriture à la carte SD externe du terminal si celui-ci en possède une. Donc la synchronisation des fichiers se fait en deux temps dans ce cas là : Les fichiers à synchroniser son copiés localement sur le terminal dans l'espace de stockage interne puis l'application de synchronisation desktop lance la commande permettant de déplacer ces fichiers au bon endroit sur le terminal. Le service SyncCommandIntentService est invoqué via cette commande pour déplacer des fichiers.
-	Cette partie pourrait être simplifiée en complétant l'application de synchronisation desktop avec un client MTP pour pouvoir accéder directement à l'ensemble de l'espace de stockage du terminal et donc de pouvoir accéder en lecture / écriture à la carte SD externe du terminal. Le client adb fera toujours le même travail mais déléguera les opérations de copie au client MTP.
+	* Déplacer les fichiers à synchroniser au bon emplacement sur le terminal si celui-ci possède une carte SD externe. Cette commande est importante car l'application de synchronisation desktop embarque un client `adb` pour communiquer avec le terminal en USB et de pouvoir exécuter des commandes. Mais il n'a pas les permissions suffisantes pour pouvoir accéder en écriture à la carte SD externe du terminal si celui-ci en possède une. Donc la synchronisation des fichiers se fait en deux temps dans ce cas là : Les fichiers à synchroniser son copiés localement sur le terminal dans l'espace de stockage interne puis l'application de synchronisation desktop lance la commande permettant de déplacer ces fichiers au bon endroit sur le terminal. Le service `SyncCommandIntentService` est invoqué via cette commande pour déplacer des fichiers.
+	
+		Cette partie pourrait être simplifiée en complétant l'application de synchronisation desktop avec un client MTP pour pouvoir accéder directement à l'ensemble de l'espace de stockage du terminal et donc de pouvoir accéder en lecture / écriture à la carte SD externe du terminal. Le client `adb`era toujours le même travail mais déléguera les opérations de copie au client MTP.
 
-Le module commons possède un nouveau package appelé service avec un nouveau Service Android RequestHandlerService. Ce service se veut plus simple à l'utilisation car il possède son propre client pour pouvoir l'utiliser. L'avantage est de n'avoir plus qu'un seul service de déclaré pour toutes les applications et l'idée à terme est de remplacer tous les services listés ci-dessus par des requêtes pouvant être joué via ce nouveau service à travers son client. Cette nouvelle approche où les appels se font à travers le client permet de supprimer tout le code qui s'occupe de la gestion des services Android.
+Le module `commons` possède un nouveau package appelé `service` avec un nouveau Service Android `RequestHandlerService`. Ce service se veut plus simple à l'utilisation car il possède son propre client pour pouvoir l'utiliser. L'avantage est de n'avoir plus qu'un seul service de déclaré pour toutes les applications et l'idée à terme est de remplacer tous les services listés ci-dessus par des requêtes pouvant être joué via ce nouveau service à travers son client. Cette nouvelle approche où les appels se font à travers le client permet de supprimer tout le code qui s'occupe de la gestion des services Android.
 
-Actuellement, il n'est pas vraiment terminé et n'est utilisé qu'à titre d'exemple dans l'application search en remplacant le service SettingsService par son équivalent LoadSettingsRequestHandler.
+Actuellement, il n'est pas vraiment terminé et n'est utilisé qu'à titre d'exemple dans l'application `search` en remplacant le service `SettingsService` par son équivalent `LoadSettingsRequestHandler`.
 
 ## Module maps
 
-Ce module est une bibliothèque Android gérant la partie cartographique des applications mobiles. Elle embarque notamment un composant Android WebView permettant de gérer l'intégration de la bibliothèque Javascript [Leaflet](http://leafletjs.com/). Ce module est complètement indépendant du reste et ne dépend pas du module commons.
+Ce module est une bibliothèque Android gérant la partie cartographique des applications mobiles. Elle embarque notamment un composant Android `WebView` permettant de gérer l'intégration de la bibliothèque Javascript [Leaflet](http://leafletjs.com/). Ce module est complètement indépendant du reste et ne dépend pas du module `commons`.
 
 ### Organisation du module
 
-* assets : Ensemble des sources Javascript, notamment la bibliothèque cartographique Leaflet.
-* content : Gestion des sources de données à afficher (MBTiles, répertoire, etc.)
-* control : Contrôleurs (UI) de la carte (zoom, position centrée autour de la position courante, etc.)
-* geojson : Objets GeoJSON
+* `assets` : Ensemble des sources Javascript, notamment la bibliothèque cartographique Leaflet.
+* `content` : Gestion des sources de données à afficher (MBTiles, répertoire, etc.)
+* `control` : Contrôleurs (UI) de la carte (zoom, position centrée autour de la position courante, etc.)
+* `geojson` : Objets GeoJSON
 
-A la racine , on trouve le fragment générique AbstractWebViewFragment permettant d'afficher la carte via un composant Android WebView.
+A la racine , on trouve le `fragment` générique `AbstractWebViewFragment` permettant d'afficher la carte via un composant Android `WebView`.
 
 ### Gestion des sources de données
 
-Le module maps offre trois sources possibles d'accès aux sources de données :
-* dir : Permet de lire les tuiles directement sur l'espace de stockage du terminal selon un répertoire donné (pyramide de tuiles)
-* mbtiles : Permet de lire les tuiles selon un fichier MBTiles.
-* mbtiles_split : Permet de lire les tuiles selon un ensemble de fichiers MBTiles éclatés selon le paramètre x (en colonne).
-* http : Cette quatrième source est simplement déclarée mais non implémentée.
+Le module `maps` offre trois sources possibles d'accès aux sources de données :
+* `dir` : Permet de lire les tuiles directement sur l'espace de stockage du terminal selon un répertoire donné (pyramide de tuiles)
+* `mbtiles` : Permet de lire les tuiles selon un fichier MBTiles.
+* `mbtiles_split` : Permet de lire les tuiles selon un ensemble de fichiers MBTiles éclatés selon le paramètre x (en colonne).
+* `http` : Cette quatrième source est simplement déclarée mais non implémentée.
 
 ### Contrôleurs
 
-Le module maps offre en standard plusieurs contrôleurs.
+Le module `maps` offre en standard plusieurs contrôleurs.
 
 **MainControl**
 
@@ -197,7 +198,7 @@ Contrôleur générique permettant d'ajouter une couche de données supplémenta
 
 **MenuUnitiesControl**
 
-Contrôleur un peu particulier utilisé uniquement dans les applications fauna, invertebrate et mortality pour :
+Contrôleur un peu particulier utilisé uniquement dans les applications `fauna`, `invertebrate` et `mortality` pour :
 * Afficher ou non la couche des unités géographiques
 * Ajouter et déplacer un marqueur sur la carte et mettre en évidence l'unité géographique correspondant
 
@@ -213,4 +214,4 @@ Contrôleur générique permettant d'ajouter une barre de bouton permettant de z
 
 SearchControl
 
-Ce contrôleur n'est pas présent dans le module maps mais dans l'application search. Il permet d'ajouter une fonction de recherche autour d'une position donnée. Il n'y a pas grand-chose à faire pour le rendre générique et de l'intégrer au sein du module maps.
+Ce contrôleur n'est pas présent dans le module `maps` mais dans l'application `search`. Il permet d'ajouter une fonction de recherche autour d'une position donnée. Il n'y a pas grand-chose à faire pour le rendre générique et de l'intégrer au sein du module `maps`.
