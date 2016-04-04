@@ -1,4 +1,6 @@
-Récupération des fonds raster
+========================================
+Récupération et tuilage des fonds raster
+========================================
 
 
 Installation
@@ -14,15 +16,17 @@ Installation
     pip install shapely
 
 
-Extraire le contenu de l'archive tilecache_filter :
+Extraire le contenu de l'archive ``tilecache_filter`` :
 
+::
     unzip tilecache_filter.zip
     mv tilecache_filter.py env/bin/
     mv mbtilesplit.py env/bin/
     mv TileCache/Cleaner.py env/lib/python2.?/site-packages/TileCache/
 
+À chaque ouverture de session shell, il faudra refaire 
 
-À chaque ouverture de session shell, il faudra refaire ::
+::
 
     source env/bin/activate
 
@@ -46,9 +50,7 @@ Configuration de Tilecache
     type=GoogleDisk
     base=/home/user/tiles/
 
-Par défault, TileCache va utiliser des échelles en puissance de 2 à partir
-de la valeur de ``maxResolution`` (résolution au niveau de zoom minimum, lorsqu'une seule
-tuile est affichée).
+Par défault, TileCache va utiliser des échelles en puissance de 2 à partir de la valeur de ``maxResolution`` (résolution au niveau de zoom minimum, lorsqu'une seule tuile est affichée).
 
 ::
 
@@ -56,7 +58,9 @@ tuile est affichée).
 
     maxResolution = MIN(1060000-700000, 6617738-6325197) / 256 = 1142,73828125
 
-Il est possible de configurer les résolutions de TileCache manuellement ::
+Il est possible de configurer les résolutions de TileCache manuellement 
+
+::
 
     bbox=700000,6325197,1060000,6617738
     resolutions=496.34,248.17,124.08...
@@ -75,13 +79,9 @@ Par exemple, pour la couche *scan* du zoom 1 au zoom 12 :
 
     tilecache_seed.py scan 1 12
 
+Par défault tilecache_seed fonctionne sur l'emprise définie au niveau de la couche, il est possible de le lancer sur une sous-partie. Voir sa documentation.
 
-Par défault tilecache_seed fonctionne sur l'emprise définie au niveau de la couche,
-il est possible de le lancer sur une sous-partie. Voir sa documentation.
-
-
-Pour supprimer les tuiles qui feraient parties de l'emprise rectangulaire 
-mais en dehors du polygone du parc, il faut utiliser le script *tilecache_filter.py* de cette manière :
+Pour supprimer les tuiles qui feraient parties de l'emprise rectangulaire mais en dehors du polygone du parc, il faut utiliser le script *tilecache_filter.py* de cette manière :
 
 ::
 
@@ -93,13 +93,11 @@ Voir plus bas pour le WKT du parc.
 Passage au format MBTiles
 =========================
 
-Grace à la commande mb-util, on peut passer d'une arborescence de tuiles à
-un fichier MBTiles et vice-versa.
+Grace à la commande mb-util, on peut passer d'une arborescence de tuiles à un fichier MBTiles et vice-versa.
 
+En premier lieu, créer un fichier de metadonnées dans le répertoires générés par TileCache. Par exemple dans ``/home/user/tiles/scan/metadata.json`` 
 
-En premier lieu, créer un fichier de metadonnées dans le répertoires générés par 
-TileCache. Par exemple dans ``/home/user/tiles/scan/metadata.json`` ::
-
+::
 
     {
         "name": "Scan",
@@ -128,7 +126,6 @@ Il ne prend qu'une arborecensce de répertoire en paramètre, et crée les 10 fi
 ::
 
     mbtilesplit.py ortho/
-
 
 
 Données d'entrée

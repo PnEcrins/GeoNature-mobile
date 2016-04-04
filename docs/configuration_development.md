@@ -212,6 +212,6 @@ Contrôleur générique permettant de changer de couche de données sur la carte
 
 Contrôleur générique permettant d'ajouter une barre de bouton permettant de zoomer ou dézoomer sur la carte.
 
-SearchControl
+**SearchControl**
 
 Ce contrôleur n'est pas présent dans le module `maps` mais dans l'application `search`. Il permet d'ajouter une fonction de recherche autour d'une position donnée. Il n'y a pas grand-chose à faire pour le rendre générique et de l'intégrer au sein du module `maps`.
