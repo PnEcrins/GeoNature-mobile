@@ -11,6 +11,10 @@ GeoNature est une application de saisie et de synthèse des observations faune e
 
 GeoNature-mobile permet de saisir 4 de ces protocoles sur appareil mobile Android.
 
+Démos vidéo des applications :
+* Application Android contact faune - http://dai.ly/k4Heui6J10dzcO5ehXf
+* Application Android recherche flore - http://dai.ly/k3bCZzAHgSC9yM5eukA
+
 ![GeoNature-mobile screenshot](https://raw.githubusercontent.com/PnEcrins/GeoNature-mobile/master/docs/images/screen-contact-faune-nomade.jpg)
 
 ![GeoNature-mobile screenshot 2](https://raw.githubusercontent.com/PnEcrins/GeoNature-mobile/master/docs/images/screen-applis.jpg)
@@ -152,4 +156,4 @@ mb-util /tmp/tiles/scan/ scan.mbtiles
 ```
 
 ## License
-&copy; Makina Corpus / Parc national des Ecrins 2012 - 2015
+&copy; Makina Corpus / Parc national des Ecrins 2012 - 2016
