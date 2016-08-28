@@ -36,6 +36,8 @@ import com.makina.ecrins.maps.geojson.Feature;
 import com.makina.ecrins.maps.geojson.FeatureCollection;
 import com.makina.ecrins.maps.geojson.geometry.GeometryUtils;
 import com.makina.ecrins.maps.location.MockLocationProvider;
+import com.makina.ecrins.maps.settings.LayerSettings;
+import com.makina.ecrins.maps.settings.MapSettings;
 import com.makina.ecrins.maps.util.DebugUtils;
 
 import org.json.JSONException;
@@ -123,13 +125,12 @@ public abstract class AbstractWebViewFragment
 
     @Override
     @SuppressLint({
-            "SetJavaScriptEnabled",
-            "NewApi"
-    })
-    public View onCreateView(
-            LayoutInflater inflater,
-            ViewGroup container,
-            Bundle savedInstanceState) {
+                          "SetJavaScriptEnabled",
+                          "NewApi"
+                  })
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
 
         Log.d(AbstractWebViewFragment.class.getName(),
               "onCreateView");
@@ -251,9 +252,8 @@ public abstract class AbstractWebViewFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(
-            Menu menu,
-            MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu,
+                                    MenuInflater inflater) {
 
         for (IControl control : this.mControls.values()) {
             if (control.hasOptionsMenu()) {
@@ -423,11 +423,13 @@ public abstract class AbstractWebViewFragment
         }
     }
 
+    @SuppressLint({
+                          "JavascriptInterface",
+                          "AddJavascriptInterface"
+                  })
     @Override
-    @SuppressLint("AddJavascriptInterface")
-    public void addControl(
-            IControl control,
-            ViewGroup parent) {
+    public void addControl(IControl control,
+                           ViewGroup parent) {
 
         Log.d(AbstractWebViewFragment.class.getName(),
               "addControl " + control.getName());
@@ -467,6 +469,7 @@ public abstract class AbstractWebViewFragment
               "removeControl " + control.getName());
 
         if (control instanceof LocationListener) {
+            // noinspection MissingPermission
             mLocationManager.removeUpdates((LocationListener) control);
         }
 
@@ -529,7 +532,6 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public boolean addOrUpdateEditableFeature(Feature selectedFeature) {
-
         try {
             Log.d(AbstractWebViewFragment.class.getName(),
                   "addOrUpdateEditableFeature " + selectedFeature.getJSONObject()
@@ -544,6 +546,11 @@ public abstract class AbstractWebViewFragment
 
         if ((selectedFeature.getGeometry() != null) && GeometryUtils.isValid(selectedFeature.getGeometry())) {
             FeatureCollection featureCollection = this.mSavedState.getParcelable(KEY_EDITABLE_FEATURES);
+
+            if (featureCollection == null) {
+                return false;
+            }
+
             featureCollection.addFeature(selectedFeature);
             this.mSavedState.putParcelable(KEY_EDITABLE_FEATURES,
                                            featureCollection);
@@ -565,6 +572,11 @@ public abstract class AbstractWebViewFragment
               "deleteEditableFeature '" + featureId + "'");
 
         FeatureCollection featureCollection = this.mSavedState.getParcelable(KEY_EDITABLE_FEATURES);
+
+        if (featureCollection == null) {
+            return false;
+        }
+
         featureCollection.removeFeature(featureId);
         this.mSavedState.putParcelable(KEY_EDITABLE_FEATURES,
                                        featureCollection);
@@ -574,7 +586,7 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public void requestLocationUpdates(LocationListener listener) {
-
+        // noinspection MissingPermission
         mLocationManager.removeUpdates(listener);
 
         if (DebugUtils.isDebuggable(getActivity())) {
@@ -583,10 +595,15 @@ public abstract class AbstractWebViewFragment
             }
 
             if (mMockLocationProvider.isProviderEnabled()) {
-                mLocationManager.requestLocationUpdates(MockLocationProvider.MOCK_LOCATION_PROVIDER, 0, 0, listener);
+                // noinspection MissingPermission
+                mLocationManager.requestLocationUpdates(MockLocationProvider.MOCK_LOCATION_PROVIDER,
+                                                        0,
+                                                        0,
+                                                        listener);
             }
         }
         else {
+            // noinspection MissingPermission
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                                                     0,
                                                     0,
@@ -601,7 +618,9 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public String getLocalizedMessage(String messageId) {
-        return getString(getResources().getIdentifier(messageId, "string", getActivity().getPackageName()));
+        return getString(getResources().getIdentifier(messageId,
+                                                      "string",
+                                                      getActivity().getPackageName()));
     }
 
     /**
@@ -615,12 +634,12 @@ public abstract class AbstractWebViewFragment
 
             for (LayerSettings layerSettings : getMapSettings().getLayers()) {
                 try {
-                    this.mTilesLayersDataSources.put(
-                            layerSettings.getName(),
-                            tilesLayerDataSourceFactory.getTilesLayerDataSource(layerSettings));
+                    this.mTilesLayersDataSources.put(layerSettings.getName(),
+                                                     tilesLayerDataSourceFactory.getTilesLayerDataSource(layerSettings));
                 }
                 catch (UnsupportedOperationException | IOException ge) {
-                    noTilesSourceFound(layerSettings, ge);
+                    noTilesSourceFound(layerSettings,
+                                       ge);
                 }
             }
 
@@ -628,17 +647,19 @@ public abstract class AbstractWebViewFragment
 
             if (unitiesLayerSettings != null) {
                 try {
-                    this.mTilesLayersDataSources.put(
-                            unitiesLayerSettings.getName(),
-                            tilesLayerDataSourceFactory.getTilesLayerDataSource(unitiesLayerSettings));
+                    this.mTilesLayersDataSources.put(unitiesLayerSettings.getName(),
+                                                     tilesLayerDataSourceFactory.getTilesLayerDataSource(unitiesLayerSettings));
                 }
                 catch (UnsupportedOperationException | IOException ge) {
-                    noTilesSourceFound(unitiesLayerSettings, ge);
+                    noTilesSourceFound(unitiesLayerSettings,
+                                       ge);
                 }
             }
         }
         catch (IOException ioe) {
-            Log.e(AbstractWebViewFragment.class.getName(), ioe.getMessage(), ioe);
+            Log.e(AbstractWebViewFragment.class.getName(),
+                  ioe.getMessage(),
+                  ioe);
         }
 
         return !getTilesLayersDataSources().isEmpty();
@@ -655,21 +676,25 @@ public abstract class AbstractWebViewFragment
      * Gets the current root path for all tiles.
      *
      * @return the root path as {@link File}
+     *
      * @throws IOException
      */
-    protected abstract File getTilesSourcePath() throws IOException;
+    protected abstract File getTilesSourcePath() throws
+                                                 IOException;
 
-    private void noTilesSourceFound(LayerSettings pLayerSettings, Throwable t) {
-        Log.w(AbstractWebViewFragment.class.getName(), t);
-        Toast.makeText(
-                getActivity(),
-                String.format(
-                        getString(R.string.message_mbtiles_not_found),
-                        pLayerSettings.getName()),
-                Toast.LENGTH_LONG).show();
+    private void noTilesSourceFound(LayerSettings pLayerSettings,
+                                    Throwable t) {
+        Log.w(AbstractWebViewFragment.class.getName(),
+              t);
+        Toast.makeText(getActivity(),
+                       String.format(getString(R.string.message_mbtiles_not_found),
+                                     pLayerSettings.getName()),
+                       Toast.LENGTH_LONG)
+             .show();
     }
 
-    private static final class SimpleWebChromeClient extends WebChromeClient {
+    private static final class SimpleWebChromeClient
+            extends WebChromeClient {
         private static final SimpleWebChromeClient instance = new SimpleWebChromeClient();
 
         private SimpleWebChromeClient() {
@@ -686,16 +711,20 @@ public abstract class AbstractWebViewFragment
 
             switch (consoleMessage.messageLevel()) {
                 case DEBUG:
-                    Log.d(getClass().getName(), message);
+                    Log.d(getClass().getName(),
+                          message);
                     break;
                 case ERROR:
-                    Log.e(getClass().getName(), message);
+                    Log.e(getClass().getName(),
+                          message);
                     break;
                 case WARNING:
-                    Log.w(getClass().getName(), message);
+                    Log.w(getClass().getName(),
+                          message);
                     break;
                 default:
-                    Log.i(getClass().getName(), message);
+                    Log.i(getClass().getName(),
+                          message);
                     break;
             }
 

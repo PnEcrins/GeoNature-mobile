@@ -17,6 +17,8 @@ import com.makina.ecrins.maps.geojson.Feature;
 import com.makina.ecrins.maps.geojson.FeatureCollection;
 import com.makina.ecrins.maps.location.Geolocation;
 import com.makina.ecrins.maps.location.MockLocationProvider;
+import com.makina.ecrins.maps.settings.LayerSettings;
+import com.makina.ecrins.maps.settings.MapSettings;
 
 import java.util.List;
 
@@ -32,14 +34,14 @@ public interface IWebViewFragment {
      *
      * @return the context
      */
-    public Context getContext();
+    Context getContext();
 
     /**
      * Whether this fragment's UI is currently visible to the user.
      *
      * @return <code>true</code> if the fragment is currently visible to the user.
      */
-    public boolean isMapVisibleToUser();
+    boolean isMapVisibleToUser();
 
     /**
      * Retrieve a reference to this activity's ActionBar.
@@ -48,35 +50,35 @@ public interface IWebViewFragment {
      *
      * @see android.support.v7.app.AppCompatActivity#getSupportActionBar()
      */
-    public ActionBar getActionBar();
+    ActionBar getActionBar();
 
     /**
      * Gets the bundle used to save this instance state.
      *
      * @return the bundle in which to place the saved state
      */
-    public Bundle getSavedInstanceState();
+    Bundle getSavedInstanceState();
 
     /**
      * Gets the current {@link MapSettings} used to configure the map.
      *
      * @return the {@link MapSettings} used for this map.
      */
-    public MapSettings getMapSettings();
+    MapSettings getMapSettings();
 
     /**
      * Updates the current {@link MapSettings}.
      *
      * @param mapSettings the {@link MapSettings} to update
      */
-    public void setMapSettings(MapSettings mapSettings);
+    void setMapSettings(MapSettings mapSettings);
 
     /**
      * Gets all registered {@link ITilesLayerDataSource} name instances as {@link List}.
      *
      * @return a list of {@link LayerSettings#getName()}
      */
-    public List<String> getTilesLayersDataSources();
+    List<String> getTilesLayersDataSources();
 
     /**
      * Gets {@link ITilesLayerDataSource} instance for a given name.
@@ -86,21 +88,21 @@ public interface IWebViewFragment {
      * @return {@link ITilesLayerDataSource} instance for this name
      */
     @Nullable
-    public ITilesLayerDataSource getTilesLayersDataSource(String name);
+    ITilesLayerDataSource getTilesLayersDataSource(String name);
 
     /**
      * Gets the current selected layer.
      *
      * @return the current layer as {@link LayerSettings}
      */
-    public LayerSettings getSelectedLayer();
+    LayerSettings getSelectedLayer();
 
     /**
      * Updates the selected layer by the given one.
      *
      * @param layerSettings the {@link LayerSettings} to use as selected layer
      */
-    public void setSelectedLayer(LayerSettings layerSettings);
+    void setSelectedLayer(LayerSettings layerSettings);
 
     /**
      * Loads the given URL.
@@ -109,26 +111,26 @@ public interface IWebViewFragment {
      *
      * @see WebView#loadUrl(String)
      */
-    public void loadUrl(String url);
+    void loadUrl(String url);
 
     /**
      * Reloads the current view (i.e. reload entirely the map).
      */
-    public void reload();
+    void reload();
 
     /**
      * Gets the current position.
      *
      * @return the current position or <code>null</code> if not determined
      */
-    public Location getCurrentLocation();
+    Location getCurrentLocation();
 
     /**
      * Updates the current position.
      *
      * @param location the current position to update
      */
-    public void setCurrentLocation(Location location);
+    void setCurrentLocation(Location location);
 
     /**
      * Adds the given {@link IControl} to the map.
@@ -139,23 +141,22 @@ public interface IWebViewFragment {
      * @param control {@link IControl} instance to add
      * @param parent  the {@link ViewGroup} to use for adding {@link IControl#getView(boolean)}
      */
-    public void addControl(
-            IControl control,
-            ViewGroup parent);
+    void addControl(IControl control,
+                    ViewGroup parent);
 
     /**
      * Removes the given {@link IControl} from the map.
      *
      * @param control {@link IControl} instance to remove
      */
-    public void removeControl(IControl control);
+    void removeControl(IControl control);
 
     /**
      * Returns a {@link List} of registered {@link IControl}.
      *
      * @return a {@link List} of {@link IControl#getName()}
      */
-    public List<String> getControls();
+    List<String> getControls();
 
     /**
      * Returns the {@link IControl} instance registered for a given name.
@@ -164,7 +165,7 @@ public interface IWebViewFragment {
      *
      * @return the {@link IControl} instance for this name
      */
-    public IControl getControl(String name);
+    IControl getControl(String name);
 
     /**
      * Returns <code>true</code> if this {@link IControl#getName()} is registered or not.
@@ -173,21 +174,21 @@ public interface IWebViewFragment {
      *
      * @return <code>true</code> if this {@link IControl#getName()} is registered or not, <code>false</code> otherwise
      */
-    public boolean hasControl(String name);
+    boolean hasControl(String name);
 
     /**
      * Declare that the options menu has changed, so should be recreated.
      *
      * @see Activity#invalidateOptionsMenu()
      */
-    public void invalidateMenu();
+    void invalidateMenu();
 
     /**
      * Returns a <code>List</code> of {@link Feature}.
      *
      * @return <code>List</code> of {@link Feature}.
      */
-    public List<Feature> getFeatures();
+    List<Feature> getFeatures();
 
     /**
      * Updates the selected {@link Feature} for a given location.
@@ -198,30 +199,29 @@ public interface IWebViewFragment {
      * @param geolocation     the current {@link Geolocation}
      * @param selectedFeature the selected {@link Feature} to update (may be <code>null</code>)
      */
-    public void setSelectedFeature(
-            Geolocation geolocation,
-            Feature selectedFeature);
+    void setSelectedFeature(Geolocation geolocation,
+                            Feature selectedFeature);
 
     /**
      * Gets all editable {@link Feature}s as {@link FeatureCollection}.
      *
      * @return {@link FeatureCollection}
      */
-    public FeatureCollection getEditableFeatures();
+    FeatureCollection getEditableFeatures();
 
     /**
      * Gets the current {@link Feature} currently edited.
      *
      * @return the selected {@link Feature} edited or <code>null</code> if none.
      */
-    public Feature getCurrentEditableFeature();
+    Feature getCurrentEditableFeature();
 
     /**
      * Sets the current {@link Feature} currently edited.
      *
      * @param selectedFeature the selected {@link Feature} edited (may be <code>null</code>).
      */
-    public void setCurrentEditableFeature(Feature selectedFeature);
+    void setCurrentEditableFeature(Feature selectedFeature);
 
     /**
      * Updates the selected {@link Feature}.
@@ -233,7 +233,7 @@ public interface IWebViewFragment {
      *
      * @return <code>true</code> if the given {@link Feature} was successfully updated or added, <code>false</code> otherwise
      */
-    public boolean addOrUpdateEditableFeature(Feature selectedFeature);
+    boolean addOrUpdateEditableFeature(Feature selectedFeature);
 
     /**
      * Delete a previously added {@link Feature}.
@@ -245,14 +245,14 @@ public interface IWebViewFragment {
      *
      * @return <code>true</code> if the given {@link Feature} was successfully deleted <code>false</code> otherwise
      */
-    public boolean deleteEditableFeature(String featureId);
+    boolean deleteEditableFeature(String featureId);
 
     /**
      * @see LocationManager#requestLocationUpdates(String, long, float, android.location.LocationListener)
      */
-    public void requestLocationUpdates(LocationListener listener);
+    void requestLocationUpdates(LocationListener listener);
 
-    public MockLocationProvider getMockLocationProvider();
+    MockLocationProvider getMockLocationProvider();
 
-    public String getLocalizedMessage(String messageId);
+    String getLocalizedMessage(String messageId);
 }

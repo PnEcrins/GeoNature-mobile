@@ -18,7 +18,8 @@ import java.util.concurrent.LinkedBlockingDeque;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public abstract class AbstractControl implements IControl {
+public abstract class AbstractControl
+        implements IControl {
 
     private static final Handler sHandler = new Handler();
     private static final String MAP_JS_VARIABLE = "lMap";
@@ -43,7 +44,8 @@ public abstract class AbstractControl implements IControl {
 
     @Override
     public void refresh() {
-        Log.d(getClass().getName(), "refresh");
+        Log.d(getClass().getName(),
+              "refresh");
     }
 
     @Override
@@ -52,7 +54,8 @@ public abstract class AbstractControl implements IControl {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu,
+                                    MenuInflater inflater) {
         // nothing to do ...
     }
 
@@ -89,10 +92,12 @@ public abstract class AbstractControl implements IControl {
     public void addControlListener(OnIControlListener pControlListener) {
         if (pControlListener != null) {
             if (mControlListeners.offerLast(pControlListener)) {
-                Log.d(getClass().getName(), "addControlListener ok");
+                Log.d(getClass().getName(),
+                      "addControlListener ok");
             }
             else {
-                Log.d(getClass().getName(), "addControlListener ko");
+                Log.d(getClass().getName(),
+                      "addControlListener ko");
             }
         }
     }
@@ -112,7 +117,8 @@ public abstract class AbstractControl implements IControl {
         getHandler().post(new Runnable() {
             @Override
             public void run() {
-                Log.d(AbstractControl.class.getName(), "setControlInitialized");
+                Log.d(AbstractControl.class.getName(),
+                      "setControlInitialized");
 
                 mControlInitialized = true;
 
@@ -132,7 +138,8 @@ public abstract class AbstractControl implements IControl {
                         }
                     }
                     catch (InterruptedException ie) {
-                        Log.w(AbstractControl.class.getName(), ie.getMessage());
+                        Log.w(AbstractControl.class.getName(),
+                              ie.getMessage());
                     }
                 }
             }
@@ -153,9 +160,11 @@ public abstract class AbstractControl implements IControl {
      *
      * @param jsFile   relative path to the JS file to load
      * @param jsObject JS expression to instantiate the JS part.
+     *
      * @see IWebViewFragment#loadUrl(String)
      */
-    protected void initializeJSController(String jsFile, String jsObject) {
+    protected void initializeJSController(String jsFile,
+                                          String jsObject) {
         this.mWebViewFragment.loadUrl("javascript:head.load(\"" + jsFile + "\", function(){" + MAP_JS_VARIABLE + ".addControl(\"" + getName() + "\", " + jsObject + ")})");
     }
 
@@ -177,6 +186,6 @@ public abstract class AbstractControl implements IControl {
         /**
          * Called when {@link IControl} is initialized.
          */
-        public void onControlInitialized();
+        void onControlInitialized();
     }
 }

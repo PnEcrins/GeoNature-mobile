@@ -13,27 +13,32 @@ public enum RenderQualityEnum {
     /**
      * Default rendering quality : 'device-dpi'
      */
-    AUTO(0, "device-dpi"),
+    AUTO(0,
+         "device-dpi"),
 
     /**
      * Low rendering quality : 'low-dpi'
      */
-    LOW(1, "low-dpi"),
+    LOW(1,
+        "low-dpi"),
 
     /**
      * Medium rendering quality : 'medium-dpi'
      */
-    MEDIUM(2, "medium-dpi"),
+    MEDIUM(2,
+           "medium-dpi"),
 
     /**
      * High rendering quality : 'high-dpi'
      */
-    HIGH(3, "high-dpi");
+    HIGH(3,
+         "high-dpi");
 
     private final int value;
     private final String valueAsString;
 
-    private RenderQualityEnum(int value, String valueAsString) {
+    RenderQualityEnum(int value,
+                      String valueAsString) {
         this.value = value;
         this.valueAsString = valueAsString;
     }

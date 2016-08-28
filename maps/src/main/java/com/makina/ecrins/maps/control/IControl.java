@@ -23,69 +23,78 @@ public interface IControl {
      * </p>
      *
      * @return the {@link IControl} name.
+     *
      * @see {@link WebView#addJavascriptInterface(Object, String)}
      */
-    public String getName();
+    String getName();
 
     /**
      * Gets the {@link View} used for this {@link IControl} instance.
      *
      * @param forceCreate flag to indicate if the view should be recreated
+     *
      * @return the {@link View} used for this {@link IControl} instance.
      */
-    public View getView(boolean forceCreate);
+    View getView(boolean forceCreate);
 
     /**
      * Optional method to refresh this {@link IControl} instance.
      */
-    public void refresh();
+    void refresh();
 
     /**
      * Report that this {@link IControl} would like to participate in populating the options menu by receiving a call to {@link #onCreateOptionsMenu(Menu, MenuInflater)} and related methods.
      *
      * @return <code>true</code> if this {@link IControl#getView(boolean)} is used through a {@link Menu}
      */
-    public boolean hasOptionsMenu();
+    boolean hasOptionsMenu();
 
     /**
      * Initialize the contents of the Activity's standard options menu.
      *
      * @param menu     the options menu in which you place your items
      * @param inflater the MenuInflater object that can be used to inflate any views in the menu
+     *
      * @see Fragment#onCreateOptionsMenu(android.view.Menu, android.view.MenuInflater)
      */
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater);
+    void onCreateOptionsMenu(Menu menu,
+                             MenuInflater inflater);
 
     /**
      * Prepare the Screen's standard options menu to be displayed. This is called right before the menu is shown, every time it is shown.
      *
      * @param menu the options menu as last shown or first initialized by {@link #onCreateOptionsMenu(Menu, MenuInflater)}
+     *
      * @see Fragment#onPrepareOptionsMenu(android.view.Menu)
      */
-    public void onPrepareOptionsMenu(Menu menu);
+    void onPrepareOptionsMenu(Menu menu);
 
     /**
      * This hook is called whenever an item in options menu is selected.
      *
      * @param item the menu item that was selected.
+     *
      * @return returns <code>false</code> to allow normal menu processing to proceed, <code>true</code> to consume it here.
+     *
      * @see Fragment#onOptionsItemSelected(android.view.MenuItem)
      */
-    public boolean onOptionsItemSelected(MenuItem item);
+    boolean onOptionsItemSelected(MenuItem item);
 
     /**
      * Uses the given {@link IWebViewFragment} to initialize the JavaScript part of this {@link IControl}.
      *
      * @param webViewFragment {@link IWebViewFragment} instance used by this {@link IControl}
+     *
      * @see {@link IWebViewFragment#loadUrl(String)}
      */
-    public void add(IWebViewFragment webViewFragment);
+    void add(IWebViewFragment webViewFragment);
 
     /**
      * Uses the given {@link IWebViewFragment} to unregister the JavaScript part of this {@link IControl}.
      *
      * @param webViewFragment {@link IWebViewFragment} instance used by this {@link IControl}
+     *
      * @see {@link IWebViewFragment#loadUrl(String)}
      */
-    public void remove(IWebViewFragment webViewFragment);
+    void remove(IWebViewFragment webViewFragment);
 }

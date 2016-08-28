@@ -11,7 +11,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.makina.ecrins.maps.LayerSettings;
+import com.makina.ecrins.maps.settings.LayerSettings;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONException;

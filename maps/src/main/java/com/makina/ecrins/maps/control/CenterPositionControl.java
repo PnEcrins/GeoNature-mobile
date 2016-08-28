@@ -23,7 +23,10 @@ import com.makina.ecrins.maps.geojson.geometry.Point;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public final class CenterPositionControl extends AbstractControl implements OnClickListener, LocationListener {
+public final class CenterPositionControl
+        extends AbstractControl
+        implements OnClickListener,
+                   LocationListener {
 
     protected ImageButton mImageButtonCenterPosition;
     protected Boolean mIsCenterPosition = false;
@@ -43,9 +46,11 @@ public final class CenterPositionControl extends AbstractControl implements OnCl
 
                 mIsCenterPosition = false;
                 mImageButtonCenterPosition.setEnabled((mWebViewFragment.getCurrentLocation() != null) && GeometryUtils.contains(new Point(new GeoPoint(mWebViewFragment.getCurrentLocation()
-                        .getLatitude(), mWebViewFragment.getCurrentLocation()
-                        .getLongitude())), mWebViewFragment.getMapSettings()
-                        .getPolygonBounds()));
+                                                                                                                                                                       .getLatitude(),
+                                                                                                                                                       mWebViewFragment.getCurrentLocation()
+                                                                                                                                                                       .getLongitude())),
+                                                                                                                                mWebViewFragment.getMapSettings()
+                                                                                                                                                .getPolygonBounds()));
             }
         });
     }
@@ -53,7 +58,8 @@ public final class CenterPositionControl extends AbstractControl implements OnCl
     @Override
     public View getView(boolean forceCreate) {
         if ((this.mView == null) || forceCreate) {
-            this.mView = mInflater.inflate(R.layout.control_center_position_layout, null);
+            this.mView = mInflater.inflate(R.layout.control_center_position_layout,
+                                           null);
 
             mImageButtonCenterPosition = (ImageButton) this.mView.findViewById(R.id.imageButtonCenterPosition);
 
@@ -68,7 +74,8 @@ public final class CenterPositionControl extends AbstractControl implements OnCl
     public void add(IWebViewFragment webViewFragment) {
         super.add(webViewFragment);
 
-        initializeJSController("js/Control.CenterPosition.js", "new L.Control.CenterPosition()");
+        initializeJSController("js/Control.CenterPosition.js",
+                               "new L.Control.CenterPosition()");
     }
 
     @Override
@@ -77,10 +84,13 @@ public final class CenterPositionControl extends AbstractControl implements OnCl
             this.mIsCenterPosition = !this.mIsCenterPosition;
 
             if (this.mIsCenterPosition) {
-                AnimationDrawable accessLocationSearchingDrawable = (AnimationDrawable) getContext().getResources()
-                        .getDrawable(R.drawable.ic_action_access_location_searching);
-                mImageButtonCenterPosition.setImageDrawable(accessLocationSearchingDrawable);
-                accessLocationSearchingDrawable.start();
+                final AnimationDrawable accessLocationSearchingDrawable = (AnimationDrawable) getContext().getResources()
+                                                                                                          .getDrawable(R.drawable.ic_action_access_location_searching);
+
+                if (accessLocationSearchingDrawable != null) {
+                    mImageButtonCenterPosition.setImageDrawable(accessLocationSearchingDrawable);
+                    accessLocationSearchingDrawable.start();
+                }
 
                 Location location = this.mWebViewFragment.getCurrentLocation();
 
@@ -96,11 +106,14 @@ public final class CenterPositionControl extends AbstractControl implements OnCl
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d(CenterPositionControl.class.getName(), "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
+        Log.d(CenterPositionControl.class.getName(),
+              "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
 
         // checks if this location is inside the map or not
-        if (isControlInitialized() && GeometryUtils.contains(new Point(new GeoPoint(location.getLatitude(), location.getLongitude())), this.mWebViewFragment.getMapSettings()
-                .getPolygonBounds())) {
+        if (isControlInitialized() && GeometryUtils.contains(new Point(new GeoPoint(location.getLatitude(),
+                                                                                    location.getLongitude())),
+                                                             this.mWebViewFragment.getMapSettings()
+                                                                                  .getPolygonBounds())) {
             mImageButtonCenterPosition.setEnabled(true);
 
             if (isControlInitialized() && mIsCenterPosition) {
@@ -126,12 +139,15 @@ public final class CenterPositionControl extends AbstractControl implements OnCl
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
+    public void onStatusChanged(String provider,
+                                int status,
+                                Bundle extras) {
         // nothing to do ...
     }
 
     @JavascriptInterface
-    public void setCenter(double latitude, double longitude) {
+    public void setCenter(double latitude,
+                          double longitude) {
         getHandler().post(new Runnable() {
             @Override
             public void run() {

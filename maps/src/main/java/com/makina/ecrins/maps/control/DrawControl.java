@@ -40,7 +40,10 @@ import java.util.List;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class DrawControl extends AbstractControl implements OnClickListener, LocationListener {
+public class DrawControl
+        extends AbstractControl
+        implements OnClickListener,
+                   LocationListener {
 
     protected static final String KEY_ADD_OR_UPDATE_FEATURE = "add_or_update_feature";
 
@@ -83,12 +86,13 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
         setControlListener(new OnIControlListener() {
             @Override
             public void onControlInitialized() {
-                Log.d(getClass().getName(), "onControlInitialized");
+                Log.d(getClass().getName(),
+                      "onControlInitialized");
 
                 mWebViewFragment.requestLocationUpdates(DrawControl.this);
 
                 mZoom = mWebViewFragment.getMapSettings()
-                        .getZoom();
+                                        .getZoom();
                 mIsImageButtonAddMarkerSelected = false;
                 mIsImageButtonAddPathSelected = false;
                 mIsImageButtonAddPolygonSelected = false;
@@ -98,16 +102,16 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
 
                 if (mWebViewFragment.getCurrentEditableFeature() != null) {
                     if (mWebViewFragment.getEditableFeatures()
-                            .hasFeature(mWebViewFragment.getCurrentEditableFeature()
-                                    .getId())) {
+                                        .hasFeature(mWebViewFragment.getCurrentEditableFeature()
+                                                                    .getId())) {
                         mIsImageButtonEditSelected = true;
                     }
                     else {
                         if (mWebViewFragment.getCurrentEditableFeature()
-                                .getGeometry() != null) {
+                                            .getGeometry() != null) {
                             switch (mWebViewFragment.getCurrentEditableFeature()
-                                    .getGeometry()
-                                    .getType()) {
+                                                    .getGeometry()
+                                                    .getType()) {
                                 case POINT:
                                     mIsImageButtonAddMarkerSelected = true;
                                     break;
@@ -126,7 +130,7 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
 
                 if (mWebViewFragment.getMockLocationProvider() != null) {
                     mWebViewFragment.getMockLocationProvider()
-                            .enableProvider(true);
+                                    .enableProvider(true);
                     mIsLocationProviderEnabled = true;
                 }
 
@@ -138,7 +142,8 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
     @Override
     public View getView(boolean forceCreate) {
         if ((this.mView == null) || forceCreate) {
-            this.mView = mInflater.inflate(R.layout.control_draw_toolbar_layout, null);
+            this.mView = mInflater.inflate(R.layout.control_draw_toolbar_layout,
+                                           null);
 
             mImageButtonAddMarker = (ImageButton) this.mView.findViewById(R.id.imageButtonAddMarker);
             mImageButtonAddPath = (ImageButton) this.mView.findViewById(R.id.imageButtonAddPath);
@@ -168,9 +173,11 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu,
+                                    MenuInflater inflater) {
         if (isControlInitialized()) {
-            inflater.inflate(R.menu.menu_draw_control, menu);
+            inflater.inflate(R.menu.menu_draw_control,
+                             menu);
         }
     }
 
@@ -188,17 +195,19 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
 
             if (mIsLocationProviderEnabled) {
                 if (this.mWebViewFragment.getMapSettings()
-                        .getMinimumZoomPointing() > this.mWebViewFragment.getMapSettings()
-                        .getZoom()) {
+                                         .getMinimumZoomPointing() > this.mWebViewFragment.getMapSettings()
+                                                                                          .getZoom()) {
                     itemMarkerFromLocation.setEnabled(false);
                     this.mIsActionMarkerFromLocationSelected = false;
                 }
                 else {
                     itemMarkerFromLocation.setEnabled(mWebViewFragment.getSavedInstanceState()
-                            .getBoolean(KEY_ADD_OR_UPDATE_FEATURE, false));
+                                                                      .getBoolean(KEY_ADD_OR_UPDATE_FEATURE,
+                                                                                  false));
 
                     if (!mWebViewFragment.getSavedInstanceState()
-                            .getBoolean(KEY_ADD_OR_UPDATE_FEATURE, false)) {
+                                         .getBoolean(KEY_ADD_OR_UPDATE_FEATURE,
+                                                     false)) {
                         this.mIsActionMarkerFromLocationSelected = false;
                         itemMarkerFromLocation.setIcon(R.drawable.ic_action_marker_from_location);
                     }
@@ -220,7 +229,7 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
             // for debugging purpose only
             if (this.mIsActionMarkerFromLocationSelected && DebugUtils.isDebuggable(mWebViewFragment.getContext())) {
                 mWebViewFragment.getMockLocationProvider()
-                        .pushRandomLocationFromCurrentLocation(50.0);
+                                .pushRandomLocationFromCurrentLocation(50.0);
             }
 
             return true;
@@ -234,7 +243,8 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
     public void add(IWebViewFragment webViewFragment) {
         super.add(webViewFragment);
 
-        initializeJSController("js/Control.NativeDraw.js", "new L.Control.NativeDraw()");
+        initializeJSController("js/Control.NativeDraw.js",
+                               "new L.Control.NativeDraw()");
     }
 
     @Override
@@ -294,12 +304,15 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
     @Override
     public void onLocationChanged(Location location) {
         if (isControlInitialized()) {
-            boolean checkIfLocationInsideMapBounds = GeometryUtils.contains(new Point(new GeoPoint(location.getLatitude(), location.getLongitude())), this.mWebViewFragment.getMapSettings()
-                    .getPolygonBounds());
+            boolean checkIfLocationInsideMapBounds = GeometryUtils.contains(new Point(new GeoPoint(location.getLatitude(),
+                                                                                                   location.getLongitude())),
+                                                                            this.mWebViewFragment.getMapSettings()
+                                                                                                 .getPolygonBounds());
 
             // checks if this location is inside the map or not
             if (mIsActionMarkerFromLocationSelected && checkIfLocationInsideMapBounds) {
-                Log.d(DrawControl.class.getName(), "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
+                Log.d(DrawControl.class.getName(),
+                      "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
 
                 mIsActionMarkerFromLocationSelected = false;
                 mWebViewFragment.invalidateMenu();
@@ -333,7 +346,9 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
+    public void onStatusChanged(String provider,
+                                int status,
+                                Bundle extras) {
         // nothing to do ...
     }
 
@@ -394,7 +409,8 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
      */
     @JavascriptInterface
     public void setZoom(final int zoom) {
-        Log.d(DrawControl.class.getName(), "setZoom " + zoom);
+        Log.d(DrawControl.class.getName(),
+              "setZoom " + zoom);
 
         getHandler().post(new Runnable() {
             @Override
@@ -409,18 +425,20 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
     @JavascriptInterface
     public int getMinimumZoomPointing() {
         return mWebViewFragment.getMapSettings()
-                .getMinimumZoomPointing();
+                               .getMinimumZoomPointing();
     }
 
     @JavascriptInterface
     public String loadFeatures() {
         try {
             return mWebViewFragment.getEditableFeatures()
-                    .getJSONObject()
-                    .toString();
+                                   .getJSONObject()
+                                   .toString();
         }
         catch (JSONException je) {
-            Log.w(DrawControl.class.getName(), je.getMessage(), je);
+            Log.w(DrawControl.class.getName(),
+                  je.getMessage(),
+                  je);
 
             return "{}";
         }
@@ -434,13 +452,15 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
             }
             else {
                 return mWebViewFragment.getCurrentEditableFeature()
-                        .getJSONObject()
-                        .toString();
+                                       .getJSONObject()
+                                       .toString();
             }
 
         }
         catch (JSONException je) {
-            Log.w(DrawControl.class.getName(), je.getMessage(), je);
+            Log.w(DrawControl.class.getName(),
+                  je.getMessage(),
+                  je);
 
             return "{}";
         }
@@ -450,10 +470,12 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
     public String getFeatureDefaultStyleAsString() {
         try {
             return mFeatureDefaultStyle.getJSONObject(getContext())
-                    .toString();
+                                       .toString();
         }
         catch (JSONException je) {
-            Log.w(DrawControl.class.getName(), je.getMessage(), je);
+            Log.w(DrawControl.class.getName(),
+                  je.getMessage(),
+                  je);
 
             return "{}";
         }
@@ -463,10 +485,12 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
     public String getFeatureAddStyleAsString() {
         try {
             return mFeatureAddStyle.getJSONObject(getContext())
-                    .toString();
+                                   .toString();
         }
         catch (JSONException je) {
-            Log.w(DrawControl.class.getName(), je.getMessage(), je);
+            Log.w(DrawControl.class.getName(),
+                  je.getMessage(),
+                  je);
 
             return "{}";
         }
@@ -476,63 +500,74 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
     public String getFeatureEditStyleAsString() {
         try {
             return mFeatureEditStyle.getJSONObject(getContext())
-                    .toString();
+                                    .toString();
         }
         catch (JSONException je) {
-            Log.w(DrawControl.class.getName(), je.getMessage(), je);
+            Log.w(DrawControl.class.getName(),
+                  je.getMessage(),
+                  je);
 
             return "{}";
         }
     }
 
     @JavascriptInterface
-    public void findFeature(final String mode, final double latitude, final double longitude) {
+    public void findFeature(final String mode,
+                            final double latitude,
+                            final double longitude) {
         getHandler().post(new Runnable() {
             @Override
             public void run() {
-                final GeoPoint location = new GeoPoint(latitude, longitude);
+                final GeoPoint location = new GeoPoint(latitude,
+                                                       longitude);
                 final Point locationAsPoint = new Point(location);
 
-                Log.d(DrawControl.class.getName(), "findFeature on location " + location.toString());
+                Log.d(DrawControl.class.getName(),
+                      "findFeature on location " + location.toString());
 
                 Feature featureFound = null;
                 final Iterator<Feature> iterator = mWebViewFragment.getEditableFeatures()
-                        .getFeatures()
-                        .iterator();
+                                                                   .getFeatures()
+                                                                   .iterator();
 
                 while ((featureFound == null) && iterator.hasNext()) {
                     Feature featureToCheck = iterator.next();
 
-                    if (GeometryUtils.contains(locationAsPoint, featureToCheck.getGeometry())) {
+                    if (GeometryUtils.contains(locationAsPoint,
+                                               featureToCheck.getGeometry())) {
                         featureFound = featureToCheck;
                     }
                 }
 
                 if (featureFound == null) {
-                    Log.d(DrawControl.class.getName(), "findFeature : no feature found at location " + location.toString() + ", try to find the closest feature ...");
+                    Log.d(DrawControl.class.getName(),
+                          "findFeature : no feature found at location " + location.toString() + ", try to find the closest feature ...");
 
-                    final DistanceFilter distanceFilter = new DistanceFilter(location, 100);
+                    final DistanceFilter distanceFilter = new DistanceFilter(location,
+                                                                             100);
                     mWebViewFragment.getEditableFeatures()
-                            .apply(distanceFilter);
+                                    .apply(distanceFilter);
 
                     if (!distanceFilter.getFilteredFeatures()
-                            .isEmpty()) {
+                                       .isEmpty()) {
                         featureFound = distanceFilter.getFilteredFeatures()
-                                .get(0);
+                                                     .get(0);
                     }
                 }
 
                 if (featureFound == null) {
-                    Log.d(DrawControl.class.getName(), "no feature found");
+                    Log.d(DrawControl.class.getName(),
+                          "no feature found");
                 }
                 else {
-                    Log.d(DrawControl.class.getName(), "nearest feature found '" + featureFound.getId() + "'");
+                    Log.d(DrawControl.class.getName(),
+                          "nearest feature found '" + featureFound.getId() + "'");
 
                     if (mode.equals("edit")) {
                         mWebViewFragment.loadUrl(getJSUrlPrefix() +
-                                ".startUpdateFeature(\"edit\", \"" +
-                                featureFound.getId() +
-                                "\")");
+                                                         ".startUpdateFeature(\"edit\", \"" +
+                                                         featureFound.getId() +
+                                                         "\")");
                     }
                     else {
                         // refreshes all features
@@ -557,32 +592,33 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
                     final Feature feature = new Feature(featureAsJson.getString("key"));
 
                     if (featureAsJson.getString("type")
-                            .equals(GeoJSONType.POINT.getValue())) {
+                                     .equals(GeoJSONType.POINT.getValue())) {
                         JSONObject coordinates = featureAsJson.getJSONObject("coordinates");
 
                         if (coordinates.has("lat") && coordinates.has("lng")) {
-                            feature.setGeometry(new Point(new GeoPoint(coordinates.getDouble("lat"), coordinates.getDouble("lng"))));
+                            feature.setGeometry(new Point(new GeoPoint(coordinates.getDouble("lat"),
+                                                                       coordinates.getDouble("lng"))));
                         }
                     }
                     else if (featureAsJson.getString("type")
-                            .equals(GeoJSONType.LINE_STRING.getValue()) ||
-                            featureAsJson.getString("type")
-                                    .equals(GeoJSONType.POLYGON.getValue())) {
+                                          .equals(GeoJSONType.LINE_STRING.getValue()) || featureAsJson.getString("type")
+                                                                                                      .equals(GeoJSONType.POLYGON.getValue())) {
                         JSONArray coordinates = featureAsJson.getJSONArray("coordinates");
                         List<Point> points = new ArrayList<>();
 
                         for (int i = 0; i < coordinates.length(); i++) {
                             points.add(new Point(new GeoPoint(coordinates.getJSONObject(i)
-                                    .getDouble("lat"), coordinates.getJSONObject(i)
-                                    .getDouble("lng"))));
+                                                                         .getDouble("lat"),
+                                                              coordinates.getJSONObject(i)
+                                                                         .getDouble("lng"))));
                         }
 
                         if (featureAsJson.getString("type")
-                                .equals(GeoJSONType.LINE_STRING.getValue())) {
+                                         .equals(GeoJSONType.LINE_STRING.getValue())) {
                             feature.setGeometry(new LineString(points));
                         }
                         else if (featureAsJson.getString("type")
-                                .equals(GeoJSONType.POLYGON.getValue())) {
+                                              .equals(GeoJSONType.POLYGON.getValue())) {
                             feature.setGeometry(new Polygon(points));
                         }
                     }
@@ -590,7 +626,8 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
                     mWebViewFragment.setCurrentEditableFeature(feature);
                 }
                 catch (JSONException je) {
-                    Log.w(DrawControl.class.getName(), je);
+                    Log.w(DrawControl.class.getName(),
+                          je);
                 }
             }
         });
@@ -601,7 +638,8 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
         getHandler().post(new Runnable() {
             @Override
             public void run() {
-                Log.d(DrawControl.class.getName(), "deleteFeature : " + featureId);
+                Log.d(DrawControl.class.getName(),
+                      "deleteFeature : " + featureId);
 
                 // refreshes all features
                 if (mWebViewFragment.deleteEditableFeature(featureId)) {
@@ -623,7 +661,8 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
                 }
 
                 mWebViewFragment.getSavedInstanceState()
-                        .putBoolean(KEY_ADD_OR_UPDATE_FEATURE, adding);
+                                .putBoolean(KEY_ADD_OR_UPDATE_FEATURE,
+                                            adding);
                 mWebViewFragment.invalidateMenu();
 
                 if (mOnDrawControlListener != null) {
@@ -643,7 +682,8 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
                 }
 
                 mWebViewFragment.getSavedInstanceState()
-                        .putBoolean(KEY_ADD_OR_UPDATE_FEATURE, editing);
+                                .putBoolean(KEY_ADD_OR_UPDATE_FEATURE,
+                                            editing);
                 mWebViewFragment.invalidateMenu();
 
                 if (mOnDrawControlListener != null) {
@@ -660,7 +700,8 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
             public void run() {
                 mWebViewFragment.setCurrentEditableFeature(null);
                 mWebViewFragment.getSavedInstanceState()
-                        .putBoolean(KEY_ADD_OR_UPDATE_FEATURE, false);
+                                .putBoolean(KEY_ADD_OR_UPDATE_FEATURE,
+                                            false);
                 mWebViewFragment.invalidateMenu();
 
                 if (mOnDrawControlListener != null) {
@@ -673,9 +714,9 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
     protected void updateButtons() {
         if (isControlInitialized()) {
             boolean checkZoom = mWebViewFragment.getMapSettings()
-                    .getMinimumZoomPointing() <= mZoom;
+                                                .getMinimumZoomPointing() <= mZoom;
             boolean checkAddingFeature = (mAddingSingleFeature && mWebViewFragment.getEditableFeatures()
-                    .isEmpty()) ^ (!mAddingSingleFeature);
+                                                                                  .isEmpty()) ^ (!mAddingSingleFeature);
 
             if (mIsImageButtonAddMarkerEnabled) {
                 mImageButtonAddMarker.setVisibility(View.VISIBLE);
@@ -708,11 +749,11 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
             }
 
             mImageButtonEdit.setEnabled(!mWebViewFragment.getEditableFeatures()
-                    .getFeatures()
-                    .isEmpty() && checkZoom);
+                                                         .getFeatures()
+                                                         .isEmpty() && checkZoom);
             mImageButtonDelete.setEnabled(!mWebViewFragment.getEditableFeatures()
-                    .getFeatures()
-                    .isEmpty() && checkZoom);
+                                                           .getFeatures()
+                                                           .isEmpty() && checkZoom);
 
             if (!checkZoom) {
                 mIsImageButtonAddMarkerSelected = false;
@@ -729,8 +770,8 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
             }
 
             if (checkZoom && mWebViewFragment.getEditableFeatures()
-                    .getFeatures()
-                    .isEmpty()) {
+                                             .getFeatures()
+                                             .isEmpty()) {
                 mIsImageButtonEditSelected = false;
                 mIsImageButtonDeleteSelected = false;
             }
@@ -747,7 +788,8 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
         final Feature feature = mWebViewFragment.getCurrentEditableFeature();
 
         if (feature == null) {
-            Log.w(DrawControl.class.getName(), "addOrUpdateSelectedFeature: nothing to add or update");
+            Log.w(DrawControl.class.getName(),
+                  "addOrUpdateSelectedFeature: nothing to add or update");
 
             updateButtons();
         }
@@ -755,9 +797,9 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
             if (feature.getGeometry() != null) {
                 // specific case for feature type Point
                 if (!mWebViewFragment.getEditableFeatures()
-                        .hasFeature(feature.getId()) && feature.getGeometry()
-                        .getType()
-                        .equals(GeoJSONType.POINT)) {
+                                     .hasFeature(feature.getId()) && feature.getGeometry()
+                                                                            .getType()
+                                                                            .equals(GeoJSONType.POINT)) {
                     getHandler().post(new Runnable() {
                         @Override
                         public void run() {
@@ -797,7 +839,7 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
 
             if (imageButton.isSelected()) {
                 boolean checkAddingFeature = (mAddingSingleFeature && mWebViewFragment.getEditableFeatures()
-                        .isEmpty()) ^ (!mAddingSingleFeature);
+                                                                                      .isEmpty()) ^ (!mAddingSingleFeature);
 
                 if (imageButton.getId() == R.id.imageButtonAddMarker) {
                     if (checkAddingFeature) {
@@ -933,10 +975,10 @@ public class DrawControl extends AbstractControl implements OnClickListener, Loc
 
     public interface OnDrawControlListener {
 
-        public void onAddingFeature(boolean adding);
+        void onAddingFeature(boolean adding);
 
-        public void onEditingFeature(boolean editing);
+        void onEditingFeature(boolean editing);
 
-        public void onDeletingFeature(boolean deleting);
+        void onDeletingFeature(boolean deleting);
     }
 }

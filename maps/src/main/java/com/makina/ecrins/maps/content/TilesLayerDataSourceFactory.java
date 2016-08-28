@@ -1,6 +1,6 @@
 package com.makina.ecrins.maps.content;
 
-import com.makina.ecrins.maps.LayerSettings;
+import com.makina.ecrins.maps.settings.LayerSettings;
 
 import java.io.File;
 import java.io.IOException;

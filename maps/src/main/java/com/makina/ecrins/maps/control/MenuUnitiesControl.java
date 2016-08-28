@@ -11,7 +11,7 @@ import android.webkit.JavascriptInterface;
 
 import com.makina.ecrins.maps.R;
 import com.makina.ecrins.maps.IWebViewFragment;
-import com.makina.ecrins.maps.MapSettings;
+import com.makina.ecrins.maps.settings.MapSettings;
 import com.makina.ecrins.maps.content.ITilesLayerDataSource;
 import com.makina.ecrins.maps.geojson.Feature;
 import com.makina.ecrins.maps.geojson.FeatureCollection;

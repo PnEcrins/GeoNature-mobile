@@ -1,4 +1,4 @@
-package com.makina.ecrins.maps;
+package com.makina.ecrins.maps.settings;
 
 import android.os.Parcel;
 import android.os.Parcelable;

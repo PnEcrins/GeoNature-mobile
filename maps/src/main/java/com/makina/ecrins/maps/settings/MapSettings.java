@@ -1,8 +1,10 @@
-package com.makina.ecrins.maps;
+package com.makina.ecrins.maps.settings;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
+import com.makina.ecrins.maps.RenderQualityEnum;
 import com.makina.ecrins.maps.geojson.geometry.GeoPoint;
 import com.makina.ecrins.maps.geojson.geometry.Point;
 import com.makina.ecrins.maps.geojson.geometry.Polygon;
@@ -18,14 +20,15 @@ import java.util.List;
 /**
  * Default settings for map configuration.
  *
- * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+ * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
-public class MapSettings implements Parcelable {
+public class MapSettings
+        implements Parcelable {
 
     public static final String KEY_DISPLAY_SCALE = "display_scale";
     public static final String KEY_RENDER_QUALITY = "render_quality";
     public static final String KEY_SHOW_UNITIES_LAYER = "show_unities_layer";
-    public static final String KEY_BBOX = "bbox";
+    public static final String KEY_CRS = "crs";
     public static final String KEY_MAX_BOUNDS = "max_bounds";
     public static final String KEY_CENTER = "center";
     public static final String KEY_START_ZOOM = "start_zoom";
@@ -39,7 +42,7 @@ public class MapSettings implements Parcelable {
     private boolean mDisplayScale = true;
     private RenderQualityEnum mRenderQuality = RenderQualityEnum.AUTO;
     private boolean mShowUnitiesLayer = true;
-    private final List<Integer> mBbox = new ArrayList<>();
+    private CRSSettings mCRSSettings;
     private final List<GeoPoint> mMaxBounds = new ArrayList<>();
     private Polygon mPolygonBounds = null;
     private GeoPoint mCenter;
@@ -54,20 +57,23 @@ public class MapSettings implements Parcelable {
         this.mDisplayScale = source.readByte() == 1;
         this.mRenderQuality = RenderQualityEnum.asRenderQuality(source.readString());
         this.mShowUnitiesLayer = source.readByte() == 1;
-        source.readList(mBbox, Integer.class.getClassLoader());
-        source.readTypedList(mMaxBounds, GeoPoint.CREATOR);
+        mCRSSettings = source.readParcelable(CRSSettings.class.getClassLoader());
+        source.readTypedList(mMaxBounds,
+                             GeoPoint.CREATOR);
         mCenter = source.readParcelable(GeoPoint.class.getClassLoader());
         mZoom = source.readInt();
         mMinZoom = source.readInt();
         mMaxZoom = source.readInt();
         mMinimumZoomPointing = source.readInt();
-        source.readTypedList(mLayers, LayerSettings.CREATOR);
+        source.readTypedList(mLayers,
+                             LayerSettings.CREATOR);
         mUnityLayer = source.readParcelable(LayerSettings.class.getClassLoader());
 
         getPolygonBounds();
     }
 
-    public MapSettings(JSONObject json) throws JSONException {
+    public MapSettings(JSONObject json) throws
+                                        JSONException {
         if (json.has(KEY_DISPLAY_SCALE)) {
             this.mDisplayScale = json.getBoolean(KEY_DISPLAY_SCALE);
         }
@@ -80,27 +86,19 @@ public class MapSettings implements Parcelable {
             this.mShowUnitiesLayer = json.getBoolean(KEY_SHOW_UNITIES_LAYER);
         }
 
-        JSONArray bboxJsonArray = json.getJSONArray(KEY_BBOX);
-
-        for (int i = 0; i < bboxJsonArray.length(); i++) {
-            mBbox.add(bboxJsonArray.getInt(i));
+        if (json.has(KEY_CRS)) {
+            this.mCRSSettings = new CRSSettings(json.getJSONObject(KEY_CRS));
         }
 
         JSONArray maxBoundsJsonArray = json.getJSONArray(KEY_MAX_BOUNDS);
 
         for (int i = 0; i < maxBoundsJsonArray.length(); i++) {
-            mMaxBounds.add(
-                    new GeoPoint(
-                            maxBoundsJsonArray.getJSONArray(i),
-                            GeoPoint.LAT_LON
-                    )
-            );
+            mMaxBounds.add(new GeoPoint(maxBoundsJsonArray.getJSONArray(i),
+                                        GeoPoint.LAT_LON));
         }
 
-        mCenter = new GeoPoint(
-                json.getJSONArray(KEY_CENTER),
-                GeoPoint.LAT_LON
-        );
+        mCenter = new GeoPoint(json.getJSONArray(KEY_CENTER),
+                               GeoPoint.LAT_LON);
 
         if (json.has(KEY_START_ZOOM)) {
             this.mZoom = json.getInt(KEY_START_ZOOM);
@@ -159,8 +157,9 @@ public class MapSettings implements Parcelable {
         this.mShowUnitiesLayer = pShowUnitiesLayer;
     }
 
-    public List<Integer> getBbox() {
-        return mBbox;
+    @Nullable
+    public CRSSettings getCRSSettings() {
+        return mCRSSettings;
     }
 
     public List<GeoPoint> getMaxBounds() {
@@ -178,24 +177,12 @@ public class MapSettings implements Parcelable {
             GeoPoint southWest = getMaxBounds().get(0);
             GeoPoint northEast = getMaxBounds().get(1);
 
-            mPolygonBounds = new Polygon(
-                    Arrays.asList(
-                            new Point(southWest),
-                            new Point(
-                                    new GeoPoint(
-                                            northEast.getLatitudeE6(),
-                                            southWest.getLongitudeE6()
-                                    )
-                            ),
-                            new Point(northEast),
-                            new Point(
-                                    new GeoPoint(
-                                            southWest.getLatitudeE6(),
-                                            northEast.getLongitudeE6()
-                                    )
-                            )
-                    )
-            );
+            mPolygonBounds = new Polygon(Arrays.asList(new Point(southWest),
+                                                       new Point(new GeoPoint(northEast.getLatitudeE6(),
+                                                                              southWest.getLongitudeE6())),
+                                                       new Point(northEast),
+                                                       new Point(new GeoPoint(southWest.getLatitudeE6(),
+                                                                              northEast.getLongitudeE6()))));
         }
 
         return mPolygonBounds;
@@ -275,19 +262,23 @@ public class MapSettings implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(Parcel dest,
+                              int flags) {
         dest.writeByte((byte) (mDisplayScale ? 1 : 0)); // as boolean value
         dest.writeString(mRenderQuality.getValueAsString());
         dest.writeByte((byte) (mShowUnitiesLayer ? 1 : 0)); // as boolean value
-        dest.writeList(mBbox);
+        dest.writeParcelable(mCRSSettings,
+                             0);
         dest.writeTypedList(mMaxBounds);
-        dest.writeParcelable(mCenter, 0);
+        dest.writeParcelable(mCenter,
+                             0);
         dest.writeInt(mZoom);
         dest.writeInt(mMinZoom);
         dest.writeInt(mMaxZoom);
         dest.writeInt(mMinimumZoomPointing);
         dest.writeTypedList(mLayers);
-        dest.writeParcelable(mUnityLayer, 0);
+        dest.writeParcelable(mUnityLayer,
+                             0);
     }
 
     public static final Parcelable.Creator<MapSettings> CREATOR = new Parcelable.Creator<MapSettings>() {
