@@ -29,7 +29,7 @@ Il est possible de déployer les applications Android en utilisant les APK dispo
 
 Il vous faut ensuite compléter les fichiers JSON de configuration comme indiqué dans la documentation (https://github.com/PnEcrins/GeoNature-mobile/blob/master/docs/configuration_development.md)
 
-Il vous faut aussi intégrer les fichiers SIG (fonds carto au format MBTiles et limites des unités géographiques) sur la carte SD du mobile (https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/install/V1.0.0/external%20card).
+Il vous faut aussi intégrer les fichiers SIG (fonds carto au format MBTiles et limites des unités géographiques) sur la carte SD du mobile (https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/install/v1.0.0/external%20card).
 
 La génération des tuiles MBTiles est détaillée dans la documentation (https://github.com/PnEcrins/GeoNature-mobile/blob/master/docs/tuilage_mbtiles.rst)
 
