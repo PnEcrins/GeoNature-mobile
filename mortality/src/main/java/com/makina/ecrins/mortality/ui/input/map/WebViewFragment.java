@@ -6,7 +6,7 @@ import com.makina.ecrins.commons.model.MountPoint;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.util.FileUtils;
 import com.makina.ecrins.maps.AbstractWebViewFragment;
-import com.makina.ecrins.maps.MapSettings;
+import com.makina.ecrins.maps.settings.MapSettings;
 import com.makina.ecrins.maps.control.CenterPositionControl;
 import com.makina.ecrins.maps.control.MenuUnitiesControl;
 import com.makina.ecrins.maps.control.SwitchLayersControl;

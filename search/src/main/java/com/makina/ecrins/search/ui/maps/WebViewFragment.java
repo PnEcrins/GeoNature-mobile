@@ -18,7 +18,7 @@ import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.model.MountPoint;
 import com.makina.ecrins.commons.util.FileUtils;
 import com.makina.ecrins.maps.AbstractWebViewFragment;
-import com.makina.ecrins.maps.MapSettings;
+import com.makina.ecrins.maps.settings.MapSettings;
 import com.makina.ecrins.maps.RenderQualityEnum;
 import com.makina.ecrins.maps.control.AbstractControl.OnIControlListener;
 import com.makina.ecrins.maps.control.CenterPositionControl;

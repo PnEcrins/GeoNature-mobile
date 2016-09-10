@@ -9,7 +9,7 @@ import com.makina.ecrins.invertebrate.MainApplication;
 import com.makina.ecrins.invertebrate.R;
 import com.makina.ecrins.invertebrate.ui.input.PagerFragmentActivity;
 import com.makina.ecrins.maps.AbstractWebViewFragment;
-import com.makina.ecrins.maps.MapSettings;
+import com.makina.ecrins.maps.settings.MapSettings;
 import com.makina.ecrins.maps.control.CenterPositionControl;
 import com.makina.ecrins.maps.control.MenuUnitiesControl;
 import com.makina.ecrins.maps.control.SwitchLayersControl;

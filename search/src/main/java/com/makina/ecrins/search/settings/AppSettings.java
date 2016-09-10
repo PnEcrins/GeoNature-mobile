@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.makina.ecrins.commons.settings.AbstractAppSettings;
-import com.makina.ecrins.maps.MapSettings;
+import com.makina.ecrins.maps.settings.MapSettings;
 
 import org.json.JSONException;
 import org.json.JSONObject;

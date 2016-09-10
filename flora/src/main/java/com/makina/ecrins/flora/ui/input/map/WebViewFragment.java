@@ -23,7 +23,7 @@ import com.makina.ecrins.flora.input.Area;
 import com.makina.ecrins.flora.input.Taxon;
 import com.makina.ecrins.flora.ui.input.PagerFragmentActivity;
 import com.makina.ecrins.maps.AbstractWebViewFragment;
-import com.makina.ecrins.maps.MapSettings;
+import com.makina.ecrins.maps.settings.MapSettings;
 import com.makina.ecrins.maps.control.AbstractControl;
 import com.makina.ecrins.maps.control.CenterPositionControl;
 import com.makina.ecrins.maps.control.ControlUtils;
