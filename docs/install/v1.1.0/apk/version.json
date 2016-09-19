@@ -1,0 +1,41 @@
+{
+    "apps":
+    [
+        {
+            "package": "com.makina.ecrins.fauna",
+            "sharedUserId": "com.makina.ecrins",
+            "apkName": "fauna-release-1.1.0.apk",
+            "versionCode": 191,
+            "versionName": "1.1.0"
+        },
+        {
+            "package": "com.makina.ecrins.mortality",
+            "sharedUserId": "com.makina.ecrins",
+            "apkName": "mortality-release-1.1.0.apk",
+            "versionCode": 92,
+            "versionName": "1.1.0"
+        },
+        {
+            "package": "com.makina.ecrins.invertebrate",
+            "sharedUserId": "com.makina.ecrins",
+            "apkName": "invertebrate-release-1.1.0.apk",
+            "versionCode": 109,
+            "versionName": "1.1.0"
+        },
+		{
+            "package": "com.makina.ecrins.flora",
+            "sharedUserId": "com.makina.ecrins",
+            "apkName": "flora-release-1.1.0.apk",
+            "versionCode": 657,
+            "versionName": "1.1.0"
+        },
+		{
+            "package": "com.makina.ecrins.search",
+            "sharedUserId": "com.makina.ecrins",
+            "apkName": "search-release-1.1.0.apk",
+            "versionCode": 219,
+            "versionName": "1.1.0"
+        }
+    ]
+}
+
