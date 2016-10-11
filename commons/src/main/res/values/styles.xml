@@ -10,6 +10,7 @@
         <item name="android:textColorSecondary">#ddd</item>
 
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_action_done</item>
 
     </style>
 
