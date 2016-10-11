@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="app_name" tools:ignore="MissingTranslation">commons</string>
-    <string name="app_version" tools:ignore="MissingTranslation">%1$s (%2$s)\n%3$s</string>
+    <string name="app_version" tools:ignore="MissingTranslation">%1$s (%2$d)\n%3$s</string>
 
     <string name="preference_category_observers_no_default_set">Not defined</string>
     <string name="preference_category_about">About</string>
@@ -125,5 +125,8 @@
     <string name="storage_size_kb">%1.1f kB</string>
     <string name="storage_size_mb">%1.1f MB</string>
     <string name="storage_size_gb">%1.1f GB</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
