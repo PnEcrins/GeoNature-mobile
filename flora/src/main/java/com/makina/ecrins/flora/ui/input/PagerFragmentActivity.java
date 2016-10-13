@@ -31,7 +31,7 @@ import com.makina.ecrins.flora.ui.input.phenology.PhenologyListFragment;
 import com.makina.ecrins.flora.ui.input.physiognomy.PhysiognomyFragment;
 import com.makina.ecrins.flora.ui.input.remarks.RemarksFragment;
 import com.makina.ecrins.flora.ui.input.taxa.TaxaFoundFragment;
-import com.makina.ecrins.flora.ui.input.taxa.TaxaFragment;
+import com.makina.ecrins.flora.ui.input.taxa.TaxaInputListFragment;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -210,7 +210,7 @@ public class PagerFragmentActivity
         fragments.put(R.string.pager_fragment_observers_and_date_title,
                       new ObserversAndDateInputFragment());
         fragments.put(R.string.pager_fragment_taxa_title,
-                      new TaxaFragment());
+                      new TaxaInputListFragment());
         fragments.put(R.string.pager_fragment_taxa_found_title,
                       new TaxaFoundFragment());
         fragments.put(R.string.pager_fragment_webview_ap_title,

@@ -1,9 +1,9 @@
 package com.makina.ecrins.flora.ui.input.taxa;
 
-
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
@@ -12,11 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
-import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.input.AbstractTaxon;
 import com.makina.ecrins.commons.input.InputType;
-import com.makina.ecrins.commons.ui.input.taxa.AbstractTaxaFragment;
-import com.makina.ecrins.flora.MainApplication;
+import com.makina.ecrins.commons.ui.input.taxa.AbstractTaxaInputListFragment;
 import com.makina.ecrins.flora.content.MainContentProvider;
 import com.makina.ecrins.flora.input.Taxon;
 
@@ -26,11 +24,10 @@ import java.util.List;
 /**
  * Lists all taxa from database.
  *
- * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+ * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
-public class TaxaFragment extends AbstractTaxaFragment {
-
-    private static final String TAG = TaxaFragment.class.getName();
+public class TaxaInputListFragment
+        extends AbstractTaxaInputListFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,43 +38,45 @@ public class TaxaFragment extends AbstractTaxaFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View view = super.onCreateView(inflater,
+                                  container,
+                                  savedInstanceState);
 
         mSecondActionBarView.setVisibility(View.GONE);
 
         return view;
     }
 
+    @NonNull
     @Override
     public AbstractTaxon createTaxon(long taxonId) {
         return new Taxon(taxonId);
     }
 
     @Override
-    public AbstractInput getInput() {
-        return ((MainApplication) getActivity().getApplication()).getInput();
-    }
-
-    @Override
     public void clearFilters() {
-        getSavedInstanceState().putSerializable(KEY_SWITCH_LABEL, LabelSwitcher.LATIN);
+        getSavedInstanceState().putSerializable(KEY_SWITCH_LABEL,
+                                                LabelSwitcher.LATIN);
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(int id,
+                                         Bundle args) {
         final String[] projection = {
-                        MainDatabaseHelper.TaxaColumns._ID,
-                        MainDatabaseHelper.TaxaColumns.NAME,
-                        MainDatabaseHelper.TaxaColumns.NAME_FR,
-                        MainDatabaseHelper.TaxaColumns.CLASS_ID,
-                        MainDatabaseHelper.TaxaColumns.NUMBER,
-                        MainDatabaseHelper.TaxaColumns.FILTER,
-                        MainDatabaseHelper.TaxaUnitiesColumns.COLOR,
-                        MainDatabaseHelper.TaxaColumns.PATRIMONIAL,
-                        MainDatabaseHelper.TaxaUnitiesColumns.NB_OBS,
-                        MainDatabaseHelper.TaxaUnitiesColumns.DATE,
-                        MainDatabaseHelper.TaxaColumns.MESSAGE
+                MainDatabaseHelper.TaxaColumns._ID,
+                MainDatabaseHelper.TaxaColumns.NAME,
+                MainDatabaseHelper.TaxaColumns.NAME_FR,
+                MainDatabaseHelper.TaxaColumns.CLASS_ID,
+                MainDatabaseHelper.TaxaColumns.NUMBER,
+                MainDatabaseHelper.TaxaColumns.FILTER,
+                MainDatabaseHelper.TaxaUnitiesColumns.COLOR,
+                MainDatabaseHelper.TaxaColumns.PATRIMONIAL,
+                MainDatabaseHelper.TaxaUnitiesColumns.NB_OBS,
+                MainDatabaseHelper.TaxaUnitiesColumns.DATE,
+                MainDatabaseHelper.TaxaColumns.MESSAGE
         };
 
         CursorLoader cursorLoader;
@@ -128,16 +127,17 @@ public class TaxaFragment extends AbstractTaxaFragment {
             }
         }
 
-        Log.d(TAG, "selection: " + selection.toString());
-        Log.d(TAG, "selectionArgs: " + selectionArgs.toString());
+        Log.d(TAG,
+              "selection: " + selection.toString());
+        Log.d(TAG,
+              "selectionArgs: " + selectionArgs.toString());
 
-        cursorLoader = new CursorLoader(
-                getActivity(),
-                Uri.parse(MainContentProvider.CONTENT_TAXA_UNITY_URI + "/0"),
-                projection,
-                selection.toString(),
-                selectionArgs.toArray(new String[selectionArgs.size()]),
-                sortOrder);
+        cursorLoader = new CursorLoader(getActivity(),
+                                        Uri.parse(MainContentProvider.CONTENT_TAXA_UNITY_URI + "/0"),
+                                        projection,
+                                        selection.toString(),
+                                        selectionArgs.toArray(new String[selectionArgs.size()]),
+                                        sortOrder);
 
         return cursorLoader;
     }
