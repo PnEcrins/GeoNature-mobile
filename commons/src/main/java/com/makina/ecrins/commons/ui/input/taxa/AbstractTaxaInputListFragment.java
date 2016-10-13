@@ -6,13 +6,15 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.text.Html;
 import android.text.Spanned;
@@ -34,13 +36,14 @@ import android.widget.FilterQueryProvider;
 import android.widget.ListView;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
-import android.widget.ViewSwitcher.ViewFactory;
+import android.widget.ViewSwitcher;
 
 import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.input.AbstractTaxon;
+import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
 import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.ui.widget.AlphabetSectionIndexerCursorAdapter;
@@ -53,33 +56,31 @@ import java.util.regex.Pattern;
 /**
  * Lists all taxa from database.
  *
- * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
- * @deprecated use {@link AbstractTaxaInputListFragment} instead
+ * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
-@Deprecated
-public abstract class AbstractTaxaFragment extends ListFragment
-        implements
-        IValidateFragment,
-        LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class AbstractTaxaInputListFragment
+        extends ListFragment
+        implements IValidateFragment,
+                   LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String TAG = AbstractTaxaFragment.class.getName();
+    protected static final String TAG = AbstractTaxaInputListFragment.class.getName();
 
-    public static final int HANDLER_TAXA_FILTER_STATUS = 0;
-
-    protected static final String KEY_SELECTED_UNITY = "selected_unity";
-    protected static final String KEY_SELECTED_TAXON = "selected_taxon";
-    protected static final String KEY_SWITCH_LABEL = "switch_label";
     protected static final String KEY_FILTER = "filter";
+    protected static final String KEY_SELECTED_TAXON = "selected_taxon";
+    protected static final String KEY_SELECTED_UNITY = "selected_unity";
+    protected static final String KEY_SWITCH_LABEL = "switch_label";
 
     protected static final String KEY_DISPLAY_TAXON_STATUS = "display_taxon_status";
     protected static final String KEY_DISPLAY_TAXON_HERITAGE = "display_taxon_heritage";
     protected static final String KEY_DISPLAY_TAXON_DETAILS = "display_taxon_details";
 
-    protected AlphabetSectionIndexerCursorAdapter mAdapter;
-    protected Bundle mSavedState;
-    protected ViewGroup mSecondActionBarView;
+    private AlphabetSectionIndexerCursorAdapter mAdapter;
+
+    private Bundle mSavedState;
+    private AbstractInput mInput;
 
     private boolean mListShown;
+    protected ViewGroup mSecondActionBarView;
     private View mProgressContainer;
     private View mListContainer;
 
@@ -90,25 +91,28 @@ public abstract class AbstractTaxaFragment extends ListFragment
         if (savedInstanceState == null) {
 
             if (BuildConfig.DEBUG) {
-                Log.d(
-                        TAG,
-                        "onCreate, savedInstanceState null"
-                );
+                Log.d(TAG,
+                      "onCreate, savedInstanceState null");
             }
 
             mSavedState = new Bundle();
-            mSavedState.putString(KEY_SELECTED_UNITY, getInput().getFeatureId());
-            mSavedState.putSerializable(KEY_SWITCH_LABEL, LabelSwitcher.FRENCH);
-            mSavedState.putBoolean(KEY_DISPLAY_TAXON_STATUS, false);
-            mSavedState.putBoolean(KEY_DISPLAY_TAXON_HERITAGE, false);
-            mSavedState.putBoolean(KEY_DISPLAY_TAXON_DETAILS, PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("taxa_display_details", true));
+            mSavedState.putString(KEY_SELECTED_UNITY,
+                                  mInput.getFeatureId());
+            mSavedState.putSerializable(KEY_SWITCH_LABEL,
+                                        LabelSwitcher.FRENCH);
+            mSavedState.putBoolean(KEY_DISPLAY_TAXON_STATUS,
+                                   false);
+            mSavedState.putBoolean(KEY_DISPLAY_TAXON_HERITAGE,
+                                   false);
+            mSavedState.putBoolean(KEY_DISPLAY_TAXON_DETAILS,
+                                   PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                                    .getBoolean("taxa_display_details",
+                                                                true));
         }
         else {
             if (BuildConfig.DEBUG) {
-                Log.d(
-                        TAG,
-                        "onCreate, savedInstanceState initialized"
-                );
+                Log.d(TAG,
+                      "onCreate, savedInstanceState initialized");
             }
 
             mSavedState = savedInstanceState;
@@ -123,8 +127,12 @@ public abstract class AbstractTaxaFragment extends ListFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_taxa, container, false);
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_taxa,
+                                           container,
+                                           false);
 
         mListContainer = view.findViewById(R.id.listContainer);
         mProgressContainer = view.findViewById(R.id.progressContainer);
@@ -136,11 +144,26 @@ public abstract class AbstractTaxaFragment extends ListFragment
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onViewCreated(View view,
+                              Bundle savedInstanceState) {
+        super.onViewCreated(view,
+                            savedInstanceState);
 
         // give some text to display if there is no data
         getListView().setEmptyView(view.findViewById(R.id.internalEmpty));
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof OnInputFragmentListener) {
+            final OnInputFragmentListener mOnInputFragmentListener = (OnInputFragmentListener) context;
+            mInput = mOnInputFragmentListener.getInput();
+        }
+        else {
+            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
+        }
     }
 
     @Override
@@ -153,10 +176,8 @@ public abstract class AbstractTaxaFragment extends ListFragment
     @Override
     public void onPause() {
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    TAG,
-                    "onPause"
-            );
+            Log.d(TAG,
+                  "onPause");
         }
 
         getLoaderManager().destroyLoader(0);
@@ -166,18 +187,33 @@ public abstract class AbstractTaxaFragment extends ListFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        final MenuItem menuItemSearch = menu.add(Menu.NONE, 0, Menu.NONE, R.string.action_search);
+    public void onCreateOptionsMenu(Menu menu,
+                                    MenuInflater inflater) {
+        final MenuItem menuItemSearch = menu.add(Menu.NONE,
+                                                 0,
+                                                 Menu.NONE,
+                                                 R.string.action_search);
         menuItemSearch.setIcon(R.drawable.ic_action_search);
-        MenuItemCompat.setShowAsAction(menuItemSearch, MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        MenuItemCompat.setShowAsAction(menuItemSearch,
+                                       MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 
-        SearchView searchView = new SearchView(((AbstractPagerFragmentActivity) getActivity()).getSupportActionBar().getThemedContext());
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        final SearchView searchView;
+
+        if (actionBar == null) {
+            searchView = new SearchView(getContext());
+        }
+        else {
+            searchView = new SearchView(actionBar.getThemedContext());
+        }
+
         searchView.setQueryHint(getString(R.string.taxa_search_hint));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN, 0);
+                imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN,
+                                    0);
                 return true;
             }
 
@@ -187,36 +223,45 @@ public abstract class AbstractTaxaFragment extends ListFragment
                     return false;
                 }
 
-                mAdapter.getFilter().filter(!TextUtils.isEmpty(newText) ? newText : null);
+                mAdapter.getFilter()
+                        .filter(!TextUtils.isEmpty(newText) ? newText : null);
                 return true;
             }
         });
 
-        MenuItemCompat.setOnActionExpandListener(menuItemSearch, new MenuItemCompat.OnActionExpandListener() {
-            @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                return true;
-            }
+        MenuItemCompat.setOnActionExpandListener(menuItemSearch,
+                                                 new MenuItemCompat.OnActionExpandListener() {
+                                                     @Override
+                                                     public boolean onMenuItemActionExpand(MenuItem item) {
+                                                         return true;
+                                                     }
 
-            @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                if (BuildConfig.DEBUG) {
-                    Log.d(
-                            TAG,
-                            "onMenuItemActionCollapse"
-                    );
-                }
+                                                     @Override
+                                                     public boolean onMenuItemActionCollapse(MenuItem item) {
+                                                         if (BuildConfig.DEBUG) {
+                                                             Log.d(TAG,
+                                                                   "onMenuItemActionCollapse");
+                                                         }
 
-                // clear the search filter on collapse
-                mAdapter.getFilter().filter(null);
-                return true;
-            }
-        });
+                                                         // clear the search filter on collapse
+                                                         mAdapter.getFilter()
+                                                                 .filter(null);
+                                                         return true;
+                                                     }
+                                                 });
 
-        MenuItemCompat.setActionView(menuItemSearch, searchView);
+        MenuItemCompat.setActionView(menuItemSearch,
+                                     searchView);
 
-        menu.add(Menu.NONE, 1, Menu.NONE, (mSavedState.getSerializable(KEY_SWITCH_LABEL).equals(LabelSwitcher.FRENCH)) ? R.string.action_switch_label_latin : R.string.action_switch_label_french).setIcon((mSavedState.getSerializable(KEY_SWITCH_LABEL).equals(LabelSwitcher.FRENCH)) ? R.drawable.ic_action_label_switcher_la : R.drawable.ic_action_label_switcher_fr);
-        MenuItemCompat.setShowAsAction(menuItemSearch, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+        menu.add(Menu.NONE,
+                 1,
+                 Menu.NONE,
+                 (mSavedState.getSerializable(KEY_SWITCH_LABEL)
+                             .equals(LabelSwitcher.FRENCH)) ? R.string.action_switch_label_latin : R.string.action_switch_label_french)
+            .setIcon((mSavedState.getSerializable(KEY_SWITCH_LABEL)
+                                 .equals(LabelSwitcher.FRENCH)) ? R.drawable.ic_action_label_switcher_la : R.drawable.ic_action_label_switcher_fr);
+        MenuItemCompat.setShowAsAction(menuItemSearch,
+                                       MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
     }
 
     @Override
@@ -227,10 +272,12 @@ public abstract class AbstractTaxaFragment extends ListFragment
 
                 switch (labelSwitcher) {
                     case FRENCH:
-                        mSavedState.putSerializable(KEY_SWITCH_LABEL, LabelSwitcher.LATIN);
+                        mSavedState.putSerializable(KEY_SWITCH_LABEL,
+                                                    LabelSwitcher.LATIN);
                         break;
                     default:
-                        mSavedState.putSerializable(KEY_SWITCH_LABEL, LabelSwitcher.FRENCH);
+                        mSavedState.putSerializable(KEY_SWITCH_LABEL,
+                                                    LabelSwitcher.FRENCH);
                         break;
                 }
 
@@ -244,7 +291,10 @@ public abstract class AbstractTaxaFragment extends ListFragment
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    public void onListItemClick(ListView l,
+                                View v,
+                                int position,
+                                long id) {
         long selectedTaxonId = mAdapter.getItemId(position);
 
         Cursor cursor = (Cursor) mAdapter.getItem(position);
@@ -252,15 +302,14 @@ public abstract class AbstractTaxaFragment extends ListFragment
         int classCount = cursor.getInt(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns.NUMBER));
 
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    TAG,
-                    "onListItemClick: " + selectedTaxonId + ", selected class:" + taxonClassId
-            );
+            Log.d(TAG,
+                  "onListItemClick: " + selectedTaxonId + ", selected class:" + taxonClassId);
         }
 
         // replace the previous selection by this one
         if (mSavedState.getParcelable(KEY_SELECTED_TAXON) != null) {
-            getInput().getTaxa().remove(((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getId());
+            mInput.getTaxa()
+                  .remove(((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getId());
         }
 
         // creates a new taxon for this input
@@ -269,13 +318,19 @@ public abstract class AbstractTaxaFragment extends ListFragment
         selectedTaxon.setClassCount(classCount);
 
         // apply selection to this taxon
-        getInput().getTaxa().put(selectedTaxon.getId(), selectedTaxon);
-        mSavedState.putParcelable(KEY_SELECTED_TAXON, selectedTaxon);
-        getInput().setCurrentSelectedTaxonId(selectedTaxon.getId());
-        v.findViewById(R.id.textViewTaxonObservers).setVisibility(View.VISIBLE);
+        mInput.getTaxa()
+              .put(selectedTaxon.getId(),
+                   selectedTaxon);
+        mSavedState.putParcelable(KEY_SELECTED_TAXON,
+                                  selectedTaxon);
+        mInput.setCurrentSelectedTaxonId(selectedTaxon.getId());
+        v.findViewById(R.id.textViewTaxonObservers)
+         .setVisibility(View.VISIBLE);
         mAdapter.notifyDataSetChanged();
 
-        Log.d(AbstractTaxaFragment.class.getName(), "number of taxa : " + getInput().getTaxa().size());
+        Log.d(TAG,
+              "number of taxa : " + mInput.getTaxa()
+                                          .size());
 
         ((AbstractPagerFragmentActivity) getActivity()).validateCurrentPage();
     }
@@ -292,31 +347,29 @@ public abstract class AbstractTaxaFragment extends ListFragment
 
     @Override
     public boolean validate() {
-        return getInput().getCurrentSelectedTaxonId() != -1;
+        return mInput.getCurrentSelectedTaxonId() != -1;
     }
 
     @Override
     public void refreshView() {
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    TAG,
-                    "refreshView"
-            );
+            Log.d(TAG,
+                  "refreshView");
         }
 
-        ((AbstractPagerFragmentActivity) getActivity()).getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        ((AbstractPagerFragmentActivity) getActivity()).getSupportActionBar()
+                                                       .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         // clear all filters, restore previously selected taxon
-        if (mSavedState.containsKey(KEY_SELECTED_TAXON) && getInput().getCurrentSelectedTaxonId() == -1) {
+        if (mSavedState.containsKey(KEY_SELECTED_TAXON) && mInput.getCurrentSelectedTaxonId() == -1) {
             if (BuildConfig.DEBUG) {
-                Log.d(
-                        TAG,
-                        "clear filters"
-                );
+                Log.d(TAG,
+                      "clear filters");
             }
 
             mSavedState.remove(KEY_SELECTED_TAXON);
-            mSavedState.putSerializable(KEY_SWITCH_LABEL, LabelSwitcher.FRENCH);
+            mSavedState.putSerializable(KEY_SWITCH_LABEL,
+                                        LabelSwitcher.FRENCH);
             mSavedState.remove(KEY_FILTER);
 
             clearFilters();
@@ -325,34 +378,39 @@ public abstract class AbstractTaxaFragment extends ListFragment
         }
 
         // restore previously selected taxon
-        if (getInput().getTaxa().get(getInput().getCurrentSelectedTaxonId()) != null) {
-            mSavedState.putParcelable(KEY_SELECTED_TAXON, getInput().getTaxa().get(getInput().getCurrentSelectedTaxonId()));
+        if (mInput.getTaxa()
+                  .get(mInput.getCurrentSelectedTaxonId()) != null) {
+            mSavedState.putParcelable(KEY_SELECTED_TAXON,
+                                      mInput.getTaxa()
+                                            .get(mInput.getCurrentSelectedTaxonId()));
 
             if (BuildConfig.DEBUG) {
-                Log.d(
-                        TAG,
-                        "restore selected taxon: " + ((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getTaxonId()
-                );
+                Log.d(TAG,
+                      "restore selected taxon: " + ((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getTaxonId());
             }
         }
 
         // remove 'KEY_SELECTED_UNITY' key if no feature was selected
-        if (getInput().getFeatureId() == null) {
+        if (mInput.getFeatureId() == null) {
             mSavedState.remove(KEY_SELECTED_UNITY);
         }
         else {
-            mSavedState.putString(KEY_SELECTED_UNITY, getInput().getFeatureId());
+            mSavedState.putString(KEY_SELECTED_UNITY,
+                                  mInput.getFeatureId());
         }
 
         // prepare the loader, either re-connect with an existing one, or start a new one
-        getLoaderManager().restartLoader(0, mSavedState, this);
+        getLoaderManager().restartLoader(0,
+                                         mSavedState,
+                                         this);
 
         // start out with a progress indicator
         setListShown(false);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader,
+                               Cursor data) {
         String sortedColumnIndex = MainDatabaseHelper.TaxaColumns.NAME;
 
         if (mSavedState.containsKey(KEY_SWITCH_LABEL)) {
@@ -367,7 +425,8 @@ public abstract class AbstractTaxaFragment extends ListFragment
         }
 
         if (mAdapter == null) {
-            initializeAdapter(data, sortedColumnIndex);
+            initializeAdapter(data,
+                              sortedColumnIndex);
         }
         else {
             mAdapter.setSortedColumnIndex(sortedColumnIndex);
@@ -386,8 +445,10 @@ public abstract class AbstractTaxaFragment extends ListFragment
         }
 
         // sets the current position to the selected taxon
-        if (getInput().getCurrentSelectedTaxonId() != -1) {
-            getListView().setSelection(mAdapter.getItemPosition(getInput().getTaxa().get(getInput().getCurrentSelectedTaxonId()).getTaxonId()));
+        if (mInput.getCurrentSelectedTaxonId() != -1) {
+            getListView().setSelection(mAdapter.getItemPosition(mInput.getTaxa()
+                                                                      .get(mInput.getCurrentSelectedTaxonId())
+                                                                      .getTaxonId()));
         }
     }
 
@@ -401,26 +462,28 @@ public abstract class AbstractTaxaFragment extends ListFragment
 
     @Override
     public void setListShown(boolean shown) {
-        setListShown(shown, true);
+        setListShown(shown,
+                     true);
     }
 
     @Override
     public void setListShownNoAnimation(boolean shown) {
-        setListShown(shown, false);
+        setListShown(shown,
+                     false);
     }
 
+    @NonNull
     public Bundle getSavedInstanceState() {
         return this.mSavedState;
     }
 
+    @NonNull
     public abstract AbstractTaxon createTaxon(long taxonId);
-
-    public abstract AbstractInput getInput();
 
     public abstract void clearFilters();
 
-    // see http://code.google.com/p/android/issues/detail?id=21742
-    private void setListShown(boolean shown, boolean animate) {
+    private void setListShown(boolean shown,
+                              boolean animate) {
         if (mListShown == shown) {
             return;
         }
@@ -429,8 +492,10 @@ public abstract class AbstractTaxaFragment extends ListFragment
 
         if (shown) {
             if (animate) {
-                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out));
-                mListContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in));
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+                                                                               android.R.anim.fade_out));
+                mListContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+                                                                           android.R.anim.fade_in));
             }
 
             mProgressContainer.setVisibility(View.GONE);
@@ -438,8 +503,10 @@ public abstract class AbstractTaxaFragment extends ListFragment
         }
         else {
             if (animate) {
-                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in));
-                mListContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out));
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+                                                                               android.R.anim.fade_in));
+                mListContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+                                                                           android.R.anim.fade_out));
             }
 
             mProgressContainer.setVisibility(View.VISIBLE);
@@ -447,34 +514,39 @@ public abstract class AbstractTaxaFragment extends ListFragment
         }
     }
 
-    private void initializeAdapter(Cursor cursor, String sortedColumnIndex) {
+    private void initializeAdapter(Cursor cursor,
+                                   String sortedColumnIndex) {
         if (mAdapter == null) {
             // create the adapter we will use to display the loaded data
             mAdapter = new AlphabetSectionIndexerCursorAdapter(getActivity(),
-                    R.layout.list_item_taxon,
-                    R.plurals.taxa_count,
-                    cursor,
-                    sortedColumnIndex,
-                    new String[] {
-                                    MainDatabaseHelper.TaxaColumns.NAME_FR,
-                                    MainDatabaseHelper.TaxaUnitiesColumns.COLOR,
-                                    MainDatabaseHelper.TaxaColumns.PATRIMONIAL,
-                                    MainDatabaseHelper.TaxaUnitiesColumns.NB_OBS,
-                                    MainDatabaseHelper.TaxaUnitiesColumns.DATE,
-                                    MainDatabaseHelper.TaxaColumns.MESSAGE
-                            },
-                    new int[] {
-                                    R.id.textSwitcher,
-                                    R.id.viewStatusColor,
-                                    R.id.imageViewHeritage,
-                                    R.id.textViewTaxonObservers,
-                                    R.id.textViewTaxonDate,
-                                    R.id.textViewTaxonMessage
-                            }, 0
-            ) {
+                                                               R.layout.list_item_taxon,
+                                                               R.plurals.taxa_count,
+                                                               cursor,
+                                                               sortedColumnIndex,
+                                                               new String[] {
+                                                                       MainDatabaseHelper.TaxaColumns.NAME_FR,
+                                                                       MainDatabaseHelper.TaxaUnitiesColumns.COLOR,
+                                                                       MainDatabaseHelper.TaxaColumns.PATRIMONIAL,
+                                                                       MainDatabaseHelper.TaxaUnitiesColumns.NB_OBS,
+                                                                       MainDatabaseHelper.TaxaUnitiesColumns.DATE,
+                                                                       MainDatabaseHelper.TaxaColumns.MESSAGE
+                                                               },
+                                                               new int[] {
+                                                                       R.id.textSwitcher,
+                                                                       R.id.viewStatusColor,
+                                                                       R.id.imageViewHeritage,
+                                                                       R.id.textViewTaxonObservers,
+                                                                       R.id.textViewTaxonDate,
+                                                                       R.id.textViewTaxonMessage
+                                                               },
+                                                               0) {
                 @Override
-                public View getView(int position, View convertView, ViewGroup parent) {
-                    View view = super.getView(position, convertView, parent);
+                public View getView(int position,
+                                    View convertView,
+                                    ViewGroup parent) {
+                    View view = super.getView(position,
+                                              convertView,
+                                              parent);
 
                     if (getItemViewType(position) == TYPE_NORMAL) {
                         if ((mSavedState.getParcelable(KEY_SELECTED_TAXON) != null) && ((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getTaxonId() == getItemId(position)) {
@@ -494,8 +566,11 @@ public abstract class AbstractTaxaFragment extends ListFragment
                             }
 
                             // apply selection to this taxon
-                            getInput().getTaxa().put(selectedTaxon.getId(), selectedTaxon);
-                            mSavedState.putParcelable(KEY_SELECTED_TAXON, selectedTaxon);
+                            mInput.getTaxa()
+                                  .put(selectedTaxon.getId(),
+                                       selectedTaxon);
+                            mSavedState.putParcelable(KEY_SELECTED_TAXON,
+                                                      selectedTaxon);
                         }
                         else {
                             view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
@@ -507,31 +582,37 @@ public abstract class AbstractTaxaFragment extends ListFragment
             };
 
             // sets a custom ViewBinder for this adapter
-            mAdapter.setViewBinder(new ViewBinder() {
+            mAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
                 @Override
                 @SuppressWarnings("deprecation")
-                public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                public boolean setViewValue(View view,
+                                            Cursor cursor,
+                                            int columnIndex) {
                     if (view.getId() == R.id.textSwitcher) {
                         TextSwitcher textSwitcher = (TextSwitcher) view;
                         String filter = mSavedState.getString(KEY_FILTER);
-                        String selectedColor = Integer.toHexString(getResources().getColor(R.color.holo_blue_light)).substring(2);
+                        String selectedColor = Integer.toHexString(getResources().getColor(R.color.holo_blue_light))
+                                                      .substring(2);
 
                         if (textSwitcher.getChildCount() != 2) {
-                            textSwitcher.setFactory(new ViewFactory() {
+                            textSwitcher.setFactory(new ViewSwitcher.ViewFactory() {
                                 @Override
                                 @SuppressLint("RtlHardcoded")
                                 public View makeView() {
                                     TextView textView = new TextView(getActivity());
                                     textView.setSingleLine();
                                     textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-                                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                                                         22);
                                     textView.setTextColor(getResources().getColor(android.R.color.primary_text_dark));
 
                                     return textView;
                                 }
                             });
-                            textSwitcher.setInAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in));
-                            textSwitcher.setOutAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out));
+                            textSwitcher.setInAnimation(AnimationUtils.loadAnimation(getActivity(),
+                                                                                     android.R.anim.fade_in));
+                            textSwitcher.setOutAnimation(AnimationUtils.loadAnimation(getActivity(),
+                                                                                      android.R.anim.fade_out));
                         }
 
                         String taxonDisplayName;
@@ -547,11 +628,15 @@ public abstract class AbstractTaxaFragment extends ListFragment
 
                         // selected taxon
                         if ((mSavedState.getParcelable(KEY_SELECTED_TAXON) != null) && ((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getTaxonId() == cursor.getLong(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns._ID))) {
-                            Spanned nameFilterFormat = (filter != null) ? Html.fromHtml(taxonDisplayName.replaceAll(Pattern.compile("(?i)(" + filter + ")").pattern(), "<b>$1</b>")) : SpannedString.valueOf(taxonDisplayName);
+                            Spanned nameFilterFormat = (filter != null) ? Html.fromHtml(taxonDisplayName.replaceAll(Pattern.compile("(?i)(" + filter + ")")
+                                                                                                                           .pattern(),
+                                                                                                                    "<b>$1</b>")) : SpannedString.valueOf(taxonDisplayName);
                             textSwitcher.setText(nameFilterFormat);
                         }
                         else {
-                            Spanned nameFilterFormat = (filter != null) ? Html.fromHtml(taxonDisplayName.replaceAll(Pattern.compile("(?i)(" + filter + ")").pattern(), "<font color=\"#" + selectedColor + "\">$1</font>")) : SpannedString.valueOf(taxonDisplayName);
+                            Spanned nameFilterFormat = (filter != null) ? Html.fromHtml(taxonDisplayName.replaceAll(Pattern.compile("(?i)(" + filter + ")")
+                                                                                                                           .pattern(),
+                                                                                                                    "<font color=\"#" + selectedColor + "\">$1</font>")) : SpannedString.valueOf(taxonDisplayName);
                             textSwitcher.setText(nameFilterFormat);
                         }
 
@@ -602,22 +687,14 @@ public abstract class AbstractTaxaFragment extends ListFragment
 
                         if (!TextUtils.isEmpty(dateString)) {
                             try {
-                                textViewTaxonDate.setText(
-                                        DateFormat.getLongDateFormat(getActivity())
-                                                .format(
-                                                        (new SimpleDateFormat(
-                                                                "yyyy/MM/dd",
-                                                                Locale.getDefault()
-                                                        )).parse(dateString)
-                                                )
-                                );
+                                textViewTaxonDate.setText(DateFormat.getLongDateFormat(getActivity())
+                                                                    .format((new SimpleDateFormat("yyyy/MM/dd",
+                                                                                                  Locale.getDefault())).parse(dateString)));
                             }
                             catch (ParseException pe) {
-                                Log.w(
-                                        TAG,
-                                        pe.getMessage(),
-                                        pe
-                                );
+                                Log.w(TAG,
+                                      pe.getMessage(),
+                                      pe);
                             }
                         }
                         else {
@@ -640,7 +717,10 @@ public abstract class AbstractTaxaFragment extends ListFragment
                         if ((message != null) && (!message.equalsIgnoreCase("None"))) {
                             textViewTaxonMessage.setBackgroundResource(R.drawable.ic_action_info);
                             textViewTaxonMessage.setText(message);
-                            textViewTaxonMessage.setPadding((int) (32 * getResources().getDisplayMetrics().density + 0.5f), 0, 0, 0);
+                            textViewTaxonMessage.setPadding((int) (32 * getResources().getDisplayMetrics().density + 0.5f),
+                                                            0,
+                                                            0,
+                                                            0);
                         }
                         else {
                             textViewTaxonMessage.setBackgroundDrawable(null);
@@ -667,8 +747,11 @@ public abstract class AbstractTaxaFragment extends ListFragment
                 @Override
                 public Cursor runQuery(CharSequence constraint) {
                     // updates KEY_FILTER and restart the loader
-                    mSavedState.putString(KEY_FILTER, (constraint != null) ? constraint.toString() : null);
-                    getLoaderManager().restartLoader(0, mSavedState, AbstractTaxaFragment.this);
+                    mSavedState.putString(KEY_FILTER,
+                                          (constraint != null) ? constraint.toString() : null);
+                    getLoaderManager().restartLoader(0,
+                                                     mSavedState,
+                                                     AbstractTaxaInputListFragment.this);
 
                     return mAdapter.getCursor();
                 }
@@ -678,8 +761,7 @@ public abstract class AbstractTaxaFragment extends ListFragment
         }
     }
 
-    @Deprecated
-    protected static enum LabelSwitcher {
+    protected enum LabelSwitcher {
         LATIN,
         FRENCH
     }
