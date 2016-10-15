@@ -184,8 +184,8 @@ public abstract class AbstractObserversAndDateInputFragment
         super.onAttach(context);
 
         if (context instanceof OnInputFragmentListener) {
-            final OnInputFragmentListener mOnInputFragmentListener = (OnInputFragmentListener) context;
-            mInput = mOnInputFragmentListener.getInput();
+            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
+            mInput = onInputFragmentListener.getInput();
             loadDefaultObserver();
         }
         else {
