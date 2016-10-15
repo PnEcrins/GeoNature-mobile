@@ -1,5 +1,6 @@
 package com.makina.ecrins.flora.ui.input.map;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,12 +15,14 @@ import android.widget.Toast;
 
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.model.MountPoint;
+import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.util.FileUtils;
 import com.makina.ecrins.flora.MainApplication;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.content.MainContentProvider;
 import com.makina.ecrins.flora.input.Area;
+import com.makina.ecrins.flora.input.Input;
 import com.makina.ecrins.flora.input.Taxon;
 import com.makina.ecrins.flora.ui.input.PagerFragmentActivity;
 import com.makina.ecrins.maps.AbstractWebViewFragment;
@@ -63,13 +66,13 @@ public class WebViewFragment
     public static final String KEY_ADD_MARKER = "add_marker";
     public static final String KEY_ADD_PATH = "add_path";
     public static final String KEY_ADD_POLYGON = "add_polygon";
-    public static final String KEY_SELECTED_TAXON_ID = "taxon_id";
     public static final String KEY_EDITING_FEATURE = "editing_feature";
 
     protected boolean mIsActionMarkerCollectionPAsSelected = false;
 
-    public WebViewFragment() {
+    private Input mInput;
 
+    public WebViewFragment() {
         super();
 
         setArguments(new Bundle());
@@ -77,17 +80,14 @@ public class WebViewFragment
 
     @Override
     public void onResume() {
-
         super.onResume();
 
         reload();
     }
 
     @Override
-    public void onCreateOptionsMenu(
-            Menu menu,
-            MenuInflater inflater) {
-
+    public void onCreateOptionsMenu(Menu menu,
+                                    MenuInflater inflater) {
         super.onCreateOptionsMenu(menu,
                                   inflater);
 
@@ -97,7 +97,6 @@ public class WebViewFragment
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-
         super.onPrepareOptionsMenu(menu);
 
         final MenuItem itemMarker = menu.findItem(R.id.itemCollectionPAs);
@@ -115,7 +114,6 @@ public class WebViewFragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.itemCollectionPAs:
                 this.mIsActionMarkerCollectionPAsSelected = !this.mIsActionMarkerCollectionPAsSelected;
@@ -146,8 +144,20 @@ public class WebViewFragment
     }
 
     @Override
-    public int getResourceTitle() {
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
+        if (context instanceof OnInputFragmentListener) {
+            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
+            mInput = (Input) onInputFragmentListener.getInput();
+        }
+        else {
+            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
+        }
+    }
+
+    @Override
+    public int getResourceTitle() {
         if (getArguments().getBoolean(KEY_AP,
                                       true)) {
             return R.string.pager_fragment_webview_ap_title;
@@ -159,41 +169,32 @@ public class WebViewFragment
 
     @Override
     public boolean getPagingEnabled() {
-
         return false;
     }
 
     @Override
     public boolean validate() {
-
         Log.d(TAG,
               "validate KEY_EDITING_FEATURE: " + getSavedInstanceState().getBoolean(KEY_EDITING_FEATURE,
                                                                                     false));
 
         if (getArguments().getBoolean(KEY_AP,
                                       true)) {
-            return (((MainApplication) getActivity().getApplication()).getInput()
-                                                                      .getCurrentSelectedTaxon() != null) &&
-                    (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
-                    (!getSavedInstanceState().getBoolean(KEY_EDITING_FEATURE,
-                                                         false));
+            return (mInput.getCurrentSelectedTaxon() != null) &&
+                    (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && (!getSavedInstanceState().getBoolean(KEY_EDITING_FEATURE,
+                                                                                                                                          false));
         }
         else {
-            return (((MainApplication) getActivity().getApplication()).getInput()
-                                                                      .getCurrentSelectedTaxon() != null) &&
-                    (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                .getCurrentSelectedTaxon()).getProspectingArea() != null) &&
+            return (mInput.getCurrentSelectedTaxon() != null) &&
+                    (((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea() != null) &&
                     (!getSavedInstanceState().getBoolean(KEY_EDITING_FEATURE,
                                                          false)) &&
-                    checkIfProspectingAreaContainsAllAreasPresences(((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                               .getCurrentSelectedTaxon()).getProspectingArea());
+                    checkIfProspectingAreaContainsAllAreasPresences(((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea());
         }
     }
 
     @Override
     public void refreshView() {
-
         Log.d(TAG,
               "refreshView, AP: " + getArguments().getBoolean(KEY_AP,
                                                               true));
@@ -201,26 +202,20 @@ public class WebViewFragment
         if (getArguments().getBoolean(KEY_AP,
                                       true)) {
             // clear all editable features if no area was edited yet.
-            if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                                   .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                      .getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) {
+            if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) {
                 getEditableFeatures().clearAllFeatures();
             }
         }
         else {
-            if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                                   .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                      .getCurrentSelectedTaxon()).getProspectingArea() == null)) {
+            if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea() == null)) {
                 getEditableFeatures().clearAllFeatures();
             }
             else {
                 // checks if this feature contains all features added to this taxon areas
-                if (!checkIfProspectingAreaContainsAllAreasPresences(((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                .getCurrentSelectedTaxon()).getProspectingArea())) {
+                if (!checkIfProspectingAreaContainsAllAreasPresences(((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea())) {
                     Log.d(TAG,
-                          "feature '" + ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                   .getCurrentSelectedTaxon()).getProspectingArea()
-                                                                                                                              .getId() + "' does not contains all previously added areas");
+                          "feature '" + ((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea()
+                                                                                  .getId() + "' does not contains all previously added areas");
 
                     Toast.makeText(getActivity(),
                                    R.string.message_pa_not_contains_all_aps,
@@ -233,7 +228,6 @@ public class WebViewFragment
 
     @Override
     public MapSettings getMapSettings() {
-
         MapSettings mapSettings = super.getMapSettings();
 
         if (mapSettings == null) {
@@ -252,18 +246,15 @@ public class WebViewFragment
     }
 
     @Override
-    public void setSelectedFeature(
-            Geolocation geolocation,
-            Feature selectedFeature) {
+    public void setSelectedFeature(Geolocation geolocation,
+                                   Feature selectedFeature) {
         // nothing to do ...
     }
 
     @Override
     public boolean addOrUpdateEditableFeature(Feature selectedFeature) {
-
         if (super.addOrUpdateEditableFeature(selectedFeature) && !getEditableFeatures().getFeatures()
-                                                                                       .isEmpty() && (((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                        .getCurrentSelectedTaxon() != null)) {
+                                                                                       .isEmpty() && (mInput.getCurrentSelectedTaxon() != null)) {
             Log.d(TAG,
                   "addOrUpdateEditableFeature: " +
                           selectedFeature.getGeometry()
@@ -278,34 +269,26 @@ public class WebViewFragment
             if (getArguments().getBoolean(KEY_AP,
                                           true)) {
                 // delete a previously added area if needed
-                if ((((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && (!((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                                                              .getCurrentSelectedTaxon()).getCurrentSelectedAreaId()
-                                                                                                                                                                                                                                         .equals(selectedFeature.getId()))) {
-                    ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                               .getCurrentSelectedTaxon()).getAreas()
-                                                                                                          .remove(((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                             .getCurrentSelectedTaxon()).getCurrentSelectedAreaId());
+                if ((((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && (!((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedAreaId()
+                                                                                                                                                 .equals(selectedFeature.getId()))) {
+                    ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                              .remove(((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedAreaId());
                 }
 
                 // add or update the current area
-                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                           .getCurrentSelectedTaxon()).getAreas()
-                                                                                                      .put(selectedFeature.getId(),
-                                                                                                           new Area(selectedFeature));
-                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                           .getCurrentSelectedTaxon()).setCurrentSelectedAreaId(selectedFeature.getId());
+                ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                          .put(selectedFeature.getId(),
+                                                               new Area(selectedFeature));
+                ((Taxon) mInput.getCurrentSelectedTaxon()).setCurrentSelectedAreaId(selectedFeature.getId());
 
                 ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
 
-                return ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                  .getCurrentSelectedTaxon()).getAreas()
-                                                                                                             .containsKey(selectedFeature.getId());
+                return ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                                 .containsKey(selectedFeature.getId());
             }
             else {
-                if (!((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                .getCurrentSelectedTaxon()).getAreas()
-                                                                                                           .isEmpty()) {
+                if (!((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                               .isEmpty()) {
                     // checks if this feature contains all features added to this taxon areas
                     if (!checkIfProspectingAreaContainsAllAreasPresences(selectedFeature)) {
                         Log.d(TAG,
@@ -320,12 +303,10 @@ public class WebViewFragment
                     }
                 }
 
-                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                           .getCurrentSelectedTaxon()).setProspectingArea(selectedFeature);
+                ((Taxon) mInput.getCurrentSelectedTaxon()).setProspectingArea(selectedFeature);
                 ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
 
-                return (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getCurrentSelectedTaxon()).getProspectingArea() != null);
+                return (((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea() != null);
             }
         }
         else {
@@ -346,7 +327,6 @@ public class WebViewFragment
 
     @Override
     public boolean deleteEditableFeature(String featureId) {
-
         super.deleteEditableFeature(featureId);
 
         getSavedInstanceState().putBoolean(KEY_EDITING_FEATURE,
@@ -355,27 +335,21 @@ public class WebViewFragment
         if (getArguments().getBoolean(KEY_AP,
                                       true)) {
             // clear the current selection
-            if ((((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                            .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                                                         .getCurrentSelectedTaxon()).getCurrentSelectedAreaId()
-                                                                                                                                                                                                                                    .equals(featureId))) {
-                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                           .getCurrentSelectedTaxon()).setCurrentSelectedAreaId(null);
+            if ((((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedAreaId()
+                                                                                                                                            .equals(featureId))) {
+                ((Taxon) mInput.getCurrentSelectedTaxon()).setCurrentSelectedAreaId(null);
             }
 
-            ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                       .getCurrentSelectedTaxon()).getAreas()
-                                                                                                  .remove(featureId);
+            ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                      .remove(featureId);
 
             ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
 
-            return !((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                               .getCurrentSelectedTaxon()).getAreas()
-                                                                                                          .containsKey(featureId);
+            return !((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                              .containsKey(featureId);
         }
         else {
-            ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                       .getCurrentSelectedTaxon()).setProspectingArea(null);
+            ((Taxon) mInput.getCurrentSelectedTaxon()).setProspectingArea(null);
 
             ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
 
@@ -385,7 +359,6 @@ public class WebViewFragment
 
     @Override
     protected void loadControls() {
-
         Log.d(TAG,
               "loadControls AP: " + getArguments().getBoolean(KEY_AP,
                                                               true));
@@ -393,9 +366,7 @@ public class WebViewFragment
         // clear all editable features if no area was edited yet.
         if (getArguments().getBoolean(KEY_AP,
                                       true)) {
-            if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                                   .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                      .getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) {
+            if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) {
                 Log.d(TAG,
                       "clear all editable features (AP)");
 
@@ -403,9 +374,7 @@ public class WebViewFragment
             }
         }
         else {
-            if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                                   .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                      .getCurrentSelectedTaxon()).getProspectingArea() == null)) {
+            if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea() == null)) {
                 Log.d(TAG,
                       "clear all editable features (PA)");
 
@@ -507,25 +476,22 @@ public class WebViewFragment
     }
 
     @Override
-    protected File getTilesSourcePath() throws IOException {
-
+    protected File getTilesSourcePath() throws
+                                        IOException {
         return FileUtils.getDatabaseFolder(getActivity(),
                                            MountPoint.StorageType.EXTERNAL);
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(
-            int id,
-            Bundle args) {
-
+    public Loader<Cursor> onCreateLoader(int id,
+                                         Bundle args) {
         final String[] projection = {
                 MainDatabaseHelper.ProspectingAreasColumns._ID,
                 MainDatabaseHelper.ProspectingAreasColumns.TAXON_ID,
                 MainDatabaseHelper.ProspectingAreasColumns.GEOMETRY
         };
 
-        if (((MainApplication) getActivity().getApplication()).getInput()
-                                                              .getCurrentSelectedTaxon() == null) {
+        if (mInput.getCurrentSelectedTaxon() == null) {
             Log.w(TAG,
                   "onCreateLoader: no taxon selected !");
 
@@ -540,9 +506,8 @@ public class WebViewFragment
         else {
             return new CursorLoader(getActivity(),
                                     Uri.withAppendedPath(MainContentProvider.CONTENT_PROSPECTING_AREAS_TAXON_URI,
-                                                         Long.toString(((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                         .getCurrentSelectedTaxon()
-                                                                                                                         .getTaxonId())),
+                                                         Long.toString(mInput.getCurrentSelectedTaxon()
+                                                                             .getTaxonId())),
                                     projection,
                                     null,
                                     null,
@@ -551,10 +516,8 @@ public class WebViewFragment
     }
 
     @Override
-    public void onLoadFinished(
-            Loader<Cursor> loader,
-            Cursor data) {
-
+    public void onLoadFinished(Loader<Cursor> loader,
+                               Cursor data) {
         if ((data != null) && data.moveToFirst()) {
             final List<Feature> features = new ArrayList<>();
 
@@ -580,7 +543,6 @@ public class WebViewFragment
     }
 
     protected void displayAPs() {
-
         if (!getArguments().getBoolean(KEY_AP,
                                        true)) {
             Log.d(TAG,
@@ -591,17 +553,14 @@ public class WebViewFragment
                 final String featureControlName = ControlUtils.getControlName(FeaturesControl.class);
                 final List<Feature> featuresAreas = new ArrayList<>();
 
-                if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                                       .getCurrentSelectedTaxon() != null) && (!((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                           .getCurrentSelectedTaxon()).getAreas()
-                                                                                                                                                                                                      .isEmpty())) {
+                if ((mInput.getCurrentSelectedTaxon() != null) && (!((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                                                                              .isEmpty())) {
                     if (hasControl(featureControlName)) {
                         ((FeaturesControl) getControl(featureControlName)).clearFeatures();
                     }
 
-                    for (Area area : ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                .getCurrentSelectedTaxon()).getAreas()
-                                                                                                                           .values()) {
+                    for (Area area : ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                                               .values()) {
                         featuresAreas.add(area.getFeature());
                     }
                 }
@@ -619,7 +578,6 @@ public class WebViewFragment
     }
 
     private void displayPAs(List<Feature> features) {
-
         final String featureControlName = ControlUtils.getControlName(FeaturesControl.class);
 
         if (!features.isEmpty() && hasControl(featureControlName)) {
@@ -633,18 +591,15 @@ public class WebViewFragment
         }
     }
 
-    private Feature createFeature(
-            String id,
-            IGeometry geometry) {
-
-        Feature feature = new Feature(id);
+    private Feature createFeature(String id,
+                                  IGeometry geometry) {
+        final Feature feature = new Feature(id);
         feature.setGeometry(geometry);
 
         return feature;
     }
 
     private boolean checkIfProspectingAreaContainsAllAreasPresences(final Feature selectedFeature) {
-
         try {
             Log.d(TAG,
                   "checkIfProspectingAreaContainsAllAreasPresences for feature : " + selectedFeature.getJSONObject()
@@ -656,10 +611,9 @@ public class WebViewFragment
         }
 
         boolean check = true;
-        Iterator<Area> iterator = ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                             .getCurrentSelectedTaxon()).getAreas()
-                                                                                                                        .values()
-                                                                                                                        .iterator();
+        Iterator<Area> iterator = ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                                            .values()
+                                                                            .iterator();
 
         while (check && iterator.hasNext()) {
             check = GeometryUtils.contains(iterator.next()
