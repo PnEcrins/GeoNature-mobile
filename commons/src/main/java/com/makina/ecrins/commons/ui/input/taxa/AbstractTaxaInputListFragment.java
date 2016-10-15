@@ -1,6 +1,5 @@
 package com.makina.ecrins.commons.ui.input.taxa;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -47,6 +46,7 @@ import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
 import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.ui.widget.AlphabetSectionIndexerCursorAdapter;
+import com.makina.ecrins.commons.ui.widget.PinnedSectionListView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -151,6 +151,10 @@ public abstract class AbstractTaxaInputListFragment
 
         // give some text to display if there is no data
         getListView().setEmptyView(view.findViewById(R.id.internalEmpty));
+
+        if (getListView() instanceof PinnedSectionListView) {
+            ((PinnedSectionListView) getListView()).setShadowVisible(false);
+        }
     }
 
     @Override
@@ -584,7 +588,6 @@ public abstract class AbstractTaxaInputListFragment
             // sets a custom ViewBinder for this adapter
             mAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
                 @Override
-                @SuppressWarnings("deprecation")
                 public boolean setViewValue(View view,
                                             Cursor cursor,
                                             int columnIndex) {
@@ -597,7 +600,6 @@ public abstract class AbstractTaxaInputListFragment
                         if (textSwitcher.getChildCount() != 2) {
                             textSwitcher.setFactory(new ViewSwitcher.ViewFactory() {
                                 @Override
-                                @SuppressLint("RtlHardcoded")
                                 public View makeView() {
                                     TextView textView = new TextView(getActivity());
                                     textView.setSingleLine();

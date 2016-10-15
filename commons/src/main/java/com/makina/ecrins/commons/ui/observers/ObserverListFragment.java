@@ -21,11 +21,13 @@ import android.text.Spanned;
 import android.text.SpannedString;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.FilterQueryProvider;
@@ -37,6 +39,7 @@ import com.makina.ecrins.commons.content.AbstractMainContentProvider;
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.input.Observer;
 import com.makina.ecrins.commons.ui.widget.AlphabetSectionIndexerCursorAdapter;
+import com.makina.ecrins.commons.ui.widget.PinnedSectionListView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,6 +73,10 @@ public class ObserverListFragment
     private final Map<Long, Observer> mSelectedObservers = new TreeMap<>();
     private long mSelectedObserverId;
     private String mFilter;
+
+    private boolean mListShown;
+    private View mProgressContainer;
+    private View mListContainer;
 
     private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         @Override
@@ -185,6 +192,22 @@ public class ObserverListFragment
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_observers,
+                                           container,
+                                           false);
+
+        mListContainer = view.findViewById(R.id.listContainer);
+        mProgressContainer = view.findViewById(R.id.progressContainer);
+
+        mListShown = true;
+
+        return view;
+    }
+
+    @Override
     public void onViewCreated(View view,
                               Bundle savedInstanceState) {
         super.onViewCreated(view,
@@ -194,13 +217,18 @@ public class ObserverListFragment
         setHasOptionsMenu(true);
 
         // give some text to display if there is no data
-        setEmptyText(getString(R.string.observers_no_data));
+        ((TextView) view.findViewById(android.R.id.empty)).setText(getString(R.string.observers_no_data));
+        getListView().setEmptyView(view.findViewById(android.R.id.empty));
 
         setChoiceMode(getArguments());
 
         // prepare the loader, either re-connect with an existing one, or start a new one
         startLoader(AbstractMainContentProvider.OBSERVERS,
                     false);
+
+        if (getListView() instanceof PinnedSectionListView) {
+            ((PinnedSectionListView) getListView()).setShadowVisible(false);
+        }
 
         // start out with a progress indicator
         setListShown(false);
@@ -253,6 +281,9 @@ public class ObserverListFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                mListener.onSelectedObservers(mSelectedObservers);
+                return true;
             case 1:
                 mSelectedObservers.clear();
                 mAdapter.notifyDataSetChanged();
@@ -329,6 +360,18 @@ public class ObserverListFragment
         super.onDetach();
 
         mListener = null;
+    }
+
+    @Override
+    public void setListShown(boolean shown) {
+        setListShown(shown,
+                     true);
+    }
+
+    @Override
+    public void setListShownNoAnimation(boolean shown) {
+        setListShown(shown,
+                     false);
     }
 
     @Override
@@ -462,6 +505,38 @@ public class ObserverListFragment
                 break;
             default:
                 break;
+        }
+    }
+
+    private void setListShown(boolean shown,
+                              boolean animate) {
+        if (mListShown == shown) {
+            return;
+        }
+
+        mListShown = shown;
+
+        if (shown) {
+            if (animate) {
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+                                                                               android.R.anim.fade_out));
+                mListContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+                                                                           android.R.anim.fade_in));
+            }
+
+            mProgressContainer.setVisibility(View.GONE);
+            mListContainer.setVisibility(View.VISIBLE);
+        }
+        else {
+            if (animate) {
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+                                                                               android.R.anim.fade_in));
+                mListContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(),
+                                                                           android.R.anim.fade_out));
+            }
+
+            mProgressContainer.setVisibility(View.VISIBLE);
+            mListContainer.setVisibility(View.INVISIBLE);
         }
     }
 

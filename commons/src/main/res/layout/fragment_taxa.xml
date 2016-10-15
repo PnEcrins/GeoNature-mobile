@@ -36,7 +36,7 @@
             android:orientation="vertical">
         </LinearLayout>
 
-        <ListView
+        <com.makina.ecrins.commons.ui.widget.PinnedSectionListView
             android:id="@android:id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
