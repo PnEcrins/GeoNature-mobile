@@ -30,7 +30,7 @@ public class Feature implements Parcelable {
     public Feature(Parcel source) {
         mId = source.readString();
         mGeometry = source.readParcelable(IGeometry.class.getClassLoader());
-        mProperties = source.readBundle();
+        mProperties = source.readBundle(Bundle.class.getClassLoader());
     }
 
     public GeoJSONType getType() {
