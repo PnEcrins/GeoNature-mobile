@@ -2,6 +2,8 @@ package com.makina.ecrins.flora.ui.frequencies;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,9 +19,8 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-import com.makina.ecrins.flora.MainApplication;
 import com.makina.ecrins.flora.R;
-import com.makina.ecrins.flora.input.Taxon;
+import com.makina.ecrins.flora.input.Frequency;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -30,28 +31,78 @@ import java.util.List;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class FrequencyEstimationFragment extends Fragment {
+public class FrequencyEstimationFragment
+        extends Fragment {
+
+    private static final String KEY_FREQUENCY = "KEY_FREQUENCY";
 
     private SeekBar mSeekBarFrequency;
     private EditText mEditTextFrequency;
 
+    private Frequency mFrequency;
+
+    private OnFrequencyListener mOnFrequencyListener;
+
+    public FrequencyEstimationFragment() {
+        // Required empty public constructor
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @return A new instance of fragment {@link FrequencyEstimationFragment}.
+     */
+    @NonNull
+    public static FrequencyEstimationFragment newInstance(@NonNull final Frequency frequency) {
+        final Bundle args = new Bundle();
+        args.putParcelable(KEY_FREQUENCY,
+                           frequency);
+
+        final FrequencyEstimationFragment fragment = new FrequencyEstimationFragment();
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_frequency_estimation, container, false);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mFrequency = (savedInstanceState == null) ? (Frequency) getArguments().getParcelable(KEY_FREQUENCY) : (Frequency) savedInstanceState.getParcelable(KEY_FREQUENCY);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_frequency_estimation,
+                                           container,
+                                           false);
 
         final List<Abacus> abacus = new ArrayList<>();
-        abacus.add(new Abacus(R.drawable.ic_abacus_01, 0.01));
-        abacus.add(new Abacus(R.drawable.ic_abacus_02, 0.02));
-        abacus.add(new Abacus(R.drawable.ic_abacus_05, 0.05));
-        abacus.add(new Abacus(R.drawable.ic_abacus_08, 0.08));
-        abacus.add(new Abacus(R.drawable.ic_abacus_15, 0.15));
-        abacus.add(new Abacus(R.drawable.ic_abacus_25, 0.25));
-        abacus.add(new Abacus(R.drawable.ic_abacus_50, 0.5));
-        abacus.add(new Abacus(R.drawable.ic_abacus_70, 0.7));
-        abacus.add(new Abacus(R.drawable.ic_abacus_90, 0.9));
+        abacus.add(new Abacus(R.drawable.ic_abacus_01,
+                              0.01));
+        abacus.add(new Abacus(R.drawable.ic_abacus_02,
+                              0.02));
+        abacus.add(new Abacus(R.drawable.ic_abacus_05,
+                              0.05));
+        abacus.add(new Abacus(R.drawable.ic_abacus_08,
+                              0.08));
+        abacus.add(new Abacus(R.drawable.ic_abacus_15,
+                              0.15));
+        abacus.add(new Abacus(R.drawable.ic_abacus_25,
+                              0.25));
+        abacus.add(new Abacus(R.drawable.ic_abacus_50,
+                              0.5));
+        abacus.add(new Abacus(R.drawable.ic_abacus_70,
+                              0.7));
+        abacus.add(new Abacus(R.drawable.ic_abacus_90,
+                              0.9));
 
-        GridView gridViewAbacus = (GridView) view.findViewById(R.id.gridViewAbacus);
-        gridViewAbacus.setAdapter(new AbacusAdapter(getActivity(), abacus));
+        final GridView gridViewAbacus = (GridView) view.findViewById(R.id.gridViewAbacus);
+        gridViewAbacus.setAdapter(new AbacusAdapter(getActivity(),
+                                                    abacus));
 
         mSeekBarFrequency = (SeekBar) view.findViewById(R.id.seekBarFrequency);
         mSeekBarFrequency.setMax(100);
@@ -67,9 +118,12 @@ public class FrequencyEstimationFragment extends Fragment {
             }
 
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar,
+                                          int progress,
+                                          boolean fromUser) {
                 if (fromUser) {
-                    updateFrequency(progress, true);
+                    updateFrequency(progress,
+                                    true);
                 }
             }
         });
@@ -77,45 +131,68 @@ public class FrequencyEstimationFragment extends Fragment {
         mEditTextFrequency = (EditText) view.findViewById(R.id.editTextFrequency);
         mEditTextFrequency.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(CharSequence s,
+                                      int start,
+                                      int before,
+                                      int count) {
                 // nothing to do ...
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged(CharSequence s,
+                                          int start,
+                                          int count,
+                                          int after) {
                 // nothing to do ...
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 if (!s.toString()
-                        .isEmpty()) {
+                      .isEmpty()) {
                     try {
-                        updateFrequency(Integer.valueOf(s.toString()), false);
+                        updateFrequency(Integer.valueOf(s.toString()),
+                                        false);
                     }
                     catch (NumberFormatException nfe) {
-                        Log.w(FrequencyEstimationFragment.class.getName(), nfe.getMessage());
+                        Log.w(FrequencyEstimationFragment.class.getName(),
+                              nfe.getMessage());
                     }
                 }
             }
         });
 
-        ((TextView) view.findViewById(R.id.textViewSeekBarMaxValue)).setText(Integer.toString(mSeekBarFrequency.getMax()));
+        ((TextView) view.findViewById(R.id.textViewSeekBarMaxValue)).setText(NumberFormat.getInstance()
+                                                                                         .format(mSeekBarFrequency.getMax()));
 
-        if ((((MainApplication) getActivity().getApplication()).getInput()
-                .getCurrentSelectedTaxon() != null) &&
-                (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-            updateFrequency(((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                    .getFrequency()
-                    .getValue(), true);
-        }
+        updateFrequency(mFrequency.getValue(),
+                        true);
 
         return view;
     }
 
-    private void updateFrequency(double progress, boolean updateEditText) {
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof OnFrequencyListener) {
+            mOnFrequencyListener = (OnFrequencyListener) context;
+        }
+        else {
+            throw new RuntimeException(getContext().toString() + " must implement OnFrequencyListener");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(KEY_FREQUENCY,
+                               mFrequency);
+    }
+
+    private void updateFrequency(double progress,
+                                 boolean updateEditText) {
         double progressValue = progress;
 
         if (progressValue > 100.0) {
@@ -127,26 +204,31 @@ public class FrequencyEstimationFragment extends Fragment {
         }
 
         mSeekBarFrequency.setProgress(Double.valueOf(progressValue)
-                .intValue());
+                                            .intValue());
 
         if ((updateEditText) || (progressValue != progress)) {
-            mEditTextFrequency.setText(Integer.toString(Double.valueOf(progressValue)
-                    .intValue()));
+            mEditTextFrequency.setText(NumberFormat.getInstance()
+                                                   .format(Double.valueOf(progressValue)
+                                                                 .intValue()));
         }
 
-        ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                .getFrequency()
-                .setValue(progressValue);
+        mFrequency.setValue(progressValue);
+
+        mOnFrequencyListener.OnFrequencyUpdated(mFrequency);
     }
 
-    private class AbacusAdapter extends ArrayAdapter<Abacus> {
+    private class AbacusAdapter
+            extends ArrayAdapter<Abacus> {
 
         private final LayoutInflater mInflater;
         private final NumberFormat mNumberFormat;
 
-        public AbacusAdapter(Context context, List<Abacus> abacus) {
-            super(context, android.R.layout.simple_list_item_1, android.R.id.text1, abacus);
+        public AbacusAdapter(Context context,
+                             List<Abacus> abacus) {
+            super(context,
+                  android.R.layout.simple_list_item_1,
+                  android.R.id.text1,
+                  abacus);
 
             mNumberFormat = NumberFormat.getPercentInstance();
             mNumberFormat.setMaximumFractionDigits(0);
@@ -164,21 +246,33 @@ public class FrequencyEstimationFragment extends Fragment {
             return false;
         }
 
+        @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position,
+                            View convertView,
+                            @NonNull ViewGroup parent) {
             View view;
 
             if (convertView == null) {
-                view = mInflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+                view = mInflater.inflate(android.R.layout.simple_list_item_1,
+                                         parent,
+                                         false);
             }
             else {
                 view = convertView;
             }
 
-            TextView textView = (TextView) view.findViewById(android.R.id.text1);
-            textView.setText(mNumberFormat.format(getItem(position).getValue()));
-            textView.setCompoundDrawablesWithIntrinsicBounds(0, getItem(position).getResourceId(), 0, 0);
-            textView.setGravity(Gravity.CENTER_HORIZONTAL);
+            final Abacus abacus = getItem(position);
+
+            if (abacus != null) {
+                TextView textView = (TextView) view.findViewById(android.R.id.text1);
+                textView.setText(mNumberFormat.format(abacus.getValue()));
+                textView.setCompoundDrawablesWithIntrinsicBounds(0,
+                                                                 abacus.getResourceId(),
+                                                                 0,
+                                                                 0);
+                textView.setGravity(Gravity.CENTER_HORIZONTAL);
+            }
 
             return view;
         }
@@ -189,7 +283,8 @@ public class FrequencyEstimationFragment extends Fragment {
         private final int mResourceId;
         private final double mValue;
 
-        public Abacus(int pResourceId, double pValue) {
+        public Abacus(int pResourceId,
+                      double pValue) {
             mResourceId = pResourceId;
             mValue = pValue;
         }
