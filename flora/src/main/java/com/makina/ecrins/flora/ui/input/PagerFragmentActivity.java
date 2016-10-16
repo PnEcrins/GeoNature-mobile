@@ -190,6 +190,7 @@ public class PagerFragmentActivity
         }
     }
 
+    @NonNull
     @Override
     protected Map<Integer, IValidateFragment> getPagerFragments() {
         final Map<Integer, IValidateFragment> fragments = new LinkedHashMap<>();

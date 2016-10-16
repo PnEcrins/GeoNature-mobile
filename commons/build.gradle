@@ -31,8 +31,8 @@ dependencies {
     compile "com.android.support:appcompat-v7:${rootProject.ext.androidSupportVersion}"
     compile "com.android.support:preference-v7:${rootProject.ext.androidSupportVersion}"
 
-    compile "commons-io:commons-io:2.4"
-    compile "com.viewpagerindicator:library:2.4.1@aar"
+    compile 'commons-io:commons-io:2.4'
+    compile 'com.viewpagerindicator:library:2.4.1@aar'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:2.4'

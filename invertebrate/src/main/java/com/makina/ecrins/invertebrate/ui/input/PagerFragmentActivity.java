@@ -199,9 +199,9 @@ public class PagerFragmentActivity
         super.onPause();
     }
 
+    @NonNull
     @Override
     protected Map<Integer, IValidateFragment> getPagerFragments() {
-
         final Map<Integer, IValidateFragment> fragments = new LinkedHashMap<>();
 
         fragments.put(R.string.pager_fragment_observers_and_date_title,

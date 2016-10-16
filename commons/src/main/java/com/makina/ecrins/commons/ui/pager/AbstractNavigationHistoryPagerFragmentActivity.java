@@ -16,7 +16,10 @@ import java.util.Deque;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public abstract class AbstractNavigationHistoryPagerFragmentActivity extends AbstractPagerFragmentActivity {
+public abstract class AbstractNavigationHistoryPagerFragmentActivity
+        extends AbstractPagerFragmentActivity {
+
+    private static final String TAG = AbstractNavigationHistoryPagerFragmentActivity.class.getName();
 
     private static final String KEY_NAVIGATION_HISTORY = "navigation_history";
     private static final String KEY_HISTORY_PREVIOUS = "history_previous";
@@ -30,11 +33,17 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity extends Abs
         super.onPostCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            mSavedState.putIntegerArrayList(KEY_NAVIGATION_HISTORY, new ArrayList<>(mHistory));
-            mSavedState.putBoolean(KEY_HISTORY_PREVIOUS, false);
+            mSavedState.putIntegerArrayList(KEY_NAVIGATION_HISTORY,
+                                            new ArrayList<>(mHistory));
+            mSavedState.putBoolean(KEY_HISTORY_PREVIOUS,
+                                   false);
         }
         else {
-            mHistory.addAll(savedInstanceState.getIntegerArrayList(KEY_NAVIGATION_HISTORY));
+            final ArrayList<Integer> navigationHistoryList = savedInstanceState.getIntegerArrayList(KEY_NAVIGATION_HISTORY);
+
+            if (navigationHistoryList != null) {
+                mHistory.addAll(navigationHistoryList);
+            }
         }
 
         mPreviousButton.setEnabled(!mHistory.isEmpty());
@@ -43,7 +52,8 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity extends Abs
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        mSavedState.putIntegerArrayList(KEY_NAVIGATION_HISTORY, new ArrayList<>(mHistory));
+        mSavedState.putIntegerArrayList(KEY_NAVIGATION_HISTORY,
+                                        new ArrayList<>(mHistory));
 
         super.onSaveInstanceState(outState);
     }
@@ -55,8 +65,10 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity extends Abs
         }
         else if (v.getId() == R.id.nextButton) {
             if (mPager.getCurrentItem() < (mAdapter.getCount() - 1)) {
-                mSavedState.putBoolean(KEY_HISTORY_PREVIOUS, false);
-                mPager.setCurrentItem(mPager.getCurrentItem() + 1, true);
+                mSavedState.putBoolean(KEY_HISTORY_PREVIOUS,
+                                       false);
+                mPager.setCurrentItem(mPager.getCurrentItem() + 1,
+                                      true);
             }
             else if (mPager.getCurrentItem() == (mAdapter.getCount() - 1)) {
                 // the last page
@@ -69,32 +81,43 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity extends Abs
     public void onPageScrollStateChanged(int state) {
         // only if the pager is currently being dragged by the user
         if (state != ViewPager.SCROLL_STATE_SETTLING) {
-            mSavedState.putInt(KEY_SCROLL_STATE, state);
+            mSavedState.putInt(KEY_SCROLL_STATE,
+                               state);
         }
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        if ((positionOffset > 0.0f) && (mSavedState.getInt(KEY_SCROLL_STATE, ViewPager.SCROLL_STATE_IDLE) == ViewPager.SCROLL_STATE_DRAGGING)) {
-            mSavedState.putBoolean(KEY_HISTORY_PREVIOUS, mSavedState.getFloat(KEY_POSITION_OFFSET, 0.0f) > positionOffset);
-            mSavedState.putFloat(KEY_POSITION_OFFSET, positionOffset);
+    public void onPageScrolled(int position,
+                               float positionOffset,
+                               int positionOffsetPixels) {
+        if ((positionOffset > 0.0f) && (mSavedState.getInt(KEY_SCROLL_STATE,
+                                                           ViewPager.SCROLL_STATE_IDLE) == ViewPager.SCROLL_STATE_DRAGGING)) {
+            mSavedState.putBoolean(KEY_HISTORY_PREVIOUS,
+                                   mSavedState.getFloat(KEY_POSITION_OFFSET,
+                                                        0.0f) > positionOffset);
+            mSavedState.putFloat(KEY_POSITION_OFFSET,
+                                 positionOffset);
         }
     }
 
     @Override
     public void onPageSelected(int position) {
-        Log.d(AbstractNavigationHistoryPagerFragmentActivity.class.getName(), "onPageSelected, position : " + position + ", previous : " + mSavedState.getBoolean(KEY_HISTORY_PREVIOUS));
+        Log.d(TAG,
+              "onPageSelected, position: " + position + ", previous: " + mSavedState.getBoolean(KEY_HISTORY_PREVIOUS));
 
         // sets default paging control
         mPager.setPagingEnabled(true);
 
         if (mSavedState.getBoolean(KEY_HISTORY_PREVIOUS)) {
             if (mHistory.isEmpty()) {
-                mSavedState.putBoolean(KEY_HISTORY_PREVIOUS, false);
+                mSavedState.putBoolean(KEY_HISTORY_PREVIOUS,
+                                       false);
             }
             else {
                 // go back in the navigation history
-                if (getPageFragment(position).getResourceTitle() == mHistory.getLast()) {
+                final IValidateFragment fragment = getPageFragment(position);
+
+                if ((fragment != null) && (fragment.getResourceTitle() == mHistory.getLast())) {
                     mHistory.pollLast();
                 }
                 else {
@@ -105,18 +128,26 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity extends Abs
             }
         }
         else {
-            mHistory.addLast(getPageFragment(mSavedState.getInt(KEY_PAGER_POSITION)).getResourceTitle());
+            final IValidateFragment fragment = getPageFragment(mSavedState.getInt(KEY_PAGER_POSITION));
+
+            if (fragment != null) {
+                mHistory.addLast(fragment.getResourceTitle());
+            }
 
             // checks validation before switching to the next page
-            if ((position > 0) && !((getPageFragmentByKey(mHistory.getLast()) == null) || getPageFragmentByKey(mHistory.getLast()).validate())) {
+            final IValidateFragment getLastFragmentInHistory = getPageFragmentByKey(mHistory.getLast());
+
+            if ((position > 0) && !((getLastFragmentInHistory == null) || getLastFragmentInHistory.validate())) {
                 goToPreviousPage();
                 return;
             }
         }
 
-        mSavedState.putBoolean(KEY_HISTORY_PREVIOUS, false);
+        mSavedState.putBoolean(KEY_HISTORY_PREVIOUS,
+                               false);
 
-        Log.d(AbstractNavigationHistoryPagerFragmentActivity.class.getName(), "onPageSelected, position : " + position + ", history : " + mHistory.toString());
+        Log.d(TAG,
+              "onPageSelected, position: " + position + ", history: " + mHistory.toString());
 
         IValidateFragment fragment = getPageFragment(position);
 
@@ -162,13 +193,15 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity extends Abs
             mNextButton.setVisibility(View.VISIBLE);
         }
 
-        mSavedState.putInt(KEY_PAGER_POSITION, mPager.getCurrentItem());
+        mSavedState.putInt(KEY_PAGER_POSITION,
+                           mPager.getCurrentItem());
     }
 
     @Override
     public void goToPreviousPage() {
         if ((mPager.getCurrentItem() > 0) && (!mHistory.isEmpty())) {
-            mSavedState.putBoolean(KEY_HISTORY_PREVIOUS, true);
+            mSavedState.putBoolean(KEY_HISTORY_PREVIOUS,
+                                   true);
             goToPageByKey(mHistory.getLast());
         }
     }
@@ -190,7 +223,9 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity extends Abs
      * Gets the number of pages for a given key saved in history.
      *
      * @param key the page key
+     *
      * @return the number of pages in history for a given page key
+     *
      * @see IValidateFragment#getResourceTitle()
      */
     public int countPagesInHistory(int key) {
