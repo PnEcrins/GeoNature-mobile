@@ -177,6 +177,7 @@ public class Area implements Parcelable {
         dest.writeParcelable(mCounting, 0);
         dest.writeList(mSelectedPhysiognomy);
         dest.writeList(mSelectedDisturbances);
+        dest.writeString(mComment);
     }
 
     public static final Parcelable.Creator<Area> CREATOR = new Parcelable.Creator<Area>() {

@@ -1,6 +1,9 @@
 package com.makina.ecrins.flora.ui.counting;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,16 +15,23 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.makina.ecrins.flora.MainApplication;
 import com.makina.ecrins.flora.R;
-import com.makina.ecrins.flora.input.Taxon;
+import com.makina.ecrins.flora.input.Counting;
+
+import java.text.NumberFormat;
 
 /**
  * Counting: Exhaustive method.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class CountingExhaustiveFragment extends Fragment implements OnClickListener {
+public class CountingExhaustiveFragment
+        extends Fragment
+        implements OnClickListener {
+
+    private static final String TAG = CountingExhaustiveFragment.class.getName();
+
+    private static final String KEY_COUNTING = "KEY_COUNTING";
 
     private EditText mEditTextCountingFertile;
     protected Button mButtonCountingMinusFertile;
@@ -30,9 +40,46 @@ public class CountingExhaustiveFragment extends Fragment implements OnClickListe
     protected Button mButtonCountingMinusSterile;
     private Button mButtonCountingPlusSterile;
 
+    private Counting mCounting;
+
+    private OnCountingListener mOnCountingListener;
+
+    public CountingExhaustiveFragment() {
+        // Required empty public constructor
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @return A new instance of fragment {@link CountingExhaustiveFragment}.
+     */
+    @NonNull
+    public static CountingExhaustiveFragment newInstance(@NonNull final Counting counting) {
+        final Bundle args = new Bundle();
+        args.putParcelable(KEY_COUNTING,
+                           counting);
+
+        final CountingExhaustiveFragment fragment = new CountingExhaustiveFragment();
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_counting_exhaustive, container, false);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mCounting = (savedInstanceState == null) ? (Counting) getArguments().getParcelable(KEY_COUNTING) : (Counting) savedInstanceState.getParcelable(KEY_COUNTING);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_counting_exhaustive,
+                                           container,
+                                           false);
 
         mEditTextCountingFertile = (EditText) view.findViewById(R.id.editTextCountingFertile);
         mButtonCountingMinusFertile = (Button) view.findViewById(R.id.buttonCountingMinusFertile);
@@ -49,42 +96,41 @@ public class CountingExhaustiveFragment extends Fragment implements OnClickListe
 
         mEditTextCountingFertile.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(CharSequence s,
+                                      int start,
+                                      int before,
+                                      int count) {
                 // nothing to do ...
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged(CharSequence s,
+                                          int start,
+                                          int count,
+                                          int after) {
                 // nothing to do ...
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.toString()
-                        .isEmpty()) {
+                     .isEmpty()) {
                     mButtonCountingMinusFertile.setEnabled(false);
                 }
                 else {
                     try {
                         int value = Integer.valueOf(s.toString());
 
-                        if ((((MainApplication) getActivity().getApplication()).getInput()
-                                .getCurrentSelectedTaxon() != null) &&
-                                (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                        .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-                            mButtonCountingMinusFertile.setEnabled(value > 0);
-                            ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                    .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                    .getCounting()
-                                    .setCountFertile(value);
-                            ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                    .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                    .getCounting()
-                                    .setTotalFertile(value);
-                        }
+                        mButtonCountingMinusFertile.setEnabled(value > 0);
+                        mCounting.setCountFertile(value);
+                        mCounting.setTotalFertile(value);
+
+                        mOnCountingListener.OnCountingUpdated(mCounting,
+                                                              true);
                     }
                     catch (NumberFormatException nfe) {
-                        Log.w(CountingExhaustiveFragment.class.getName(), nfe.getMessage());
+                        Log.w(TAG,
+                              nfe.getMessage());
 
                         mButtonCountingMinusFertile.setEnabled(false);
                     }
@@ -94,42 +140,41 @@ public class CountingExhaustiveFragment extends Fragment implements OnClickListe
 
         mEditTextCountingSterile.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(CharSequence s,
+                                      int start,
+                                      int before,
+                                      int count) {
                 // nothing to do ...
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged(CharSequence s,
+                                          int start,
+                                          int count,
+                                          int after) {
                 // nothing to do ...
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.toString()
-                        .isEmpty()) {
+                     .isEmpty()) {
                     mButtonCountingMinusSterile.setEnabled(false);
                 }
                 else {
                     try {
                         int value = Integer.valueOf(s.toString());
 
-                        if ((((MainApplication) getActivity().getApplication()).getInput()
-                                .getCurrentSelectedTaxon() != null) &&
-                                (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                        .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-                            mButtonCountingMinusSterile.setEnabled(value > 0);
-                            ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                    .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                    .getCounting()
-                                    .setCountSterile(value);
-                            ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                    .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                    .getCounting()
-                                    .setTotalSterile(value);
-                        }
+                        mButtonCountingMinusSterile.setEnabled(value > 0);
+                        mCounting.setCountSterile(value);
+                        mCounting.setTotalSterile(value);
+
+                        mOnCountingListener.OnCountingUpdated(mCounting,
+                                                              true);
                     }
                     catch (NumberFormatException nfe) {
-                        Log.w(CountingExhaustiveFragment.class.getName(), nfe.getMessage());
+                        Log.w(TAG,
+                              nfe.getMessage());
 
                         mButtonCountingMinusSterile.setEnabled(false);
                     }
@@ -137,56 +182,74 @@ public class CountingExhaustiveFragment extends Fragment implements OnClickListe
             }
         });
 
-        if ((((MainApplication) getActivity().getApplication()).getInput()
-                .getCurrentSelectedTaxon() != null) &&
-                (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-            mEditTextCountingFertile.setText(Integer.toString(((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                    .getCounting()
-                    .getCountFertile()));
-            mEditTextCountingSterile.setText(Integer.toString(((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                    .getCounting()
-                    .getCountSterile()));
-        }
+        mEditTextCountingFertile.setText(NumberFormat.getInstance()
+                                                     .format(mCounting.getCountFertile()));
+        mEditTextCountingSterile.setText(NumberFormat.getInstance()
+                                                     .format(mCounting.getCountSterile()));
 
         return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof OnCountingListener) {
+            mOnCountingListener = (OnCountingListener) context;
+        }
+        else {
+            throw new RuntimeException(getContext().toString() + " must implement OnCountingListener");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(KEY_COUNTING,
+                               mCounting);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.buttonCountingMinusFertile:
-                updateEditText(mEditTextCountingFertile, -1);
+                updateEditText(mEditTextCountingFertile,
+                               -1);
                 break;
             case R.id.buttonCountingPlusFertile:
-                updateEditText(mEditTextCountingFertile, 1);
+                updateEditText(mEditTextCountingFertile,
+                               1);
                 break;
             case R.id.buttonCountingMinusSterile:
-                updateEditText(mEditTextCountingSterile, -1);
+                updateEditText(mEditTextCountingSterile,
+                               -1);
                 break;
             case R.id.buttonCountingPlusSterile:
-                updateEditText(mEditTextCountingSterile, 1);
+                updateEditText(mEditTextCountingSterile,
+                               1);
                 break;
         }
     }
 
-    private void updateEditText(final EditText editText, final int value) {
+    private void updateEditText(final EditText editText,
+                                final int value) {
         int newValue = value;
 
         if ((editText.getText() != null) && !(editText.getText()
-                .toString()
-                .isEmpty())) {
+                                                      .toString()
+                                                      .isEmpty())) {
             try {
                 newValue += Integer.valueOf(editText.getText()
-                        .toString());
+                                                    .toString());
             }
             catch (NumberFormatException nfe) {
-                Log.w(CountingExhaustiveFragment.class.getName(), nfe.getMessage());
+                Log.w(CountingExhaustiveFragment.class.getName(),
+                      nfe.getMessage());
             }
         }
 
-        editText.setText(Integer.toString((newValue < 0) ? 0 : newValue));
+        editText.setText(NumberFormat.getInstance()
+                                     .format((newValue < 0) ? 0 : newValue));
     }
 }

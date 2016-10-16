@@ -131,6 +131,13 @@ public class FrequencyFragmentActivity
 
                         transaction.commit();
                         break;
+                    default:
+                        Log.w(TAG,
+                              "invalid frequency type " + mFrequency.getType()
+                                                                    .getValue());
+
+                        // nothing to do at this point, so we finish this activity
+                        finish();
                 }
             }
 

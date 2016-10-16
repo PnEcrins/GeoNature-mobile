@@ -43,7 +43,7 @@ public class Counting implements Parcelable {
 
     public Counting(Parcel source) {
         mType = (CountingType) source.readSerializable();
-        mPlotSurface = source.readInt();
+        mPlotSurface = source.readDouble();
         mPlots = source.readInt();
         mCountFertile = source.readInt();
         mTotalFertile = source.readInt();
