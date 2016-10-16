@@ -1,5 +1,6 @@
 package com.makina.ecrins.flora.ui.input.disturbances;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,15 +27,18 @@ import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.TextView;
 
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
+import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.ui.widget.AbstractGroupsCursorAdapter;
-import com.makina.ecrins.flora.MainApplication;
+import com.makina.ecrins.flora.BuildConfig;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.content.MainContentProvider;
+import com.makina.ecrins.flora.input.Input;
 import com.makina.ecrins.flora.input.Taxon;
+import com.makina.ecrins.flora.ui.input.PagerFragmentActivity;
 
 /**
- * Disturbances as an <code>ExpendableListView</code>.
+ * Disturbances as an {@code ExpendableListView}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
@@ -54,38 +58,39 @@ public class DisturbancesFragment
 
     protected final Handler mHandler = new Handler();
 
+    private Input mInput;
+
     private boolean mListShown;
     private boolean mIsVisibleToUser = false;
+    private boolean mClearSelection = false;
 
     private ActionMode mMode;
     private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         @Override
-        public boolean onPrepareActionMode(
-                ActionMode mode,
-                Menu menu) {
-
+        public boolean onPrepareActionMode(ActionMode mode,
+                                           Menu menu) {
             return false;
         }
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-
             mMode = null;
+
+            if (!mClearSelection) {
+                ((PagerFragmentActivity) getActivity()).goToNextPage();
+            }
+
+            mClearSelection = false;
         }
 
         @Override
-        public boolean onCreateActionMode(
-                ActionMode mode,
-                Menu menu) {
-
-            if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                                   .getCurrentSelectedTaxon() != null) &&
-                    (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
-                    !((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                           .getSelectedDisturbances()
-                                                                                                           .isEmpty()) {
+        public boolean onCreateActionMode(ActionMode mode,
+                                          Menu menu) {
+            if ((mInput.getCurrentSelectedTaxon() != null) &&
+                    (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
+                    !((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                               .getSelectedDisturbances()
+                                                               .isEmpty()) {
                 MenuItem menuItem = menu.add(Menu.NONE,
                                              0,
                                              Menu.NONE,
@@ -99,25 +104,20 @@ public class DisturbancesFragment
         }
 
         @Override
-        public boolean onActionItemClicked(
-                final ActionMode mode,
-                final MenuItem item) {
-
+        public boolean onActionItemClicked(final ActionMode mode,
+                                           final MenuItem item) {
             switch (item.getItemId()) {
                 case 0:
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-
-                            if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                                      .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-                                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                           .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                      .getSelectedDisturbances()
-                                                                                                                      .clear();
+                            if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
+                                ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                                          .getSelectedDisturbances()
+                                                                          .clear();
                             }
 
+                            mClearSelection = true;
                             mAdapter.notifyDataSetChanged();
                             mode.finish();
                         }
@@ -131,11 +131,9 @@ public class DisturbancesFragment
     };
 
     @Override
-    public View onCreateView(
-            LayoutInflater inflater,
-            ViewGroup container,
-            Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_expandable_list,
                                      container,
                                      false);
@@ -149,12 +147,13 @@ public class DisturbancesFragment
     }
 
     @Override
-    public void onViewCreated(
-            View view,
-            Bundle savedInstanceState) {
-
+    public void onViewCreated(View view,
+                              Bundle savedInstanceState) {
         super.onViewCreated(view,
                             savedInstanceState);
+
+        // we have a menu item to show in action bar
+        setHasOptionsMenu(true);
 
         setListShown(false,
                      false);
@@ -177,31 +176,26 @@ public class DisturbancesFragment
                                                                    android.R.id.text1
                                                            }) {
             @Override
-            public View getChildView(
-                    int groupPosition,
-                    int childPosition,
-                    boolean isLastChild,
-                    View convertView,
-                    ViewGroup parent) {
+            public View getChildView(int groupPosition,
+                                     int childPosition,
+                                     boolean isLastChild,
+                                     View convertView,
+                                     ViewGroup parent) {
+                final View view = super.getChildView(groupPosition,
+                                                     childPosition,
+                                                     isLastChild,
+                                                     convertView,
+                                                     parent);
 
-                View view = super.getChildView(groupPosition,
-                                               childPosition,
-                                               isLastChild,
-                                               convertView,
-                                               parent);
-
-                if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                                       .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                          .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
+                if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
                     final CheckedTextView checkedTextView = (CheckedTextView) view.findViewById(android.R.id.text1);
                     final Cursor cursor = mAdapter.getChild(groupPosition,
                                                             childPosition);
                     final long childId = cursor.getInt(cursor.getColumnIndex(MainDatabaseHelper.DisturbancesColumns.CODE));
 
-                    checkedTextView.setChecked(((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                          .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                     .getSelectedDisturbances()
-                                                                                                                                     .contains(childId));
+                    checkedTextView.setChecked(((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                                                         .getSelectedDisturbances()
+                                                                                         .contains(childId));
                 }
 
                 return view;
@@ -209,19 +203,16 @@ public class DisturbancesFragment
 
             @Override
             protected LoaderManager getLoaderManager() {
-
                 return DisturbancesFragment.this.getLoaderManager();
             }
 
             @Override
             protected String getGroupId(Cursor groupCursor) {
-
                 return groupCursor.getString(groupCursor.getColumnIndex(MainDatabaseHelper.DisturbancesColumns.CLASSIFICATION));
             }
 
             @Override
             protected LoaderCallbacks<Cursor> getLoaderCallbacks() {
-
                 return DisturbancesFragment.this;
             }
         };
@@ -229,11 +220,10 @@ public class DisturbancesFragment
 
         mExpandableListView.setOnGroupClickListener(new OnGroupClickListener() {
             @Override
-            public boolean onGroupClick(
-                    ExpandableListView parent,
-                    View v,
-                    int groupPosition,
-                    long id) {
+            public boolean onGroupClick(ExpandableListView parent,
+                                        View v,
+                                        int groupPosition,
+                                        long id) {
 
                 mAdapter.setExpendAllGroups(false);
 
@@ -243,41 +233,33 @@ public class DisturbancesFragment
 
         mExpandableListView.setOnChildClickListener(new OnChildClickListener() {
             @Override
-            public boolean onChildClick(
-                    ExpandableListView parent,
-                    View v,
-                    int groupPosition,
-                    int childPosition,
-                    long id) {
-
-                if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                                       .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                          .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
+            public boolean onChildClick(ExpandableListView parent,
+                                        View v,
+                                        int groupPosition,
+                                        int childPosition,
+                                        long id) {
+                if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
                     final CheckedTextView checkedTextView = (CheckedTextView) v.findViewById(android.R.id.text1);
                     final Cursor cursor = mAdapter.getChild(groupPosition,
                                                             childPosition);
                     final long childId = cursor.getInt(cursor.getColumnIndex(MainDatabaseHelper.DisturbancesColumns.CODE));
 
-                    if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                              .getSelectedDisturbances()
-                                                                                                              .contains(childId)) {
-                        ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                              .getSelectedDisturbances()
-                                                                                                              .remove(childId);
+                    if (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                                  .getSelectedDisturbances()
+                                                                  .contains(childId)) {
+                        ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                                  .getSelectedDisturbances()
+                                                                  .remove(childId);
                     }
                     else {
-                        ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                              .getSelectedDisturbances()
-                                                                                                              .add(childId);
+                        ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                                  .getSelectedDisturbances()
+                                                                  .add(childId);
                     }
 
-                    checkedTextView.setChecked(((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                          .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                     .getSelectedDisturbances()
-                                                                                                                                     .contains(childId));
+                    checkedTextView.setChecked(((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                                                         .getSelectedDisturbances()
+                                                                                         .contains(childId));
 
                     updateActionMode();
                 }
@@ -292,8 +274,31 @@ public class DisturbancesFragment
     }
 
     @Override
-    public void onDestroyView() {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                ((PagerFragmentActivity) getActivity()).goToNextPage();
+                return true;
+            default:
+                return false;
+        }
+    }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof OnInputFragmentListener) {
+            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
+            mInput = (Input) onInputFragmentListener.getInput();
+        }
+        else {
+            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
         mListShown = false;
 
         mProgressContainer = null;
@@ -305,20 +310,15 @@ public class DisturbancesFragment
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
-
         super.setUserVisibleHint(isVisibleToUser);
-
-        Log.d(TAG,
-              "setUserVisibleHint: isVisible = " +
-                      this.isVisible() +
-                      ", isVisibleToUser = " +
-                      isVisibleToUser);
 
         mIsVisibleToUser = isVisibleToUser;
 
         if ((!this.isVisible() || !isVisibleToUser) && (mMode != null)) {
-            Log.d(TAG,
-                  "setUserVisibleHint finish action mode");
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      "setUserVisibleHint: finish action mode");
+            }
 
             mMode.finish();
         }
@@ -326,13 +326,11 @@ public class DisturbancesFragment
 
     @Override
     public int getResourceTitle() {
-
         return R.string.pager_fragment_disturbances_title;
     }
 
     @Override
     public boolean getPagingEnabled() {
-
         return true;
     }
 
@@ -355,10 +353,8 @@ public class DisturbancesFragment
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(
-            int id,
-            Bundle args) {
-
+    public Loader<Cursor> onCreateLoader(int id,
+                                         Bundle args) {
         final String[] projection = {
                 MainDatabaseHelper.DisturbancesColumns._ID,
                 MainDatabaseHelper.DisturbancesColumns.CODE,
@@ -388,13 +384,8 @@ public class DisturbancesFragment
     }
 
     @Override
-    public void onLoadFinished(
-            Loader<Cursor> loader,
-            Cursor data) {
-
-        Log.d(TAG,
-              "onLoadFinished " + loader.getId());
-
+    public void onLoadFinished(Loader<Cursor> loader,
+                               Cursor data) {
         if (loader.getId() == -1) {
             mAdapter.setGroupCursor(data);
 
@@ -416,7 +407,7 @@ public class DisturbancesFragment
                                            data);
             }
             catch (NullPointerException npe) {
-                Log.d(TAG,
+                Log.w(TAG,
                       "onLoadFinished : adapter expired");
             }
         }
@@ -435,7 +426,7 @@ public class DisturbancesFragment
                                                null);
                 }
                 catch (NullPointerException npe) {
-                    Log.d(TAG,
+                    Log.w(TAG,
                           "onLoaderReset : adapter expired");
                 }
             }
@@ -443,38 +434,30 @@ public class DisturbancesFragment
     }
 
     private void updateActionMode() {
-
-        if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                               .getCurrentSelectedTaxon() == null) || !mIsVisibleToUser) {
+        if ((mInput.getCurrentSelectedTaxon() == null) || !mIsVisibleToUser) {
             if (mMode != null) {
                 mMode.finish();
             }
         }
         else {
-            if ((((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                            .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && isVisible()) {
-                if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                               .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                          .getSelectedDisturbances()
-                                                                                                          .isEmpty()) {
+            if ((((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && isVisible()) {
+                if (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                              .getSelectedDisturbances()
+                                                              .isEmpty()) {
                     if (mMode != null) {
                         mMode.finish();
                     }
                 }
                 else {
-                    Log.d(TAG,
-                          "updateActionMode");
-
                     if (mMode == null) {
                         mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
                     }
 
                     if (mMode != null) {
                         mMode.setTitle(String.format(getString(R.string.action_title_item_selected),
-                                                     ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                           .getSelectedDisturbances()
-                                                                                                                                           .size()));
+                                                     ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                                                               .getSelectedDisturbances()
+                                                                                               .size()));
                     }
                 }
             }
@@ -490,9 +473,8 @@ public class DisturbancesFragment
      *                progress indicator. The initial value is true.
      * @param animate If <code>true</code>, an animation will be used to transition to the new state.
      */
-    private void setListShown(
-            boolean shown,
-            boolean animate) {
+    private void setListShown(boolean shown,
+                              boolean animate) {
 
         if (mListShown == shown) {
             return;
