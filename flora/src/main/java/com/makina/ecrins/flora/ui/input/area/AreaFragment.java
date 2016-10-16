@@ -1,5 +1,6 @@
 package com.makina.ecrins.flora.ui.input.area;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -25,18 +26,20 @@ import android.widget.TextView;
 
 import com.makina.ecrins.commons.content.AbstractMainContentProvider;
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
+import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
 import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
-import com.makina.ecrins.flora.MainApplication;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.content.MainContentProvider;
 import com.makina.ecrins.flora.input.Area;
+import com.makina.ecrins.flora.input.Input;
 import com.makina.ecrins.flora.input.Taxon;
+import com.makina.ecrins.maps.geojson.Feature;
 import com.makina.ecrins.maps.geojson.geometry.LineString;
 import com.makina.ecrins.maps.geojson.geometry.Polygon;
 
 /**
- * Compute the area according to the selected {@link com.makina.ecrins.maps.geojson.Feature}.
+ * Compute the area according to the selected {@link Feature}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
@@ -62,6 +65,7 @@ public class AreaFragment
 
     private SimpleCursorAdapter mAdapter = null;
 
+    private Input mInput;
     private double mPointArea;
     private double mPathLength;
     private double mPathWidth;
@@ -70,7 +74,6 @@ public class AreaFragment
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
@@ -82,11 +85,9 @@ public class AreaFragment
     }
 
     @Override
-    public View onCreateView(
-            LayoutInflater inflater,
-            ViewGroup container,
-            Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
         Log.d(TAG,
               "onCreateView");
 
@@ -94,14 +95,12 @@ public class AreaFragment
                                        container,
                                        savedInstanceState);
 
-        if (((MainApplication) getActivity().getApplication()).getInput()
-                                                              .getCurrentSelectedTaxon() == null) {
+        if (mInput.getCurrentSelectedTaxon() == null) {
             Log.w(TAG,
                   "onCreateView : no taxon selected !");
         }
         else {
-            final Area selectedArea = ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                 .getCurrentSelectedTaxon()).getCurrentSelectedArea();
+            final Area selectedArea = ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea();
 
             if (selectedArea == null) {
                 Log.w(TAG,
@@ -118,20 +117,18 @@ public class AreaFragment
                         mEditTextPointArea = (EditText) view.findViewById(R.id.editTextPointArea);
                         mEditTextPointArea.addTextChangedListener(new TextWatcher() {
                             @Override
-                            public void onTextChanged(
-                                    CharSequence s,
-                                    int start,
-                                    int before,
-                                    int count) {
+                            public void onTextChanged(CharSequence s,
+                                                      int start,
+                                                      int before,
+                                                      int count) {
                                 // nothing to do ...
                             }
 
                             @Override
-                            public void beforeTextChanged(
-                                    CharSequence s,
-                                    int start,
-                                    int count,
-                                    int after) {
+                            public void beforeTextChanged(CharSequence s,
+                                                          int start,
+                                                          int count,
+                                                          int after) {
                                 // nothing to do ...
                             }
 
@@ -166,20 +163,18 @@ public class AreaFragment
                         mEditTextPathWidth.setEnabled(false);
                         mEditTextPathWidth.addTextChangedListener(new TextWatcher() {
                             @Override
-                            public void onTextChanged(
-                                    CharSequence s,
-                                    int start,
-                                    int before,
-                                    int count) {
+                            public void onTextChanged(CharSequence s,
+                                                      int start,
+                                                      int before,
+                                                      int count) {
                                 // nothing to do ...
                             }
 
                             @Override
-                            public void beforeTextChanged(
-                                    CharSequence s,
-                                    int start,
-                                    int count,
-                                    int after) {
+                            public void beforeTextChanged(CharSequence s,
+                                                          int start,
+                                                          int count,
+                                                          int after) {
                                 // nothing to do ...
                             }
 
@@ -256,44 +251,48 @@ public class AreaFragment
     }
 
     @Override
-    public int getResourceTitle() {
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
+        if (context instanceof OnInputFragmentListener) {
+            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
+            mInput = (Input) onInputFragmentListener.getInput();
+        }
+        else {
+            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
+        }
+    }
+
+    @Override
+    public int getResourceTitle() {
         return R.string.pager_fragment_area_title;
     }
 
     @Override
     public boolean getPagingEnabled() {
-
         return true;
     }
 
     @Override
     public boolean validate() {
-
-        return ((((MainApplication) getActivity().getApplication()).getInput()
-                                                                   .getCurrentSelectedTaxon() != null) &&
-                (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                            .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
-                (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                            .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                       .getComputedArea() > 0.0));
+        return ((mInput.getCurrentSelectedTaxon() != null) &&
+                (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
+                (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                           .getComputedArea() > 0.0));
     }
 
     @Override
     public void refreshView() {
-
         ((AppCompatActivity) getActivity()).getSupportActionBar()
                                            .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         // refreshes title
-        if (((MainApplication) getActivity().getApplication()).getInput()
-                                                              .getCurrentSelectedTaxon() == null) {
+        if (mInput.getCurrentSelectedTaxon() == null) {
             getActivity().setTitle(String.format(getString(getResourceTitle()),
                                                  getString(R.string.area_none)));
         }
         else {
-            final Area selectedArea = ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                 .getCurrentSelectedTaxon()).getCurrentSelectedArea();
+            final Area selectedArea = ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea();
 
             if (selectedArea == null) {
                 Log.w(TAG,
@@ -334,10 +333,8 @@ public class AreaFragment
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(
-            int id,
-            Bundle args) {
-
+    public Loader<Cursor> onCreateLoader(int id,
+                                         Bundle args) {
         final String[] projection = {
                 MainDatabaseHelper.InclinesColumns._ID,
                 MainDatabaseHelper.InclinesColumns.VALUE,
@@ -366,10 +363,8 @@ public class AreaFragment
     }
 
     @Override
-    public void onLoadFinished(
-            Loader<Cursor> loader,
-            Cursor data) {
-
+    public void onLoadFinished(Loader<Cursor> loader,
+                               Cursor data) {
         switch (loader.getId()) {
             case AbstractMainContentProvider.INCLINES:
                 if (mAdapter == null) {
@@ -392,7 +387,6 @@ public class AreaFragment
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
         switch (loader.getId()) {
             case AbstractMainContentProvider.INCLINES:
                 // data is not available anymore, delete reference
@@ -407,12 +401,10 @@ public class AreaFragment
     }
 
     @Override
-    public void onItemSelected(
-            AdapterView<?> parent,
-            View view,
-            int position,
-            long id) {
-
+    public void onItemSelected(AdapterView<?> parent,
+                               View view,
+                               int position,
+                               long id) {
         Log.d(TAG,
               "onItemSelected " + id);
 
@@ -429,7 +421,6 @@ public class AreaFragment
     }
 
     private void initializeAdapter(Cursor cursor) {
-
         if (mAdapter == null) {
             mAdapter = new SimpleCursorAdapter(getActivity(),
                                                android.R.layout.simple_spinner_item,
@@ -447,40 +438,31 @@ public class AreaFragment
     }
 
     private void computeArea() {
-
-        if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                               .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                  .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-            switch (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                               .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                          .getFeature()
-                                                                                                          .getGeometry()
-                                                                                                          .getType()) {
+        if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
+            switch (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                              .getFeature()
+                                                              .getGeometry()
+                                                              .getType()) {
                 case POINT:
-                    ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                               .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                          .setComputedArea(mPointArea);
+                    ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                              .setComputedArea(mPointArea);
                     ((AbstractPagerFragmentActivity) getActivity()).validateCurrentPage();
                     break;
                 case LINE_STRING:
-                    ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                               .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                          .setComputedArea((mPathLength * mPathWidth) / Math.cos(Math.PI * mInclineValue / 180));
+                    ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                              .setComputedArea((mPathLength * mPathWidth) / Math.cos(Math.PI * mInclineValue / 180));
                     mTextViewAreaComputed.setText(String.format(getString(R.string.area_computed),
-                                                                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                           .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                                      .getComputedArea()));
+                                                                ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                                                                          .getComputedArea()));
 
                     ((AbstractPagerFragmentActivity) getActivity()).validateCurrentPage();
                     break;
                 case POLYGON:
-                    ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                               .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                          .setComputedArea(mPolygonArea / Math.cos(Math.PI * mInclineValue / 180));
+                    ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                              .setComputedArea(mPolygonArea / Math.cos(Math.PI * mInclineValue / 180));
                     mTextViewAreaComputed.setText(String.format(getString(R.string.area_computed),
-                                                                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                           .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                                      .getComputedArea()));
+                                                                ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
+                                                                                                          .getComputedArea()));
 
                     ((AbstractPagerFragmentActivity) getActivity()).validateCurrentPage();
                     break;
@@ -492,22 +474,17 @@ public class AreaFragment
 
     private class GetFeatureLengthOrAreaAsyncTask
             extends AsyncTask<Void, Void, Double> {
-
         private Area mSelectedArea = null;
 
         @Override
         protected void onPreExecute() {
-
-            if (((MainApplication) getActivity().getApplication()).getInput()
-                                                                  .getCurrentSelectedTaxon() != null) {
-                mSelectedArea = ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                           .getCurrentSelectedTaxon()).getCurrentSelectedArea();
+            if (mInput.getCurrentSelectedTaxon() != null) {
+                mSelectedArea = ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea();
             }
         }
 
         @Override
         protected Double doInBackground(Void... params) {
-
             if (mSelectedArea == null) {
                 return 0.0;
             }
@@ -529,7 +506,6 @@ public class AreaFragment
 
         @Override
         protected void onPostExecute(Double result) {
-
             if (mSelectedArea != null) {
                 switch (mSelectedArea.getFeature()
                                      .getGeometry()
