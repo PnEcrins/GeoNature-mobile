@@ -1,5 +1,6 @@
 package com.makina.ecrins.flora.ui.input.taxa;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,10 +13,11 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
+import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
 import com.makina.ecrins.commons.ui.pager.IValidateWithNavigationControlFragment;
 import com.makina.ecrins.flora.BuildConfig;
-import com.makina.ecrins.flora.MainApplication;
 import com.makina.ecrins.flora.R;
+import com.makina.ecrins.flora.input.Input;
 import com.makina.ecrins.flora.input.Taxon;
 import com.makina.ecrins.flora.ui.input.PagerFragmentActivity;
 
@@ -24,27 +26,28 @@ import com.makina.ecrins.flora.ui.input.PagerFragmentActivity;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class TaxaFoundFragment extends Fragment implements IValidateWithNavigationControlFragment, OnClickListener {
+public class TaxaFoundFragment
+        extends Fragment
+        implements IValidateWithNavigationControlFragment,
+                   OnClickListener {
 
     private static final String TAG = TaxaFoundFragment.class.getName();
 
     private static final String ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT = "alert_dialog_delete_all_areas";
 
+    private Input mInput;
+
     private AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
         @Override
         public void onPositiveButtonClick(DialogInterface dialog) {
             if (BuildConfig.DEBUG) {
-                Log.d(
-                        TAG,
-                        "delete all areas"
-                );
+                Log.d(TAG,
+                      "delete all areas");
             }
 
-            if (((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon() != null) {
-                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getAreas()
-                        .clear();
+            if (mInput.getCurrentSelectedTaxon() != null) {
+                ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                          .clear();
             }
 
             ((PagerFragmentActivity) getActivity()).goToPageByKey(R.string.pager_fragment_webview_pa_title);
@@ -61,7 +64,8 @@ public class TaxaFoundFragment extends Fragment implements IValidateWithNavigati
         super.onCreate(savedInstanceState);
 
         // restore CommentDialogFragment state after resume if needed
-        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT);
+        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getActivity().getSupportFragmentManager()
+                                                                                           .findFragmentByTag(ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT);
 
         if (alertDialogFragment != null) {
             alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
@@ -69,13 +73,32 @@ public class TaxaFoundFragment extends Fragment implements IValidateWithNavigati
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_taxa_found, container, false);
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_taxa_found,
+                                           container,
+                                           false);
 
-        view.findViewById(R.id.buttonTaxonFound).setOnClickListener(this);
-        view.findViewById(R.id.buttonTaxonNotFound).setOnClickListener(this);
+        view.findViewById(R.id.buttonTaxonFound)
+            .setOnClickListener(this);
+        view.findViewById(R.id.buttonTaxonNotFound)
+            .setOnClickListener(this);
 
         return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof OnInputFragmentListener) {
+            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
+            mInput = (Input) onInputFragmentListener.getInput();
+        }
+        else {
+            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
+        }
     }
 
     @Override
@@ -95,7 +118,6 @@ public class TaxaFoundFragment extends Fragment implements IValidateWithNavigati
 
     @Override
     public void refreshView() {
-
         ((AppCompatActivity) getActivity()).getSupportActionBar()
                                            .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
     }
@@ -114,21 +136,16 @@ public class TaxaFoundFragment extends Fragment implements IValidateWithNavigati
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.buttonTaxonFound:
-                if (((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon() != null) {
-                    ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                            .getCurrentSelectedTaxon()).setProspectingArea(null);
+                if (mInput.getCurrentSelectedTaxon() != null) {
+                    ((Taxon) mInput.getCurrentSelectedTaxon()).setProspectingArea(null);
                 }
 
                 ((PagerFragmentActivity) getActivity()).goToNextPage();
                 break;
             case R.id.buttonTaxonNotFound:
-                if ((((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon() != null) &&
-                        (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                .getCurrentSelectedTaxon()).getAreas().isEmpty())) {
-                    ((PagerFragmentActivity) getActivity())
-                            .goToPageByKey(R.string.pager_fragment_webview_pa_title);
+                if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                                                                             .isEmpty())) {
+                    ((PagerFragmentActivity) getActivity()).goToPageByKey(R.string.pager_fragment_webview_pa_title);
                 }
                 else {
                     confirmBeforeDeleteAreas();
@@ -139,14 +156,10 @@ public class TaxaFoundFragment extends Fragment implements IValidateWithNavigati
     }
 
     private void confirmBeforeDeleteAreas() {
-        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(
-                R.string.alert_dialog_confirm_delete_areas_title,
-                R.string.alert_dialog_confirm_delete_areas_message
-        );
+        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(R.string.alert_dialog_confirm_delete_areas_title,
+                                                                                        R.string.alert_dialog_confirm_delete_areas_message);
         alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
-        alertDialogFragment.show(
-                getActivity().getSupportFragmentManager(),
-                ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT
-        );
+        alertDialogFragment.show(getActivity().getSupportFragmentManager(),
+                                 ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT);
     }
 }
