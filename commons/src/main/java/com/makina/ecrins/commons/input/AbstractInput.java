@@ -170,6 +170,7 @@ public abstract class AbstractInput
         return getTaxa().get(getCurrentSelectedTaxonId());
     }
 
+    @Deprecated
     public JSONObject getJSONObject() throws
                                       JSONException {
         final JSONObject json = new JSONObject();
@@ -206,6 +207,7 @@ public abstract class AbstractInput
         return json;
     }
 
+    @Deprecated
     @NonNull
     public String getDateFormat() {
         return"yyyy/MM/dd";

@@ -121,6 +121,7 @@ public abstract class AbstractTaxon
         this.mComment = pComment;
     }
 
+    @Deprecated
     public JSONObject getJSONObject() throws JSONException {
 
         JSONObject json = new JSONObject();

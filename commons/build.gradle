@@ -32,10 +32,12 @@ dependencies {
     compile "com.android.support:preference-v7:${rootProject.ext.androidSupportVersion}"
 
     compile 'commons-io:commons-io:2.4'
+    compile 'com.google.code.gson:gson:2.7'
     compile 'com.viewpagerindicator:library:2.4.1@aar'
 
     testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:2.4'
+    testCompile 'org.robolectric:robolectric:3.1.2'
+    testCompile 'org.mockito:mockito-core:2.2.7'
 }
 
 task('increaseVersionCode') << {

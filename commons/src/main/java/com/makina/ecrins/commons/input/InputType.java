@@ -1,5 +1,7 @@
 package com.makina.ecrins.commons.input;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Describes {@link AbstractInput} type.
  *
@@ -7,12 +9,16 @@ package com.makina.ecrins.commons.input;
  */
 public enum InputType {
 
+    @SerializedName("fauna")
     FAUNA(128,
           "fauna"),
+    @SerializedName("mortality")
     MORTALITY(64,
               "mortality"),
+    @SerializedName("invertebrate")
     INVERTEBRATE(32,
                  "invertebrate"),
+    @SerializedName("flora")
     FLORA(16,
           "flora");
 
