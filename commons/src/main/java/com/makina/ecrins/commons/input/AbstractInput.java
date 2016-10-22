@@ -33,8 +33,8 @@ public abstract class AbstractInput
     private static final String KEY_OBSERVERS_ID = "observers_id";
     private static final String KEY_TAXA = "taxons";
 
-    private final InputType mType;
-    private long mInputId;
+    InputType mType;
+    long mInputId;
     private String mFeatureId;
     private Date mDate;
     private final Map<Long, Observer> mObservers;
@@ -210,7 +210,7 @@ public abstract class AbstractInput
     @Deprecated
     @NonNull
     public String getDateFormat() {
-        return"yyyy/MM/dd";
+        return "yyyy/MM/dd";
     }
 
     @Override

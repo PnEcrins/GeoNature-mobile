@@ -23,8 +23,8 @@ public abstract class AbstractTaxon
     public static final String KEY_OBSERVATION_CRITERION = "criterion";
     public static final String KEY_COMMENT = "comment";
 
-    private long mId;
-    private long mTaxonId;
+    long mId;
+    long mTaxonId;
     private long mClassId;
     private int mClassCount;
     private String mNameEntered;
@@ -122,7 +122,8 @@ public abstract class AbstractTaxon
     }
 
     @Deprecated
-    public JSONObject getJSONObject() throws JSONException {
+    public JSONObject getJSONObject() throws
+                                      JSONException {
 
         JSONObject json = new JSONObject();
         json.put(KEY_ID,
@@ -151,9 +152,8 @@ public abstract class AbstractTaxon
     }
 
     @Override
-    public void writeToParcel(
-            Parcel dest,
-            int flags) {
+    public void writeToParcel(Parcel dest,
+                              int flags) {
 
         dest.writeLong(mId);
         dest.writeLong(mTaxonId);

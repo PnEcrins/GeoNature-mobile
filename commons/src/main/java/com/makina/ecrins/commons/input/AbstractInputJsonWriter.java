@@ -10,11 +10,12 @@ import java.io.Writer;
 import java.util.Collection;
 
 /**
- * Default {@code JSONWriter} about writing an {@link AbstractInput} as {@code JSON}.
+ * Default {@code JsonWriter} about writing an {@link AbstractInput} as {@code JSON}.
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
 public abstract class AbstractInputJsonWriter {
+
     String dateFormat = "yyyy/MM/dd";
 
     public void setDateFormat(@NonNull final String dateFormat) {
