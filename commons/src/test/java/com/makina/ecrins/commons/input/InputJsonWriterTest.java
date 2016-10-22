@@ -7,6 +7,8 @@ import com.google.gson.stream.JsonWriter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 
 import java.io.StringWriter;
@@ -20,19 +22,25 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
- * Unit test for {@link AbstractInputJsonWriter}.
+ * Unit test for {@link InputJsonWriter}.
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
 @RunWith(RobolectricTestRunner.class)
-public class AbstractInputJsonWriterTest {
+public class InputJsonWriterTest {
 
-    private DummyInputJsonWriter dummyInputJsonWriter;
+    private InputJsonWriter inputJsonWriter;
+
+    @Mock
+    private InputJsonWriter.OnInputJsonWriterListener onInputJsonWriterListener;
 
     @Before
     public void setUp() throws
                         Exception {
-        dummyInputJsonWriter = spy(new DummyInputJsonWriter());
+        MockitoAnnotations.initMocks(this);
+
+        inputJsonWriter = spy(new InputJsonWriter(InputHelper.DEFAULT_DATE_FORMAT,
+                                                  onInputJsonWriterListener));
     }
 
     @Test
@@ -59,14 +67,14 @@ public class AbstractInputJsonWriterTest {
 
         // when write this input as JSON string
         final StringWriter writer = new StringWriter();
-        dummyInputJsonWriter.write(writer,
-                                   input);
+        inputJsonWriter.write(writer,
+                              input);
 
-        verify(dummyInputJsonWriter,
+        verify(onInputJsonWriterListener,
                atLeastOnce()).writeAdditionalInputData(any(JsonWriter.class),
                                                        eq(input));
 
-        verify(dummyInputJsonWriter,
+        verify(onInputJsonWriterListener,
                atLeastOnce()).writeAdditionalTaxonData(any(JsonWriter.class),
                                                        eq(taxon1));
 
@@ -82,7 +90,7 @@ public class AbstractInputJsonWriterTest {
         expectedJsonString.append(input.getType()
                                        .getValue());
         expectedJsonString.append("\",\"initial_input\":\"nomade\",\"dateobs\":\"");
-        expectedJsonString.append(DateFormat.format(dummyInputJsonWriter.dateFormat,
+        expectedJsonString.append(DateFormat.format(inputJsonWriter.getDateFormat(),
                                                     input.getDate())
                                             .toString());
         expectedJsonString.append("\",\"observers_id\":[1],\"taxons\":[{\"id\":");

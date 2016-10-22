@@ -14,12 +14,20 @@ import java.util.Collection;
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
-public abstract class AbstractInputJsonWriter {
+public class InputJsonWriter {
 
-    String dateFormat = "yyyy/MM/dd";
+    private final String dateFormat;
+    private final OnInputJsonWriterListener onInputJsonWriterListener;
 
-    public void setDateFormat(@NonNull final String dateFormat) {
+    public InputJsonWriter(@NonNull final String dateFormat,
+                           @NonNull OnInputJsonWriterListener onInputJsonWriterListener) {
         this.dateFormat = dateFormat;
+        this.onInputJsonWriterListener = onInputJsonWriterListener;
+    }
+
+    @NonNull
+    public String getDateFormat() {
+        return dateFormat;
     }
 
     public void write(@NonNull final Writer out,
@@ -30,30 +38,6 @@ public abstract class AbstractInputJsonWriter {
                    input);
         writer.close();
     }
-
-    /**
-     * Adding some additional data to write from the current {@link AbstractInput}.
-     *
-     * @param writer the current @code JsonWriter} to use
-     * @param input  the current {@link AbstractInput} to read
-     *
-     * @throws IOException
-     */
-    public abstract void writeAdditionalInputData(@NonNull final JsonWriter writer,
-                                                  @NonNull final AbstractInput input) throws
-                                                                                      IOException;
-
-    /**
-     * Adding some additional data to write from the current {@link AbstractTaxon}.
-     *
-     * @param writer the current @code JsonWriter} to use
-     * @param taxon  the current {@link AbstractTaxon} to read
-     *
-     * @throws IOException
-     */
-    public abstract void writeAdditionalTaxonData(@NonNull final JsonWriter writer,
-                                                  @NonNull final AbstractTaxon taxon) throws
-                                                                                      IOException;
 
     private void writeInput(@NonNull final JsonWriter writer,
                             @NonNull final AbstractInput input) throws
@@ -68,12 +52,12 @@ public abstract class AbstractInputJsonWriter {
         writer.name("initial_input")
               .value("nomade");
         writer.name("dateobs")
-              .value(DateFormat.format(dateFormat,
+              .value(DateFormat.format(getDateFormat(),
                                        input.getDate())
                                .toString());
 
-        writeAdditionalInputData(writer,
-                                 input);
+        onInputJsonWriterListener.writeAdditionalInputData(writer,
+                                                           input);
 
         writeObservers(writer,
                        input.getObservers()
@@ -130,12 +114,44 @@ public abstract class AbstractInputJsonWriter {
               .value(taxon.getCriterionId());
         writer.endObject();
 
-        writeAdditionalTaxonData(writer,
-                                 taxon);
+        onInputJsonWriterListener.writeAdditionalTaxonData(writer,
+                                                           taxon);
 
         writer.name("comment")
               .value(taxon.getComment());
 
         writer.endObject();
+    }
+
+    /**
+     * Callback used by {@link InputJsonWriter}.
+     *
+     * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
+     */
+    public interface OnInputJsonWriterListener {
+
+        /**
+         * Adding some additional data to write from the current {@link AbstractInput}.
+         *
+         * @param writer the current @code JsonWriter} to use
+         * @param input  the current {@link AbstractInput} to read
+         *
+         * @throws IOException
+         */
+        void writeAdditionalInputData(@NonNull final JsonWriter writer,
+                                      @NonNull final AbstractInput input) throws
+                                                                          IOException;
+
+        /**
+         * Adding some additional data to write from the current {@link AbstractTaxon}.
+         *
+         * @param writer the current @code JsonWriter} to use
+         * @param taxon  the current {@link AbstractTaxon} to read
+         *
+         * @throws IOException
+         */
+        void writeAdditionalTaxonData(@NonNull final JsonWriter writer,
+                                      @NonNull final AbstractTaxon taxon) throws
+                                                                          IOException;
     }
 }

@@ -236,6 +236,7 @@ public abstract class AbstractInput
      *
      * @return an unique ID
      */
+    @Deprecated
     public static long generateId() {
         final Calendar now = Calendar.getInstance();
         now.set(Calendar.MILLISECOND,

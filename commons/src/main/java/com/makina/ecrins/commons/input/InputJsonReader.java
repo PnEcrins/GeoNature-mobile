@@ -19,14 +19,22 @@ import java.util.Map;
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
-public abstract class AbstractInputJsonReader {
+public class InputJsonReader {
 
-    private static final String TAG = AbstractInputJsonReader.class.getSimpleName();
+    private static final String TAG = InputJsonReader.class.getSimpleName();
 
-    String dateFormat = "yyyy/MM/dd";
+    private final String dateFormat;
+    private final OnInputJsonReaderListener onInputJsonReaderListener;
 
-    public void setDateFormat(@NonNull final String dateFormat) {
+    public InputJsonReader(@NonNull final String dateFormat,
+                           @NonNull final OnInputJsonReaderListener onInputJsonReaderListener) {
         this.dateFormat = dateFormat;
+        this.onInputJsonReaderListener = onInputJsonReaderListener;
+    }
+
+    @NonNull
+    public String getDateFormat() {
+        return dateFormat;
     }
 
     @NonNull
@@ -39,52 +47,10 @@ public abstract class AbstractInputJsonReader {
         return input;
     }
 
-    /**
-     * Returns a new instance of {@link AbstractInput}.
-     *
-     * @return new instance of {@link AbstractInput}
-     */
-    @NonNull
-    public abstract AbstractInput createInput();
-
-    /**
-     * Returns a new instance of {@link AbstractTaxon}.
-     *
-     * @return new instance of {@link AbstractTaxon} to use
-     */
-    @NonNull
-    public abstract AbstractTaxon createTaxon();
-
-    /**
-     * Reading some additional data to set to the given {@link AbstractInput}.
-     *
-     * @param reader  the current @code JsonReader} to use
-     * @param keyName the JSON key read
-     * @param input   the current {@link AbstractInput} to use
-     *
-     * @throws IOException
-     */
-    public abstract void readAdditionalInputData(@NonNull final JsonReader reader,
-                                                 @NonNull final String keyName,
-                                                 @NonNull final AbstractInput input);
-
-    /**
-     * Reading some additional data to set to the given {@link AbstractTaxon}.
-     *
-     * @param reader  the current @code JsonReader} to use
-     * @param keyName the JSON key read
-     * @param taxon   the current {@link AbstractTaxon} to use
-     *
-     * @throws IOException
-     */
-    public abstract void readAdditionalTaxonData(@NonNull final JsonReader reader,
-                                                 @NonNull final String keyName,
-                                                 @NonNull final AbstractTaxon taxon);
-
     @NonNull
     private AbstractInput readInput(@NonNull final JsonReader reader) throws
                                                                       IOException {
-        final AbstractInput input = createInput();
+        final AbstractInput input = onInputJsonReaderListener.createInput();
 
         reader.beginObject();
 
@@ -109,7 +75,7 @@ public abstract class AbstractInputJsonReader {
                 case "dateobs":
                     try {
                         @SuppressLint("SimpleDateFormat")
-                        final Date date = new SimpleDateFormat(dateFormat).parse(reader.nextString());
+                        final Date date = new SimpleDateFormat(getDateFormat()).parse(reader.nextString());
                         input.setDate(date);
                     }
                     catch (ParseException pe) {
@@ -133,9 +99,9 @@ public abstract class AbstractInputJsonReader {
 
                     break;
                 default:
-                    readAdditionalInputData(reader,
-                                            keyName,
-                                            input);
+                    onInputJsonReaderListener.readAdditionalInputData(reader,
+                                                                      keyName,
+                                                                      input);
                     break;
             }
         }
@@ -215,7 +181,7 @@ public abstract class AbstractInputJsonReader {
     @NonNull
     private AbstractTaxon readTaxon(@NonNull final JsonReader reader) throws
                                                                       IOException {
-        final AbstractTaxon taxon = createTaxon();
+        final AbstractTaxon taxon = onInputJsonReaderListener.createTaxon();
 
         reader.beginObject();
 
@@ -248,9 +214,9 @@ public abstract class AbstractInputJsonReader {
                     taxon.setComment(reader.nextString());
                     break;
                 default:
-                    readAdditionalTaxonData(reader,
-                                            keyName,
-                                            taxon);
+                    onInputJsonReaderListener.readAdditionalTaxonData(reader,
+                                                                      keyName,
+                                                                      taxon);
                     break;
             }
         }
@@ -258,5 +224,57 @@ public abstract class AbstractInputJsonReader {
         reader.endObject();
 
         return taxon;
+    }
+
+    /**
+     * Callback used by {@link InputJsonReader}.
+     *
+     * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
+     */
+    public interface OnInputJsonReaderListener {
+
+        /**
+         * Returns a new instance of {@link AbstractInput}.
+         *
+         * @return new instance of {@link AbstractInput}
+         */
+        @NonNull
+        AbstractInput createInput();
+
+        /**
+         * Returns a new instance of {@link AbstractTaxon}.
+         *
+         * @return new instance of {@link AbstractTaxon} to use
+         */
+        @NonNull
+        AbstractTaxon createTaxon();
+
+        /**
+         * Reading some additional data to set to the given {@link AbstractInput}.
+         *
+         * @param reader  the current @code JsonReader} to use
+         * @param keyName the JSON key read
+         * @param input   the current {@link AbstractInput} to use
+         *
+         * @throws IOException
+         */
+        void readAdditionalInputData(@NonNull final JsonReader reader,
+                                     @NonNull final String keyName,
+                                     @NonNull final AbstractInput input) throws
+                                                                         IOException;
+
+        /**
+         * Reading some additional data to set to the given {@link AbstractTaxon}.
+         *
+         * @param reader  the current @code JsonReader} to use
+         * @param keyName the JSON key read
+         * @param taxon   the current {@link AbstractTaxon} to use
+         *
+         * @throws IOException
+         */
+        void readAdditionalTaxonData(@NonNull final JsonReader reader,
+                                     @NonNull final String keyName,
+                                     @NonNull final AbstractTaxon taxon) throws
+                                                                         IOException;
     }
 }
