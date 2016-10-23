@@ -1,11 +1,12 @@
 package com.makina.ecrins.commons.input;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.util.JsonReader;
+import android.util.JsonToken;
 import android.util.Log;
-
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -19,22 +20,26 @@ import java.util.Map;
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class InputJsonReader {
 
     private static final String TAG = InputJsonReader.class.getSimpleName();
 
-    private final String dateFormat;
+    private String dateFormat;
     private final OnInputJsonReaderListener onInputJsonReaderListener;
 
-    public InputJsonReader(@NonNull final String dateFormat,
-                           @NonNull final OnInputJsonReaderListener onInputJsonReaderListener) {
-        this.dateFormat = dateFormat;
+    public InputJsonReader(@NonNull final OnInputJsonReaderListener onInputJsonReaderListener) {
+        this.dateFormat = InputHelper.DEFAULT_DATE_FORMAT;
         this.onInputJsonReaderListener = onInputJsonReaderListener;
     }
 
     @NonNull
     public String getDateFormat() {
         return dateFormat;
+    }
+
+    public void setDateFormat(@NonNull final String dateFormat) {
+        this.dateFormat = dateFormat;
     }
 
     @NonNull

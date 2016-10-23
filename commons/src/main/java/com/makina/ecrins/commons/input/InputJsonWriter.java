@@ -1,9 +1,10 @@
 package com.makina.ecrins.commons.input;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
-
-import com.google.gson.stream.JsonWriter;
+import android.util.JsonWriter;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -14,20 +15,24 @@ import java.util.Collection;
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class InputJsonWriter {
 
-    private final String dateFormat;
+    private String dateFormat;
     private final OnInputJsonWriterListener onInputJsonWriterListener;
 
-    public InputJsonWriter(@NonNull final String dateFormat,
-                           @NonNull OnInputJsonWriterListener onInputJsonWriterListener) {
-        this.dateFormat = dateFormat;
+    public InputJsonWriter(@NonNull OnInputJsonWriterListener onInputJsonWriterListener) {
+        this.dateFormat = InputHelper.DEFAULT_DATE_FORMAT;
         this.onInputJsonWriterListener = onInputJsonWriterListener;
     }
 
     @NonNull
     public String getDateFormat() {
         return dateFormat;
+    }
+
+    public void setDateFormat(@NonNull final String dateFormat) {
+        this.dateFormat = dateFormat;
     }
 
     public void write(@NonNull final Writer out,

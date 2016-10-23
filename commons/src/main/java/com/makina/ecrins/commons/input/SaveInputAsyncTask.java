@@ -18,7 +18,9 @@ import java.io.IOException;
  * {@code AsyncTask} implementation to save current {@link AbstractInput} as {@code JSON} file.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+ * @deprecated use {@link AbstractInputIntentService} instead
  */
+@Deprecated
 public class SaveInputAsyncTask
         extends AsyncTask<AbstractInput, Void, Boolean> {
 
@@ -29,9 +31,8 @@ public class SaveInputAsyncTask
     private Context mContext;
     private Handler mHandler;
 
-    public SaveInputAsyncTask(
-            Context pContext,
-            Handler pHandler) {
+    public SaveInputAsyncTask(Context pContext,
+                              Handler pHandler) {
 
         super();
         this.mContext = pContext;

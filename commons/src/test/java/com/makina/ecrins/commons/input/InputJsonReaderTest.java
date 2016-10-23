@@ -43,8 +43,7 @@ public class InputJsonReaderTest {
         doReturn(new DummyTaxon(0L)).when(onInputJsonReaderListener)
                                     .createTaxon();
 
-        inputJsonReader = spy(new InputJsonReader(InputHelper.DEFAULT_DATE_FORMAT,
-                                                  onInputJsonReaderListener));
+        inputJsonReader = spy(new InputJsonReader(onInputJsonReaderListener));
     }
 
     @Test

@@ -121,6 +121,9 @@ public abstract class AbstractTaxon
         this.mComment = pComment;
     }
 
+    /**
+     * @deprecated use {@link InputJsonReader} instead
+     */
     @Deprecated
     public JSONObject getJSONObject() throws
                                       JSONException {

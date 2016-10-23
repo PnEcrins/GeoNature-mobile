@@ -39,8 +39,7 @@ public class InputJsonWriterTest {
                         Exception {
         MockitoAnnotations.initMocks(this);
 
-        inputJsonWriter = spy(new InputJsonWriter(InputHelper.DEFAULT_DATE_FORMAT,
-                                                  onInputJsonWriterListener));
+        inputJsonWriter = spy(new InputJsonWriter(onInputJsonWriterListener));
     }
 
     @Test

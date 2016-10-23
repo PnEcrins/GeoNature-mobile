@@ -170,6 +170,9 @@ public abstract class AbstractInput
         return getTaxa().get(getCurrentSelectedTaxonId());
     }
 
+    /**
+     * @deprecated use {@link InputJsonReader} instead
+     */
     @Deprecated
     public JSONObject getJSONObject() throws
                                       JSONException {
