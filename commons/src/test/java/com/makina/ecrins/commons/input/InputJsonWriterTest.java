@@ -1,8 +1,7 @@
 package com.makina.ecrins.commons.input;
 
 import android.text.format.DateFormat;
-
-import com.google.gson.stream.JsonWriter;
+import android.util.JsonWriter;
 
 import org.junit.Before;
 import org.junit.Test;

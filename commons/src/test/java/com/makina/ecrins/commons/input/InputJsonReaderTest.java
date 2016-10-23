@@ -1,6 +1,6 @@
 package com.makina.ecrins.commons.input;
 
-import com.google.gson.stream.JsonReader;
+import android.util.JsonReader;
 
 import org.junit.Before;
 import org.junit.Test;
