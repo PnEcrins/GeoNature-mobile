@@ -1,20 +1,9 @@
 package com.makina.ecrins.maps.jts.geojson;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 
 import com.makina.ecrins.maps.TestHelper;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +13,15 @@ import org.robolectric.RobolectricTestRunner;
 import java.io.StringWriter;
 import java.util.Arrays;
 
+import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createCoordinate;
+import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createGeometryCollection;
+import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createLineString;
+import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createLinearRing;
+import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createMultiLineString;
+import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createMultiPoint;
+import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createMultiPolygon;
+import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createPoint;
+import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createPolygon;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.doReturn;
@@ -56,7 +54,8 @@ public class GeoJsonWriterTest {
                        .getId();
         doReturn("Feature").when(feature)
                            .getType();
-        doReturn(createPoint(47.2256258d,
+        doReturn(createPoint(gf,
+                             47.2256258d,
                              -1.5545135d)).when(feature)
                                           .getGeometry();
         doReturn(new Bundle()).when(feature)
@@ -82,9 +81,12 @@ public class GeoJsonWriterTest {
                        .getId();
         doReturn("Feature").when(feature)
                            .getType();
-        doReturn(createMultiPoint(createPoint(47.2256258d,
+        doReturn(createMultiPoint(gf,
+                                  createPoint(gf,
+                                              47.2256258d,
                                               -1.5545135d),
-                                  createPoint(47.225136d,
+                                  createPoint(gf,
+                                              47.225136d,
                                               -1.553913d))).when(feature)
                                                            .getGeometry();
         doReturn(new Bundle()).when(feature)
@@ -110,9 +112,12 @@ public class GeoJsonWriterTest {
                        .getId();
         doReturn("Feature").when(feature)
                            .getType();
-        doReturn(createLineString(createCoordinate(47.2256258d,
+        doReturn(createLineString(gf,
+                                  createCoordinate(gf,
+                                                   47.2256258d,
                                                    -1.5545135d),
-                                  createCoordinate(47.225136d,
+                                  createCoordinate(gf,
+                                                   47.225136d,
                                                    -1.553913d))).when(feature)
                                                                 .getGeometry();
         doReturn(new Bundle()).when(feature)
@@ -138,9 +143,13 @@ public class GeoJsonWriterTest {
                        .getId();
         doReturn("Feature").when(feature)
                            .getType();
-        doReturn(createMultiLineString(createLineString(createCoordinate(47.2256258d,
+        doReturn(createMultiLineString(gf,
+                                       createLineString(gf,
+                                                        createCoordinate(gf,
+                                                                         47.2256258d,
                                                                          -1.5545135d),
-                                                        createCoordinate(47.225136d,
+                                                        createCoordinate(gf,
+                                                                         47.225136d,
                                                                          -1.553913d)))).when(feature)
                                                                                        .getGeometry();
         doReturn(new Bundle()).when(feature)
@@ -166,15 +175,21 @@ public class GeoJsonWriterTest {
                        .getId();
         doReturn("Feature").when(feature)
                            .getType();
-        doReturn(createPolygon(createCoordinate(47.226219d,
+        doReturn(createPolygon(gf,
+                               createCoordinate(gf,
+                                                47.226219d,
                                                 -1.554430d),
-                               createCoordinate(47.226237d,
+                               createCoordinate(gf,
+                                                47.226237d,
                                                 -1.554261d),
-                               createCoordinate(47.226122d,
+                               createCoordinate(gf,
+                                                47.226122d,
                                                 -1.554245d),
-                               createCoordinate(47.226106d,
+                               createCoordinate(gf,
+                                                47.226106d,
                                                 -1.554411d),
-                               createCoordinate(47.226219d,
+                               createCoordinate(gf,
+                                                47.226219d,
                                                 -1.554430d))).when(feature)
                                                              .getGeometry();
         doReturn(new Bundle()).when(feature)
@@ -200,25 +215,38 @@ public class GeoJsonWriterTest {
                        .getId();
         doReturn("Feature").when(feature)
                            .getType();
-        doReturn(createPolygon(createLinearRing(createCoordinate(47.226257d,
+        doReturn(createPolygon(gf,
+                               createLinearRing(gf,
+                                                createCoordinate(gf,
+                                                                 47.226257d,
                                                                  -1.554564d),
-                                                createCoordinate(47.226295d,
+                                                createCoordinate(gf,
+                                                                 47.226295d,
                                                                  -1.554202d),
-                                                createCoordinate(47.226075d,
+                                                createCoordinate(gf,
+                                                                 47.226075d,
                                                                  -1.554169d),
-                                                createCoordinate(47.226049d,
+                                                createCoordinate(gf,
+                                                                 47.226049d,
                                                                  -1.554496d),
-                                                createCoordinate(47.226257d,
+                                                createCoordinate(gf,
+                                                                 47.226257d,
                                                                  -1.554564d)),
-                               createLinearRing(createCoordinate(47.226219d,
+                               createLinearRing(gf,
+                                                createCoordinate(gf,
+                                                                 47.226219d,
                                                                  -1.554430d),
-                                                createCoordinate(47.226237d,
+                                                createCoordinate(gf,
+                                                                 47.226237d,
                                                                  -1.554261d),
-                                                createCoordinate(47.226122d,
+                                                createCoordinate(gf,
+                                                                 47.226122d,
                                                                  -1.554245d),
-                                                createCoordinate(47.226106d,
+                                                createCoordinate(gf,
+                                                                 47.226106d,
                                                                  -1.554411d),
-                                                createCoordinate(47.226219d,
+                                                createCoordinate(gf,
+                                                                 47.226219d,
                                                                  -1.554430d)))).when(feature)
                                                                                .getGeometry();
         doReturn(new Bundle()).when(feature)
@@ -244,35 +272,55 @@ public class GeoJsonWriterTest {
                        .getId();
         doReturn("Feature").when(feature)
                            .getType();
-        doReturn(createMultiPolygon(createPolygon(createCoordinate(47.226116d,
+        doReturn(createMultiPolygon(gf,
+                                    createPolygon(gf,
+                                                  createCoordinate(gf,
+                                                                   47.226116d,
                                                                    -1.554169d),
-                                                  createCoordinate(47.226126d,
+                                                  createCoordinate(gf,
+                                                                   47.226126d,
                                                                    -1.554097d),
-                                                  createCoordinate(47.225527d,
+                                                  createCoordinate(gf,
+                                                                   47.225527d,
                                                                    -1.553986d),
-                                                  createCoordinate(47.225519d,
+                                                  createCoordinate(gf,
+                                                                   47.225519d,
                                                                    -1.554061d),
-                                                  createCoordinate(47.226116d,
+                                                  createCoordinate(gf,
+                                                                   47.226116d,
                                                                    -1.554169d)),
-                                    createPolygon(createLinearRing(createCoordinate(47.226257d,
+                                    createPolygon(gf,
+                                                  createLinearRing(gf,
+                                                                   createCoordinate(gf,
+                                                                                    47.226257d,
                                                                                     -1.554564d),
-                                                                   createCoordinate(47.226295d,
+                                                                   createCoordinate(gf,
+                                                                                    47.226295d,
                                                                                     -1.554202d),
-                                                                   createCoordinate(47.226075d,
+                                                                   createCoordinate(gf,
+                                                                                    47.226075d,
                                                                                     -1.554169d),
-                                                                   createCoordinate(47.226049d,
+                                                                   createCoordinate(gf,
+                                                                                    47.226049d,
                                                                                     -1.554496d),
-                                                                   createCoordinate(47.226257d,
+                                                                   createCoordinate(gf,
+                                                                                    47.226257d,
                                                                                     -1.554564d)),
-                                                  createLinearRing(createCoordinate(47.226219d,
+                                                  createLinearRing(gf,
+                                                                   createCoordinate(gf,
+                                                                                    47.226219d,
                                                                                     -1.554430d),
-                                                                   createCoordinate(47.226237d,
+                                                                   createCoordinate(gf,
+                                                                                    47.226237d,
                                                                                     -1.554261d),
-                                                                   createCoordinate(47.226122d,
+                                                                   createCoordinate(gf,
+                                                                                    47.226122d,
                                                                                     -1.554245d),
-                                                                   createCoordinate(47.226106d,
+                                                                   createCoordinate(gf,
+                                                                                    47.226106d,
                                                                                     -1.554411d),
-                                                                   createCoordinate(47.226219d,
+                                                                   createCoordinate(gf,
+                                                                                    47.226219d,
                                                                                     -1.554430d))))).when(feature)
                                                                                                    .getGeometry();
 
@@ -299,29 +347,47 @@ public class GeoJsonWriterTest {
                        .getId();
         doReturn("Feature").when(feature)
                            .getType();
-        doReturn(createGeometryCollection(createPoint(47.2256258d,
+        doReturn(createGeometryCollection(gf,
+                                          createPoint(gf,
+                                                      47.2256258d,
                                                       -1.5545135d),
-                                          createMultiPoint(createPoint(47.2256258d,
+                                          createMultiPoint(gf,
+                                                           createPoint(gf,
+                                                                       47.2256258d,
                                                                        -1.5545135d),
-                                                           createPoint(47.225136d,
+                                                           createPoint(gf,
+                                                                       47.225136d,
                                                                        -1.553913d)),
-                                          createLineString(createCoordinate(47.2256258d,
+                                          createLineString(gf,
+                                                           createCoordinate(gf,
+                                                                            47.2256258d,
                                                                             -1.5545135d),
-                                                           createCoordinate(47.225136d,
+                                                           createCoordinate(gf,
+                                                                            47.225136d,
                                                                             -1.553913d)),
-                                          createMultiLineString(createLineString(createCoordinate(47.2256258d,
+                                          createMultiLineString(gf,
+                                                                createLineString(gf,
+                                                                                 createCoordinate(gf,
+                                                                                                  47.2256258d,
                                                                                                   -1.5545135d),
-                                                                                 createCoordinate(47.225136d,
+                                                                                 createCoordinate(gf,
+                                                                                                  47.225136d,
                                                                                                   -1.553913d))),
-                                          createPolygon(createCoordinate(47.226219d,
+                                          createPolygon(gf,
+                                                        createCoordinate(gf,
+                                                                         47.226219d,
                                                                          -1.554430d),
-                                                        createCoordinate(47.226237d,
+                                                        createCoordinate(gf,
+                                                                         47.226237d,
                                                                          -1.554261d),
-                                                        createCoordinate(47.226122d,
+                                                        createCoordinate(gf,
+                                                                         47.226122d,
                                                                          -1.554245d),
-                                                        createCoordinate(47.226106d,
+                                                        createCoordinate(gf,
+                                                                         47.226106d,
                                                                          -1.554411d),
-                                                        createCoordinate(47.226219d,
+                                                        createCoordinate(gf,
+                                                                         47.226219d,
                                                                          -1.554430d)))).when(feature)
                                                                                        .getGeometry();
 
@@ -342,7 +408,7 @@ public class GeoJsonWriterTest {
     @Test
     public void testWriteEmptyFeatureCollection() throws
                                                   Exception {
-        // given a FeatureCollection
+        // given an empty FeatureCollection
         final FeatureCollection featureCollection = mock(FeatureCollection.class);
         doReturn("FeatureCollection").when(featureCollection)
                                      .getType();
@@ -367,7 +433,8 @@ public class GeoJsonWriterTest {
                        .getId();
         doReturn("Feature").when(feature1)
                            .getType();
-        doReturn(createPoint(47.2256258d,
+        doReturn(createPoint(gf,
+                             47.2256258d,
                              -1.5545135d)).when(feature1)
                                           .getGeometry();
         doReturn(new Bundle()).when(feature1)
@@ -379,9 +446,12 @@ public class GeoJsonWriterTest {
                        .getId();
         doReturn("Feature").when(feature2)
                            .getType();
-        doReturn(createMultiPoint(createPoint(47.2256258d,
+        doReturn(createMultiPoint(gf,
+                                  createPoint(gf,
+                                              47.2256258d,
                                               -1.5545135d),
-                                  createPoint(47.225136d,
+                                  createPoint(gf,
+                                              47.225136d,
                                               -1.553913d))).when(feature2)
                                                            .getGeometry();
         doReturn(new Bundle()).when(feature2)
@@ -393,9 +463,12 @@ public class GeoJsonWriterTest {
                        .getId();
         doReturn("Feature").when(feature3)
                            .getType();
-        doReturn(createLineString(createCoordinate(47.2256258d,
+        doReturn(createLineString(gf,
+                                  createCoordinate(gf,
+                                                   47.2256258d,
                                                    -1.5545135d),
-                                  createCoordinate(47.225136d,
+                                  createCoordinate(gf,
+                                                   47.225136d,
                                                    -1.553913d))).when(feature3)
                                                                 .getGeometry();
         doReturn(new Bundle()).when(feature3)
@@ -407,9 +480,13 @@ public class GeoJsonWriterTest {
                        .getId();
         doReturn("Feature").when(feature4)
                            .getType();
-        doReturn(createMultiLineString(createLineString(createCoordinate(47.2256258d,
+        doReturn(createMultiLineString(gf,
+                                       createLineString(gf,
+                                                        createCoordinate(gf,
+                                                                         47.2256258d,
                                                                          -1.5545135d),
-                                                        createCoordinate(47.225136d,
+                                                        createCoordinate(gf,
+                                                                         47.225136d,
                                                                          -1.553913d)))).when(feature4)
                                                                                        .getGeometry();
         doReturn(new Bundle()).when(feature4)
@@ -421,15 +498,21 @@ public class GeoJsonWriterTest {
                        .getId();
         doReturn("Feature").when(feature5)
                            .getType();
-        doReturn(createPolygon(createCoordinate(47.226219d,
+        doReturn(createPolygon(gf,
+                               createCoordinate(gf,
+                                                47.226219d,
                                                 -1.554430d),
-                               createCoordinate(47.226237d,
+                               createCoordinate(gf,
+                                                47.226237d,
                                                 -1.554261d),
-                               createCoordinate(47.226122d,
+                               createCoordinate(gf,
+                                                47.226122d,
                                                 -1.554245d),
-                               createCoordinate(47.226106d,
+                               createCoordinate(gf,
+                                                47.226106d,
                                                 -1.554411d),
-                               createCoordinate(47.226219d,
+                               createCoordinate(gf,
+                                                47.226219d,
                                                 -1.554430d))).when(feature5)
                                                              .getGeometry();
         doReturn(new Bundle()).when(feature5)
@@ -455,61 +538,5 @@ public class GeoJsonWriterTest {
         assertNotNull(writer.toString());
         assertEquals(TestHelper.getFixture("featurecollection.json"),
                      writer.toString());
-    }
-
-    @NonNull
-    private Coordinate createCoordinate(double latitude,
-                                        double longitude) {
-        return new Coordinate(longitude,
-                              latitude);
-    }
-
-    @NonNull
-    private Point createPoint(double latitude,
-                              double longitude) {
-        return gf.createPoint(createCoordinate(latitude,
-                                               longitude));
-    }
-
-    @NonNull
-    private MultiPoint createMultiPoint(@NonNull final Point... points) {
-        return gf.createMultiPoint(points);
-    }
-
-    @NonNull
-    private LineString createLineString(@NonNull final Coordinate... coordinates) {
-        return gf.createLineString(coordinates);
-    }
-
-    @NonNull
-    private MultiLineString createMultiLineString(@NonNull final LineString... lineStrings) {
-        return gf.createMultiLineString(lineStrings);
-    }
-
-    @NonNull
-    private LinearRing createLinearRing(@NonNull final Coordinate... coordinates) {
-        return gf.createLinearRing(coordinates);
-    }
-
-    @NonNull
-    private Polygon createPolygon(@NonNull final Coordinate... coordinates) {
-        return gf.createPolygon(coordinates);
-    }
-
-    @NonNull
-    private Polygon createPolygon(@NonNull final LinearRing shell,
-                                  @NonNull final LinearRing... holes) {
-        return gf.createPolygon(shell,
-                                holes);
-    }
-
-    @NonNull
-    private MultiPolygon createMultiPolygon(@NonNull final Polygon... polygons) {
-        return gf.createMultiPolygon(polygons);
-    }
-
-    @NonNull
-    private GeometryCollection createGeometryCollection(@NonNull final Geometry... geometries) {
-        return gf.createGeometryCollection(geometries);
     }
 }
