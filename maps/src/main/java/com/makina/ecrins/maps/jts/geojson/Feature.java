@@ -48,6 +48,15 @@ public class Feature
         return properties;
     }
 
+    /**
+     * Performs an operation on a given {@link Feature}.
+     *
+     * @param filter the filter to apply to this {@link Feature}
+     */
+    public void apply(IFeatureFilterVisitor filter) {
+        filter.filter(this);
+    }
+
     @Override
     public int describeContents() {
         return 0;

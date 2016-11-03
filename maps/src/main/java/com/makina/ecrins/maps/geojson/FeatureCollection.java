@@ -18,6 +18,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
+@Deprecated
 public class FeatureCollection implements Parcelable {
 
     private final Map<String, Feature> mFeatures = new HashMap<>();

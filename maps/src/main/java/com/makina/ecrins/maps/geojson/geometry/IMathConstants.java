@@ -5,6 +5,7 @@ package com.makina.ecrins.maps.geojson.geometry;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
+@Deprecated
 public interface IMathConstants {
 
     public static final float DEG2RAD = (float) (Math.PI / 180.0);

@@ -1,11 +1,12 @@
-package com.makina.ecrins.maps.geojson;
+package com.makina.ecrins.maps.jts.geojson;
+
+import android.support.annotation.NonNull;
 
 /**
  * Visitor pattern to apply a concrete filter to a given {@link Feature}.
  *
- * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+ * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
-@Deprecated
 public interface IFeatureFilterVisitor {
 
     /**
@@ -13,5 +14,5 @@ public interface IFeatureFilterVisitor {
      *
      * @param feature a {@link Feature} instance to which the filter is applied
      */
-    public void filter(Feature feature);
+    void filter(@NonNull final Feature feature);
 }

@@ -19,7 +19,7 @@ import com.vividsolutions.jts.geom.Polygon;
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
-public class JTSUtils {
+public class JTSTestHelper {
 
     @NonNull
     public static Coordinate createCoordinate(@NonNull final GeometryFactory gf,

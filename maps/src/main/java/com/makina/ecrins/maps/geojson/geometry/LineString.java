@@ -18,6 +18,7 @@ import java.util.List;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
+@Deprecated
 public class LineString implements IGeometry {
 
     private List<Point> mPoints = new ArrayList<>();

@@ -10,15 +10,15 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.io.StringReader;
 
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createCoordinate;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createGeometryCollection;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createLineString;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createLinearRing;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createMultiLineString;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createMultiPoint;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createMultiPolygon;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createPoint;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createPolygon;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createCoordinate;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createGeometryCollection;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createLineString;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createLinearRing;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createMultiLineString;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createMultiPoint;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createMultiPolygon;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createPoint;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createPolygon;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;

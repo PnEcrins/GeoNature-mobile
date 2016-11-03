@@ -5,6 +5,7 @@ package com.makina.ecrins.maps.geojson;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
+@Deprecated
 public enum GeoJSONType {
 
     FEATURE_COLLECTION("FeatureCollection"),

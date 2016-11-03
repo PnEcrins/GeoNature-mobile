@@ -21,6 +21,7 @@ import java.util.List;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
+@Deprecated
 public final class GeometryUtils implements IMathConstants, IGeoConstants {
 
     /**

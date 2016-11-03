@@ -66,6 +66,19 @@ public class FeatureCollection
         return features.isEmpty();
     }
 
+    /**
+     * Performs an operation on all {@link Feature}s of this collection.
+     *
+     * @param filter the filter to apply to all these {@link Feature}s
+     */
+    public void apply(IFeatureFilterVisitor filter) {
+        final List<Feature> features = getFeatures();
+
+        for (Feature feature : features) {
+            feature.apply(filter);
+        }
+    }
+
     @Override
     public int describeContents() {
         return 0;

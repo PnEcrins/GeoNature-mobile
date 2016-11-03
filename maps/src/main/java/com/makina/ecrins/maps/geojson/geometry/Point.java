@@ -16,6 +16,7 @@ import java.util.List;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
+@Deprecated
 public class Point implements IGeometry {
 
     private GeoPoint mGeoPoint;

@@ -15,6 +15,7 @@ import org.json.JSONObject;
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  * @see <a href="http://leafletjs.com/reference.html#path">http://leafletjs.com/reference.html#path</a>
  */
+@Deprecated
 public class FeatureStyle implements Parcelable {
 
     public final String KEY_STROKE = "stroke";

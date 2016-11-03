@@ -11,17 +11,17 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import java.io.StringWriter;
-import java.util.Arrays;
 
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createCoordinate;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createGeometryCollection;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createLineString;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createLinearRing;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createMultiLineString;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createMultiPoint;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createMultiPolygon;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createPoint;
-import static com.makina.ecrins.maps.jts.geojson.JTSUtils.createPolygon;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createCoordinate;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createGeometryCollection;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createLineString;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createLinearRing;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createMultiLineString;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createMultiPoint;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createMultiPolygon;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createPoint;
+import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createPolygon;
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.doReturn;
@@ -522,12 +522,12 @@ public class GeoJsonWriterTest {
         final FeatureCollection featureCollection = mock(FeatureCollection.class);
         doReturn("FeatureCollection").when(featureCollection)
                                      .getType();
-        doReturn(Arrays.asList(feature1,
-                               feature2,
-                               feature3,
-                               feature4,
-                               feature5)).when(featureCollection)
-                                         .getFeatures();
+        doReturn(asList(feature1,
+                        feature2,
+                        feature3,
+                        feature4,
+                        feature5)).when(featureCollection)
+                                  .getFeatures();
 
         // when write this FeatureCollection as JSON string
         final StringWriter writer = new StringWriter();

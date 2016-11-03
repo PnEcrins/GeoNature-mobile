@@ -15,6 +15,7 @@ import java.io.Serializable;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
+@Deprecated
 public class GeoPoint implements IMathConstants, IGeoConstants, Serializable, Parcelable, Comparable<GeoPoint> {
 
     private static final long serialVersionUID = -2537159865270907402L;
