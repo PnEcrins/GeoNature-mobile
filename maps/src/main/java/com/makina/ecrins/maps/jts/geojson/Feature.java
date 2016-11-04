@@ -26,7 +26,7 @@ public class Feature
         this.geometry = geometry;
     }
 
-    public Feature(Parcel source) {
+    protected Feature(Parcel source) {
         id = source.readString();
         type = source.readString();
         geometry = (Geometry) source.readSerializable();

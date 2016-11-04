@@ -24,15 +24,11 @@ public class FeatureCollection
         super();
     }
 
-    public FeatureCollection(Parcel source) {
+    protected FeatureCollection(Parcel source) {
         final List<Feature> features = new ArrayList<>();
         source.readTypedList(features,
                              Feature.CREATOR);
-
-        for (Feature feature : features) {
-            this.features.put(feature.getId(),
-                              feature);
-        }
+        addAllFeatures(features);
     }
 
     @NonNull
@@ -52,6 +48,13 @@ public class FeatureCollection
     public void addFeature(@NonNull final Feature feature) {
         features.put(feature.getId(),
                      feature);
+    }
+
+    public void addAllFeatures(@NonNull final List<Feature> features) {
+        for (Feature feature : features) {
+            this.features.put(feature.getId(),
+                              feature);
+        }
     }
 
     public void removeFeature(@NonNull final String featureId) {

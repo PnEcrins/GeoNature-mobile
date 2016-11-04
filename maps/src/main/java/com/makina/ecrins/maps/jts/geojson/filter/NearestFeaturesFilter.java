@@ -26,6 +26,15 @@ public class NearestFeaturesFilter
     private final GeoPoint geoPoint;
     private final double maxDistance;
 
+    /**
+     * Gets an ordered {@code List} of nearest {@link Feature}s located at a given distance (in meters)
+     *
+     * @param geoPoint    the current {@link GeoPoint} to use.
+     * @param maxDistance the max distance in meters as filter
+     * @param features    a {@code List} of {@link Feature}s on which to apply the filter
+     *
+     * @return an ordered {@code List} of nearest filtered {@link Feature}s found
+     */
     @NonNull
     public static List<Feature> getFilteredFeatures(@NonNull final GeoPoint geoPoint,
                                                     double maxDistance,
@@ -40,6 +49,15 @@ public class NearestFeaturesFilter
         return nearestFeaturesFilter.getFilteredFeatures();
     }
 
+    /**
+     * Gets an ordered {@code List} of nearest {@link Feature}s located at a given distance (in meters)
+     *
+     * @param geoPoint          the current {@link GeoPoint} to use.
+     * @param maxDistance       the max distance in meters as filter
+     * @param featureCollection the {@link FeatureCollection} on which to apply the filter
+     *
+     * @return an ordered {@code List} of nearest filtered {@link Feature}s found
+     */
     @NonNull
     public static List<Feature> getFilteredFeatures(@NonNull final GeoPoint geoPoint,
                                                     double maxDistance,
@@ -51,6 +69,12 @@ public class NearestFeaturesFilter
         return nearestFeaturesFilter.getFilteredFeatures();
     }
 
+    /**
+     * Default constructor.
+     *
+     * @param geoPoint    the current {@link GeoPoint} to use.
+     * @param maxDistance the max distance in meters as filter
+     */
     public NearestFeaturesFilter(@NonNull final GeoPoint geoPoint,
                                  double maxDistance) {
         this.features = new TreeMap<>();
