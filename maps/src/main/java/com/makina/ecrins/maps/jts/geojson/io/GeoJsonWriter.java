@@ -4,7 +4,10 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.JsonWriter;
+import android.util.Log;
 
 import com.makina.ecrins.maps.jts.geojson.AbstractGeoJson;
 import com.makina.ecrins.maps.jts.geojson.Feature;
@@ -20,6 +23,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 
 /**
@@ -32,6 +36,47 @@ import java.io.Writer;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class GeoJsonWriter {
 
+    private static final String TAG = GeoJsonWriter.class.getSimpleName();
+
+    /**
+     * Convert the given {@link Feature} as {@code JSON} string.
+     *
+     * @param feature the {@link Feature} to convert
+     *
+     * @return a {@code JSON} string representation of the given {@link Feature} or {@code null} if something goes wrong
+     *
+     * @see #write(Writer, Feature)
+     */
+    @Nullable
+    public String write(@Nullable final Feature feature) {
+        if (feature == null) {
+            return null;
+        }
+
+        final StringWriter writer = new StringWriter();
+
+        try {
+            write(writer,
+                  feature);
+        }
+        catch (IOException ioe) {
+            Log.w(TAG,
+                  ioe.getMessage());
+
+            return null;
+        }
+
+        return writer.toString();
+    }
+
+    /**
+     * Convert the given {@link Feature} as {@code JSON} and write it to the given {@code Writer}.
+     *
+     * @param out     the {@code Writer} to use
+     * @param feature the {@link Feature} to convert
+     *
+     * @throws IOException if something goes wrong
+     */
     public void write(@NonNull final Writer out,
                       @NonNull final Feature feature) throws
                                                       IOException {
@@ -42,6 +87,45 @@ public class GeoJsonWriter {
         writer.close();
     }
 
+    /**
+     * Convert the given {@link FeatureCollection} as {@code JSON} string.
+     *
+     * @param featureCollection the {@link FeatureCollection} to convert
+     *
+     * @return a {@code JSON} string representation of the given {@link FeatureCollection} or {@code null} if something goes wrong
+     *
+     * @see #write(Writer, FeatureCollection)
+     */
+    @Nullable
+    public String write(@Nullable final FeatureCollection featureCollection) {
+        if (featureCollection == null) {
+            return null;
+        }
+
+        final StringWriter writer = new StringWriter();
+
+        try {
+            write(writer,
+                  featureCollection);
+        }
+        catch (IOException ioe) {
+            Log.w(TAG,
+                  ioe.getMessage());
+
+            return null;
+        }
+
+        return writer.toString();
+    }
+
+    /**
+     * Convert the given {@link FeatureCollection} as {@code JSON} and write it to the given {@code Writer}.
+     *
+     * @param out               the {@code Writer} to use
+     * @param featureCollection the {@link FeatureCollection} to convert
+     *
+     * @throws IOException if something goes wrong
+     */
     public void write(@NonNull final Writer out,
                       @NonNull final FeatureCollection featureCollection) throws
                                                                           IOException {
@@ -89,6 +173,10 @@ public class GeoJsonWriter {
     private void writeGeometry(@NonNull final JsonWriter writer,
                                @NonNull final Geometry geometry) throws
                                                                  IOException {
+        if (TextUtils.isEmpty(geometry.getGeometryType())) {
+            throw new IOException("invalid geometry type");
+        }
+
         switch (geometry.getGeometryType()) {
             case "Point":
                 writePoint(writer,
@@ -229,6 +317,12 @@ public class GeoJsonWriter {
 
         for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
             final Geometry geometry = geometryCollection.getGeometryN(i);
+
+            if (TextUtils.isEmpty(geometry.getGeometryType())) {
+                Log.w(TAG,
+                      "invalid geometry type");
+                continue;
+            }
 
             switch (geometry.getGeometryType()) {
                 case "Point":

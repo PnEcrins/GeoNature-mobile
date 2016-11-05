@@ -24,6 +24,7 @@ import static com.makina.ecrins.maps.jts.geojson.JTSTestHelper.createPolygon;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -42,6 +43,38 @@ public class GeoJsonReaderTest {
                         Exception {
         gf = new GeometryFactory();
         geoJsonReader = new GeoJsonReader();
+    }
+
+    @Test
+    public void testReadFeatureFromJsonString() throws
+                                                Exception {
+        // given a JSON Feature as Point
+        final String json = TestHelper.getFixture("feature_point.json");
+
+        // when read the JSON as Feature
+        final Feature feature = geoJsonReader.readFeature(json);
+
+        // then
+        assertNotNull(feature);
+        assertEquals("id1",
+                     feature.getId());
+        assertEquals("Feature",
+                     feature.getType());
+        assertNotNull(feature.getGeometry());
+        assertEquals(createPoint(gf,
+                                 47.2256258d,
+                                 -1.5545135d),
+                     feature.getGeometry());
+    }
+
+    @Test
+    public void testReadFeatureFromInvalidJsonString() throws
+                                                       Exception {
+        // when read an invalid JSON as Feature
+        final Feature feature = geoJsonReader.readFeature("");
+
+        // then
+        assertNull(feature);
     }
 
     @Test
@@ -364,6 +397,37 @@ public class GeoJsonReaderTest {
     }
 
     @Test
+    public void testReadFeatureCollectionFromJsonString() throws
+                                                          Exception {
+        // given a JSON FeatureCollection
+        final String json = TestHelper.getFixture("featurecollection.json");
+
+        // when read the JSON as FeatureCollection
+        final FeatureCollection featureCollection = geoJsonReader.readFeatureCollection(json);
+
+        // then
+        assertNotNull(featureCollection);
+        assertEquals("FeatureCollection",
+                     featureCollection.getType());
+        assertFalse(featureCollection.isEmpty());
+        assertTrue(featureCollection.hasFeature("id1"));
+        assertTrue(featureCollection.hasFeature("id2"));
+        assertTrue(featureCollection.hasFeature("id3"));
+        assertTrue(featureCollection.hasFeature("id4"));
+        assertTrue(featureCollection.hasFeature("id5"));
+    }
+
+    @Test
+    public void testReadFeatureCollectionFromInvalidJsonString() throws
+                                                                 Exception {
+        // when read an invalid JSON as FeatureCollection
+        final FeatureCollection featureCollection = geoJsonReader.readFeatureCollection("");
+
+        // then
+        assertNull(featureCollection);
+    }
+
+    @Test
     public void testReadEmptyFeatureCollection() throws
                                                  Exception {
         // given a JSON empty FeatureCollection
@@ -382,7 +446,7 @@ public class GeoJsonReaderTest {
     @Test
     public void testReadFeatureCollection() throws
                                             Exception {
-        // given a JSON empty FeatureCollection
+        // given a JSON FeatureCollection
         final StringReader reader = new StringReader(TestHelper.getFixture("featurecollection.json"));
 
         // when read the JSON as FeatureCollection

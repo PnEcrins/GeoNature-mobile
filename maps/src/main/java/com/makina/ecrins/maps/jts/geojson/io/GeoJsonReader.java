@@ -4,9 +4,11 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.JsonReader;
 import android.util.JsonToken;
+import android.util.Log;
 
 import com.makina.ecrins.maps.jts.geojson.AbstractGeoJson;
 import com.makina.ecrins.maps.jts.geojson.Feature;
@@ -25,6 +27,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,12 +42,49 @@ import java.util.List;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class GeoJsonReader {
 
+    private static final String TAG = GeoJsonReader.class.getSimpleName();
+
     private final GeometryFactory gf;
 
     public GeoJsonReader() {
         gf = new GeometryFactory();
     }
 
+    /**
+     * parse a {@code JSON} string to convert as {@link Feature}.
+     *
+     * @param json the {@code JSON} string to parse
+     *
+     * @return a {@link Feature} instance from the {@code JSON} string or {@code null} if something goes wrong
+     *
+     * @see #readFeature(Reader)
+     */
+    @Nullable
+    public Feature readFeature(@Nullable final String json) {
+        if (TextUtils.isEmpty(json)) {
+            return null;
+        }
+
+        try {
+            return readFeature(new StringReader(json));
+        }
+        catch (IOException ioe) {
+            Log.w(TAG,
+                  ioe.getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * parse a {@code JSON} reader to convert as {@link Feature}.
+     *
+     * @param in the {@code Reader} to parse
+     *
+     * @return a {@link Feature} instance from the {@code JSON} reader
+     *
+     * @throws IOException if something goes wrong
+     */
     @NonNull
     public Feature readFeature(@NonNull final Reader in) throws
                                                          IOException {
@@ -55,6 +95,41 @@ public class GeoJsonReader {
         return feature;
     }
 
+    /**
+     * parse a {@code JSON} string to convert as {@link FeatureCollection}.
+     *
+     * @param json the {@code JSON} string to parse
+     *
+     * @return a {@link FeatureCollection} instance from the {@code JSON} string or {@code null} if something goes wrong
+     *
+     * @see #readFeatureCollection(Reader)
+     */
+    @Nullable
+    public FeatureCollection readFeatureCollection(@Nullable final String json) {
+        if (TextUtils.isEmpty(json)) {
+            return null;
+        }
+
+        try {
+            return readFeatureCollection(new StringReader(json));
+        }
+        catch (IOException ioe) {
+            Log.w(TAG,
+                  ioe.getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * parse a {@code JSON} reader to convert as {@link FeatureCollection}.
+     *
+     * @param in the {@code Reader} to parse
+     *
+     * @return a {@link FeatureCollection} instance from the {@code JSON} reader
+     *
+     * @throws IOException if something goes wrong
+     */
     @NonNull
     public FeatureCollection readFeatureCollection(@NonNull final Reader in) throws
                                                                              IOException {
