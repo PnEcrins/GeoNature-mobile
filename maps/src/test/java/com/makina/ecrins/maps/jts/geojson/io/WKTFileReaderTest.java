@@ -15,8 +15,10 @@ import java.io.File;
 import static com.makina.ecrins.maps.TestHelper.getFixtureAsFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -56,6 +58,7 @@ public class WKTFileReaderTest {
                never()).onError(any(Throwable.class));
         verify(onWKTFileReaderListener,
                times(3)).onProgress(anyInt(),
+                                    eq(3),
                                     any(Feature.class));
         verify(onWKTFileReaderListener).onFinish(featureCollectionArgumentCaptor.capture());
 
@@ -67,5 +70,50 @@ public class WKTFileReaderTest {
         assertNotNull(featureCollection.getFeature("69"));
         assertNotNull(featureCollection.getFeature("19"));
         assertNotNull(featureCollection.getFeature("146"));
+    }
+
+    @Test
+    public void testReadFeaturesFromInvalidFile() throws
+                                                  Exception {
+        // given a wrong file to read
+        final File wkt = getFixtureAsFile("featurestyle.json");
+
+        // when trying to parse this wrong file as WKT
+        new WKTFileReader().readFeatures(wkt,
+                                         onWKTFileReaderListener);
+
+        // then
+        verify(onWKTFileReaderListener).onStart(anyInt());
+        verify(onWKTFileReaderListener,
+               never()).onProgress(anyInt(),
+                                   anyInt(),
+                                   any(Feature.class));
+        verify(onWKTFileReaderListener).onFinish(featureCollectionArgumentCaptor.capture());
+
+        final FeatureCollection featureCollection = featureCollectionArgumentCaptor.getValue();
+        assertNotNull(featureCollection);
+        assertTrue(featureCollection.isEmpty());
+    }
+
+    @Test
+    public void testReadFeaturesFromMissingFile() throws
+                                                  Exception {
+        // given a missing file to read
+        final File wkt = getFixtureAsFile("");
+
+        // when trying to parse this wrong file as WKT
+        new WKTFileReader().readFeatures(wkt,
+                                         onWKTFileReaderListener);
+
+        // then
+        verify(onWKTFileReaderListener).onError(any(Throwable.class));
+        verify(onWKTFileReaderListener,
+               never()).onStart(anyInt());
+        verify(onWKTFileReaderListener,
+               never()).onProgress(anyInt(),
+                                   anyInt(),
+                                   any(Feature.class));
+        verify(onWKTFileReaderListener,
+               never()).onFinish(any(FeatureCollection.class));
     }
 }
