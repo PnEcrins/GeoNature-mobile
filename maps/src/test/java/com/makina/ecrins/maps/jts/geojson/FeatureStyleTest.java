@@ -37,7 +37,8 @@ public class FeatureStyleTest {
     @Test
     public void testDefaultBuilder() throws
                                      Exception {
-        doReturn("#03f").when(application).getString(anyInt());
+        doReturn("#03f").when(application)
+                        .getString(anyInt());
 
         // given a default FeatureStyle
         final FeatureStyle featureStyle = FeatureStyle.Builder.newInstance(application)
@@ -62,7 +63,8 @@ public class FeatureStyleTest {
     @Test
     public void testBuilder() throws
                               Exception {
-        doReturn("#aaa").when(application).getString(anyInt());
+        doReturn("#aaa").when(application)
+                        .getString(anyInt());
 
         // given a FeatureStyle
         final FeatureStyle featureStyle = FeatureStyle.Builder.newInstance(application)
@@ -74,6 +76,42 @@ public class FeatureStyleTest {
                                                               .setFillColorResourceId(android.R.color.darker_gray)
                                                               .setFillOpacity(0.7)
                                                               .build();
+
+        // then
+        assertFalse(featureStyle.isStroke());
+        assertEquals(android.R.color.darker_gray,
+                     featureStyle.getColorResourceId());
+        assertEquals(1,
+                     featureStyle.getWeight());
+        assertEquals(0.2,
+                     featureStyle.getOpacity());
+        assertFalse(featureStyle.isFill());
+        assertEquals(android.R.color.darker_gray,
+                     featureStyle.getFillColorResourceId());
+        assertEquals(0.7,
+                     featureStyle.getFillOpacity());
+        assertEquals(TestHelper.getFixture("featurestyle.json"),
+                     featureStyle.toString());
+    }
+
+    @Test
+    public void testBuilderFromExistingFeatureStyle() throws
+                                                      Exception {
+        // given a FeatureStyle
+        final FeatureStyle featureStyle = FeatureStyle.Builder.newInstance(application)
+                                                              .setStroke(false)
+                                                              .setColorResourceId(android.R.color.darker_gray)
+                                                              .setWeight(1)
+                                                              .setOpacity(0.2)
+                                                              .setFill(false)
+                                                              .setFillColorResourceId(android.R.color.darker_gray)
+                                                              .setFillOpacity(0.7)
+                                                              .build();
+
+        // when building a new FeatureStyle from an existing one
+        final FeatureStyle newFeatureStyle = FeatureStyle.Builder.newInstance(application)
+                                                                 .from(featureStyle)
+                                                                 .build();
 
         // then
         assertFalse(featureStyle.isStroke());

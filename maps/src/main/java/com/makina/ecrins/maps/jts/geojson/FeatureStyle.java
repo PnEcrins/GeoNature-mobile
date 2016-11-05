@@ -159,6 +159,26 @@ public class FeatureStyle
         }
 
         /**
+         * Initialize this {@link Builder} from an existing {@link FeatureStyle}.
+         *
+         * @param featureStyle the {@link FeatureStyle} to use
+         *
+         * @return Fluent interface
+         */
+        @NonNull
+        public Builder from(@NonNull final FeatureStyle featureStyle) {
+            this.stroke = featureStyle.isStroke();
+            this.colorResourceId = featureStyle.getColorResourceId();
+            this.weight = featureStyle.getWeight();
+            this.opacity = featureStyle.getOpacity();
+            this.fill = featureStyle.isFill();
+            this.fillColorResourceId = featureStyle.getFillColorResourceId();
+            this.fillOpacity = featureStyle.getFillOpacity();
+
+            return this;
+        }
+
+        /**
          * Whether to draw stroke along the path.
          * Set it to {@code false} to disable borders on geometries.
          *
