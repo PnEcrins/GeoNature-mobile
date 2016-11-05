@@ -3,6 +3,7 @@ package com.makina.ecrins.maps.jts.geojson.io;
 import com.makina.ecrins.maps.TestHelper;
 import com.makina.ecrins.maps.jts.geojson.Feature;
 import com.makina.ecrins.maps.jts.geojson.FeatureCollection;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 import org.junit.Before;
@@ -549,5 +550,48 @@ public class GeoJsonReaderTest {
                                                     47.226219d,
                                                     -1.554430d)),
                      feature5.getGeometry());
+    }
+
+    @Test
+    public void testReadGeometryFromJsonString() throws
+                                                 Exception {
+        // given a JSON Geometry as Point
+        final String json = TestHelper.getFixture("geometry_point.json");
+
+        // when read the JSON as Point
+        final Geometry point = geoJsonReader.readGeometry(json);
+
+        // then assertNotNull(point);
+        assertEquals(createPoint(gf,
+                                 47.2256258d,
+                                 -1.5545135d),
+                     point);
+    }
+
+    @Test
+    public void testReadGeometryFromInvalidJsonString() throws
+                                                        Exception {
+        // when read an invalid JSON as FeatureCollection
+        final Geometry geometry = geoJsonReader.readGeometry("");
+
+        // then
+        assertNull(geometry);
+    }
+
+    @Test
+    public void testReadGeometry() throws
+                                   Exception {
+        // given a JSON Geometry as Point
+        final StringReader reader = new StringReader(TestHelper.getFixture("geometry_point.json"));
+
+        // when read the JSON as Point
+        final Geometry point = geoJsonReader.readGeometry(reader);
+
+        // then
+        assertNotNull(point);
+        assertEquals(createPoint(gf,
+                                 47.2256258d,
+                                 -1.5545135d),
+                     point);
     }
 }

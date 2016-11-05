@@ -140,6 +140,51 @@ public class GeoJsonReader {
         return featureCollection;
     }
 
+    /**
+     * parse a {@code JSON} string to convert as {@code Geometry}.
+     *
+     * @param json the {@code JSON} string to parse
+     *
+     * @return a {@code Geometry} instance from the {@code JSON} string or {@code null} if something goes wrong
+     *
+     * @see #readGeometry(Reader)
+     */
+    @Nullable
+    public Geometry readGeometry(@Nullable final String json) {
+        if (TextUtils.isEmpty(json)) {
+            return null;
+        }
+
+        try {
+            return readGeometry(new StringReader(json));
+        }
+        catch (IOException ioe) {
+            Log.w(TAG,
+                  ioe.getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * parse a {@code JSON} reader to convert as {@code Geometry}.
+     *
+     * @param in the {@code Reader} to parse
+     *
+     * @return a {@code Geometry} instance from the {@code JSON} reader
+     *
+     * @throws IOException if something goes wrong
+     */
+    @NonNull
+    public Geometry readGeometry(@NonNull final Reader in) throws
+                                                           IOException {
+        final JsonReader jsonReader = new JsonReader(in);
+        final Geometry geometry = readGeometry(jsonReader);
+        jsonReader.close();
+
+        return geometry;
+    }
+
     @NonNull
     private Feature readFeature(@NonNull final JsonReader reader) throws
                                                                   IOException {
