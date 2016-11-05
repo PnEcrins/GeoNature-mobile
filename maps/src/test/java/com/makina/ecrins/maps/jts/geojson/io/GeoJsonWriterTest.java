@@ -1,8 +1,10 @@
-package com.makina.ecrins.maps.jts.geojson;
+package com.makina.ecrins.maps.jts.geojson.io;
 
 import android.os.Bundle;
 
 import com.makina.ecrins.maps.TestHelper;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.FeatureCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 import org.junit.Before;

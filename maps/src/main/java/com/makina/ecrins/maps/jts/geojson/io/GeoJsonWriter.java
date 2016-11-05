@@ -1,4 +1,4 @@
-package com.makina.ecrins.maps.jts.geojson;
+package com.makina.ecrins.maps.jts.geojson.io;
 
 import android.annotation.TargetApi;
 import android.os.Build;
@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.JsonWriter;
 
+import com.makina.ecrins.maps.jts.geojson.AbstractGeoJson;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.FeatureCollection;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -24,6 +27,7 @@ import java.io.Writer;
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  * @see <a href="https://tools.ietf.org/html/rfc7946">https://tools.ietf.org/html/rfc7946</a>
+ * @see GeoJsonReader
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class GeoJsonWriter {

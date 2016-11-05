@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,6 +27,20 @@ public class TestHelper {
     public static InputStream getFixtureAsStream(@NonNull final String name) {
         return TestHelper.class.getClassLoader()
                                .getResourceAsStream("fixtures/" + name);
+    }
+
+    /**
+     * Reads the contents of a file as {@code File}.
+     *
+     * @param name the file to read (e.g. XML, JSON or any text file), must not be {@code null}
+     *
+     * @return the contents as {@code File}.
+     */
+    @Nullable
+    public static File getFixtureAsFile(@NonNull final String name) {
+        return new File(TestHelper.class.getClassLoader()
+                                        .getResource("fixtures/" + name)
+                                        .getFile());
     }
 
     /**

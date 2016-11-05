@@ -4,6 +4,9 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.makina.ecrins.maps.jts.geojson.io.GeoJsonReader;
+import com.makina.ecrins.maps.jts.geojson.io.GeoJsonWriter;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
