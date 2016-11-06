@@ -5,6 +5,7 @@ import android.graphics.drawable.AnimationDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +13,9 @@ import android.view.View.OnClickListener;
 import android.webkit.JavascriptInterface;
 import android.widget.ImageButton;
 
-import com.makina.ecrins.maps.R;
 import com.makina.ecrins.maps.IWebViewFragment;
-import com.makina.ecrins.maps.geojson.geometry.GeoPoint;
-import com.makina.ecrins.maps.geojson.geometry.GeometryUtils;
-import com.makina.ecrins.maps.geojson.geometry.Point;
+import com.makina.ecrins.maps.R;
+import com.makina.ecrins.maps.jts.geojson.GeoPoint;
 
 /**
  * Simple control to center the map to the current position.
@@ -28,16 +27,13 @@ public final class CenterPositionControl
         implements OnClickListener,
                    LocationListener {
 
-    protected ImageButton mImageButtonCenterPosition;
-    protected Boolean mIsCenterPosition = false;
+    private ImageButton mImageButtonCenterPosition;
+    private Boolean mIsCenterPosition = false;
 
-    private final LayoutInflater mInflater;
     private View mView = null;
 
     public CenterPositionControl(Context pContext) {
         super(pContext);
-
-        mInflater = (LayoutInflater) pContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         setControlListener(new OnIControlListener() {
             @Override
@@ -45,12 +41,11 @@ public final class CenterPositionControl
                 mWebViewFragment.requestLocationUpdates(CenterPositionControl.this);
 
                 mIsCenterPosition = false;
-                mImageButtonCenterPosition.setEnabled((mWebViewFragment.getCurrentLocation() != null) && GeometryUtils.contains(new Point(new GeoPoint(mWebViewFragment.getCurrentLocation()
-                                                                                                                                                                       .getLatitude(),
-                                                                                                                                                       mWebViewFragment.getCurrentLocation()
-                                                                                                                                                                       .getLongitude())),
-                                                                                                                                mWebViewFragment.getMapSettings()
-                                                                                                                                                .getPolygonBounds()));
+                final Location currentLocation = mWebViewFragment.getCurrentLocation();
+                mImageButtonCenterPosition.setEnabled((currentLocation != null) && mWebViewFragment.getMapSettings()
+                                                                                                   .getPolygonBounds()
+                                                                                                   .contains(new GeoPoint(currentLocation.getLatitude(),
+                                                                                                                          currentLocation.getLongitude()).getPoint()));
             }
         });
     }
@@ -58,8 +53,9 @@ public final class CenterPositionControl
     @Override
     public View getView(boolean forceCreate) {
         if ((this.mView == null) || forceCreate) {
-            this.mView = mInflater.inflate(R.layout.control_center_position_layout,
-                                           null);
+            this.mView = LayoutInflater.from(getContext())
+                                       .inflate(R.layout.control_center_position_layout,
+                                                null);
 
             mImageButtonCenterPosition = (ImageButton) this.mView.findViewById(R.id.imageButtonCenterPosition);
 
@@ -84,8 +80,9 @@ public final class CenterPositionControl
             this.mIsCenterPosition = !this.mIsCenterPosition;
 
             if (this.mIsCenterPosition) {
-                final AnimationDrawable accessLocationSearchingDrawable = (AnimationDrawable) getContext().getResources()
-                                                                                                          .getDrawable(R.drawable.ic_action_access_location_searching);
+                final AnimationDrawable accessLocationSearchingDrawable = (AnimationDrawable) ResourcesCompat.getDrawable(getContext().getResources(),
+                                                                                                                          R.drawable.ic_action_access_location_searching,
+                                                                                                                          null);
 
                 if (accessLocationSearchingDrawable != null) {
                     mImageButtonCenterPosition.setImageDrawable(accessLocationSearchingDrawable);
@@ -110,10 +107,10 @@ public final class CenterPositionControl
               "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
 
         // checks if this location is inside the map or not
-        if (isControlInitialized() && GeometryUtils.contains(new Point(new GeoPoint(location.getLatitude(),
-                                                                                    location.getLongitude())),
-                                                             this.mWebViewFragment.getMapSettings()
-                                                                                  .getPolygonBounds())) {
+        if (isControlInitialized() && mWebViewFragment.getMapSettings()
+                                                      .getPolygonBounds()
+                                                      .contains(new GeoPoint(location.getLatitude(),
+                                                                             location.getLongitude()).getPoint())) {
             mImageButtonCenterPosition.setEnabled(true);
 
             if (isControlInitialized() && mIsCenterPosition) {

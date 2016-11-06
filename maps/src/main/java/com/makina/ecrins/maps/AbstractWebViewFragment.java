@@ -32,15 +32,12 @@ import com.makina.ecrins.maps.content.ITilesLayerDataSource;
 import com.makina.ecrins.maps.content.TilesLayerDataSourceFactory;
 import com.makina.ecrins.maps.control.IControl;
 import com.makina.ecrins.maps.control.MainControl;
-import com.makina.ecrins.maps.geojson.Feature;
-import com.makina.ecrins.maps.geojson.FeatureCollection;
-import com.makina.ecrins.maps.geojson.geometry.GeometryUtils;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.FeatureCollection;
 import com.makina.ecrins.maps.location.MockLocationProvider;
 import com.makina.ecrins.maps.settings.LayerSettings;
 import com.makina.ecrins.maps.settings.MapSettings;
 import com.makina.ecrins.maps.util.DebugUtils;
-
-import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
@@ -510,17 +507,14 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public FeatureCollection getEditableFeatures() {
-
         return this.mSavedState.getParcelable(KEY_EDITABLE_FEATURES);
     }
 
     public Feature getCurrentEditableFeature() {
-
         return this.mSavedState.getParcelable(KEY_SELECTED_EDITABLE_FEATURE);
     }
 
     public void setCurrentEditableFeature(Feature selectedFeature) {
-
         if (selectedFeature == null) {
             this.mSavedState.remove(KEY_SELECTED_EDITABLE_FEATURE);
         }
@@ -531,21 +525,9 @@ public abstract class AbstractWebViewFragment
     }
 
     @Override
-    public boolean addOrUpdateEditableFeature(Feature selectedFeature) {
-        try {
-            Log.d(AbstractWebViewFragment.class.getName(),
-                  "addOrUpdateEditableFeature " + selectedFeature.getJSONObject()
-                                                                 .toString());
-        }
-        catch (JSONException je) {
-            Log.w(AbstractWebViewFragment.class.getName(),
-                  je.getMessage());
-
-            return false;
-        }
-
-        if ((selectedFeature.getGeometry() != null) && GeometryUtils.isValid(selectedFeature.getGeometry())) {
-            FeatureCollection featureCollection = this.mSavedState.getParcelable(KEY_EDITABLE_FEATURES);
+    public boolean addOrUpdateEditableFeature(@NonNull Feature selectedFeature) {
+        if (selectedFeature.getGeometry().isValid()) {
+            final FeatureCollection featureCollection = this.mSavedState.getParcelable(KEY_EDITABLE_FEATURES);
 
             if (featureCollection == null) {
                 return false;

@@ -21,9 +21,11 @@ import java.util.List;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class SwitchLayersControl extends AbstractControl implements ActionBar.OnNavigationListener {
+public class SwitchLayersControl
+        extends AbstractControl
+        implements ActionBar.OnNavigationListener {
 
-    private ArrayAdapter<LayerSettings> mlayersAdapter = null;
+    private ArrayAdapter<LayerSettings> mLayersAdapter = null;
 
     /**
      * Default constructor.
@@ -55,12 +57,14 @@ public class SwitchLayersControl extends AbstractControl implements ActionBar.On
     public void add(IWebViewFragment webViewFragment) {
         super.add(webViewFragment);
 
-        initializeJSController("js/Control.SwitchLayers.js", "new L.Control.SwitchLayers()");
+        initializeJSController("js/Control.SwitchLayers.js",
+                               "new L.Control.SwitchLayers()");
     }
 
     @Override
-    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        LayerSettings selectedLayer = mlayersAdapter.getItem(itemPosition);
+    public boolean onNavigationItemSelected(int itemPosition,
+                                            long itemId) {
+        LayerSettings selectedLayer = mLayersAdapter.getItem(itemPosition);
         this.mWebViewFragment.setSelectedLayer(selectedLayer);
         this.mWebViewFragment.loadUrl(getJSUrlPrefix() + ".refreshMap()");
 
@@ -75,10 +79,8 @@ public class SwitchLayersControl extends AbstractControl implements ActionBar.On
     @JavascriptInterface
     public void setZoom(final int zoom) {
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    SwitchLayersControl.class.getName(),
-                    "setZoom " + zoom
-            );
+            Log.d(SwitchLayersControl.class.getName(),
+                  "setZoom " + zoom);
         }
 
         getHandler().post(new Runnable() {
@@ -89,47 +91,45 @@ public class SwitchLayersControl extends AbstractControl implements ActionBar.On
         });
     }
 
-    protected void updateNavigationList() {
+    private void updateNavigationList() {
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    SwitchLayersControl.class.getName(),
-                    "updateNavigationList"
-            );
+            Log.d(SwitchLayersControl.class.getName(),
+                  "updateNavigationList");
         }
 
         if (isControlInitialized()) {
             List<LayerSettings> selectedLayers = new ArrayList<>();
 
-            for (LayerSettings layerSettings : this.mWebViewFragment.getMapSettings().getLayers()) {
+            for (LayerSettings layerSettings : this.mWebViewFragment.getMapSettings()
+                                                                    .getLayers()) {
                 final ITilesLayerDataSource tilesLayerDataSource = this.mWebViewFragment.getTilesLayersDataSource(layerSettings.getName());
 
                 if ((tilesLayerDataSource != null) && tilesLayerDataSource.getZooms()
-                        .contains(
-                                this.mWebViewFragment.getMapSettings()
-                                        .getZoom()
-                        )) {
+                                                                          .contains(this.mWebViewFragment.getMapSettings()
+                                                                                                         .getZoom())) {
                     selectedLayers.add(layerSettings);
                 }
             }
 
             if ((this.mWebViewFragment.getActionBar() != null) && (this.mWebViewFragment.isMapVisibleToUser())) {
-                mlayersAdapter = new ArrayAdapter<>(this.mWebViewFragment.getActionBar()
-                        .getThemedContext(), R.layout.support_simple_spinner_dropdown_item, selectedLayers);
-                mlayersAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+                mLayersAdapter = new ArrayAdapter<>(this.mWebViewFragment.getActionBar()
+                                                                         .getThemedContext(),
+                                                    R.layout.support_simple_spinner_dropdown_item,
+                                                    selectedLayers);
+                mLayersAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
 
                 this.mWebViewFragment.getActionBar()
-                        .setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+                                     .setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
                 this.mWebViewFragment.getActionBar()
-                        .setListNavigationCallbacks(mlayersAdapter, this);
+                                     .setListNavigationCallbacks(mLayersAdapter,
+                                                                 this);
                 this.mWebViewFragment.getActionBar()
-                        .setSelectedNavigationItem(selectedLayers.indexOf(mWebViewFragment.getSelectedLayer()));
+                                     .setSelectedNavigationItem(selectedLayers.indexOf(mWebViewFragment.getSelectedLayer()));
             }
             else {
                 if (BuildConfig.DEBUG) {
-                    Log.d(
-                            SwitchLayersControl.class.getName(),
-                            "updateNavigationList, not ready"
-                    );
+                    Log.d(SwitchLayersControl.class.getName(),
+                          "updateNavigationList, not ready");
                 }
             }
         }

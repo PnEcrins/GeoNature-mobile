@@ -186,7 +186,7 @@ public class GeoJsonReader {
     }
 
     @NonNull
-    private Feature readFeature(@NonNull final JsonReader reader) throws
+    public Feature readFeature(@NonNull final JsonReader reader) throws
                                                                   IOException {
         String id = null;
         String type = null;

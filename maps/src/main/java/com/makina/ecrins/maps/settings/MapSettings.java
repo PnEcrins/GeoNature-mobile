@@ -2,19 +2,21 @@ package com.makina.ecrins.maps.settings;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.makina.ecrins.maps.RenderQualityEnum;
-import com.makina.ecrins.maps.geojson.geometry.GeoPoint;
-import com.makina.ecrins.maps.geojson.geometry.Point;
-import com.makina.ecrins.maps.geojson.geometry.Polygon;
+import com.makina.ecrins.maps.jts.geojson.GeoPoint;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -90,15 +92,23 @@ public class MapSettings
             this.mCRSSettings = new CRSSettings(json.getJSONObject(KEY_CRS));
         }
 
-        JSONArray maxBoundsJsonArray = json.getJSONArray(KEY_MAX_BOUNDS);
+        final JSONArray maxBoundsJsonArray = json.getJSONArray(KEY_MAX_BOUNDS);
 
         for (int i = 0; i < maxBoundsJsonArray.length(); i++) {
-            mMaxBounds.add(new GeoPoint(maxBoundsJsonArray.getJSONArray(i),
-                                        GeoPoint.LAT_LON));
+            final JSONArray jsonArray = maxBoundsJsonArray.getJSONArray(i);
+
+            if (jsonArray.length() == 2) {
+                mMaxBounds.add(new GeoPoint(jsonArray.getDouble(0),
+                                            jsonArray.getDouble(1)));
+            }
         }
 
-        mCenter = new GeoPoint(json.getJSONArray(KEY_CENTER),
-                               GeoPoint.LAT_LON);
+        final JSONArray centerGeoPointJsonArray = json.getJSONArray(KEY_CENTER);
+
+        if (centerGeoPointJsonArray.length() == 2) {
+            mCenter = new GeoPoint(centerGeoPointJsonArray.getDouble(0),
+                                   centerGeoPointJsonArray.getDouble(1));
+        }
 
         if (json.has(KEY_START_ZOOM)) {
             this.mZoom = json.getInt(KEY_START_ZOOM);
@@ -172,17 +182,19 @@ public class MapSettings
      *
      * @return the current map boundaries as {@link Polygon}
      */
+    @NonNull
     public Polygon getPolygonBounds() {
         if (mPolygonBounds == null) {
             GeoPoint southWest = getMaxBounds().get(0);
             GeoPoint northEast = getMaxBounds().get(1);
 
-            mPolygonBounds = new Polygon(Arrays.asList(new Point(southWest),
-                                                       new Point(new GeoPoint(northEast.getLatitudeE6(),
-                                                                              southWest.getLongitudeE6())),
-                                                       new Point(northEast),
-                                                       new Point(new GeoPoint(southWest.getLatitudeE6(),
-                                                                              northEast.getLongitudeE6()))));
+            final Geometry geometry = new GeometryFactory().toGeometry(new Envelope(southWest.getPoint()
+                                                                                             .getCoordinate(),
+                                                                                    northEast.getPoint()
+                                                                                             .getCoordinate()));
+            if (geometry instanceof Polygon) {
+                mPolygonBounds = (Polygon) geometry;
+            }
         }
 
         return mPolygonBounds;
@@ -250,10 +262,6 @@ public class MapSettings
      */
     public LayerSettings getUnityLayer() {
         return mUnityLayer;
-    }
-
-    public int getLayerSettingsIndex(LayerSettings pLayerSettings) {
-        return mLayers.indexOf(pLayerSettings);
     }
 
     @Override

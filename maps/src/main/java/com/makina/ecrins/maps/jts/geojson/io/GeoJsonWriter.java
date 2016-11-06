@@ -136,9 +136,9 @@ public class GeoJsonWriter {
         writer.close();
     }
 
-    private void writeFeature(@NonNull final JsonWriter writer,
-                              @NonNull final Feature feature) throws
-                                                              IOException {
+    public void writeFeature(@NonNull final JsonWriter writer,
+                             @NonNull final Feature feature) throws
+                                                             IOException {
         writer.beginObject();
         writer.name("id")
               .value(feature.getId());

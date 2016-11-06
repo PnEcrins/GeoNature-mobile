@@ -2,6 +2,7 @@ package com.makina.ecrins.maps.control;
 
 import android.content.Context;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,7 +25,7 @@ public abstract class AbstractControl
     private static final Handler sHandler = new Handler();
     private static final String MAP_JS_VARIABLE = "lMap";
 
-    protected boolean mControlInitialized = false;
+    private boolean mControlInitialized = false;
     protected IWebViewFragment mWebViewFragment;
 
     private final Context mContext;
@@ -37,6 +38,7 @@ public abstract class AbstractControl
         this.mContext = pContext;
     }
 
+    @NonNull
     @Override
     public String getName() {
         return ControlUtils.getControlName(this);
