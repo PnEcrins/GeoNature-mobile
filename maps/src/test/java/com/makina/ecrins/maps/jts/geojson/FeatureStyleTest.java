@@ -2,6 +2,7 @@ package com.makina.ecrins.maps.jts.geojson;
 
 import android.app.Application;
 
+import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.R;
 import com.makina.ecrins.maps.TestHelper;
 
@@ -10,13 +11,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 
 /**
  * Unit test for {@link FeatureStyle}.
@@ -24,6 +23,10 @@ import static org.mockito.Mockito.spy;
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
 @RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class,
+        sdk = 21,
+        manifest = "src/main/AndroidManifest.xml",
+        packageName = "com.makina.ecrins.maps")
 public class FeatureStyleTest {
 
     private Application application;
@@ -31,15 +34,12 @@ public class FeatureStyleTest {
     @Before
     public void setUp() throws
                         Exception {
-        application = spy(RuntimeEnvironment.application);
+        application = RuntimeEnvironment.application;
     }
 
     @Test
     public void testDefaultBuilder() throws
                                      Exception {
-        doReturn("#03f").when(application)
-                        .getString(anyInt());
-
         // given a default FeatureStyle
         final FeatureStyle featureStyle = FeatureStyle.Builder.newInstance(application)
                                                               .build();
@@ -63,13 +63,10 @@ public class FeatureStyleTest {
     @Test
     public void testBuilder() throws
                               Exception {
-        doReturn("#aaa").when(application)
-                        .getString(anyInt());
-
         // given a FeatureStyle
         final FeatureStyle featureStyle = FeatureStyle.Builder.newInstance(application)
                                                               .setStroke(false)
-                                                              .setColorResourceId(android.R.color.darker_gray)
+                                                              .setColorResourceId(R.color.feature_dark_blue)
                                                               .setWeight(1)
                                                               .setOpacity(0.2)
                                                               .setFill(false)
@@ -79,7 +76,7 @@ public class FeatureStyleTest {
 
         // then
         assertFalse(featureStyle.isStroke());
-        assertEquals(android.R.color.darker_gray,
+        assertEquals(R.color.feature_dark_blue,
                      featureStyle.getColorResourceId());
         assertEquals(1,
                      featureStyle.getWeight());
@@ -100,7 +97,7 @@ public class FeatureStyleTest {
         // given a FeatureStyle
         final FeatureStyle featureStyle = FeatureStyle.Builder.newInstance(application)
                                                               .setStroke(false)
-                                                              .setColorResourceId(android.R.color.darker_gray)
+                                                              .setColorResourceId(R.color.feature_dark_blue)
                                                               .setWeight(1)
                                                               .setOpacity(0.2)
                                                               .setFill(false)
@@ -114,19 +111,19 @@ public class FeatureStyleTest {
                                                                  .build();
 
         // then
-        assertFalse(featureStyle.isStroke());
-        assertEquals(android.R.color.darker_gray,
-                     featureStyle.getColorResourceId());
+        assertFalse(newFeatureStyle.isStroke());
+        assertEquals(R.color.feature_dark_blue,
+                     newFeatureStyle.getColorResourceId());
         assertEquals(1,
-                     featureStyle.getWeight());
+                     newFeatureStyle.getWeight());
         assertEquals(0.2,
-                     featureStyle.getOpacity());
-        assertFalse(featureStyle.isFill());
+                     newFeatureStyle.getOpacity());
+        assertFalse(newFeatureStyle.isFill());
         assertEquals(android.R.color.darker_gray,
-                     featureStyle.getFillColorResourceId());
+                     newFeatureStyle.getFillColorResourceId());
         assertEquals(0.7,
-                     featureStyle.getFillOpacity());
+                     newFeatureStyle.getFillOpacity());
         assertEquals(TestHelper.getFixture("featurestyle.json"),
-                     featureStyle.toString());
+                     newFeatureStyle.toString());
     }
 }

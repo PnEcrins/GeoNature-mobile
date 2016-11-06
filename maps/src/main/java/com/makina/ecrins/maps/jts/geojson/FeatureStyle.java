@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 
 import com.makina.ecrins.maps.R;
 
@@ -286,12 +287,16 @@ public class FeatureStyle
         public FeatureStyle build() {
             return new FeatureStyle(stroke,
                                     colorResourceId,
-                                    context.getString(colorResourceId),
+                                    String.format("#%06X",
+                                                  (0xFFFFFF & ContextCompat.getColor(context,
+                                                                                     colorResourceId))),
                                     weight,
                                     opacity,
                                     fill,
                                     fillColorResourceId,
-                                    context.getString(colorResourceId),
+                                    String.format("#%06X",
+                                                  (0xFFFFFF & ContextCompat.getColor(context,
+                                                                                     fillColorResourceId))),
                                     fillOpacity);
         }
     }
