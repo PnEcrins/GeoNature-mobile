@@ -1,10 +1,10 @@
 package com.makina.ecrins.flora.ui.input.disturbances;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -27,7 +27,8 @@ import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.TextView;
 
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
-import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
+import com.makina.ecrins.commons.input.AbstractInput;
+import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.ui.widget.AbstractGroupsCursorAdapter;
 import com.makina.ecrins.flora.BuildConfig;
@@ -45,6 +46,7 @@ import com.makina.ecrins.flora.ui.input.PagerFragmentActivity;
 public class DisturbancesFragment
         extends Fragment
         implements IValidateFragment,
+                   IInputFragment,
                    LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = DisturbancesFragment.class.getName();
@@ -285,19 +287,6 @@ public class DisturbancesFragment
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnInputFragmentListener) {
-            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
-            mInput = (Input) onInputFragmentListener.getInput();
-        }
-        else {
-            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
-        }
-    }
-
-    @Override
     public void onDestroyView() {
         mListShown = false;
 
@@ -350,6 +339,11 @@ public class DisturbancesFragment
         // start out with a progress indicator
         setListShown(false,
                      true);
+    }
+
+    @Override
+    public void setInput(@NonNull AbstractInput input) {
+        this.mInput = (Input) input;
     }
 
     @Override

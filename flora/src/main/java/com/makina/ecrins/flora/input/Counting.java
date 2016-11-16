@@ -2,6 +2,8 @@ package com.makina.ecrins.flora.input;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.makina.ecrins.flora.R;
 
@@ -120,6 +122,7 @@ public class Counting implements Parcelable {
         }
     }
 
+    @Deprecated
     public JSONObject getJSONObject() throws JSONException {
         JSONObject json = new JSONObject();
 
@@ -169,6 +172,22 @@ public class Counting implements Parcelable {
 
         public int getResourceNameId() {
             return resourceNameId;
+        }
+
+        @Nullable
+        public static CountingType fromValue(@Nullable final String value) {
+            if (TextUtils.isEmpty(value)) {
+                return null;
+            }
+
+            for (CountingType countingType : values()) {
+                if (countingType.getValue()
+                                 .equals(value)) {
+                    return countingType;
+                }
+            }
+
+            return null;
         }
     }
 

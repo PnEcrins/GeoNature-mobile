@@ -1,12 +1,13 @@
 package com.makina.ecrins.flora.ui.input.map;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,10 +15,12 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
+import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.model.MountPoint;
-import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
+import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.util.FileUtils;
+import com.makina.ecrins.flora.BuildConfig;
 import com.makina.ecrins.flora.MainApplication;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.content.MainContentProvider;
@@ -26,7 +29,6 @@ import com.makina.ecrins.flora.input.Input;
 import com.makina.ecrins.flora.input.Taxon;
 import com.makina.ecrins.flora.ui.input.PagerFragmentActivity;
 import com.makina.ecrins.maps.AbstractWebViewFragment;
-import com.makina.ecrins.maps.settings.MapSettings;
 import com.makina.ecrins.maps.control.AbstractControl;
 import com.makina.ecrins.maps.control.CenterPositionControl;
 import com.makina.ecrins.maps.control.ControlUtils;
@@ -34,14 +36,12 @@ import com.makina.ecrins.maps.control.DrawControl;
 import com.makina.ecrins.maps.control.FeaturesControl;
 import com.makina.ecrins.maps.control.SwitchLayersControl;
 import com.makina.ecrins.maps.control.ZoomControl;
-import com.makina.ecrins.maps.geojson.Feature;
-import com.makina.ecrins.maps.geojson.FeatureStyle;
-import com.makina.ecrins.maps.geojson.geometry.GeometryUtils;
-import com.makina.ecrins.maps.geojson.geometry.IGeometry;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.FeatureStyle;
+import com.makina.ecrins.maps.jts.geojson.io.GeoJsonReader;
 import com.makina.ecrins.maps.location.Geolocation;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.makina.ecrins.maps.settings.MapSettings;
+import com.vividsolutions.jts.geom.Geometry;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +57,7 @@ import java.util.List;
 public class WebViewFragment
         extends AbstractWebViewFragment
         implements IValidateFragment,
+                   IInputFragment,
                    LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = WebViewFragment.class.getName();
@@ -124,12 +125,6 @@ public class WebViewFragment
                                                      this);
                 }
                 else {
-                    final String featureControlName = ControlUtils.getControlName(FeaturesControl.class);
-
-                    if (hasControl(featureControlName)) {
-                        ((FeaturesControl) getControl(featureControlName)).clearFeatures();
-                    }
-
                     if (!getArguments().getBoolean(KEY_AP,
                                                    true)) {
                         displayAPs();
@@ -140,19 +135,6 @@ public class WebViewFragment
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnInputFragmentListener) {
-            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
-            mInput = (Input) onInputFragmentListener.getInput();
-        }
-        else {
-            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
         }
     }
 
@@ -180,12 +162,12 @@ public class WebViewFragment
 
         if (getArguments().getBoolean(KEY_AP,
                                       true)) {
-            return (mInput.getCurrentSelectedTaxon() != null) &&
+            return (mInput != null) && (mInput.getCurrentSelectedTaxon() != null) &&
                     (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && (!getSavedInstanceState().getBoolean(KEY_EDITING_FEATURE,
                                                                                                                                           false));
         }
         else {
-            return (mInput.getCurrentSelectedTaxon() != null) &&
+            return (mInput != null) && (mInput.getCurrentSelectedTaxon() != null) &&
                     (((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea() != null) &&
                     (!getSavedInstanceState().getBoolean(KEY_EDITING_FEATURE,
                                                          false)) &&
@@ -199,20 +181,30 @@ public class WebViewFragment
               "refreshView, AP: " + getArguments().getBoolean(KEY_AP,
                                                               true));
 
+        if (mInput == null) {
+            Log.w(TAG,
+                  "refreshView: null input");
+            return;
+        }
+
         if (getArguments().getBoolean(KEY_AP,
                                       true)) {
             // clear all editable features if no area was edited yet.
             if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) {
-                getEditableFeatures().clearAllFeatures();
+                clearEditableFeatures();
             }
         }
         else {
+            displayAPs();
+
             if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea() == null)) {
-                getEditableFeatures().clearAllFeatures();
+                clearEditableFeatures();
             }
             else {
+                final Feature prospectingArea = ((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea();
+
                 // checks if this feature contains all features added to this taxon areas
-                if (!checkIfProspectingAreaContainsAllAreasPresences(((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea())) {
+                if ((prospectingArea != null) && !checkIfProspectingAreaContainsAllAreasPresences(prospectingArea)) {
                     Log.d(TAG,
                           "feature '" + ((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea()
                                                                                   .getId() + "' does not contains all previously added areas");
@@ -224,6 +216,11 @@ public class WebViewFragment
                 }
             }
         }
+    }
+
+    @Override
+    public void setInput(@NonNull AbstractInput input) {
+        this.mInput = (Input) input;
     }
 
     @Override
@@ -239,6 +236,7 @@ public class WebViewFragment
         return mapSettings;
     }
 
+    @NonNull
     @Override
     public List<Feature> getFeatures() {
         // no features to load
@@ -252,43 +250,52 @@ public class WebViewFragment
     }
 
     @Override
-    public boolean addOrUpdateEditableFeature(Feature selectedFeature) {
+    public boolean addOrUpdateEditableFeature(@NonNull Feature selectedFeature) {
         if (super.addOrUpdateEditableFeature(selectedFeature) && !getEditableFeatures().getFeatures()
                                                                                        .isEmpty() && (mInput.getCurrentSelectedTaxon() != null)) {
             Log.d(TAG,
                   "addOrUpdateEditableFeature: " +
                           selectedFeature.getGeometry()
-                                         .getType()
-                                         .name() +
+                                         .getGeometryType() +
                           ", id: " +
                           selectedFeature.getId());
 
             getSavedInstanceState().putBoolean(KEY_EDITING_FEATURE,
                                                false);
 
+            if (mInput == null) {
+                return false;
+            }
+
+            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+            if (currentSelectedTaxon == null) {
+                return false;
+            }
+
             if (getArguments().getBoolean(KEY_AP,
                                           true)) {
                 // delete a previously added area if needed
-                if ((((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && (!((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedAreaId()
-                                                                                                                                                 .equals(selectedFeature.getId()))) {
-                    ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
-                                                              .remove(((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedAreaId());
+                if ((!TextUtils.isEmpty(currentSelectedTaxon.getCurrentSelectedAreaId()) && (!currentSelectedTaxon.getCurrentSelectedAreaId()
+                                                                                                                  .equals(selectedFeature.getId())))) {
+                    currentSelectedTaxon.getAreas()
+                                        .remove(currentSelectedTaxon.getCurrentSelectedAreaId());
                 }
 
                 // add or update the current area
-                ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
-                                                          .put(selectedFeature.getId(),
-                                                               new Area(selectedFeature));
-                ((Taxon) mInput.getCurrentSelectedTaxon()).setCurrentSelectedAreaId(selectedFeature.getId());
+                currentSelectedTaxon.getAreas()
+                                    .put(selectedFeature.getId(),
+                                         new Area(selectedFeature));
+                currentSelectedTaxon.setCurrentSelectedAreaId(selectedFeature.getId());
 
                 ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
 
-                return ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
-                                                                 .containsKey(selectedFeature.getId());
+                return currentSelectedTaxon.getAreas()
+                                           .containsKey(selectedFeature.getId());
             }
             else {
-                if (!((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
-                                                               .isEmpty()) {
+                if (!currentSelectedTaxon.getAreas()
+                                         .isEmpty()) {
                     // checks if this feature contains all features added to this taxon areas
                     if (!checkIfProspectingAreaContainsAllAreasPresences(selectedFeature)) {
                         Log.d(TAG,
@@ -303,14 +310,15 @@ public class WebViewFragment
                     }
                 }
 
-                ((Taxon) mInput.getCurrentSelectedTaxon()).setProspectingArea(selectedFeature);
+                currentSelectedTaxon.setProspectingArea(selectedFeature);
                 ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
 
-                return (((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea() != null);
+                return (currentSelectedTaxon.getProspectingArea() != null);
             }
         }
         else {
-            if ((selectedFeature.getGeometry() == null) || (!GeometryUtils.isValid(selectedFeature.getGeometry()))) {
+            if (!selectedFeature.getGeometry()
+                                .isValid()) {
                 // add this invalid feature to be edited by the user
                 getEditableFeatures().addFeature(selectedFeature);
                 Toast.makeText(getActivity(),
@@ -332,25 +340,33 @@ public class WebViewFragment
         getSavedInstanceState().putBoolean(KEY_EDITING_FEATURE,
                                            false);
 
+        if (mInput == null) {
+            return false;
+        }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+        if (currentSelectedTaxon == null) {
+            return false;
+        }
+
         if (getArguments().getBoolean(KEY_AP,
                                       true)) {
             // clear the current selection
-            if ((((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedAreaId()
-                                                                                                                                            .equals(featureId))) {
-                ((Taxon) mInput.getCurrentSelectedTaxon()).setCurrentSelectedAreaId(null);
+            if ((!TextUtils.isEmpty(currentSelectedTaxon.getCurrentSelectedAreaId()) && (currentSelectedTaxon.getCurrentSelectedAreaId()
+                                                                                                             .equals(featureId)))) {
+                currentSelectedTaxon.setCurrentSelectedAreaId(null);
             }
 
-            ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
-                                                      .remove(featureId);
-
+            currentSelectedTaxon.getAreas()
+                                .remove(featureId);
             ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
 
-            return !((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
-                                                              .containsKey(featureId);
+            return !currentSelectedTaxon.getAreas()
+                                        .containsKey(featureId);
         }
         else {
-            ((Taxon) mInput.getCurrentSelectedTaxon()).setProspectingArea(null);
-
+            currentSelectedTaxon.setProspectingArea(null);
             ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
 
             return true;
@@ -363,27 +379,7 @@ public class WebViewFragment
               "loadControls AP: " + getArguments().getBoolean(KEY_AP,
                                                               true));
 
-        // clear all editable features if no area was edited yet.
-        if (getArguments().getBoolean(KEY_AP,
-                                      true)) {
-            if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) {
-                Log.d(TAG,
-                      "clear all editable features (AP)");
-
-                getEditableFeatures().clearAllFeatures();
-            }
-        }
-        else {
-            if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea() == null)) {
-                Log.d(TAG,
-                      "clear all editable features (PA)");
-
-                getEditableFeatures().clearAllFeatures();
-            }
-        }
-
         final DrawControl drawControl = new DrawControl(getActivity());
-
         drawControl.setAddingSingleFeature(getArguments().getBoolean(KEY_SINGLE_FEATURE,
                                                                      true));
         drawControl.enableAddMarker(getArguments().getBoolean(KEY_ADD_MARKER,
@@ -392,60 +388,77 @@ public class WebViewFragment
                                                             true));
         drawControl.enableAddPolygon(getArguments().getBoolean(KEY_ADD_POLYGON,
                                                                true));
-        drawControl.setFeatureDefaultStyle(drawControl.getFeatureDefaultStyle()
-                                                      .setColorResourceId(R.color.feature)
-                                                      .setFillColorResourceId(R.color.feature));
-        drawControl.setFeatureAddStyle(drawControl.getFeatureAddStyle()
-                                                  .setColorResourceId(R.color.feature_add)
-                                                  .setFillColorResourceId(R.color.feature_add));
-        drawControl.setFeatureEditStyle(drawControl.getFeatureEditStyle()
-                                                   .setColorResourceId(R.color.feature_edit)
-                                                   .setFillColorResourceId(R.color.feature_edit));
+        drawControl.setFeatureDefaultStyle(FeatureStyle.Builder.newInstance(getContext())
+                                                               .from(drawControl.getFeatureDefaultStyle())
+                                                               .setColorResourceId(R.color.feature)
+                                                               .setFillColorResourceId(R.color.feature)
+                                                               .build());
+        drawControl.setFeatureAddStyle(FeatureStyle.Builder.newInstance(getContext())
+                                                           .from(drawControl.getFeatureAddStyle())
+                                                           .setColorResourceId(R.color.feature_add)
+                                                           .setFillColorResourceId(R.color.feature_add)
+                                                           .build());
+        drawControl.setFeatureEditStyle(FeatureStyle.Builder.newInstance(getContext())
+                                                            .from(drawControl.getFeatureEditStyle())
+                                                            .setColorResourceId(R.color.feature_edit)
+                                                            .setFillColorResourceId(R.color.feature_edit)
+                                                            .build());
+        drawControl.setOnDrawControlListener(new DrawControl.OnDrawControlListener() {
+            @Override
+            public void onAddingFeature(boolean adding) {
 
+                Log.d(getClass().getName(),
+                      "onAddingFeature " + adding);
+
+                getSavedInstanceState().putBoolean(KEY_EDITING_FEATURE,
+                                                   adding);
+
+                ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
+            }
+
+            @Override
+            public void onEditingFeature(boolean editing) {
+
+                Log.d(getClass().getName(),
+                      "onEditingFeature " + editing);
+
+                getSavedInstanceState().putBoolean(KEY_EDITING_FEATURE,
+                                                   editing);
+
+                ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
+            }
+
+            @Override
+            public void onDeletingFeature(boolean deleting) {
+
+                Log.d(getClass().getName(),
+                      "onDeletingFeature " + deleting);
+
+                getSavedInstanceState().putBoolean(KEY_EDITING_FEATURE,
+                                                   deleting);
+
+                ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
+            }
+        });
         drawControl.addControlListener(new AbstractControl.OnIControlListener() {
             @Override
             public void onControlInitialized() {
-
                 Log.d(getClass().getName(),
                       "onControlInitialized drawControl");
 
-                drawControl.setOnDrawControlListener(new DrawControl.OnDrawControlListener() {
-                    @Override
-                    public void onAddingFeature(boolean adding) {
-
-                        Log.d(getClass().getName(),
-                              "onAddingFeature " + adding);
-
-                        getSavedInstanceState().putBoolean(KEY_EDITING_FEATURE,
-                                                           adding);
-
-                        ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
+                if (getArguments().getBoolean(KEY_AP,
+                                              true)) {
+                    // clear all editable features if no area was edited yet.
+                    if ((mInput != null) && (mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) {
+                        clearEditableFeatures();
                     }
-
-                    @Override
-                    public void onEditingFeature(boolean editing) {
-
-                        Log.d(getClass().getName(),
-                              "onEditingFeature " + editing);
-
-                        getSavedInstanceState().putBoolean(KEY_EDITING_FEATURE,
-                                                           editing);
-
-                        ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
+                }
+                else {
+                    if ((mInput != null) && (mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea() == null)) {
+                        clearEditableFeatures();
                     }
+                }
 
-                    @Override
-                    public void onDeletingFeature(boolean deleting) {
-
-                        Log.d(getClass().getName(),
-                              "onDeletingFeature " + deleting);
-
-                        getSavedInstanceState().putBoolean(KEY_EDITING_FEATURE,
-                                                           deleting);
-
-                        ((PagerFragmentActivity) WebViewFragment.this.getActivity()).validateCurrentPage();
-                    }
-                });
             }
         });
 
@@ -453,7 +466,6 @@ public class WebViewFragment
         featuresControl.addControlListener(new AbstractControl.OnIControlListener() {
             @Override
             public void onControlInitialized() {
-
                 Log.d(getClass().getName(),
                       "onControlInitialized displayAPs");
 
@@ -522,13 +534,17 @@ public class WebViewFragment
             final List<Feature> features = new ArrayList<>();
 
             do {
-                try {
-                    features.add(createFeature(Long.toString(data.getLong(data.getColumnIndex(MainDatabaseHelper.ProspectingAreasColumns._ID))),
-                                               GeometryUtils.createGeometryFromJson(new JSONObject(data.getString(data.getColumnIndex(MainDatabaseHelper.ProspectingAreasColumns.GEOMETRY))))));
-                }
-                catch (JSONException je) {
+                final String id = Long.toString(data.getLong(data.getColumnIndex(MainDatabaseHelper.ProspectingAreasColumns._ID)));
+                final Geometry geometry = new GeoJsonReader().readGeometry(data.getString(data.getColumnIndex(MainDatabaseHelper.ProspectingAreasColumns.GEOMETRY)));
+
+                if (geometry == null) {
                     Log.w(TAG,
-                          je.getMessage());
+                          "onLoadFinished, invalid Geometry for Feature " + id);
+                }
+
+                if (geometry != null) {
+                    features.add(new Feature(id,
+                                             geometry));
                 }
             }
             while (data.moveToNext());
@@ -543,6 +559,10 @@ public class WebViewFragment
     }
 
     protected void displayAPs() {
+        if (mInput == null) {
+            return;
+        }
+
         if (!getArguments().getBoolean(KEY_AP,
                                        true)) {
             Log.d(TAG,
@@ -551,14 +571,23 @@ public class WebViewFragment
             // this fragment may not be attached to the current activity
             if (isAdded()) {
                 final String featureControlName = ControlUtils.getControlName(FeaturesControl.class);
+
+                if (!hasControl(featureControlName)) {
+                    Log.w(TAG,
+                          "displayAPs: FeaturesControl not found");
+
+                    return;
+                }
+
                 final List<Feature> featuresAreas = new ArrayList<>();
+                final FeaturesControl featuresControl = (FeaturesControl) getControl(featureControlName);
+
+                if (hasControl(featureControlName)) {
+                    featuresControl.clearFeatures();
+                }
 
                 if ((mInput.getCurrentSelectedTaxon() != null) && (!((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
                                                                                                               .isEmpty())) {
-                    if (hasControl(featureControlName)) {
-                        ((FeaturesControl) getControl(featureControlName)).clearFeatures();
-                    }
-
                     for (Area area : ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
                                                                                .values()) {
                         featuresAreas.add(area.getFeature());
@@ -567,10 +596,12 @@ public class WebViewFragment
 
                 if (!featuresAreas.isEmpty()) {
                     if (hasControl(featureControlName)) {
-                        ((FeaturesControl) getControl(featureControlName)).addFeatures(featuresAreas,
-                                                                                       new FeatureStyle().setColorResourceId(R.color.feature_ap)
-                                                                                                         .setFillColorResourceId(R.color.feature_ap),
-                                                                                       false);
+                        featuresControl.addFeatures(featuresAreas,
+                                                    FeatureStyle.Builder.newInstance(getContext())
+                                                                        .setColorResourceId(R.color.feature_ap)
+                                                                        .setFillColorResourceId(R.color.feature_ap)
+                                                                        .build(),
+                                                    false);
                     }
                 }
             }
@@ -585,41 +616,48 @@ public class WebViewFragment
                   "displayPAs");
 
             ((FeaturesControl) getControl(featureControlName)).addFeatures(features,
-                                                                           new FeatureStyle().setColorResourceId(R.color.feature_pa)
-                                                                                             .setFillColorResourceId(R.color.feature_pa),
+                                                                           FeatureStyle.Builder.newInstance(getContext())
+                                                                                               .setColorResourceId(R.color.feature_pa)
+                                                                                               .setFillColorResourceId(R.color.feature_pa)
+                                                                                               .build(),
                                                                            false);
         }
     }
 
-    private Feature createFeature(String id,
-                                  IGeometry geometry) {
-        final Feature feature = new Feature(id);
-        feature.setGeometry(geometry);
+    private void clearEditableFeatures() {
+        final String drawControlName = ControlUtils.getControlName(DrawControl.class);
 
-        return feature;
+        if (hasControl(drawControlName)) {
+            ((DrawControl) getControl(drawControlName)).clearFeatures();
+        }
     }
 
     private boolean checkIfProspectingAreaContainsAllAreasPresences(final Feature selectedFeature) {
-        try {
+        if (BuildConfig.DEBUG) {
             Log.d(TAG,
-                  "checkIfProspectingAreaContainsAllAreasPresences for feature : " + selectedFeature.getJSONObject()
-                                                                                                    .toString());
+                  "checkIfProspectingAreaContainsAllAreasPresences for feature: " + selectedFeature.getId());
         }
-        catch (JSONException je) {
-            Log.w(TAG,
-                  je.getMessage());
+
+        if (mInput == null) {
+            return false;
+        }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+        if (currentSelectedTaxon == null) {
+            return false;
         }
 
         boolean check = true;
-        Iterator<Area> iterator = ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
-                                                                            .values()
-                                                                            .iterator();
+        final Iterator<Area> iterator = currentSelectedTaxon.getAreas()
+                                                            .values()
+                                                            .iterator();
 
         while (check && iterator.hasNext()) {
-            check = GeometryUtils.contains(iterator.next()
-                                                   .getFeature()
-                                                   .getGeometry(),
-                                           selectedFeature.getGeometry());
+            final Area area = iterator.next();
+            check = (area.getFeature() != null) && selectedFeature.getGeometry()
+                                                                  .contains(area.getFeature()
+                                                                                .getGeometry());
         }
 
         return check;

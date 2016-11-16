@@ -2,10 +2,13 @@ package com.makina.ecrins.flora.input;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.flora.input.Counting.CountingType;
-import com.makina.ecrins.maps.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.io.GeoJsonWriter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,7 +22,8 @@ import java.util.List;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class Area implements Parcelable {
+public class Area
+        implements Parcelable {
 
     public static final String KEY_ID = "id";
     public static final String KEY_AREA = "computed_area";
@@ -31,7 +35,7 @@ public class Area implements Parcelable {
     public static final String KEY_DISTURBANCES = "disturbances";
     public static final String KEY_COMMENT = "comment";
 
-    private long mAreaId;
+    long mAreaId;
     private double mComputedArea;
     private Feature mFeature;
     private Frequency mFrequency;
@@ -42,18 +46,9 @@ public class Area implements Parcelable {
     private String mComment;
 
     public Area(Feature pFeature) {
-        mAreaId = AbstractInput.generateId();
-        mComputedArea = 0.0;
+        this();
+
         mFeature = pFeature;
-
-        mPhenologyId = -1;
-        mSelectedPhysiognomy = new ArrayList<>();
-        mSelectedDisturbances = new ArrayList<>();
-
-        // sets the default counting method (i.e. none)
-        mCounting = new Counting(CountingType.NONE);
-
-        mComment = "";
     }
 
     public Area(Parcel source) {
@@ -66,9 +61,26 @@ public class Area implements Parcelable {
         mFrequency = source.readParcelable(Frequency.class.getClassLoader());
         mPhenologyId = source.readLong();
         mCounting = source.readParcelable(Counting.class.getClassLoader());
-        source.readList(mSelectedPhysiognomy, Long.class.getClassLoader());
-        source.readList(mSelectedDisturbances, Long.class.getClassLoader());
+        source.readList(mSelectedPhysiognomy,
+                        Long.class.getClassLoader());
+        source.readList(mSelectedDisturbances,
+                        Long.class.getClassLoader());
         mComment = source.readString();
+    }
+
+    protected Area() {
+        mAreaId = AbstractInput.generateId();
+        mComputedArea = 0.0;
+        mFeature = null;
+
+        mPhenologyId = -1;
+        mSelectedPhysiognomy = new ArrayList<>();
+        mSelectedDisturbances = new ArrayList<>();
+
+        // sets the default counting method (i.e. none)
+        mCounting = new Counting(CountingType.NONE);
+
+        mComment = "";
     }
 
     public long getAreaId() {
@@ -83,6 +95,7 @@ public class Area implements Parcelable {
         this.mComputedArea = pComputedArea;
     }
 
+    @Nullable
     public Feature getFeature() {
         return mFeature;
     }
@@ -91,6 +104,7 @@ public class Area implements Parcelable {
         this.mFeature = pFeature;
     }
 
+    @Nullable
     public Frequency getFrequency() {
         return mFrequency;
     }
@@ -107,6 +121,7 @@ public class Area implements Parcelable {
         this.mPhenologyId = pPhenologyId;
     }
 
+    @NonNull
     public Counting getCounting() {
         return mCounting;
     }
@@ -115,10 +130,12 @@ public class Area implements Parcelable {
         this.mCounting = pCounting;
     }
 
+    @NonNull
     public List<Long> getSelectedPhysiognomy() {
         return mSelectedPhysiognomy;
     }
 
+    @NonNull
     public List<Long> getSelectedDisturbances() {
         return mSelectedDisturbances;
     }
@@ -131,16 +148,24 @@ public class Area implements Parcelable {
         this.mComment = pComment;
     }
 
-    public JSONObject getJSONObject() throws JSONException {
+    @Deprecated
+    public JSONObject getJSONObject() throws
+                                      JSONException {
         JSONObject json = new JSONObject();
 
-        json.put(KEY_ID, mAreaId);
-        json.put(KEY_AREA, Double.valueOf(mComputedArea)
-                .intValue());
-        json.put(KEY_FEATURE, mFeature.getJSONObject());
-        json.put(KEY_FREQUENCY, mFrequency.getJSONObject());
-        json.put(KEY_PHENOLOGY, mPhenologyId);
-        json.put(KEY_COUNTING, mCounting.getJSONObject());
+        json.put(KEY_ID,
+                 mAreaId);
+        json.put(KEY_AREA,
+                 Double.valueOf(mComputedArea)
+                       .intValue());
+        json.put(KEY_FEATURE,
+                 new JSONObject(new GeoJsonWriter().write(mFeature)));
+        json.put(KEY_FREQUENCY,
+                 mFrequency.getJSONObject());
+        json.put(KEY_PHENOLOGY,
+                 mPhenologyId);
+        json.put(KEY_COUNTING,
+                 mCounting.getJSONObject());
 
         JSONArray jsonPhysiognomy = new JSONArray();
 
@@ -148,7 +173,8 @@ public class Area implements Parcelable {
             jsonPhysiognomy.put(physiognomyId);
         }
 
-        json.put(KEY_PHYSIOGNOMY, jsonPhysiognomy);
+        json.put(KEY_PHYSIOGNOMY,
+                 jsonPhysiognomy);
 
         JSONArray jsonDisturbances = new JSONArray();
 
@@ -156,8 +182,10 @@ public class Area implements Parcelable {
             jsonDisturbances.put(disturbanceId);
         }
 
-        json.put(KEY_DISTURBANCES, jsonDisturbances);
-        json.put(KEY_COMMENT, mComment);
+        json.put(KEY_DISTURBANCES,
+                 jsonDisturbances);
+        json.put(KEY_COMMENT,
+                 mComment);
 
         return json;
     }
@@ -168,13 +196,17 @@ public class Area implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(Parcel dest,
+                              int flags) {
         dest.writeLong(mAreaId);
         dest.writeDouble(mComputedArea);
-        dest.writeParcelable(mFeature, 0);
-        dest.writeParcelable(mFrequency, 0);
+        dest.writeParcelable(mFeature,
+                             0);
+        dest.writeParcelable(mFrequency,
+                             0);
         dest.writeLong(mPhenologyId);
-        dest.writeParcelable(mCounting, 0);
+        dest.writeParcelable(mCounting,
+                             0);
         dest.writeList(mSelectedPhysiognomy);
         dest.writeList(mSelectedDisturbances);
         dest.writeString(mComment);

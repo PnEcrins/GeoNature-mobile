@@ -103,27 +103,25 @@ public class TaxaInputListFragment
         selection.append(" & ?) != 0)");
         selectionArgs.add(Integer.toString(InputType.FLORA.getKey()));
 
-        if (args != null) {
-            if (args.containsKey(KEY_FILTER) && (args.getString(KEY_FILTER) != null)) {
-                if (args.containsKey(KEY_SWITCH_LABEL)) {
-                    if (selection.length() > 0) {
-                        selection.append(" AND ");
-                    }
-
-                    String filter = "%" + args.getString(KEY_FILTER) + "%";
-
-                    switch ((LabelSwitcher) args.getSerializable(KEY_SWITCH_LABEL)) {
-                        case FRENCH:
-                            selection.append(MainDatabaseHelper.TaxaColumns.NAME_FR);
-                            break;
-                        default:
-                            selection.append(MainDatabaseHelper.TaxaColumns.NAME);
-                            break;
-                    }
-
-                    selection.append(" LIKE ?");
-                    selectionArgs.add(filter);
+        if (args.containsKey(KEY_FILTER) && (args.getString(KEY_FILTER) != null)) {
+            if (args.containsKey(KEY_SWITCH_LABEL)) {
+                if (selection.length() > 0) {
+                    selection.append(" AND ");
                 }
+
+                String filter = "%" + args.getString(KEY_FILTER) + "%";
+
+                switch ((LabelSwitcher) args.getSerializable(KEY_SWITCH_LABEL)) {
+                    case FRENCH:
+                        selection.append(MainDatabaseHelper.TaxaColumns.NAME_FR);
+                        break;
+                    default:
+                        selection.append(MainDatabaseHelper.TaxaColumns.NAME);
+                        break;
+                }
+
+                selection.append(" LIKE ?");
+                selectionArgs.add(filter);
             }
         }
 

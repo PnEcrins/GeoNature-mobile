@@ -15,7 +15,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
+import com.makina.ecrins.commons.input.AbstractInput;
+import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.input.Counting;
@@ -31,24 +32,12 @@ import com.makina.ecrins.flora.ui.counting.CountingFragmentActivity;
  */
 public class CountingListFragment
         extends ListFragment
-        implements IValidateFragment {
+        implements IValidateFragment,
+                   IInputFragment {
 
     private static final String TAG = CountingListFragment.class.getName();
 
     private Input mInput;
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnInputFragmentListener) {
-            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
-            mInput = (Input) onInputFragmentListener.getInput();
-        }
-        else {
-            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
-        }
-    }
 
     @Override
     public void onActivityResult(int requestCode,
@@ -64,9 +53,15 @@ public class CountingListFragment
                 return;
             }
 
-            if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-                ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                          .setCounting(counting);
+            if (mInput == null) {
+                return;
+            }
+
+            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+            if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
+                currentSelectedTaxon.getCurrentSelectedArea()
+                                    .setCounting(counting);
             }
         }
     }
@@ -82,33 +77,39 @@ public class CountingListFragment
             return;
         }
 
+        if (mInput == null) {
+            return;
+        }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
         // sets the selected counting for the current taxon
-        if ((mInput.getCurrentSelectedTaxon() != null) &&
-                (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
+        if ((currentSelectedTaxon != null) &&
+                (currentSelectedTaxon.getCurrentSelectedArea() != null) &&
                 (!selectedCounting.getType()
-                                  .equals(((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                    .getCounting()
-                                                                                    .getType()))) {
-            ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                      .setCounting(new Counting(selectedCounting.getType()));
+                                  .equals(currentSelectedTaxon.getCurrentSelectedArea()
+                                                              .getCounting()
+                                                              .getType()))) {
+            currentSelectedTaxon.getCurrentSelectedArea()
+                                .setCounting(new Counting(selectedCounting.getType()));
         }
 
         ((CountingArrayAdapter) l.getAdapter()).notifyDataSetChanged();
 
         // starts CountingFragmentActivity only if exhaustive or sampling counting method was selected
-        if ((mInput.getCurrentSelectedTaxon() != null) &&
-                (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
-                (!((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                            .getCounting()
-                                                            .getType()
-                                                            .equals(CountingType.NONE))) {
+        if ((currentSelectedTaxon != null) &&
+                (currentSelectedTaxon.getCurrentSelectedArea() != null) &&
+                (!currentSelectedTaxon.getCurrentSelectedArea()
+                                      .getCounting()
+                                      .getType()
+                                      .equals(CountingType.NONE))) {
             final Intent intent = new Intent(getActivity(),
                                              CountingFragmentActivity.class);
             intent.putExtra(CountingFragmentActivity.EXTRA_AREA,
-                            ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea());
+                            currentSelectedTaxon.getCurrentSelectedArea());
             intent.putExtra(CountingFragmentActivity.EXTRA_COUNTING,
-                            ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                      .getCounting());
+                            currentSelectedTaxon.getCurrentSelectedArea()
+                                                .getCounting());
 
             startActivityForResult(intent,
                                    0);
@@ -127,17 +128,16 @@ public class CountingListFragment
 
     @Override
     public boolean validate() {
-        if ((mInput.getCurrentSelectedTaxon() == null) || ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() == null))) {
-            Log.w(TAG,
-                  "validate: no taxon selected !");
-
+        if (mInput == null) {
             return false;
         }
-        else {
-            // always true
-            return (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                               .getCounting() != null);
-        }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+        return !(currentSelectedTaxon == null || currentSelectedTaxon.getCurrentSelectedArea() == null) &&
+                currentSelectedTaxon.getCurrentSelectedArea() != null && currentSelectedTaxon.getCurrentSelectedArea()
+                                                                                             .getCounting()
+                                                                                             .isValid();
     }
 
     @Override
@@ -153,14 +153,20 @@ public class CountingListFragment
             setListShown(true);
         }
 
+        if (mInput == null) {
+            return;
+        }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
         // checks the validity of the selected counting method and sets the default one (i.e. NONE) if needed
-        if ((mInput.getCurrentSelectedTaxon() != null) &&
-                (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
-                (!((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                            .getCounting()
-                                                            .isValid())) {
-            ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                      .setCounting(new Counting(CountingType.NONE));
+        if (currentSelectedTaxon != null &&
+                currentSelectedTaxon.getCurrentSelectedArea() != null &&
+                !currentSelectedTaxon.getCurrentSelectedArea()
+                                     .getCounting()
+                                     .isValid()) {
+            currentSelectedTaxon.getCurrentSelectedArea()
+                                .setCounting(new Counting(CountingType.NONE));
 
             Toast.makeText(getActivity(),
                            R.string.message_counting_invalid,
@@ -169,6 +175,11 @@ public class CountingListFragment
         }
 
         ((CountingArrayAdapter) getListAdapter()).notifyDataSetChanged();
+    }
+
+    @Override
+    public void setInput(@NonNull AbstractInput input) {
+        this.mInput = (Input) input;
     }
 
     private class CountingArrayAdapter
@@ -208,26 +219,32 @@ public class CountingListFragment
                 ((TextView) view.findViewById(R.id.textViewCountingName)).setText(getString(counting.getType()
                                                                                                     .getResourceNameId()));
 
-                if ((mInput.getCurrentSelectedTaxon() != null) &&
-                        (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
-                        (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                   .getCounting()
-                                                                   .getType()
-                                                                   .equals(counting.getType()))) {
-                    if (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                  .getCounting()
-                                                                  .getType()
-                                                                  .equals(CountingType.NONE)) {
+                if (mInput == null) {
+                    return view;
+                }
+
+                final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+                if ((currentSelectedTaxon != null) &&
+                        (currentSelectedTaxon.getCurrentSelectedArea() != null) &&
+                        (currentSelectedTaxon.getCurrentSelectedArea()
+                                             .getCounting()
+                                             .getType()
+                                             .equals(counting.getType()))) {
+                    if (currentSelectedTaxon.getCurrentSelectedArea()
+                                            .getCounting()
+                                            .getType()
+                                            .equals(CountingType.NONE)) {
                         ((TextView) view.findViewById(R.id.textViewCountingValue)).setText("");
                     }
                     else {
                         ((TextView) view.findViewById(R.id.textViewCountingValue)).setText(String.format(getString(R.string.counting_selected_counting),
-                                                                                                         ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                                   .getCounting()
-                                                                                                                                                   .getTotalFertile(),
-                                                                                                         ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                                   .getCounting()
-                                                                                                                                                   .getTotalSterile()));
+                                                                                                         currentSelectedTaxon.getCurrentSelectedArea()
+                                                                                                                             .getCounting()
+                                                                                                                             .getTotalFertile(),
+                                                                                                         currentSelectedTaxon.getCurrentSelectedArea()
+                                                                                                                             .getCounting()
+                                                                                                                             .getTotalSterile()));
                     }
 
                     ((RadioButton) view.findViewById(R.id.radioButton)).setChecked(true);

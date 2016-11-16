@@ -1,10 +1,10 @@
 package com.makina.ecrins.flora.ui.input.physiognomy;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -27,7 +27,8 @@ import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.TextView;
 
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
-import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
+import com.makina.ecrins.commons.input.AbstractInput;
+import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.ui.widget.AbstractGroupsCursorAdapter;
 import com.makina.ecrins.flora.BuildConfig;
@@ -45,6 +46,7 @@ import com.makina.ecrins.flora.ui.input.PagerFragmentActivity;
 public class PhysiognomyFragment
         extends Fragment
         implements IValidateFragment,
+                   IInputFragment,
                    LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = PhysiognomyFragment.class.getName();
@@ -86,11 +88,17 @@ public class PhysiognomyFragment
         @Override
         public boolean onCreateActionMode(ActionMode mode,
                                           Menu menu) {
-            if ((mInput.getCurrentSelectedTaxon() != null) &&
-                    (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
-                    !((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                               .getSelectedPhysiognomy()
-                                                               .isEmpty()) {
+            if (mInput == null) {
+                return false;
+            }
+
+            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+            if ((currentSelectedTaxon != null) &&
+                    (currentSelectedTaxon.getCurrentSelectedArea() != null) &&
+                    !currentSelectedTaxon.getCurrentSelectedArea()
+                                         .getSelectedPhysiognomy()
+                                         .isEmpty()) {
                 final MenuItem menuItem = menu.add(Menu.NONE,
                                                    0,
                                                    Menu.NONE,
@@ -111,10 +119,16 @@ public class PhysiognomyFragment
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-                                ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                          .getSelectedPhysiognomy()
-                                                                          .clear();
+                            if (mInput == null) {
+                                return;
+                            }
+
+                            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+                            if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
+                                currentSelectedTaxon.getCurrentSelectedArea()
+                                                    .getSelectedPhysiognomy()
+                                                    .clear();
                             }
 
                             mClearSelection = true;
@@ -184,14 +198,20 @@ public class PhysiognomyFragment
                                                      convertView,
                                                      parent);
 
-                if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
+                if (mInput == null) {
+                    return view;
+                }
+
+                final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+                if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
                     final CheckedTextView checkedTextView = (CheckedTextView) view.findViewById(android.R.id.text1);
                     final long childId = mAdapter.getChildId(groupPosition,
                                                              childPosition);
 
-                    checkedTextView.setChecked(((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                         .getSelectedPhysiognomy()
-                                                                                         .contains(childId));
+                    checkedTextView.setChecked(currentSelectedTaxon.getCurrentSelectedArea()
+                                                                   .getSelectedPhysiognomy()
+                                                                   .contains(childId));
                 }
 
                 return view;
@@ -233,25 +253,31 @@ public class PhysiognomyFragment
                                         int groupPosition,
                                         int childPosition,
                                         long id) {
-                if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
+                if (mInput == null) {
+                    return false;
+                }
+
+                final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+                if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
                     final CheckedTextView checkedTextView = (CheckedTextView) v.findViewById(android.R.id.text1);
 
-                    if (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                  .getSelectedPhysiognomy()
-                                                                  .contains(id)) {
-                        ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                  .getSelectedPhysiognomy()
-                                                                  .remove(id);
+                    if (currentSelectedTaxon.getCurrentSelectedArea()
+                                            .getSelectedPhysiognomy()
+                                            .contains(id)) {
+                        currentSelectedTaxon.getCurrentSelectedArea()
+                                            .getSelectedPhysiognomy()
+                                            .remove(id);
                     }
                     else {
-                        ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                  .getSelectedPhysiognomy()
-                                                                  .add(id);
+                        currentSelectedTaxon.getCurrentSelectedArea()
+                                            .getSelectedPhysiognomy()
+                                            .add(id);
                     }
 
-                    checkedTextView.setChecked(((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                         .getSelectedPhysiognomy()
-                                                                                         .contains(id));
+                    checkedTextView.setChecked(currentSelectedTaxon.getCurrentSelectedArea()
+                                                                   .getSelectedPhysiognomy()
+                                                                   .contains(id));
 
                     updateActionMode();
                 }
@@ -263,19 +289,6 @@ public class PhysiognomyFragment
         mExpandableListView.setEmptyView(mTextViewEmpty);
         mExpandableListView.setAdapter(mAdapter);
         mExpandableListView.setFastScrollEnabled(true);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnInputFragmentListener) {
-            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
-            mInput = (Input) onInputFragmentListener.getInput();
-        }
-        else {
-            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
-        }
     }
 
     @Override
@@ -331,6 +344,11 @@ public class PhysiognomyFragment
         // start out with a progress indicator
         setListShown(false,
                      true);
+    }
+
+    @Override
+    public void setInput(@NonNull AbstractInput input) {
+        this.mInput = (Input) input;
     }
 
     @Override
@@ -414,16 +432,26 @@ public class PhysiognomyFragment
     }
 
     private void updateActionMode() {
-        if ((mInput.getCurrentSelectedTaxon() == null) || !mIsVisibleToUser) {
+        if (mInput == null) {
+            if (mMode != null) {
+                mMode.finish();
+            }
+
+            return;
+        }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+        if ((currentSelectedTaxon == null) || !mIsVisibleToUser) {
             if (mMode != null) {
                 mMode.finish();
             }
         }
         else {
-            if ((((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && isVisible()) {
-                if (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                              .getSelectedPhysiognomy()
-                                                              .isEmpty()) {
+            if ((currentSelectedTaxon.getCurrentSelectedArea() != null) && isVisible()) {
+                if (currentSelectedTaxon.getCurrentSelectedArea()
+                                        .getSelectedPhysiognomy()
+                                        .isEmpty()) {
                     if (mMode != null) {
                         mMode.finish();
                     }
@@ -435,9 +463,9 @@ public class PhysiognomyFragment
 
                     if (mMode != null) {
                         mMode.setTitle(String.format(getString(R.string.action_title_item_selected),
-                                                     ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                               .getSelectedPhysiognomy()
-                                                                                               .size()));
+                                                     currentSelectedTaxon.getCurrentSelectedArea()
+                                                                         .getSelectedPhysiognomy()
+                                                                         .size()));
                     }
                 }
             }

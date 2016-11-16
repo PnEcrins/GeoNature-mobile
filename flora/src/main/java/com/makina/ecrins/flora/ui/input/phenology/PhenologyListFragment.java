@@ -1,8 +1,8 @@
 package com.makina.ecrins.flora.ui.input.phenology;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -13,7 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
-import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
+import com.makina.ecrins.commons.input.AbstractInput;
+import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.flora.R;
@@ -29,24 +30,12 @@ import com.makina.ecrins.flora.input.Taxon;
 public class PhenologyListFragment
         extends ListFragment
         implements IValidateFragment,
+                   IInputFragment,
                    LoaderManager.LoaderCallbacks<Cursor> {
 
     private SimpleCursorAdapter mAdapter;
 
     private Input mInput;
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnInputFragmentListener) {
-            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
-            mInput = (Input) onInputFragmentListener.getInput();
-        }
-        else {
-            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
-        }
-    }
 
     @Override
     public void onViewCreated(View view,
@@ -75,10 +64,16 @@ public class PhenologyListFragment
 
                 final Cursor cursor = (Cursor) getItem(position);
 
-                if ((mInput.getCurrentSelectedTaxon() != null) &&
-                        (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
-                        (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                   .getPhenologyId() == cursor.getInt(cursor.getColumnIndex(MainDatabaseHelper.PhenologyColumns.CODE)))) {
+                if (mInput == null) {
+                    return view;
+                }
+
+                final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+                if ((currentSelectedTaxon != null) &&
+                        (currentSelectedTaxon.getCurrentSelectedArea() != null) &&
+                        (currentSelectedTaxon.getCurrentSelectedArea()
+                                             .getPhenologyId() == cursor.getInt(cursor.getColumnIndex(MainDatabaseHelper.PhenologyColumns.CODE)))) {
                     getListView().setSelection(position);
                     view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
                 }
@@ -109,9 +104,15 @@ public class PhenologyListFragment
         final Cursor cursor = (Cursor) mAdapter.getItem(position);
         long phenologyCode = cursor.getLong(cursor.getColumnIndex(MainDatabaseHelper.PhenologyColumns.CODE));
 
-        if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-            ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                      .setPhenologyId(phenologyCode);
+        if (mInput == null) {
+            return;
+        }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+        if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
+            currentSelectedTaxon.getCurrentSelectedArea()
+                                .setPhenologyId(phenologyCode);
         }
 
         mAdapter.notifyDataSetChanged();
@@ -131,8 +132,16 @@ public class PhenologyListFragment
 
     @Override
     public boolean validate() {
-        return !((mInput.getCurrentSelectedTaxon() == null) || ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() == null))) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                                                                                                                                                                                                            .getPhenologyId() != -1;
+        if (mInput == null) {
+            return false;
+        }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+        return mInput != null && !(currentSelectedTaxon == null || currentSelectedTaxon.getCurrentSelectedArea() == null) &&
+                currentSelectedTaxon.getCurrentSelectedArea() != null &&
+                currentSelectedTaxon.getCurrentSelectedArea()
+                                    .getPhenologyId() != -1;
     }
 
     @Override
@@ -144,6 +153,11 @@ public class PhenologyListFragment
 
         // start out with a progress indicator
         setListShown(false);
+    }
+
+    @Override
+    public void setInput(@NonNull AbstractInput input) {
+        this.mInput = (Input) input;
     }
 
     @Override

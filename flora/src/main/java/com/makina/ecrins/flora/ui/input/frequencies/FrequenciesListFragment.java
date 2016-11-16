@@ -14,7 +14,8 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
+import com.makina.ecrins.commons.input.AbstractInput;
+import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.flora.R;
@@ -34,24 +35,12 @@ import java.text.NumberFormat;
  */
 public class FrequenciesListFragment
         extends ListFragment
-        implements IValidateFragment {
+        implements IValidateFragment,
+                   IInputFragment {
 
     private static final String TAG = FrequenciesListFragment.class.getName();
 
     private Input mInput;
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnInputFragmentListener) {
-            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
-            mInput = (Input) onInputFragmentListener.getInput();
-        }
-        else {
-            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
-        }
-    }
 
     @Override
     public void onActivityResult(int requestCode,
@@ -67,9 +56,15 @@ public class FrequenciesListFragment
                 return;
             }
 
-            if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-                ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                          .setFrequency(frequency);
+            if (mInput == null) {
+                return;
+            }
+
+            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+            if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
+                currentSelectedTaxon.getCurrentSelectedArea()
+                                    .setFrequency(frequency);
             }
         }
     }
@@ -85,28 +80,34 @@ public class FrequenciesListFragment
             return;
         }
 
-        if ((mInput.getCurrentSelectedTaxon() != null) &&
-                (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
-                ((((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                            .getFrequency() == null) || ((((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                    .getFrequency() != null) && (!selectedFrequency.getType()
-                                                                                                                                                                                   .equals(((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                                                                                                                     .getFrequency()
-                                                                                                                                                                                                                                     .getType()))))) {
-            ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                      .setFrequency(new Frequency(selectedFrequency.getType()));
+        if (mInput == null) {
+            return;
+        }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+        if ((currentSelectedTaxon != null) &&
+                (currentSelectedTaxon.getCurrentSelectedArea() != null) &&
+                ((currentSelectedTaxon.getCurrentSelectedArea()
+                                      .getFrequency() == null) || ((currentSelectedTaxon.getCurrentSelectedArea()
+                                                                                        .getFrequency() != null) && (!selectedFrequency.getType()
+                                                                                                                                       .equals(currentSelectedTaxon.getCurrentSelectedArea()
+                                                                                                                                                                   .getFrequency()
+                                                                                                                                                                   .getType()))))) {
+            currentSelectedTaxon.getCurrentSelectedArea()
+                                .setFrequency(new Frequency(selectedFrequency.getType()));
         }
 
         ((FrequenciesArrayAdapter) l.getAdapter()).notifyDataSetChanged();
 
-        if (mInput.getCurrentSelectedTaxon() != null) {
+        if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
             final Intent intent = new Intent(getActivity(),
                                              FrequencyFragmentActivity.class);
             intent.putExtra(FrequencyFragmentActivity.EXTRA_AREA,
-                            ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea());
+                            currentSelectedTaxon.getCurrentSelectedArea());
             intent.putExtra(FrequencyFragmentActivity.EXTRA_FREQUENCY,
-                            ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                      .getFrequency());
+                            currentSelectedTaxon.getCurrentSelectedArea()
+                                                .getFrequency());
 
             startActivityForResult(intent,
                                    0);
@@ -125,33 +126,43 @@ public class FrequenciesListFragment
 
     @Override
     public boolean validate() {
-        if ((mInput.getCurrentSelectedTaxon() == null) || ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() == null))) {
-            Log.w(TAG,
-                  "validate: no taxon selected !");
-
+        if (mInput == null) {
             return false;
         }
-        else {
-            return (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
-                    (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                               .getFrequency() != null) &&
-                    (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                               .getFrequency()
-                                                               .getValue() > 0);
-        }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+        return !(mInput == null || currentSelectedTaxon == null || currentSelectedTaxon.getCurrentSelectedArea() == null) &&
+                currentSelectedTaxon.getCurrentSelectedArea() != null &&
+                currentSelectedTaxon.getCurrentSelectedArea()
+                                    .getFrequency() != null &&
+                currentSelectedTaxon.getCurrentSelectedArea()
+                                    .getFrequency()
+                                    .getValue() > 0;
     }
 
     @Override
     public void refreshView() {
-        if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
+        if (mInput == null) {
+            Log.w(TAG,
+                  "refreshView: null input");
+            return;
+        }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+        if ((currentSelectedTaxon != null) &&
+                (currentSelectedTaxon.getCurrentSelectedArea() != null) &&
+                (currentSelectedTaxon.getCurrentSelectedArea()
+                                     .getFeature() != null)) {
             Log.d(TAG,
-                  "refreshView, current area " + ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                           .getFeature()
-                                                                                           .getId());
+                  "refreshView, current area " + currentSelectedTaxon.getCurrentSelectedArea()
+                                                                     .getFeature()
+                                                                     .getId());
         }
         else {
             Log.w(TAG,
-                  "refreshView, no selected area !");
+                  "refreshView, no selected area!");
         }
 
         if (getListAdapter() == null) {
@@ -166,6 +177,11 @@ public class FrequenciesListFragment
         else {
             ((FrequenciesArrayAdapter) getListAdapter()).notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void setInput(@NonNull AbstractInput input) {
+        this.mInput = (Input) input;
     }
 
     private class FrequenciesArrayAdapter
@@ -205,21 +221,27 @@ public class FrequenciesListFragment
                 ((TextView) view.findViewById(R.id.textViewFrequencyName)).setText(getString(frequency.getType()
                                                                                                       .getResourceNameId()));
 
-                if ((mInput.getCurrentSelectedTaxon() != null) &&
-                        (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
-                        (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                   .getFrequency() != null) &&
-                        (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                   .getFrequency()
-                                                                   .getType()
-                                                                   .equals(frequency.getType()))) {
+                if (mInput == null) {
+                    return view;
+                }
+
+                final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+                if ((currentSelectedTaxon != null) &&
+                        (currentSelectedTaxon.getCurrentSelectedArea() != null) &&
+                        (currentSelectedTaxon.getCurrentSelectedArea()
+                                             .getFrequency() != null) &&
+                        (currentSelectedTaxon.getCurrentSelectedArea()
+                                             .getFrequency()
+                                             .getType()
+                                             .equals(frequency.getType()))) {
                     NumberFormat numberFormatPercent = DecimalFormat.getPercentInstance();
                     numberFormatPercent.setMaximumFractionDigits(2);
 
                     ((TextView) view.findViewById(R.id.textViewFrequencyValue)).setText(String.format(getString(R.string.frequencies_selected_frequency_computed),
-                                                                                                      numberFormatPercent.format(((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                                                           .getFrequency()
-                                                                                                                                                                           .getValue() / 100)));
+                                                                                                      numberFormatPercent.format(currentSelectedTaxon.getCurrentSelectedArea()
+                                                                                                                                                     .getFrequency()
+                                                                                                                                                     .getValue() / 100)));
                     ((RadioButton) view.findViewById(R.id.radioButton)).setChecked(true);
                     view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
 

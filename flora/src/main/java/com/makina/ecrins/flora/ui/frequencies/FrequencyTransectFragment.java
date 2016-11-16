@@ -19,8 +19,7 @@ import android.widget.TextView;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.input.Area;
 import com.makina.ecrins.flora.input.Frequency;
-import com.makina.ecrins.maps.geojson.geometry.LineString;
-import com.makina.ecrins.maps.geojson.geometry.Polygon;
+import com.makina.ecrins.maps.jts.geojson.GeometryUtils;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -332,17 +331,17 @@ public class FrequencyTransectFragment
 
             switch (mArea.getFeature()
                          .getGeometry()
-                         .getType()) {
-                case POINT:
+                         .getGeometryType()) {
+                case "Point":
                     computedStep = (Math.PI * Math.sqrt(mArea.getComputedArea() / Math.PI)) / 100;
                     break;
-                case LINE_STRING:
-                    computedStep = ((LineString) mArea.getFeature()
-                                                      .getGeometry()).getGeodesicLength() / 100;
+                case "LineString":
+                    computedStep = GeometryUtils.getGeodesicLength(mArea.getFeature()
+                                                                        .getGeometry()) / 100;
                     break;
-                case POLYGON:
-                    computedStep = ((Polygon) mArea.getFeature()
-                                                   .getGeometry()).getGeodesicLength() / 200;
+                case "Polygon":
+                    computedStep = GeometryUtils.getGeodesicLength(mArea.getFeature()
+                                                                        .getGeometry()) / 200;
                     break;
                 default:
                     computedStep = 0.6;

@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:sharedUserId="com.makina.ecrins"
-    android:versionCode="691"
+    android:versionCode="830"
     tools:ignore="GradleOverrides">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -80,6 +80,9 @@
             android:exported="false"/>
         <service
             android:name="com.makina.ecrins.commons.sync.SyncService"
+            android:exported="false"/>
+        <service
+            android:name="com.makina.ecrins.flora.input.InputIntentService"
             android:exported="false"/>
 
         <receiver

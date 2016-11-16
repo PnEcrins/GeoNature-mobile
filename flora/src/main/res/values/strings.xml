@@ -22,7 +22,7 @@
 
     <string name="pager_fragment_taxa_found_title">Did you find the specie ?</string>
     <string name="pager_fragment_webview_ap_title">Map (AP)</string>
-    <string name="pager_fragment_area_title">Area : %s</string>
+    <string name="pager_fragment_area_title">Area: %s</string>
     <string name="pager_fragment_frequencies_title">Frequency</string>
     <string name="pager_fragment_phenology_title">Phenology</string>
     <string name="pager_fragment_counting_title">Counting</string>
@@ -57,42 +57,43 @@
     <string name="taxa_found_button_no">no</string>
 
     <string name="area_none">None</string>
+    <string name="area_none_text">No area defined</string>
     <string name="area_point">Point</string>
     <string name="area_path">Path</string>
     <string name="area_polygon">Polygon</string>
     <string name="area_point_area_hint">Area (m&#x00B2;)</string>
-    <string name="area_path_length_computed">Path length : %.2f m</string>
+    <string name="area_path_length_computed">Path length: %.2f m</string>
     <string name="area_path_width_hint">Width (m)</string>
-    <string name="area_path_incline">Incline :</string>
-    <string name="area_polygon_planimetric_area_computed">Planimetric area : %.2f m&#x00B2;</string>
-    <string name="area_computed">Computed area : %.2f m&#x00B2;</string>
+    <string name="area_path_incline">Incline:</string>
+    <string name="area_polygon_planimetric_area_computed">Planimetric area: %.2f m&#x00B2;</string>
+    <string name="area_computed">Computed area: %.2f m&#x00B2;</string>
 
-    <string name="frequencies_selected_frequency_computed">Calculated frequency : %s</string>
+    <string name="frequencies_selected_frequency_computed">Calculated frequency: %s</string>
     <string name="frequency_estimation_abacus_hint">abacus</string>
     <string name="frequency_estimation_min_value">0</string>
-    <string name="frequency_estimation_frequency">Frequency :</string>
+    <string name="frequency_estimation_frequency">Frequency:</string>
     <string name="frequency_estimation_frequency_precentage">&#37;</string>
-    <string name="frequency_transect_step_advice">Recommended step length for 100 points : %d cm</string>
-    <string name="frequency_transect_number_of_transects">Number of transects :</string>
+    <string name="frequency_transect_step_advice">Recommended step length for 100 points: %d cm</string>
+    <string name="frequency_transect_number_of_transects">Number of transects:</string>
     <string name="frequency_transect_yes">YES</string>
     <string name="frequency_transect_no">NO</string>
-    <string name="frequency_transect_number_of_steps">Number of steps : %d</string>
-    <string name="frequency_transect_frequency">Frequency : %s</string>
-    <string name="frequency_transect_frequency_undefined">Frequency : undefined</string>
+    <string name="frequency_transect_number_of_steps">Number of steps: %d</string>
+    <string name="frequency_transect_frequency">Frequency: %s</string>
+    <string name="frequency_transect_frequency_undefined">Frequency: undefined</string>
 
     <string name="phenology_no_data">No phenology to display</string>
 
     <string name="counting_no_method">None</string>
-    <string name="counting_selected_counting">Fertile : %1$d, Sterile : %2$d</string>
+    <string name="counting_selected_counting">Fertile: %1$d, Sterile: %2$d</string>
     <string name="counting_plot">Plot</string>
     <string name="counting_elements">Total number of items counted</string>
     <string name="counting_fertile">Fertile</string>
     <string name="counting_sterile">Sterile</string>
     <string name="counting_exhaustive_hint">Total Number of elements accounts for this AP</string>
     <string name="counting_sampling_plot_surface">Plot surface (m&#x00B2;)</string>
-    <string name="counting_sampling_plot_number">Number of plots :</string>
-    <string name="counting_sampling_fertile_count">Fertile :</string>
-    <string name="counting_sampling_sterile_count">Sterile :</string>
+    <string name="counting_sampling_plot_number">Number of plots:</string>
+    <string name="counting_sampling_fertile_count">Fertile:</string>
+    <string name="counting_sampling_sterile_count">Sterile:</string>
     <plurals name="counting_sampling_fertile_total_count">
         <item quantity="other">%d fertile</item>
     </plurals>
@@ -107,8 +108,8 @@
     <string name="remarks_hint">Add a comment</string>
 
     <string name="choose_action_title_quit_step">Quit this step ?</string>
-    <string name="choose_action_yes">Yes : finish this step</string>
-    <string name="choose_action_no">No : close this dialog</string>
+    <string name="choose_action_yes">Yes: finish this step</string>
+    <string name="choose_action_no">No: close this dialog</string>
     <string name="choose_action_message">Your presence area has been saved.</string>
     <string name="choose_action_pause">Pause and continue the prospection</string>
     <string name="choose_action_area">Add a new presence area</string>

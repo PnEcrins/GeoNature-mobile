@@ -2,6 +2,8 @@ package com.makina.ecrins.flora.input;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.makina.ecrins.flora.R;
 
@@ -91,6 +93,7 @@ public class Frequency implements Parcelable {
         this.mValue = pValue;
     }
 
+    @Deprecated
     public JSONObject getJSONObject() throws JSONException {
         JSONObject json = new JSONObject();
 
@@ -137,6 +140,22 @@ public class Frequency implements Parcelable {
 
         public int getResourceNameId() {
             return resourceNameId;
+        }
+
+        @Nullable
+        public static FrequencyType fromValue(@Nullable final String value) {
+            if (TextUtils.isEmpty(value)) {
+                return null;
+            }
+
+            for (FrequencyType frequencyType : values()) {
+                if (frequencyType.getValue()
+                             .equals(value)) {
+                    return frequencyType;
+                }
+            }
+
+            return null;
         }
     }
 

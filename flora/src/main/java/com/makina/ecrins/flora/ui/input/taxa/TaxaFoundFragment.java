@@ -1,8 +1,8 @@
 package com.makina.ecrins.flora.ui.input.taxa;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,8 +12,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
-import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
+import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.IValidateWithNavigationControlFragment;
 import com.makina.ecrins.flora.BuildConfig;
 import com.makina.ecrins.flora.R;
@@ -29,6 +30,7 @@ import com.makina.ecrins.flora.ui.input.PagerFragmentActivity;
 public class TaxaFoundFragment
         extends Fragment
         implements IValidateWithNavigationControlFragment,
+                   IInputFragment,
                    OnClickListener {
 
     private static final String TAG = TaxaFoundFragment.class.getName();
@@ -89,19 +91,6 @@ public class TaxaFoundFragment
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnInputFragmentListener) {
-            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
-            mInput = (Input) onInputFragmentListener.getInput();
-        }
-        else {
-            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
-        }
-    }
-
-    @Override
     public int getResourceTitle() {
         return R.string.pager_fragment_taxa_found_title;
     }
@@ -130,6 +119,11 @@ public class TaxaFoundFragment
     @Override
     public boolean getPagingToPreviousEnabled() {
         return true;
+    }
+
+    @Override
+    public void setInput(@NonNull AbstractInput input) {
+        this.mInput = (Input) input;
     }
 
     @Override

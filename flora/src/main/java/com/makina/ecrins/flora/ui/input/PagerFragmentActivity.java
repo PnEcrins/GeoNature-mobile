@@ -3,25 +3,25 @@ package com.makina.ecrins.flora.ui.input;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.makina.ecrins.commons.input.AbstractInput;
-import com.makina.ecrins.commons.input.SaveInputAsyncTask;
+import com.makina.ecrins.commons.input.AbstractInputIntentService;
+import com.makina.ecrins.commons.input.InputHelper;
 import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.ChooseActionDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.ProgressDialogFragment;
-import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
+import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.AbstractNavigationHistoryPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.flora.BuildConfig;
 import com.makina.ecrins.flora.MainApplication;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.input.Input;
-import com.makina.ecrins.flora.ui.input.area.AreaFragment;
+import com.makina.ecrins.flora.input.InputIntentService;
+import com.makina.ecrins.flora.ui.input.area.AreaInputFragment;
 import com.makina.ecrins.flora.ui.input.counting.CountingListFragment;
 import com.makina.ecrins.flora.ui.input.disturbances.DisturbancesFragment;
 import com.makina.ecrins.flora.ui.input.frequencies.FrequenciesListFragment;
@@ -33,7 +33,6 @@ import com.makina.ecrins.flora.ui.input.remarks.RemarksFragment;
 import com.makina.ecrins.flora.ui.input.taxa.TaxaFoundFragment;
 import com.makina.ecrins.flora.ui.input.taxa.TaxaInputListFragment;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -46,8 +45,7 @@ import java.util.Map;
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
 public class PagerFragmentActivity
-        extends AbstractNavigationHistoryPagerFragmentActivity
-        implements OnInputFragmentListener {
+        extends AbstractNavigationHistoryPagerFragmentActivity {
 
     private static final String TAG = PagerFragmentActivity.class.getName();
 
@@ -76,17 +74,11 @@ public class PagerFragmentActivity
                                 int actionResourceId) {
             switch (actionResourceId) {
                 case R.string.alert_dialog_action_start_new_input:
-                    // instantiates a new Input
-                    ((MainApplication) getApplication()).setInput(new Input());
-
-                    if (BuildConfig.DEBUG) {
-                        Log.d(TAG,
-                              "start new input: " + ((MainApplication) getApplication()).getInput()
-                                                                                        .getInputId());
-                    }
-
                     dialog.dismiss();
-                    goBackInHistory(R.string.pager_fragment_observers_and_date_title);
+
+                    // restart the current activity
+                    finish();
+                    startActivity(getIntent());
 
                     break;
                 case R.string.alert_dialog_action_close_app:
@@ -99,51 +91,99 @@ public class PagerFragmentActivity
         }
     };
 
-    private static class PagerFragmentHandler
-            extends Handler {
+    private InputHelper mInputHelper;
+    private InputHelper.OnInputHelperListener mOnInputHelperListener = new InputHelper.OnInputHelperListener() {
 
-        private final WeakReference<PagerFragmentActivity> mPagerFragmentActivity;
+        @NonNull
+        @Override
+        public AbstractInput createInput() {
+            return new Input();
+        }
 
-        public PagerFragmentHandler(PagerFragmentActivity pPagerFragmentActivity) {
-            super();
-
-            mPagerFragmentActivity = new WeakReference<>(pPagerFragmentActivity);
+        @NonNull
+        @Override
+        public Class<? extends AbstractInputIntentService> getInputIntentServiceClass() {
+            return InputIntentService.class;
         }
 
         @Override
-        public void handleMessage(Message msg) {
-            PagerFragmentActivity pagerFragmentActivity = mPagerFragmentActivity.get();
-            ProgressDialogFragment dialogFragment = (ProgressDialogFragment) pagerFragmentActivity.getSupportFragmentManager()
-                                                                                                  .findFragmentByTag(PROGRESS_DIALOG_FRAGMENT);
+        public void onReadInput(@NonNull AbstractInputIntentService.Status status) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      "onReadInput, " + status.name());
+            }
 
-            switch (msg.what) {
-                case SaveInputAsyncTask.HANDLER_INPUT_SAVE_START:
-                    pagerFragmentActivity.showProgressDialog(R.string.progress_title,
-                                                             R.string.progress_message_saving_current_input,
-                                                             ProgressDialog.STYLE_SPINNER,
-                                                             0);
+            switch (status) {
+                case FINISHED:
+                    final AbstractInput input = mInputHelper.getInput();
+
+                    if (input == null) {
+                        Log.w(TAG,
+                              "onReadInput, status: " + status + ", no input found");
+
+                        return;
+                    }
+
+                    final IValidateFragment pageFragment = getCurrentPageFragment();
+
+                    if (pageFragment instanceof IInputFragment) {
+                        ((IInputFragment) pageFragment).setInput(input);
+                        pageFragment.refreshView();
+                    }
 
                     break;
-                case SaveInputAsyncTask.HANDLER_INPUT_SAVED:
+            }
+        }
 
+        @Override
+        public void onSaveInput(@NonNull AbstractInputIntentService.Status status) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      "onSaveInput, " + status.name());
+            }
+        }
+
+        @Override
+        public void onExportInput(@NonNull AbstractInputIntentService.Status status) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      "onExportInput, " + status.name());
+            }
+
+            final AbstractInput input = mInputHelper.getInput();
+            ProgressDialogFragment dialogFragment = (ProgressDialogFragment) getSupportFragmentManager().findFragmentByTag(PROGRESS_DIALOG_FRAGMENT);
+
+            switch (status) {
+                case STARTING:
+                    showProgressDialog(R.string.progress_title,
+                                       R.string.progress_message_saving_current_input,
+                                       ProgressDialog.STYLE_SPINNER,
+                                       0);
+                    break;
+                case FINISHED:
                     if (dialogFragment != null) {
                         dialogFragment.dismiss();
                     }
 
-                    pagerFragmentActivity.mSavedState.putLong(KEY_INPUT_SAVED,
-                                                              ((MainApplication) pagerFragmentActivity.getApplication()).getInput()
-                                                                                                                        .getInputId());
+                    if (input == null) {
+                        Log.w(TAG,
+                              "onExportInput, status: " + status + ", no input found");
 
-                    pagerFragmentActivity.showChooseActionDialog();
+                        return;
+                    }
+
+                    mSavedState.putLong(KEY_INPUT_SAVED,
+                                        input.getInputId());
+
+                    showChooseActionDialog();
 
                     break;
-                case SaveInputAsyncTask.HANDLER_INPUT_SAVE_FAILED:
-
+                case FINISHED_WITH_ERRORS:
                     if (dialogFragment != null) {
                         dialogFragment.dismiss();
                     }
 
-                    Toast.makeText(pagerFragmentActivity,
+                    Toast.makeText(PagerFragmentActivity.this,
                                    R.string.message_saving_current_input_failed,
                                    Toast.LENGTH_LONG)
                          .show();
@@ -151,29 +191,24 @@ public class PagerFragmentActivity
                     break;
             }
         }
-    }
-
-    private PagerFragmentHandler mHandler;
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d(TAG,
-              "onCreate");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onCreate");
+        }
+
+        mInputHelper = new InputHelper(this,
+                                       mOnInputHelperListener);
 
         if (savedInstanceState == null) {
             // instantiates a new Input
-            ((MainApplication) getApplication()).setInput(new Input());
-
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG,
-                      "onCreate, input: " + ((MainApplication) getApplication()).getInput()
-                                                                                .getInputId());
-            }
+            mInputHelper.startInput();
         }
-
-        mHandler = new PagerFragmentHandler(this);
 
         // restore AlertDialogFragment state after resume if needed
         final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getSupportFragmentManager().findFragmentByTag(ALERT_CANCEL_DIALOG_FRAGMENT);
@@ -188,6 +223,30 @@ public class PagerFragmentActivity
         if (chooseActionDialogFragment != null) {
             chooseActionDialogFragment.setOnChooseActionDialogListener(mOnChooseActionDialogListener);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onResume");
+        }
+
+        mInputHelper.resume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onPause");
+        }
+
+        mInputHelper.dispose();
     }
 
     @NonNull
@@ -217,7 +276,7 @@ public class PagerFragmentActivity
         fragments.put(R.string.pager_fragment_webview_ap_title,
                       mapAPFragment);
         fragments.put(R.string.pager_fragment_area_title,
-                      new AreaFragment());
+                      new AreaInputFragment());
         fragments.put(R.string.pager_fragment_frequencies_title,
                       new FrequenciesListFragment());
         fragments.put(R.string.pager_fragment_phenology_title,
@@ -239,14 +298,54 @@ public class PagerFragmentActivity
     }
 
     @Override
+    public void onPageSelected(int position) {
+        super.onPageSelected(position);
+
+        final AbstractInput input = mInputHelper.getInput();
+
+        if (input == null) {
+            mInputHelper.readInput();
+        }
+        else {
+            final IValidateFragment pageFragment = getCurrentPageFragment();
+
+            if (pageFragment instanceof IInputFragment) {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "onPageSelected: " + position + ", " + pageFragment.getClass()
+                                                                             .getName());
+                }
+
+                ((IInputFragment) pageFragment).setInput(input);
+                pageFragment.refreshView();
+                validateCurrentPage();
+            }
+        }
+    }
+
+    @Override
     protected void performFinishAction() {
+        final Input input = (Input) mInputHelper.getInput();
+
+        if (input == null) {
+            Log.w(TAG,
+                  "performFinishAction: no input found");
+
+            // TODO: reload the input by calling readInput()
+            Toast.makeText(PagerFragmentActivity.this,
+                           R.string.message_saving_current_input_failed,
+                           Toast.LENGTH_LONG)
+                 .show();
+
+            return;
+        }
+
         if (mSavedState.getLong(KEY_INPUT_SAVED,
-                                0) == ((MainApplication) getApplication()).getInput()
-                                                                          .getInputId()) {
+                                0) == input.getInputId()) {
             showChooseActionDialog();
         }
         else {
-            saveCurrentInput();
+            mInputHelper.exportInput();
         }
     }
 
@@ -254,12 +353,6 @@ public class PagerFragmentActivity
     public void onBackPressed() {
         showAlertDialog(R.string.alert_dialog_confirm_cancel_title,
                         R.string.alert_dialog_confirm_cancel_input_all_message);
-    }
-
-    @NonNull
-    @Override
-    public AbstractInput getInput() {
-        return ((MainApplication) getApplication()).getInput();
     }
 
     protected void showAlertDialog(int titleResourceId,
@@ -295,10 +388,5 @@ public class PagerFragmentActivity
         chooseActionDialogFragment.setOnChooseActionDialogListener(mOnChooseActionDialogListener);
         chooseActionDialogFragment.show(getSupportFragmentManager(),
                                         CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
-    }
-
-    protected void saveCurrentInput() {
-        (new SaveInputAsyncTask(this,
-                                mHandler)).execute(((MainApplication) getApplication()).getInput());
     }
 }

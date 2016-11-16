@@ -57,11 +57,12 @@
     <string name="taxa_found_button_no">non</string>
 
     <string name="area_none">Non définie</string>
+    <string name="area_none_text">Type de surface non défini</string>
     <string name="area_point">Point</string>
     <string name="area_path">Chemin</string>
     <string name="area_polygon">Polygone</string>
     <string name="area_point_area_hint">Surface (m&#x00B2;)</string>
-    <string name="area_path_length_computed">Longueur du chemin : %.2f</string>
+    <string name="area_path_length_computed">Longueur du chemin : %.2f m</string>
     <string name="area_path_width_hint">Largeur (m)</string>
     <string name="area_path_incline">Pente :</string>
     <string name="area_polygon_planimetric_area_computed">Surface planimétrique : %.2f m&#x00B2;</string>

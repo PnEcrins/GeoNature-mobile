@@ -17,8 +17,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.makina.ecrins.commons.BuildConfig;
+import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
-import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
+import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.IValidateWithNavigationControlFragment;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.input.Input;
@@ -32,7 +33,8 @@ import com.makina.ecrins.flora.input.Taxon;
  */
 public class ChooseActionListFragment
         extends ListFragment
-        implements IValidateWithNavigationControlFragment {
+        implements IValidateWithNavigationControlFragment,
+                   IInputFragment {
 
     private static final String TAG = ChooseActionListFragment.class.getName();
 
@@ -126,19 +128,6 @@ public class ChooseActionListFragment
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnInputFragmentListener) {
-            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
-            mInput = (Input) onInputFragmentListener.getInput();
-        }
-        else {
-            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
-        }
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
@@ -185,6 +174,12 @@ public class ChooseActionListFragment
                                Settings.System.SCREEN_OFF_TIMEOUT,
                                mDefaultScreenOffTimeOut);
 
+        if (mInput == null) {
+            Log.w(TAG,
+                  "refreshView: null input");
+            return;
+        }
+
         if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) {
             // restore the previously added Area for this Taxon
             ((Taxon) mInput.getCurrentSelectedTaxon()).setCurrentSelectedAreaId(((Taxon) mInput.getCurrentSelectedTaxon()).getLastInsertedAreaId());
@@ -215,6 +210,11 @@ public class ChooseActionListFragment
     @Override
     public boolean getPagingToPreviousEnabled() {
         return true;
+    }
+
+    @Override
+    public void setInput(@NonNull AbstractInput input) {
+        this.mInput = (Input) input;
     }
 
     /**
@@ -268,7 +268,13 @@ public class ChooseActionListFragment
                 view = convertView;
             }
 
-            ((TextView) view.findViewById(android.R.id.text1)).setText(getItem(position).getName());
+            final ActionItem actionItem = getItem(position);
+
+            if (actionItem == null) {
+                return view;
+            }
+
+            ((TextView) view.findViewById(android.R.id.text1)).setText(actionItem.getName());
 
             return view;
         }
@@ -286,14 +292,20 @@ public class ChooseActionListFragment
                           "delete area '" + areaId + "'");
                 }
 
-                ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
-                                                          .remove(areaId);
-                ((Taxon) mInput.getCurrentSelectedTaxon()).setCurrentSelectedAreaId(((Taxon) mInput.getCurrentSelectedTaxon()).getLastInsertedAreaId());
+                if (mInput == null) {
+                    return;
+                }
+
+                final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+                currentSelectedTaxon.getAreas()
+                                    .remove(areaId);
+                currentSelectedTaxon.setCurrentSelectedAreaId(currentSelectedTaxon.getLastInsertedAreaId());
 
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG,
                           "restore previously added area '" +
-                                  ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedAreaId() + "'");
+                                  currentSelectedTaxon.getCurrentSelectedAreaId() + "'");
                 }
             }
 

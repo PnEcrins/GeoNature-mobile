@@ -1,7 +1,7 @@
 package com.makina.ecrins.flora.ui.input.remarks;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,7 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
+import com.makina.ecrins.commons.input.AbstractInput;
+import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.input.Area;
@@ -27,10 +28,10 @@ import com.makina.ecrins.flora.input.Taxon;
  */
 public class RemarksFragment
         extends Fragment
-        implements IValidateFragment {
+        implements IValidateFragment,
+                   IInputFragment {
 
     private EditText mEditTextRemarks;
-
     private Input mInput;
 
     private final TextWatcher mTextWatcher = new TextWatcher() {
@@ -52,9 +53,15 @@ public class RemarksFragment
 
         @Override
         public void afterTextChanged(Editable s) {
-            if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-                ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                          .setComment(s.toString());
+            if (mInput == null) {
+                return;
+            }
+
+            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+            if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
+                currentSelectedTaxon.getCurrentSelectedArea()
+                                    .setComment(s.toString());
             }
         }
     };
@@ -80,19 +87,6 @@ public class RemarksFragment
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnInputFragmentListener) {
-            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
-            mInput = (Input) onInputFragmentListener.getInput();
-        }
-        else {
-            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
-        }
-    }
-
-    @Override
     public void onPause() {
         mEditTextRemarks.removeTextChangedListener(mTextWatcher);
 
@@ -111,14 +105,27 @@ public class RemarksFragment
 
     @Override
     public boolean validate() {
-        return (mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null);
+        return (mInput != null) &&
+                (mInput.getCurrentSelectedTaxon() != null) &&
+                (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null);
     }
 
     @Override
     public void refreshView() {
-        if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-            mEditTextRemarks.setText(((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                               .getComment());
+        if (mInput == null) {
+            return;
         }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+        if ((mInput != null) && (currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
+            mEditTextRemarks.setText(currentSelectedTaxon.getCurrentSelectedArea()
+                                                         .getComment());
+        }
+    }
+
+    @Override
+    public void setInput(@NonNull AbstractInput input) {
+        this.mInput = (Input) input;
     }
 }

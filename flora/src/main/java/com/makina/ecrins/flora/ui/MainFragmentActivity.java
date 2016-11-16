@@ -24,13 +24,15 @@ import com.makina.ecrins.flora.ui.sync.SynchronizationActivity;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class MainFragmentActivity extends AbstractMainFragmentActivity {
+public class MainFragmentActivity
+        extends AbstractMainFragmentActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case 0:
-                startActivity(new Intent(this, MainPreferencesActivity.class));
+                startActivity(new Intent(this,
+                                         MainPreferencesActivity.class));
                 return true;
             default:
                 return false;
@@ -41,11 +43,12 @@ public class MainFragmentActivity extends AbstractMainFragmentActivity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.buttonStartSynchronization:
-                startActivity(new Intent(this, SynchronizationActivity.class));
+                startActivity(new Intent(this,
+                                         SynchronizationActivity.class));
                 break;
             case R.id.buttonStartInput:
-                ((MainApplication) getApplication()).setInput(null);
-                startActivity(new Intent(this, PagerFragmentActivity.class));
+                startActivity(new Intent(this,
+                                         PagerFragmentActivity.class));
                 break;
         }
     }
@@ -82,15 +85,15 @@ public class MainFragmentActivity extends AbstractMainFragmentActivity {
     }
 
     @Override
-    protected void performMessageStatusTaskHandler(AbstractMainFragmentActivity mainFragmentActivity, Message msg) {
+    protected void performMessageStatusTaskHandler(AbstractMainFragmentActivity mainFragmentActivity,
+                                                   Message msg) {
         // nothing to do ...
     }
 
     @Override
     protected Uri getObserverLoaderUri(long ObserverId) {
-        return Uri.withAppendedPath(
-                MainContentProvider.CONTENT_OBSERVERS_URI,
-                Long.toString(ObserverId));
+        return Uri.withAppendedPath(MainContentProvider.CONTENT_OBSERVERS_URI,
+                                    Long.toString(ObserverId));
     }
 
     @Override
