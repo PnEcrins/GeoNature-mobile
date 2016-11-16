@@ -31,6 +31,18 @@ L.Control.NativeDraw = L.Control.extend(
 		map.off("zoomend", this._onZoomEvent, this);
 	},
 
+    clearFeatures: function()
+	{
+		this._clearEvents();
+		this._map.removeLayer(this._features);
+		this._map.removeLayer(this._markers);
+		this._features.clearLayers();
+		this._markers.clearLayers();
+		this._map.addLayer(this._features);
+
+		this._moveRefreshPosition();
+	},
+
 	startDrawFeature: function(layerType)
 	{
 		this._clearEvents();
@@ -360,7 +372,20 @@ L.Control.NativeDraw = L.Control.extend(
 
 				for (var j = 0; j < feature.geometry.coordinates[0].length; j++)
 				{
-					polygon.addLatLng(new L.LatLng(feature.geometry.coordinates[0][j][1], feature.geometry.coordinates[0][j][0]));
+				    // add the last LatLng only if different from the first LatLng added to this Polygon
+				    if (j == (feature.geometry.coordinates[0].length - 1))
+				    {
+				        var lastLatLng = new L.LatLng(feature.geometry.coordinates[0][j][1], feature.geometry.coordinates[0][j][0]);
+
+				        if (!polygon.getLatLngs()[0].equals(lastLatLng))
+				        {
+				            polygon.addLatLng(lastLatLng);
+				        }
+				    }
+				    else
+				    {
+				        polygon.addLatLng(new L.LatLng(feature.geometry.coordinates[0][j][1], feature.geometry.coordinates[0][j][0]));
+				    }
 				}
 
 				this._features.addLayer(polygon);

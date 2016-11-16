@@ -100,49 +100,59 @@ public class FeaturesControl
      */
     public void addFeatures(@NonNull final List<Feature> features,
                             @NonNull final FeatureStyle style,
-                            boolean fitBounds) {
-        if (isControlInitialized()) {
-            mWebViewFragment.getFeatures()
-                            .addAll(features);
+                            final boolean fitBounds) {
+        getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (isControlInitialized()) {
+                    mWebViewFragment.getFeatures()
+                                    .addAll(features);
 
-            final FeatureCollection featureCollection = new FeatureCollection();
-            featureCollection.addAllFeatures(features);
+                    final FeatureCollection featureCollection = new FeatureCollection();
+                    featureCollection.addAllFeatures(features);
 
-            Log.d(getClass().getName(),
-                  "addFeatures size: " + featureCollection.getFeatures()
-                                                          .size());
+                    Log.d(getClass().getName(),
+                          "addFeatures size: " + featureCollection.getFeatures()
+                                                                  .size());
 
-            this.mWebViewFragment.loadUrl(getJSUrlPrefix() +
-                                                  ".addFeatures('" +
-                                                  new GeoJsonWriter().write(featureCollection) +
-                                                  "', '" +
-                                                  style.toString() +
-                                                  "', " +
-                                                  fitBounds +
-                                                  ")");
-        }
-        else {
-            Log.w(getClass().getName(),
-                  "addFeatures: Control '" + getName() + "' is not initialized!");
-        }
+                    mWebViewFragment.loadUrl(getJSUrlPrefix() +
+                                                     ".addFeatures('" +
+                                                     new GeoJsonWriter().write(featureCollection) +
+                                                     "', '" +
+                                                     style.toString() +
+                                                     "', " +
+                                                     fitBounds +
+                                                     ")");
+                }
+                else {
+                    Log.w(FeaturesControl.class.getName(),
+                          "addFeatures: Control '" + getName() + "' is not initialized!");
+                }
+            }
+        });
     }
 
     /**
      * Clears all {@link Feature}s.
      */
     public void clearFeatures() {
-        if (isControlInitialized()) {
-            Log.d(getClass().getName(),
-                  "clearFeatures");
+        getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (isControlInitialized()) {
+                    Log.d(getClass().getName(),
+                          "clearFeatures");
 
-            this.mWebViewFragment.getFeatures()
-                                 .clear();
-            this.mWebViewFragment.loadUrl(getJSUrlPrefix() + ".clearFeatures()");
-        }
-        else {
-            Log.w(getClass().getName(),
-                  "clearFeatures: Control '" + getName() + "' is not initialized !");
-        }
+                    mWebViewFragment.getFeatures()
+                                    .clear();
+                    mWebViewFragment.loadUrl(getJSUrlPrefix() + ".clearFeatures()");
+                }
+                else {
+                    Log.w(FeaturesControl.class.getName(),
+                          "clearFeatures: Control '" + getName() + "' is not initialized !");
+                }
+            }
+        });
     }
 
     @JavascriptInterface

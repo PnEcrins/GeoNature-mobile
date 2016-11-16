@@ -412,6 +412,30 @@ public class DrawControl
     }
 
     /**
+     * Clears all {@link Feature}s.
+     */
+    public void clearFeatures() {
+        getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (isControlInitialized()) {
+                    Log.d(getClass().getName(),
+                          "clearFeatures");
+
+                    mWebViewFragment.getEditableFeatures()
+                                    .clearAllFeatures();
+                    mWebViewFragment.loadUrl(getJSUrlPrefix() + ".clearFeatures()");
+                    updateButtons();
+                }
+                else {
+                    Log.w(DrawControl.class.getName(),
+                          "clearFeatures: Control '" + getName() + "' is not initialized !");
+                }
+            }
+        });
+    }
+
+    /**
      * Sets the current zoom level
      *
      * @param zoom the zoom level to set
@@ -603,7 +627,8 @@ public class DrawControl
 
                             if (type.equals("Polygon") && (coordinates.size() > 2)) {
                                 // add a last coordinate as the same first coordinate to create a valid closed LineString
-                                if (!coordinates.get(0).equals(coordinates.get(coordinates.size() - 1))) {
+                                if (!coordinates.get(0)
+                                                .equals(coordinates.get(coordinates.size() - 1))) {
                                     coordinates.add(coordinates.get(0));
                                 }
 
