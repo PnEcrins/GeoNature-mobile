@@ -12,7 +12,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.makina.ecrins.commons.R;
-import com.viewpagerindicator.UnderlinePageIndicator;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -34,6 +33,7 @@ public abstract class AbstractPagerFragmentActivity
 
     protected SimpleFragmentPagerAdapter mAdapter;
     protected Bundle mSavedState;
+
     protected EnablePagingViewPager mPager;
     protected Button mPreviousButton;
     protected Button mNextButton;
@@ -57,6 +57,10 @@ public abstract class AbstractPagerFragmentActivity
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
+        final UnderlinePageIndicator indicator = (UnderlinePageIndicator) findViewById(R.id.indicator);
+        indicator.setViewPager(mPager);
+        mPager.addOnPageChangeListener(this);
+
         if (savedInstanceState == null) {
             mSavedState = new Bundle();
 
@@ -74,11 +78,19 @@ public abstract class AbstractPagerFragmentActivity
                 }
             }
 
-            mAdapter.notifyDataSetChanged();
             mSavedState.putInt(KEY_PAGER_SIZE,
                                getPagerFragments().size());
             mSavedState.putInt(KEY_PAGER_POSITION,
                                mPager.getCurrentItem());
+
+            mAdapter.notifyDataSetChanged();
+            mPager.setCurrentItem(mPager.getCurrentItem());
+            mPager.post(new Runnable() {
+                @Override
+                public void run() {
+                    onPageSelected(mPager.getCurrentItem());
+                }
+            });
         }
         else {
             mSavedState = savedInstanceState;
@@ -107,11 +119,6 @@ public abstract class AbstractPagerFragmentActivity
         }
 
         setTitle(mAdapter.getPageTitle(mPager.getCurrentItem()));
-
-        UnderlinePageIndicator indicator = (UnderlinePageIndicator) findViewById(R.id.indicator);
-        indicator.setViewPager(mPager);
-        indicator.setFades(false);
-        indicator.setOnPageChangeListener(this);
 
         mPreviousButton.setEnabled(mPager.getCurrentItem() > 0);
         mPreviousButton.setVisibility((mPager.getCurrentItem() > 0) ? View.VISIBLE : View.INVISIBLE);
@@ -282,6 +289,28 @@ public abstract class AbstractPagerFragmentActivity
     public void goToLastPage() {
         mPager.setCurrentItem(mAdapter.getCount() - 1,
                               true);
+    }
+
+    /**
+     * Gets the current {@link IValidateFragment} instance at the current position of this pager.
+     *
+     * @return {@link IValidateFragment} instance
+     */
+    @Nullable
+    public IValidateFragment getCurrentPageFragment() {
+        IValidateFragment pageFragment = getPageFragment(mPager.getCurrentItem());
+
+        if (pageFragment == null) {
+            // no fragment found through getSupportFragmentManager() so try to find it through getPagerFragments()
+            pageFragment = (new ArrayList<>(getPagerFragments().values())).get(mPager.getCurrentItem());
+        }
+
+        if (pageFragment == null) {
+            Log.w(TAG,
+                  "getCurrentPageFragment: no fragment found at position " + mPager.getCurrentItem());
+        }
+
+        return pageFragment;
     }
 
     /**

@@ -3,10 +3,13 @@ package com.makina.ecrins.commons.input;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
 import android.util.JsonWriter;
+import android.util.Log;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
 
@@ -14,9 +17,12 @@ import java.util.Collection;
  * Default {@code JsonWriter} about writing an {@link AbstractInput} as {@code JSON}.
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
+ * @see InputJsonReader
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class InputJsonWriter {
+
+    private static final String TAG = InputJsonWriter.class.getSimpleName();
 
     private String dateFormat;
     private final OnInputJsonWriterListener onInputJsonWriterListener;
@@ -35,12 +41,52 @@ public class InputJsonWriter {
         this.dateFormat = dateFormat;
     }
 
+    /**
+     * Convert the given {@link AbstractInput} as {@code JSON} string.
+     *
+     * @param input the {@link AbstractInput} to convert
+     *
+     * @return a {@code JSON} string representation of the given {@link AbstractInput} or {@code null} if something goes wrong
+     *
+     * @see #write(Writer, AbstractInput)
+     */
+    @Nullable
+    public String write(@Nullable final AbstractInput input) {
+        if (input == null) {
+            return null;
+        }
+
+        final StringWriter writer = new StringWriter();
+
+        try {
+            write(writer,
+                  input);
+        }
+        catch (IOException ioe) {
+            Log.w(TAG,
+                  ioe.getMessage());
+
+            return null;
+        }
+
+        return writer.toString();
+    }
+
+    /**
+     * Convert the given {@link AbstractInput} as {@code JSON} and write it to the given {@code Writer}.
+     *
+     * @param out   the {@code Writer} to use
+     * @param input the {@link AbstractInput} to convert
+     *
+     * @throws IOException if something goes wrong
+     */
     public void write(@NonNull final Writer out,
                       @NonNull final AbstractInput input) throws
                                                           IOException {
         final JsonWriter writer = new JsonWriter(out);
         writeInput(writer,
                    input);
+        writer.flush();
         writer.close();
     }
 

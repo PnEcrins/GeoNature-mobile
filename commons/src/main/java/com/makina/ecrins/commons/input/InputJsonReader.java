@@ -4,12 +4,15 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.Log;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,6 +22,7 @@ import java.util.Map;
  * Default {@code JsonReader} about reading a {@code JSON} stream and build the corresponding {@link AbstractInput}.
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
+ * @see InputJsonWriter
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class InputJsonReader {
@@ -42,6 +46,41 @@ public class InputJsonReader {
         this.dateFormat = dateFormat;
     }
 
+    /**
+     * parse a {@code JSON} string to convert as {@link AbstractInput}.
+     *
+     * @param json the {@code JSON} string to parse
+     *
+     * @return a {@link AbstractInput} instance from the {@code JSON} string or {@code null} if something goes wrong
+     *
+     * @see #read(Reader)
+     */
+    @Nullable
+    public AbstractInput read(@Nullable final String json) {
+        if (TextUtils.isEmpty(json)) {
+            return null;
+        }
+
+        try {
+            return read(new StringReader(json));
+        }
+        catch (IOException ioe) {
+            Log.w(TAG,
+                  ioe.getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * parse a {@code JSON} reader to convert as {@link AbstractInput}.
+     *
+     * @param in the {@code Reader} to parse
+     *
+     * @return a {@link AbstractInput} instance from the {@code JSON} reader
+     *
+     * @throws IOException if something goes wrong
+     */
     @NonNull
     public AbstractInput read(@NonNull final Reader in) throws
                                                         IOException {

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
 
 import org.json.JSONArray;
@@ -87,6 +88,7 @@ public abstract class AbstractInput
         return mInputId;
     }
 
+    @Nullable
     public String getFeatureId() {
         return mFeatureId;
     }
@@ -166,6 +168,7 @@ public abstract class AbstractInput
      *
      * @return the selected {@link AbstractTaxon} or {@code null} if none was selected.
      */
+    @Nullable
     public AbstractTaxon getCurrentSelectedTaxon() {
         return getTaxa().get(getCurrentSelectedTaxonId());
     }

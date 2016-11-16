@@ -1,6 +1,13 @@
 package com.makina.ecrins.commons.input;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import java.util.Calendar;
 
@@ -14,19 +21,162 @@ import java.util.Calendar;
  * </ul>
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
+ * @see AbstractInputIntentService
  */
 public class InputHelper {
 
+    private static final String TAG = InputHelper.class.getSimpleName();
+
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
 
-    private final String dateFormat;
+    private final Context mContext;
+    private final String mDateFormat;
+    private final OnInputHelperListener mOnInputHelperListener;
+    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context,
+                              Intent intent) {
+            if ((intent == null) || (intent.getAction() == null)) {
+                return;
+            }
 
-    public InputHelper() {
-        this(DEFAULT_DATE_FORMAT);
+            final AbstractInputIntentService.Status status = (AbstractInputIntentService.Status) intent.getSerializableExtra(AbstractInputIntentService.EXTRA_STATUS);
+            final AbstractInput input = intent.getParcelableExtra(AbstractInputIntentService.EXTRA_INPUT);
+
+            if (status == null) {
+                Log.w(TAG,
+                      "onReceive, no status defined for action " + intent.getAction());
+
+                return;
+            }
+
+            Log.d(TAG,
+                  "onReceive, action: " + intent.getAction() + ", status: " + status);
+
+            if (intent.getAction()
+                      .equals(getBroadcastActionReadInput())) {
+                switch (status) {
+                    case FINISHED:
+                        mInput = input;
+                }
+
+                mOnInputHelperListener.onReadInput(status);
+            }
+
+            if (intent.getAction()
+                      .equals(getBroadcastActionSaveInput())) {
+                mOnInputHelperListener.onSaveInput(status);
+            }
+
+            if (intent.getAction()
+                      .equals(getBroadcastActionExportInput())) {
+                mOnInputHelperListener.onExportInput(status);
+            }
+        }
+    };
+
+    private AbstractInput mInput;
+
+    public InputHelper(@NonNull final Context context,
+                       @NonNull final OnInputHelperListener onInputHelperListener) {
+        this(context,
+             DEFAULT_DATE_FORMAT,
+             onInputHelperListener);
     }
 
-    public InputHelper(@NonNull final String dateFormat) {
-        this.dateFormat = dateFormat;
+    public InputHelper(@NonNull final Context context,
+                       @NonNull final String dateFormat,
+                       @NonNull final OnInputHelperListener onInputHelperListener) {
+        this.mContext = context;
+        this.mDateFormat = dateFormat;
+        this.mOnInputHelperListener = onInputHelperListener;
+    }
+
+    @NonNull
+    public AbstractInput startInput() {
+        mInput = mOnInputHelperListener.createInput();
+
+        if (mInput.getInputId() == 0) {
+            mInput.mInputId = generateId();
+        }
+
+        Log.d(TAG,
+              "startInput, input: " + mInput.getInputId());
+
+        return mInput;
+    }
+
+    @Nullable
+    public AbstractInput getInput() {
+        return mInput;
+    }
+
+    public void setInput(@Nullable final AbstractInput input) {
+        this.mInput = input;
+    }
+
+    public void readInput() {
+        AbstractInputIntentService.readInput(mContext,
+                                             mOnInputHelperListener.getInputIntentServiceClass(),
+                                             getBroadcastActionReadInput(),
+                                             mDateFormat);
+    }
+
+    public void saveInput() {
+        if (mInput == null) {
+            Log.w(TAG,
+                  "exportInput: no input to save");
+        }
+
+        AbstractInputIntentService.saveInput(mContext,
+                                             mOnInputHelperListener.getInputIntentServiceClass(),
+                                             getBroadcastActionSaveInput(),
+                                             mDateFormat,
+                                             mInput);
+    }
+
+    public void exportInput() {
+        if (mInput == null) {
+            Log.w(TAG,
+                  "exportInput: no input to export");
+        }
+
+        AbstractInputIntentService.exportInput(mContext,
+                                               mOnInputHelperListener.getInputIntentServiceClass(),
+                                               getBroadcastActionExportInput(),
+                                               mDateFormat,
+                                               mInput);
+    }
+
+    public void resume() {
+        LocalBroadcastManager.getInstance(mContext)
+                             .registerReceiver(mBroadcastReceiver,
+                                               new IntentFilter(getBroadcastActionReadInput()));
+        LocalBroadcastManager.getInstance(mContext)
+                             .registerReceiver(mBroadcastReceiver,
+                                               new IntentFilter(getBroadcastActionSaveInput()));
+        LocalBroadcastManager.getInstance(mContext)
+                             .registerReceiver(mBroadcastReceiver,
+                                               new IntentFilter(getBroadcastActionExportInput()));
+    }
+
+    public void dispose() {
+        saveInput();
+
+        LocalBroadcastManager.getInstance(mContext)
+                             .unregisterReceiver(mBroadcastReceiver);
+    }
+
+    private String getBroadcastActionReadInput() {
+        return mContext.getPackageName() + ".broadcast.input.read";
+    }
+
+    private String getBroadcastActionSaveInput() {
+        return mContext.getPackageName() + ".broadcast.input.save";
+    }
+
+    private String getBroadcastActionExportInput() {
+        return mContext.getPackageName() + ".broadcast.input.export";
     }
 
     /**
@@ -34,7 +184,7 @@ public class InputHelper {
      *
      * @return an unique ID
      */
-    public static long generateId() {
+    private long generateId() {
         final Calendar now = Calendar.getInstance();
         now.set(Calendar.MILLISECOND,
                 0);
@@ -50,5 +200,30 @@ public class InputHelper {
                   0);
 
         return (now.getTimeInMillis() - start.getTimeInMillis()) / 1000;
+    }
+
+    /**
+     * Callback used by {@link InputHelper}.
+     *
+     * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
+     */
+    public interface OnInputHelperListener {
+
+        /**
+         * Returns a new instance of {@link AbstractInput}.
+         *
+         * @return new instance of {@link AbstractInput}
+         */
+        @NonNull
+        AbstractInput createInput();
+
+        @NonNull
+        Class<? extends AbstractInputIntentService> getInputIntentServiceClass();
+
+        void onReadInput(@NonNull final AbstractInputIntentService.Status status);
+
+        void onSaveInput(@NonNull final AbstractInputIntentService.Status status);
+
+        void onExportInput(@NonNull final AbstractInputIntentService.Status status);
     }
 }

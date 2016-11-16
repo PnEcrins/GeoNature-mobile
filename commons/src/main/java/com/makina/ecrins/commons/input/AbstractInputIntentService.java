@@ -16,8 +16,6 @@ import com.makina.ecrins.commons.util.FileUtils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 
 /**
  * Custom {@code IntentService} to read, save or export as JSON file a given {@link AbstractInput}.
@@ -86,7 +84,7 @@ public abstract class AbstractInputIntentService
                                    @NonNull final AbstractInput input) {
         final Intent intent = new Intent(context,
                                          clazz);
-        intent.setAction(ACTION_READ);
+        intent.setAction(ACTION_EXPORT);
         intent.putExtra(BROADCAST_ACTION,
                         broadcastAction);
         intent.putExtra(EXTRA_DATE_FORMAT,
@@ -129,6 +127,9 @@ public abstract class AbstractInputIntentService
             return;
         }
 
+        Log.d(TAG,
+              "onHandleIntent, action: " + intent.getAction());
+
         switch (intent.getAction()) {
             case ACTION_READ:
                 sendBroadcast(broadcastAction,
@@ -151,16 +152,16 @@ public abstract class AbstractInputIntentService
                     break;
                 }
 
-                try {
-                    final AbstractInput input = mInputJsonReader.read(new StringReader(json));
+                final AbstractInput input = mInputJsonReader.read(json);
 
+                if (input == null) {
+                    sendBroadcast(broadcastAction,
+                                  Status.FINISHED_WITH_ERRORS);
+                }
+                else {
                     sendBroadcast(broadcastAction,
                                   Status.FINISHED,
                                   input);
-                }
-                catch (IOException ioe) {
-                    sendBroadcast(broadcastAction,
-                                  Status.FINISHED_WITH_ERRORS);
                 }
 
                 break;
@@ -180,37 +181,22 @@ public abstract class AbstractInputIntentService
                     break;
                 }
 
-                try {
-                    final StringWriter writer = new StringWriter();
+                final String inputAsJson = mInputJsonWriter.write(inputToSave);
 
-                    mInputJsonWriter.write(writer,
-                                           inputToSave);
-
+                if (TextUtils.isEmpty(inputAsJson)) {
                     sendBroadcast(broadcastAction,
-                                  Status.FINISHED,
-                                  inputToSave);
-
-                    final String jsonString = writer.toString();
-
-                    if (TextUtils.isEmpty(jsonString)) {
-                        sendBroadcast(broadcastAction,
-                                      Status.FINISHED_WITH_ERRORS);
-                        break;
-                    }
-
+                                  Status.FINISHED_WITH_ERRORS);
+                }
+                else {
                     PreferenceManager.getDefaultSharedPreferences(this)
                                      .edit()
                                      .putString(KEY_PREFERENCE_CURRENT_INPUT,
-                                                jsonString)
+                                                inputAsJson)
                                      .apply();
 
                     sendBroadcast(broadcastAction,
                                   Status.FINISHED,
                                   inputToSave);
-                }
-                catch (IOException ioe) {
-                    sendBroadcast(broadcastAction,
-                                  Status.FINISHED_WITH_ERRORS);
                 }
 
                 break;

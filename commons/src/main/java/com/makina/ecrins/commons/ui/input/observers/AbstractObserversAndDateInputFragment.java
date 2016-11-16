@@ -1,7 +1,6 @@
 package com.makina.ecrins.commons.ui.input.observers;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DataSetObserver;
@@ -16,6 +15,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +28,7 @@ import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.input.Observer;
 import com.makina.ecrins.commons.ui.dialog.DateTimePickerDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.OnCalendarSetListener;
-import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
+import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.observers.AbstractObserverListActivity;
 import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
@@ -47,14 +47,17 @@ import java.util.Calendar;
 public abstract class AbstractObserversAndDateInputFragment
         extends Fragment
         implements IValidateFragment,
+                   IInputFragment,
                    LoaderManager.LoaderCallbacks<Cursor>,
                    OnCalendarSetListener {
+
+    protected static final String TAG = AbstractObserversAndDateInputFragment.class.getName();
 
     private static final String KEY_SELECTED_OBSERVER = "selected_observer";
     private static final String ALERT_DIALOG_CALENDAR_FRAGMENT = "ALERT_DIALOG_CALENDAR_FRAGMENT";
 
     private ObserverArrayAdapter mObserversAdapter;
-    private static DatesAdapter mDatesAdapter;
+    private DatesAdapter mDatesAdapter;
 
     private AbstractInput mInput;
 
@@ -109,8 +112,6 @@ public abstract class AbstractObserversAndDateInputFragment
         mDatesAdapter = new DatesAdapter(getContext(),
                                          android.R.layout.simple_list_item_2,
                                          getDateFormatResourceId());
-        mDatesAdapter.clear();
-        mDatesAdapter.add(mInput.getDate());
 
         ListView listSelectedObserversView = (ListView) view.findViewById(R.id.listSelectedObservers);
         listSelectedObserversView.setAdapter(mObserversAdapter);
@@ -166,7 +167,8 @@ public abstract class AbstractObserversAndDateInputFragment
 
             if (selectedObservers.size() > 0) {
                 mObserversAdapter.clear();
-                mInput.getObservers().clear();
+                mInput.getObservers()
+                      .clear();
 
                 for (Observer observer : selectedObservers) {
                     mInput.getObservers()
@@ -176,20 +178,6 @@ public abstract class AbstractObserversAndDateInputFragment
                     mObserversAdapter.add(observer);
                 }
             }
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnInputFragmentListener) {
-            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
-            mInput = onInputFragmentListener.getInput();
-            loadDefaultObserver();
-        }
-        else {
-            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
         }
     }
 
@@ -205,14 +193,30 @@ public abstract class AbstractObserversAndDateInputFragment
 
     @Override
     public boolean validate() {
-        return !mInput.getObservers()
-                      .isEmpty();
+        return (mInput != null) && !mInput.getObservers()
+                                          .isEmpty();
     }
 
     @Override
     public void refreshView() {
         ((AppCompatActivity) getActivity()).getSupportActionBar()
                                            .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+
+        if (mInput == null) {
+            Log.w(TAG,
+                  "refreshView: null input");
+            return;
+        }
+
+        mDatesAdapter.clear();
+        mDatesAdapter.add(mInput.getDate());
+
+        loadObservers();
+    }
+
+    @Override
+    public void setInput(@NonNull AbstractInput input) {
+        this.mInput = input;
     }
 
     @Override
@@ -251,7 +255,8 @@ public abstract class AbstractObserversAndDateInputFragment
 
         mObserversAdapter.clear();
 
-        for (Observer observer : mInput.getObservers().values()) {
+        for (Observer observer : mInput.getObservers()
+                                       .values()) {
             mObserversAdapter.add(observer);
         }
     }
@@ -269,7 +274,7 @@ public abstract class AbstractObserversAndDateInputFragment
         mDatesAdapter.add(calendar.getTime());
     }
 
-    private void loadDefaultObserver() {
+    private void loadObservers() {
         long defaultObserverId = PreferenceManager.getDefaultSharedPreferences(getContext())
                                                   .getLong(PreferencesFragment.KEY_PREFERENCE_DEFAULT_OBSERVER,
                                                            0);

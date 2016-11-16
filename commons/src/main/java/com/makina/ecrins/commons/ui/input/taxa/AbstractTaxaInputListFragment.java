@@ -42,7 +42,7 @@ import com.makina.ecrins.commons.R;
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.input.AbstractTaxon;
-import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
+import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.ui.widget.AlphabetSectionIndexerCursorAdapter;
@@ -61,6 +61,7 @@ import java.util.regex.Pattern;
 public abstract class AbstractTaxaInputListFragment
         extends ListFragment
         implements IValidateFragment,
+                   IInputFragment,
                    LoaderManager.LoaderCallbacks<Cursor> {
 
     protected static final String TAG = AbstractTaxaInputListFragment.class.getName();
@@ -96,8 +97,6 @@ public abstract class AbstractTaxaInputListFragment
             }
 
             mSavedState = new Bundle();
-            mSavedState.putString(KEY_SELECTED_UNITY,
-                                  mInput.getFeatureId());
             mSavedState.putSerializable(KEY_SWITCH_LABEL,
                                         LabelSwitcher.FRENCH);
             mSavedState.putBoolean(KEY_DISPLAY_TAXON_STATUS,
@@ -154,19 +153,6 @@ public abstract class AbstractTaxaInputListFragment
 
         if (getListView() instanceof PinnedSectionListView) {
             ((PinnedSectionListView) getListView()).setShadowVisible(false);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnInputFragmentListener) {
-            final OnInputFragmentListener onInputFragmentListener = (OnInputFragmentListener) context;
-            mInput = onInputFragmentListener.getInput();
-        }
-        else {
-            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
         }
     }
 
@@ -351,7 +337,7 @@ public abstract class AbstractTaxaInputListFragment
 
     @Override
     public boolean validate() {
-        return mInput.getCurrentSelectedTaxonId() != -1;
+        return (mInput != null) && (mInput.getCurrentSelectedTaxonId() != -1);
     }
 
     @Override
@@ -363,6 +349,15 @@ public abstract class AbstractTaxaInputListFragment
 
         ((AbstractPagerFragmentActivity) getActivity()).getSupportActionBar()
                                                        .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+
+        if (mInput == null) {
+            Log.w(TAG,
+                  "refreshView: null input");
+            return;
+        }
+
+        mSavedState.putString(KEY_SELECTED_UNITY,
+                              mInput.getFeatureId());
 
         // clear all filters, restore previously selected taxon
         if (mSavedState.containsKey(KEY_SELECTED_TAXON) && mInput.getCurrentSelectedTaxonId() == -1) {
@@ -413,6 +408,11 @@ public abstract class AbstractTaxaInputListFragment
     }
 
     @Override
+    public void setInput(@NonNull AbstractInput input) {
+        this.mInput = input;
+    }
+
+    @Override
     public void onLoadFinished(Loader<Cursor> loader,
                                Cursor data) {
         String sortedColumnIndex = MainDatabaseHelper.TaxaColumns.NAME;
@@ -450,9 +450,10 @@ public abstract class AbstractTaxaInputListFragment
 
         // sets the current position to the selected taxon
         if (mInput.getCurrentSelectedTaxonId() != -1) {
-            getListView().setSelection(mAdapter.getItemPosition(mInput.getTaxa()
-                                                                      .get(mInput.getCurrentSelectedTaxonId())
-                                                                      .getTaxonId()));
+            final int itemPosition = mAdapter.getItemPosition(mInput.getTaxa()
+                                                                    .get(mInput.getCurrentSelectedTaxonId())
+                                                                    .getTaxonId());
+            getListView().smoothScrollToPosition(itemPosition);
         }
     }
 
