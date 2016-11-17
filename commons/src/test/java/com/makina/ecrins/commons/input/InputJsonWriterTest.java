@@ -17,6 +17,7 @@ import static junit.framework.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -39,6 +40,47 @@ public class InputJsonWriterTest {
         MockitoAnnotations.initMocks(this);
 
         inputJsonWriter = spy(new InputJsonWriter(onInputJsonWriterListener));
+    }
+
+    @Test
+    public void testWriteEmptyInput() throws
+                                      Exception {
+        // given an empty input
+        final DummyInput input = new DummyInput(InputType.FAUNA);
+
+        // when write this input as JSON string
+        final StringWriter writer = new StringWriter();
+        inputJsonWriter.write(writer,
+                              input);
+
+        verify(onInputJsonWriterListener,
+               atLeastOnce()).writeAdditionalInputData(any(JsonWriter.class),
+                                                       eq(input));
+
+        verify(onInputJsonWriterListener,
+               never()).writeAdditionalTaxonData(any(JsonWriter.class),
+                                                 any(DummyTaxon.class));
+
+        // then
+        assertNotNull(writer.toString());
+
+        @SuppressWarnings("StringBufferReplaceableByString")
+        final StringBuilder expectedJsonString = new StringBuilder();
+        expectedJsonString.append('{');
+        expectedJsonString.append("\"id\":");
+        expectedJsonString.append(input.getInputId());
+        expectedJsonString.append(",\"input_type\":\"");
+        expectedJsonString.append(input.getType()
+                                       .getValue());
+        expectedJsonString.append("\",\"initial_input\":\"nomade\",\"dateobs\":\"");
+        expectedJsonString.append(DateFormat.format(inputJsonWriter.getDateFormat(),
+                                                    input.getDate())
+                                            .toString());
+        expectedJsonString.append("\",\"observers_id\":[],\"taxons\":[]");
+        expectedJsonString.append("}");
+
+        assertEquals(expectedJsonString.toString(),
+                     writer.toString());
     }
 
     @Test

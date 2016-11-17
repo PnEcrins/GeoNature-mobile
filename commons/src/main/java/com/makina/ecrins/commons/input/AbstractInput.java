@@ -58,6 +58,10 @@ public abstract class AbstractInput
         mFeatureId = source.readString();
         mDate = (Date) source.readSerializable();
 
+        if (mDate == null) {
+            mDate = new Date();
+        }
+
         final List<Observer> observers = new ArrayList<>();
         source.readTypedList(observers,
                              Observer.CREATOR);
@@ -97,6 +101,7 @@ public abstract class AbstractInput
         this.mFeatureId = pFeatureId;
     }
 
+    @NonNull
     public Date getDate() {
         return mDate;
     }

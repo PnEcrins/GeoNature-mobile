@@ -47,6 +47,62 @@ public class InputJsonReaderTest {
     }
 
     @Test
+    public void testReadEmptyInput() throws
+                                     Exception {
+        // given a JSON string
+        @SuppressWarnings("StringBufferReplaceableByString")
+        final StringBuilder jsonString = new StringBuilder();
+        jsonString.append('{');
+        jsonString.append("\"id\":");
+        jsonString.append(2);
+        jsonString.append(",\"input_type\":\"");
+        jsonString.append("fauna");
+        jsonString.append("\",\"initial_input\":\"nomade\",\"dateobs\":\"");
+        jsonString.append("2015/11/19");
+        jsonString.append("\",\"observers_id\":[],\"taxons\":[]");
+        jsonString.append("}");
+
+        // when read this JSON string
+        final StringReader reader = new StringReader(jsonString.toString());
+        final DummyInput input = (DummyInput) inputJsonReader.read(reader);
+
+        verify(onInputJsonReaderListener,
+               never()).readAdditionalInputData(any(JsonReader.class),
+                                                any(String.class),
+                                                any(DummyInput.class));
+
+        verify(onInputJsonReaderListener,
+               never()).readAdditionalTaxonData(any(JsonReader.class),
+                                                any(String.class),
+                                                any(DummyTaxon.class));
+
+        // then
+        assertNotNull(input);
+        assertEquals(2,
+                     input.getInputId());
+        assertEquals(InputType.FAUNA,
+                     input.getType());
+
+        final Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(Calendar.YEAR,
+                     2015);
+        calendar.set(Calendar.MONTH,
+                     Calendar.NOVEMBER);
+        calendar.set(Calendar.DAY_OF_MONTH,
+                     19);
+        assertEquals(calendar.getTime(),
+                     input.getDate());
+
+        assertEquals(0,
+                     input.getObservers()
+                          .size());
+        assertEquals(0,
+                     input.getTaxa()
+                          .size());
+    }
+
+    @Test
     public void testRead() throws
                            Exception {
         // given a JSON string
