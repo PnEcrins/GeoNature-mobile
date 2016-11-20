@@ -31,6 +31,10 @@ import com.makina.ecrins.maps.jts.geojson.Feature;
 import com.makina.ecrins.maps.jts.geojson.GeometryUtils;
 import com.vividsolutions.jts.geom.Polygon;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
+
 /**
  * Default {@code Adapter} of {@link Area}.
  *
@@ -50,6 +54,7 @@ public class AreaAdapter
     private final Context mContext;
     private LoaderManager mLoaderManager;
     private final OnAreaAdapterListener mOnAreaAdapterListener;
+    private final DecimalFormat mDecimalFormat;
 
     private Area mArea;
 
@@ -59,6 +64,12 @@ public class AreaAdapter
         this.mContext = context;
         this.mLoaderManager = loaderManager;
         this.mOnAreaAdapterListener = onAreaAdapterListener;
+
+        mDecimalFormat = new DecimalFormat();
+        mDecimalFormat.setMaximumFractionDigits(2);
+        final DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        mDecimalFormat.setDecimalFormatSymbols(symbols);
     }
 
     @Override
@@ -176,12 +187,13 @@ public class AreaAdapter
                     if (!s.toString()
                           .isEmpty()) {
                         try {
-                            mPointArea = Double.valueOf(s.toString());
+                            mPointArea = mDecimalFormat.parse(s.toString())
+                                                       .doubleValue();
                             computeArea();
                         }
-                        catch (NumberFormatException nfe) {
+                        catch (ParseException pe) {
                             Log.w(TAG,
-                                  nfe.getMessage());
+                                  pe.getMessage());
                         }
                     }
                 }
@@ -191,12 +203,14 @@ public class AreaAdapter
         @Override
         public void bind(@NonNull Area area,
                          int position) {
-            // nothing to do ...
+            mEditTextPointArea.setText(mPointArea == 0 ? null : mDecimalFormat.format(mPointArea));
         }
 
         @Override
         public void computeArea() {
-            mOnAreaAdapterListener.onAreaComputed(mPointArea);
+            mOnAreaAdapterListener.onAreaComputed(mInclineValue,
+                                                  mPointArea,
+                                                  mPointArea);
         }
     }
 
@@ -248,12 +262,13 @@ public class AreaAdapter
                     if (!s.toString()
                           .isEmpty()) {
                         try {
-                            mPathWidth = Double.valueOf(s.toString());
+                            mPathWidth = mDecimalFormat.parse(s.toString())
+                                                       .doubleValue();
                             computeArea();
                         }
-                        catch (NumberFormatException nfe) {
+                        catch (ParseException pe) {
                             Log.w(TAG,
-                                  nfe.getMessage());
+                                  pe.getMessage());
                         }
                     }
                 }
@@ -267,39 +282,57 @@ public class AreaAdapter
             mTextViewAreaComputed.setText(String.format(mContext.getString(R.string.area_computed),
                                                         0.0));
 
-            if (mAdapter != null) {
-                mSpinnerIncline.setAdapter(mAdapter);
-            }
+            // prepare the loader, either re-connect with an existing one, or start a new one
+            mLoaderManager.initLoader(AbstractMainContentProvider.INCLINES,
+                                      new Bundle(),
+                                      mLoaderCallbacks);
         }
 
         @Override
         public void bind(@NonNull Area area,
                          int position) {
-
-            // prepare the loader, either re-connect with an existing one, or start a new one
-            mLoaderManager.initLoader(AbstractMainContentProvider.INCLINES,
-                                      new Bundle(),
-                                      mLoaderCallbacks);
-
             final Feature feature = area.getFeature();
 
             if (feature != null) {
                 mPathLength = GeometryUtils.getGeodesicLength(feature.getGeometry());
+
+                if (mPathLength != 0) {
+                    mPathWidth = area.getArea() / mPathLength;
+                }
             }
 
             mTextViewPathLengthComputed.setText(String.format(mContext.getString(R.string.area_path_length_computed),
                                                               mPathLength));
-            mEditTextPathWidth.setEnabled(true);
+
+            if (mSpinnerIncline.getAdapter() != null) {
+                for (int i = 0; i < mSpinnerIncline.getAdapter()
+                                                   .getCount(); i++) {
+                    final Cursor cursorAtPosition = (Cursor) mSpinnerIncline.getAdapter()
+                                                                            .getItem(i);
+
+                    if (area.getInclineValue() == cursorAtPosition.getDouble(cursorAtPosition.getColumnIndex(MainDatabaseHelper.InclinesColumns.VALUE))) {
+                        mSpinnerIncline.setSelection(i);
+                        break;
+                    }
+                }
+            }
+
             mSpinnerIncline.setEnabled(true);
+
+            mEditTextPathWidth.setEnabled(true);
+            mEditTextPathWidth.setText(mPathWidth == 0 ? null : mDecimalFormat.format(mPathWidth));
         }
 
         @Override
         public void computeArea() {
-            final double area = (mPathLength * mPathWidth) / Math.cos(Math.PI * mInclineValue / 180);
+            final double area = mPathLength * mPathWidth;
+            final double computedArea = area / Math.cos(Math.PI * mInclineValue / 180);
             mTextViewAreaComputed.setText(String.format(mContext.getString(R.string.area_computed),
-                                                        area));
+                                                        computedArea));
 
-            mOnAreaAdapterListener.onAreaComputed(area);
+            mOnAreaAdapterListener.onAreaComputed(mInclineValue,
+                                                  area,
+                                                  computedArea);
         }
 
         @Override
@@ -341,20 +374,15 @@ public class AreaAdapter
             mTextViewAreaComputed.setText(String.format(mContext.getString(R.string.area_computed),
                                                         0.0));
 
-            if (mAdapter != null) {
-                mSpinnerIncline.setAdapter(mAdapter);
-            }
+            // prepare the loader, either re-connect with an existing one, or start a new one
+            mLoaderManager.initLoader(AbstractMainContentProvider.INCLINES,
+                                      new Bundle(),
+                                      mLoaderCallbacks);
         }
 
         @Override
         public void bind(@NonNull Area area,
                          int position) {
-
-            // prepare the loader, either re-connect with an existing one, or start a new one
-            mLoaderManager.initLoader(AbstractMainContentProvider.INCLINES,
-                                      new Bundle(),
-                                      mLoaderCallbacks);
-
             final Feature feature = area.getFeature();
 
             if (feature != null) {
@@ -364,16 +392,32 @@ public class AreaAdapter
 
             mTextViewPolygonPlanimetricAreaComputed.setText(String.format(mContext.getString(R.string.area_polygon_planimetric_area_computed),
                                                                           mPolygonArea));
+
+            if (mSpinnerIncline.getAdapter() != null) {
+                for (int i = 0; i < mSpinnerIncline.getAdapter()
+                                                   .getCount(); i++) {
+                    final Cursor cursorAtPosition = (Cursor) mSpinnerIncline.getAdapter()
+                                                                            .getItem(i);
+
+                    if (area.getInclineValue() == cursorAtPosition.getDouble(cursorAtPosition.getColumnIndex(MainDatabaseHelper.InclinesColumns.VALUE))) {
+                        mSpinnerIncline.setSelection(i);
+                        break;
+                    }
+                }
+            }
+
             mSpinnerIncline.setEnabled(true);
         }
 
         @Override
         public void computeArea() {
-            final double area = mPolygonArea / Math.cos(Math.PI * mInclineValue / 180);
+            final double computedArea = mPolygonArea / Math.cos(Math.PI * mInclineValue / 180);
             mTextViewAreaComputed.setText(String.format(mContext.getString(R.string.area_computed),
-                                                        area));
+                                                        computedArea));
 
-            mOnAreaAdapterListener.onAreaComputed(area);
+            mOnAreaAdapterListener.onAreaComputed(mInclineValue,
+                                                  mPolygonArea,
+                                                  computedArea);
         }
 
         @Override
@@ -509,6 +553,8 @@ public class AreaAdapter
      * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
      */
     public interface OnAreaAdapterListener {
-        void onAreaComputed(double area);
+        void onAreaComputed(double incline,
+                            double area,
+                            double computedArea);
     }
 }

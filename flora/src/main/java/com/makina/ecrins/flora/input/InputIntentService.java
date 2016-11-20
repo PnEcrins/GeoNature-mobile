@@ -61,17 +61,22 @@ public class InputIntentService
                 reader.beginObject();
 
                 while (reader.hasNext()) {
-                    switch (reader.nextName()) {
-                        case "feature":
-                            final JsonToken jsonToken = reader.peek();
+                    final JsonToken jsonToken = reader.peek();
 
-                            switch (jsonToken) {
-                                case BEGIN_OBJECT:
-                                    ((Taxon) taxon).setProspectingArea(new GeoJsonReader().readFeature(reader));
+                    switch (jsonToken) {
+                        case NAME:
+                            switch (reader.nextName()) {
+                                case "feature":
+                                    final JsonToken featureJsonToken = reader.peek();
+
+                                    switch (featureJsonToken) {
+                                        case BEGIN_OBJECT:
+                                            ((Taxon) taxon).setProspectingArea(new GeoJsonReader().readFeature(reader));
+                                            break;
+                                    }
+
                                     break;
                             }
-
-                            break;
                     }
                 }
 
@@ -119,9 +124,12 @@ public class InputIntentService
 
         while (reader.hasNext()) {
             final Area area = readArea(reader);
-            areas.put(area.getFeature()
-                          .getId(),
-                      area);
+
+            if (area.getFeature() != null) {
+                areas.put(area.getFeature()
+                              .getId(),
+                          area);
+            }
         }
 
         reader.endArray();
@@ -135,57 +143,68 @@ public class InputIntentService
         reader.beginObject();
 
         while (reader.hasNext()) {
-            final String keyName = reader.nextName();
+            final JsonToken jsonToken = reader.peek();
 
-            switch (keyName) {
-                case "id":
-                    area.mAreaId = reader.nextLong();
-                    break;
-                case "computed_area":
-                    area.setComputedArea(reader.nextDouble());
-                    break;
-                case "feature":
-                    area.setFeature(new GeoJsonReader().readFeature(reader));
-                    break;
-                case "frequency":
-                    final JsonToken jsonToken = reader.peek();
+            switch (jsonToken) {
+                case NAME:
+                    final String keyName = reader.nextName();
 
-                    switch (jsonToken) {
-                        case BEGIN_OBJECT:
-                            area.setFrequency(readFrequency(reader));
+                    switch (keyName) {
+                        case "id":
+                            area.mAreaId = reader.nextLong();
+                            break;
+                        case "incline":
+                            area.setInclineValue(reader.nextDouble());
+                            break;
+                        case "area":
+                            area.setArea(reader.nextDouble());
+                            break;
+                        case "computed_area":
+                            area.setComputedArea(reader.nextDouble());
+                            break;
+                        case "feature":
+                            area.setFeature(new GeoJsonReader().readFeature(reader));
+                            break;
+                        case "frequency":
+                            final JsonToken frequencyJsonToken = reader.peek();
+
+                            switch (frequencyJsonToken) {
+                                case BEGIN_OBJECT:
+                                    area.setFrequency(readFrequency(reader));
+                                    break;
+                            }
+
+                            break;
+                        case "phenology":
+                            area.setPhenologyId(reader.nextLong());
+                            break;
+                        case "counting":
+                            area.setCounting(readCounting(reader));
+                            break;
+                        case "physiognomy":
+                            reader.beginArray();
+
+                            while (reader.hasNext()) {
+                                area.getSelectedPhysiognomy()
+                                    .add(reader.nextLong());
+                            }
+
+                            reader.endArray();
+                            break;
+                        case "disturbances":
+                            reader.beginArray();
+
+                            while (reader.hasNext()) {
+                                area.getSelectedDisturbances()
+                                    .add(reader.nextLong());
+                            }
+
+                            reader.endArray();
+                            break;
+                        case "comment":
+                            area.setComment(reader.nextString());
                             break;
                     }
-
-                    break;
-                case "phenology":
-                    area.setPhenologyId(reader.nextLong());
-                    break;
-                case "counting":
-                    area.setCounting(readCounting(reader));
-                    break;
-                case "physiognomy":
-                    reader.beginArray();
-
-                    while (reader.hasNext()) {
-                        area.getSelectedPhysiognomy()
-                            .add(reader.nextLong());
-                    }
-
-                    reader.endArray();
-                    break;
-                case "disturbances":
-                    reader.beginArray();
-
-                    while (reader.hasNext()) {
-                        area.getSelectedDisturbances()
-                            .add(reader.nextLong());
-                    }
-
-                    reader.endArray();
-                    break;
-                case "comment":
-                    area.setComment(reader.nextString());
-                    break;
             }
         }
 
@@ -306,9 +325,17 @@ public class InputIntentService
     private void writeArea(@NonNull final JsonWriter writer,
                            @NonNull final Area area) throws
                                                      IOException {
+        if (area.getFeature() == null) {
+            return;
+        }
+
         writer.beginObject();
         writer.name("id")
               .value(area.getAreaId());
+        writer.name("incline")
+              .value(area.getInclineValue());
+        writer.name("area")
+              .value(area.getArea());
         writer.name("computed_area")
               .value(area.getComputedArea());
         writer.name("feature");

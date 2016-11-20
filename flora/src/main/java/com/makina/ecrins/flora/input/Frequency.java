@@ -33,11 +33,11 @@ public class Frequency implements Parcelable {
 
     public Frequency(FrequencyType pType) {
         mType = pType;
-        mRecommendedStep = 0.0;
+        mRecommendedStep = 0.0d;
         mTransects = 1;
         mTransectYes = 0;
         mTransectNo = 0;
-        mValue = 0.0;
+        mValue = 0.0d;
     }
 
     public Frequency(Parcel source) {

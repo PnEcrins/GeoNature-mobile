@@ -36,6 +36,8 @@ public class Area
     public static final String KEY_COMMENT = "comment";
 
     long mAreaId;
+    private double mInclineValue;
+    private double mArea;
     private double mComputedArea;
     private Feature mFeature;
     private Frequency mFrequency;
@@ -56,6 +58,8 @@ public class Area
         mSelectedPhysiognomy = new ArrayList<>();
         mSelectedDisturbances = new ArrayList<>();
 
+        mInclineValue = source.readDouble();
+        mArea = source.readDouble();
         mComputedArea = source.readDouble();
         mFeature = source.readParcelable(Feature.class.getClassLoader());
         mFrequency = source.readParcelable(Frequency.class.getClassLoader());
@@ -70,7 +74,9 @@ public class Area
 
     protected Area() {
         mAreaId = AbstractInput.generateId();
-        mComputedArea = 0.0;
+        mInclineValue = 0.0d;
+        mArea = 0.0d;
+        mComputedArea = 0.0d;
         mFeature = null;
 
         mPhenologyId = -1;
@@ -85,6 +91,22 @@ public class Area
 
     public long getAreaId() {
         return mAreaId;
+    }
+
+    public double getInclineValue() {
+        return mInclineValue;
+    }
+
+    public void setInclineValue(double pInclineValue) {
+        this.mInclineValue = pInclineValue;
+    }
+
+    public double getArea() {
+        return mArea;
+    }
+
+    public void setArea(double pArea) {
+        this.mArea = pArea;
     }
 
     public double getComputedArea() {
@@ -199,6 +221,8 @@ public class Area
     public void writeToParcel(Parcel dest,
                               int flags) {
         dest.writeLong(mAreaId);
+        dest.writeDouble(mInclineValue);
+        dest.writeDouble(mArea);
         dest.writeDouble(mComputedArea);
         dest.writeParcelable(mFeature,
                              0);

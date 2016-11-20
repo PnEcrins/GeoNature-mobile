@@ -17,6 +17,7 @@ import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
+import com.makina.ecrins.flora.BuildConfig;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.input.Area;
 import com.makina.ecrins.flora.input.Input;
@@ -41,17 +42,26 @@ public class AreaInputFragment
 
     private final AreaAdapter.OnAreaAdapterListener mOnAreaAdapterListener = new AreaAdapter.OnAreaAdapterListener() {
         @Override
-        public void onAreaComputed(double area) {
+        public void onAreaComputed(double incline,
+                                   double area,
+                                   double computedArea) {
             if (mInput == null) {
                 Log.w(TAG,
                       "onAreaComputed: null input");
                 return;
             }
 
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      "onAreaComputed, incline: " + incline + ", area: " + area + ", computedArea: " + computedArea);
+            }
+
             final Area currentSelectedArea = mInput.getCurrentSelectedTaxon() != null ? ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() : null;
 
             if (currentSelectedArea != null) {
-                currentSelectedArea.setComputedArea(area);
+                currentSelectedArea.setInclineValue(incline);
+                currentSelectedArea.setArea(area);
+                currentSelectedArea.setComputedArea(computedArea);
             }
 
             ((AbstractPagerFragmentActivity) getActivity()).validateCurrentPage();
