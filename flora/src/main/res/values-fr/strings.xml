@@ -38,8 +38,8 @@
 
     <string name="progress_message_saving_current_input">Sauvegarde de la saisie &#8230;</string>
 
-    <string name="alert_dialog_confirm_cancel_title">Annuler ?</string>
-    <string name="alert_dialog_confirm_cancel_input_all_message">Abandonner toute la saisie ?</string>
+    <string name="alert_dialog_confirm_cancel_title">Quitter ?</string>
+    <string name="alert_dialog_confirm_cancel_input_all_message">Votre saisie n\'est pas terminée. Voulez vous quitter maintenant ?\n Vous pourrez la reprendre plus tard.</string>
     <string name="alert_dialog_confirm_delete_area_title">Supprimer l\'AP en cours ?</string>
     <string name="alert_dialog_confirm_delete_area_message">Une AP est en cours de saisie.\nSouhaitez vous la supprimer ?</string>
     <string name="alert_dialog_confirm_delete_areas_title">Supprimer toutes les APs ?</string>
@@ -49,7 +49,10 @@
     <string name="alert_dialog_action_start_new_input">Démarrer une nouvelle prospection</string>
     <string name="alert_dialog_action_close_app">Fermer l\'application</string>
     <string name="alert_dialog_confirm_quit_finish_message">Votre zone de prospection a bien été enregistrée.</string>
-    <string name="alert_dialog_confirm_quit_finish_step_message">Sauvegarder et quitter cette étape ?</string>
+    <string name="alert_dialog_confirm_input_continue_title">Saisie existante</string>
+    <string name="alert_dialog_confirm_input_continue_message">Une saisie n\'a pas été terminée, voulez-vous la reprendre ?\nCette saisie sera perdue si vous décidez de commencer une nouvelle.</string>
+    <string name="alert_dialog_confirm_input_continue_action_yes">Oui</string>
+    <string name="alert_dialog_confirm_input_continue_action_no">Démarrer une nouvelle saisie</string>
 
     <string name="observers_and_date_date_format">dd MMMM yyyy</string>
 

@@ -130,6 +130,7 @@ public class TaxaFoundFragment
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.buttonTaxonFound:
+                // delete any existing prospecting area
                 if (mInput.getCurrentSelectedTaxon() != null) {
                     ((Taxon) mInput.getCurrentSelectedTaxon()).setProspectingArea(null);
                 }

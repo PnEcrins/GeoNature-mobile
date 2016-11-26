@@ -64,6 +64,9 @@ public class InputIntentService
                     final JsonToken jsonToken = reader.peek();
 
                     switch (jsonToken) {
+                        case NULL:
+                            reader.nextNull();
+                            break;
                         case NAME:
                             switch (reader.nextName()) {
                                 case "feature":

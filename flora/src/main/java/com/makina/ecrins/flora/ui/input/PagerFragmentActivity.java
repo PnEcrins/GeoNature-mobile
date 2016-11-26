@@ -53,11 +53,13 @@ public class PagerFragmentActivity
     protected static final String PROGRESS_DIALOG_FRAGMENT = "progress_dialog";
     protected static final String CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT = "choose_quit_action_dialog";
 
+    public static final String EXTRA_NEW_INPUT = "extra_new_input";
     protected static final String KEY_INPUT_SAVED = "input_saved";
 
     private final AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
         @Override
         public void onPositiveButtonClick(DialogInterface dialog) {
+            mInputHelper.saveInput();
             PagerFragmentActivity.this.finish();
         }
 
@@ -75,6 +77,7 @@ public class PagerFragmentActivity
             switch (actionResourceId) {
                 case R.string.alert_dialog_action_start_new_input:
                     dialog.dismiss();
+                    mInputHelper.deleteInput();
 
                     // restart the current activity
                     finish();
@@ -83,6 +86,7 @@ public class PagerFragmentActivity
                     break;
                 case R.string.alert_dialog_action_close_app:
                     dialog.dismiss();
+                    mInputHelper.deleteInput();
                     ((MainApplication) getApplication()).setCloseApplication(true);
                     finish();
 
@@ -93,7 +97,6 @@ public class PagerFragmentActivity
 
     private InputHelper mInputHelper;
     private InputHelper.OnInputHelperListener mOnInputHelperListener = new InputHelper.OnInputHelperListener() {
-
         @NonNull
         @Override
         public AbstractInput createInput() {
@@ -114,14 +117,22 @@ public class PagerFragmentActivity
             }
 
             switch (status) {
+                case FINISHED_WITH_ERRORS:
+                case FINISHED_NOT_FOUND:
                 case FINISHED:
-                    final AbstractInput input = mInputHelper.getInput();
+                    AbstractInput input = mInputHelper.getInput();
 
                     if (input == null) {
                         Log.w(TAG,
                               "onReadInput, status: " + status + ", no input found");
 
-                        return;
+                        input = mInputHelper.startInput();
+                    }
+                    else {
+                        if (BuildConfig.DEBUG) {
+                            Log.d(TAG,
+                                  "onReadInput, continue input: " + input.getInputId());
+                        }
                     }
 
                     final IValidateFragment pageFragment = getCurrentPageFragment();
@@ -137,10 +148,12 @@ public class PagerFragmentActivity
 
         @Override
         public void onSaveInput(@NonNull AbstractInputIntentService.Status status) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG,
-                      "onSaveInput, " + status.name());
-            }
+            // nothing to do ...
+        }
+
+        @Override
+        public void onDeleteInput(@NonNull AbstractInputIntentService.Status status) {
+            // nothing to do ...
         }
 
         @Override
@@ -205,9 +218,13 @@ public class PagerFragmentActivity
         mInputHelper = new InputHelper(this,
                                        mOnInputHelperListener);
 
-        if (savedInstanceState == null) {
+        if (getIntent().getBooleanExtra(EXTRA_NEW_INPUT,
+                                        true)) {
             // instantiates a new Input
             mInputHelper.startInput();
+        }
+        else {
+            mInputHelper.readInput();
         }
 
         // restore AlertDialogFragment state after resume if needed

@@ -16,11 +16,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
 import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.IValidateWithNavigationControlFragment;
+import com.makina.ecrins.flora.BuildConfig;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.input.Input;
 import com.makina.ecrins.flora.input.Taxon;
