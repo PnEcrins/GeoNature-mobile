@@ -129,9 +129,13 @@ public class InputJsonReader {
                     }
                     break;
                 case "observers_id":
+                case "observers":
                     if (reader.peek() != JsonToken.NULL) {
                         readObservers(reader,
                                       input.getObservers());
+                    }
+                    else {
+                        reader.nextNull();
                     }
 
                     break;
@@ -139,6 +143,10 @@ public class InputJsonReader {
                     if (reader.peek() != JsonToken.NULL) {
                         readTaxa(reader,
                                  input.getTaxa());
+                        input.setCurrentSelectedTaxonId(input.getLastInsertedTaxonId());
+                    }
+                    else {
+                        reader.nextNull();
                     }
 
                     break;

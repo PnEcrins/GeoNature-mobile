@@ -51,19 +51,19 @@ public class InputJsonReaderTest {
                                      Exception {
         // given a JSON string
         @SuppressWarnings("StringBufferReplaceableByString")
-        final StringBuilder jsonString = new StringBuilder();
-        jsonString.append('{');
-        jsonString.append("\"id\":");
-        jsonString.append(2);
-        jsonString.append(",\"input_type\":\"");
-        jsonString.append("fauna");
-        jsonString.append("\",\"initial_input\":\"nomade\",\"dateobs\":\"");
-        jsonString.append("2015/11/19");
-        jsonString.append("\",\"observers_id\":[],\"taxons\":[]");
-        jsonString.append("}");
+        final String jsonString = new StringBuilder().append('{')
+                                                     .append("\"id\":")
+                                                     .append(2)
+                                                     .append(",\"input_type\":\"")
+                                                     .append("fauna")
+                                                     .append("\",\"initial_input\":\"nomade\",\"dateobs\":\"")
+                                                     .append("2015/11/19")
+                                                     .append("\",\"observers_id\":[],\"observers\":[],\"taxons\":[]")
+                                                     .append("}")
+                                                     .toString();
 
         // when read this JSON string
-        final StringReader reader = new StringReader(jsonString.toString());
+        final StringReader reader = new StringReader(jsonString);
         final DummyInput input = (DummyInput) inputJsonReader.read(reader);
 
         verify(onInputJsonReaderListener,
@@ -100,6 +100,8 @@ public class InputJsonReaderTest {
         assertEquals(0,
                      input.getTaxa()
                           .size());
+        assertEquals(-1,
+                     input.getCurrentSelectedTaxonId());
     }
 
     @Test
@@ -107,28 +109,28 @@ public class InputJsonReaderTest {
                            Exception {
         // given a JSON string
         @SuppressWarnings("StringBufferReplaceableByString")
-        final StringBuilder jsonString = new StringBuilder();
-        jsonString.append('{');
-        jsonString.append("\"id\":");
-        jsonString.append(2);
-        jsonString.append(",\"input_type\":\"");
-        jsonString.append("fauna");
-        jsonString.append("\",\"initial_input\":\"nomade\",\"dateobs\":\"");
-        jsonString.append("2015/11/19");
-        jsonString.append("\",\"observers_id\":[1],\"taxons\":[{\"id\":");
-        jsonString.append(3);
-        jsonString.append(",\"id_taxon\":");
-        jsonString.append(4);
-        jsonString.append(",\"name_entered\":\"");
-        jsonString.append("name");
-        jsonString.append("\",\"observation\":{\"criterion\":");
-        jsonString.append(5);
-        jsonString.append("},\"comment\":\"");
-        jsonString.append("comment");
-        jsonString.append("\"}]}");
+        final String jsonString = new StringBuilder().append('{')
+                                                     .append("\"id\":")
+                                                     .append(2)
+                                                     .append(",\"input_type\":\"")
+                                                     .append("fauna")
+                                                     .append("\",\"initial_input\":\"nomade\",\"dateobs\":\"")
+                                                     .append("2015/11/19")
+                                                     .append("\",\"observers_id\":[1],\"taxons\":[{\"id\":")
+                                                     .append(3)
+                                                     .append(",\"id_taxon\":")
+                                                     .append(4)
+                                                     .append(",\"name_entered\":\"")
+                                                     .append("name")
+                                                     .append("\",\"observation\":{\"criterion\":")
+                                                     .append(5)
+                                                     .append("},\"comment\":\"")
+                                                     .append("comment")
+                                                     .append("\"}]}")
+                                                     .toString();
 
         // when read this JSON string
-        final StringReader reader = new StringReader(jsonString.toString());
+        final StringReader reader = new StringReader(jsonString);
         final DummyInput input = (DummyInput) inputJsonReader.read(reader);
 
         verify(onInputJsonReaderListener,
@@ -186,5 +188,24 @@ public class InputJsonReaderTest {
                      taxon1.getCriterionId());
         assertEquals("comment",
                      taxon1.getComment());
+
+        assertEquals(3L,
+                     input.getCurrentSelectedTaxonId());
+        assertNotNull(input.getCurrentSelectedTaxon());
+        assertEquals(3L,
+                     input.getCurrentSelectedTaxon()
+                          .getId());
+        assertEquals(4L,
+                     input.getCurrentSelectedTaxon()
+                          .getTaxonId());
+        assertEquals("name",
+                     input.getCurrentSelectedTaxon()
+                          .getNameEntered());
+        assertEquals(5L,
+                     input.getCurrentSelectedTaxon()
+                          .getCriterionId());
+        assertEquals("comment",
+                     input.getCurrentSelectedTaxon()
+                          .getComment());
     }
 }

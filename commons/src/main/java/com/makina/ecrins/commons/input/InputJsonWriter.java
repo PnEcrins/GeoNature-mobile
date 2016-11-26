@@ -131,6 +131,22 @@ public class InputJsonWriter {
         }
 
         writer.endArray();
+
+        writer.name("observers");
+        writer.beginArray();
+
+        for (Observer observer : observers) {
+            writer.beginObject();
+            writer.name("id")
+                  .value(observer.getObserverId());
+            writer.name("lastname")
+                  .value(observer.getLastname());
+            writer.name("firstname")
+                  .value(observer.getFirstname());
+            writer.endObject();
+        }
+
+        writer.endArray();
     }
 
     private void writeTaxa(@NonNull final JsonWriter writer,

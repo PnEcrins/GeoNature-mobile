@@ -65,21 +65,21 @@ public class InputJsonWriterTest {
         assertNotNull(writer.toString());
 
         @SuppressWarnings("StringBufferReplaceableByString")
-        final StringBuilder expectedJsonString = new StringBuilder();
-        expectedJsonString.append('{');
-        expectedJsonString.append("\"id\":");
-        expectedJsonString.append(input.getInputId());
-        expectedJsonString.append(",\"input_type\":\"");
-        expectedJsonString.append(input.getType()
-                                       .getValue());
-        expectedJsonString.append("\",\"initial_input\":\"nomade\",\"dateobs\":\"");
-        expectedJsonString.append(DateFormat.format(inputJsonWriter.getDateFormat(),
-                                                    input.getDate())
-                                            .toString());
-        expectedJsonString.append("\",\"observers_id\":[],\"taxons\":[]");
-        expectedJsonString.append("}");
+        final String expectedJsonString = new StringBuilder().append('{')
+                                                             .append("\"id\":")
+                                                             .append(input.getInputId())
+                                                             .append(",\"input_type\":\"")
+                                                             .append(input.getType()
+                                                                          .getValue())
+                                                             .append("\",\"initial_input\":\"nomade\",\"dateobs\":\"")
+                                                             .append(DateFormat.format(inputJsonWriter.getDateFormat(),
+                                                                                       input.getDate())
+                                                                               .toString())
+                                                             .append("\",\"observers_id\":[],\"observers\":[],\"taxons\":[]")
+                                                             .append("}")
+                                                             .toString();
 
-        assertEquals(expectedJsonString.toString(),
+        assertEquals(expectedJsonString,
                      writer.toString());
     }
 
@@ -122,30 +122,38 @@ public class InputJsonWriterTest {
         assertNotNull(writer.toString());
 
         @SuppressWarnings("StringBufferReplaceableByString")
-        final StringBuilder expectedJsonString = new StringBuilder();
-        expectedJsonString.append('{');
-        expectedJsonString.append("\"id\":");
-        expectedJsonString.append(input.getInputId());
-        expectedJsonString.append(",\"input_type\":\"");
-        expectedJsonString.append(input.getType()
-                                       .getValue());
-        expectedJsonString.append("\",\"initial_input\":\"nomade\",\"dateobs\":\"");
-        expectedJsonString.append(DateFormat.format(inputJsonWriter.getDateFormat(),
-                                                    input.getDate())
-                                            .toString());
-        expectedJsonString.append("\",\"observers_id\":[1],\"taxons\":[{\"id\":");
-        expectedJsonString.append(taxon1.getId());
-        expectedJsonString.append(",\"id_taxon\":");
-        expectedJsonString.append(taxon1.getTaxonId());
-        expectedJsonString.append(",\"name_entered\":\"");
-        expectedJsonString.append(taxon1.getNameEntered());
-        expectedJsonString.append("\",\"observation\":{\"criterion\":");
-        expectedJsonString.append(taxon1.getCriterionId());
-        expectedJsonString.append("},\"comment\":\"");
-        expectedJsonString.append(taxon1.getComment());
-        expectedJsonString.append("\"}]}");
+        final String expectedJsonString = new StringBuilder().append('{')
+                                                             .append("\"id\":")
+                                                             .append(input.getInputId())
+                                                             .append(",\"input_type\":\"")
+                                                             .append(input.getType()
+                                                                          .getValue())
+                                                             .append("\",\"initial_input\":\"nomade\",\"dateobs\":\"")
+                                                             .append(DateFormat.format(inputJsonWriter.getDateFormat(),
+                                                                                       input.getDate())
+                                                                               .toString())
+                                                             .append("\",\"observers_id\":[")
+                                                             .append(observer1.getObserverId())
+                                                             .append("],\"observers\":[{\"id\":")
+                                                             .append(observer1.getObserverId())
+                                                             .append(",\"lastname\":\"")
+                                                             .append(observer1.getLastname())
+                                                             .append("\",\"firstname\":\"")
+                                                             .append(observer1.getFirstname())
+                                                             .append("\"}],\"taxons\":[{\"id\":")
+                                                             .append(taxon1.getId())
+                                                             .append(",\"id_taxon\":")
+                                                             .append(taxon1.getTaxonId())
+                                                             .append(",\"name_entered\":\"")
+                                                             .append(taxon1.getNameEntered())
+                                                             .append("\",\"observation\":{\"criterion\":")
+                                                             .append(taxon1.getCriterionId())
+                                                             .append("},\"comment\":\"")
+                                                             .append(taxon1.getComment())
+                                                             .append("\"}]}")
+                                                             .toString();
 
-        assertEquals(expectedJsonString.toString(),
+        assertEquals(expectedJsonString,
                      writer.toString());
     }
 }

@@ -69,6 +69,11 @@ public class InputHelper {
             }
 
             if (intent.getAction()
+                      .equals(getBroadcastActionDeleteInput())) {
+                mOnInputHelperListener.onDeleteInput(status);
+            }
+
+            if (intent.getAction()
                       .equals(getBroadcastActionExportInput())) {
                 mOnInputHelperListener.onExportInput(status);
             }
@@ -125,7 +130,7 @@ public class InputHelper {
     public void saveInput() {
         if (mInput == null) {
             Log.w(TAG,
-                  "exportInput: no input to save");
+                  "saveInput: no input to save");
         }
 
         AbstractInputIntentService.saveInput(mContext,
@@ -133,6 +138,12 @@ public class InputHelper {
                                              getBroadcastActionSaveInput(),
                                              mDateFormat,
                                              mInput);
+    }
+
+    public void deleteInput() {
+        AbstractInputIntentService.deleteInput(mContext,
+                                               mOnInputHelperListener.getInputIntentServiceClass(),
+                                               getBroadcastActionSaveInput());
     }
 
     public void exportInput() {
@@ -157,6 +168,9 @@ public class InputHelper {
                                                new IntentFilter(getBroadcastActionSaveInput()));
         LocalBroadcastManager.getInstance(mContext)
                              .registerReceiver(mBroadcastReceiver,
+                                               new IntentFilter(getBroadcastActionDeleteInput()));
+        LocalBroadcastManager.getInstance(mContext)
+                             .registerReceiver(mBroadcastReceiver,
                                                new IntentFilter(getBroadcastActionExportInput()));
     }
 
@@ -173,6 +187,10 @@ public class InputHelper {
 
     private String getBroadcastActionSaveInput() {
         return mContext.getPackageName() + ".broadcast.input.save";
+    }
+
+    private String getBroadcastActionDeleteInput() {
+        return mContext.getPackageName() + ".broadcast.input.delete";
     }
 
     private String getBroadcastActionExportInput() {
@@ -223,6 +241,8 @@ public class InputHelper {
         void onReadInput(@NonNull final AbstractInputIntentService.Status status);
 
         void onSaveInput(@NonNull final AbstractInputIntentService.Status status);
+
+        void onDeleteInput(@NonNull final AbstractInputIntentService.Status status);
 
         void onExportInput(@NonNull final AbstractInputIntentService.Status status);
     }

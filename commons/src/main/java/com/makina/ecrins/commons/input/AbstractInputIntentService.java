@@ -16,6 +16,7 @@ import com.makina.ecrins.commons.util.FileUtils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 
 /**
  * Custom {@code IntentService} to read, save or export as JSON file a given {@link AbstractInput}.
@@ -31,15 +32,16 @@ public abstract class AbstractInputIntentService
 
     private static final String BROADCAST_ACTION = "BROADCAST_ACTION";
 
-    private static final String ACTION_READ = "ACTION_READ";
-    private static final String ACTION_SAVE = "ACTION_SAVE";
-    private static final String ACTION_EXPORT = "ACTION_EXPORT";
+    protected static final String ACTION_READ = "ACTION_READ";
+    protected static final String ACTION_SAVE = "ACTION_SAVE";
+    protected static final String ACTION_DELETE = "ACTION_DELETE";
+    protected static final String ACTION_EXPORT = "ACTION_EXPORT";
 
     private static final String EXTRA_DATE_FORMAT = "EXTRA_DATE_FORMAT";
     public static final String EXTRA_STATUS = "EXTRA_STATUS";
     public static final String EXTRA_INPUT = "EXTRA_INPUT";
 
-    private static final String KEY_PREFERENCE_CURRENT_INPUT = "KEY_PREFERENCE_CURRENT_INPUT";
+    protected static final String KEY_PREFERENCE_CURRENT_INPUT = "KEY_PREFERENCE_CURRENT_INPUT";
 
     private final InputJsonReader mInputJsonReader;
     private final InputJsonWriter mInputJsonWriter;
@@ -48,51 +50,75 @@ public abstract class AbstractInputIntentService
                                  @NonNull final Class<? extends AbstractInputIntentService> clazz,
                                  @NonNull final String broadcastAction,
                                  @NonNull final String dateFormat) {
-        final Intent intent = new Intent(context,
-                                         clazz);
-        intent.setAction(ACTION_READ);
-        intent.putExtra(BROADCAST_ACTION,
-                        broadcastAction);
-        intent.putExtra(EXTRA_DATE_FORMAT,
-                        dateFormat);
-
-        context.startService(intent);
+        context.startService(buildIntent(context,
+                                         clazz,
+                                         ACTION_READ,
+                                         broadcastAction,
+                                         dateFormat,
+                                         null));
     }
 
     public static void saveInput(@NonNull final Context context,
                                  @NonNull final Class<? extends AbstractInputIntentService> clazz,
                                  @NonNull final String broadcastAction,
                                  @NonNull final String dateFormat,
-                                 @NonNull final AbstractInput input) {
-        final Intent intent = new Intent(context,
-                                         clazz);
-        intent.setAction(ACTION_SAVE);
-        intent.putExtra(BROADCAST_ACTION,
-                        broadcastAction);
-        intent.putExtra(EXTRA_DATE_FORMAT,
-                        dateFormat);
-        intent.putExtra(EXTRA_INPUT,
-                        input);
+                                 @Nullable final AbstractInput input) {
+        context.startService(buildIntent(context,
+                                         clazz,
+                                         ACTION_SAVE,
+                                         broadcastAction,
+                                         dateFormat,
+                                         input));
+    }
 
-        context.startService(intent);
+    public static void deleteInput(@NonNull final Context context,
+                                   @NonNull final Class<? extends AbstractInputIntentService> clazz,
+                                   @NonNull final String broadcastAction) {
+        context.startService(buildIntent(context,
+                                         clazz,
+                                         ACTION_DELETE,
+                                         broadcastAction,
+                                         null,
+                                         null));
     }
 
     public static void exportInput(@NonNull final Context context,
                                    @NonNull final Class<? extends AbstractInputIntentService> clazz,
                                    @NonNull final String broadcastAction,
                                    @NonNull final String dateFormat,
-                                   @NonNull final AbstractInput input) {
+                                   @Nullable final AbstractInput input) {
+        context.startService(buildIntent(context,
+                                         clazz,
+                                         ACTION_EXPORT,
+                                         broadcastAction,
+                                         dateFormat,
+                                         input));
+    }
+
+    @NonNull
+    protected static Intent buildIntent(@NonNull final Context context,
+                                        @NonNull final Class<? extends AbstractInputIntentService> clazz,
+                                        @NonNull final String action,
+                                        @NonNull final String broadcastAction,
+                                        @Nullable final String dateFormat,
+                                        @Nullable final AbstractInput input) {
         final Intent intent = new Intent(context,
                                          clazz);
-        intent.setAction(ACTION_EXPORT);
+        intent.setAction(action);
         intent.putExtra(BROADCAST_ACTION,
                         broadcastAction);
-        intent.putExtra(EXTRA_DATE_FORMAT,
-                        dateFormat);
-        intent.putExtra(EXTRA_INPUT,
-                        input);
 
-        context.startService(intent);
+        if (!TextUtils.isEmpty(dateFormat)) {
+            intent.putExtra(EXTRA_DATE_FORMAT,
+                            dateFormat);
+        }
+
+        if (input != null) {
+            intent.putExtra(EXTRA_INPUT,
+                            input);
+        }
+
+        return intent;
     }
 
     public AbstractInputIntentService() {
@@ -148,20 +174,19 @@ public abstract class AbstractInputIntentService
 
                     sendBroadcast(broadcastAction,
                                   Status.FINISHED_NOT_FOUND);
-
-                    break;
-                }
-
-                final AbstractInput input = mInputJsonReader.read(json);
-
-                if (input == null) {
-                    sendBroadcast(broadcastAction,
-                                  Status.FINISHED_WITH_ERRORS);
                 }
                 else {
-                    sendBroadcast(broadcastAction,
-                                  Status.FINISHED,
-                                  input);
+                    final AbstractInput input = mInputJsonReader.read(json);
+
+                    if (input == null) {
+                        sendBroadcast(broadcastAction,
+                                      Status.FINISHED_WITH_ERRORS);
+                    }
+                    else {
+                        sendBroadcast(broadcastAction,
+                                      Status.FINISHED,
+                                      input);
+                    }
                 }
 
                 break;
@@ -177,27 +202,42 @@ public abstract class AbstractInputIntentService
 
                     sendBroadcast(broadcastAction,
                                   Status.FINISHED_WITH_ERRORS);
-
-                    break;
-                }
-
-                final String inputAsJson = mInputJsonWriter.write(inputToSave);
-
-                if (TextUtils.isEmpty(inputAsJson)) {
-                    sendBroadcast(broadcastAction,
-                                  Status.FINISHED_WITH_ERRORS);
                 }
                 else {
-                    PreferenceManager.getDefaultSharedPreferences(this)
-                                     .edit()
-                                     .putString(KEY_PREFERENCE_CURRENT_INPUT,
-                                                inputAsJson)
-                                     .apply();
+                    Log.d(TAG,
+                          "onHandleIntent, " + intent.getAction() + ", input to save: " + inputToSave.getInputId());
 
-                    sendBroadcast(broadcastAction,
-                                  Status.FINISHED,
-                                  inputToSave);
+                    final String inputAsJson = mInputJsonWriter.write(inputToSave);
+
+                    if (TextUtils.isEmpty(inputAsJson)) {
+                        sendBroadcast(broadcastAction,
+                                      Status.FINISHED_WITH_ERRORS);
+                    }
+                    else {
+                        PreferenceManager.getDefaultSharedPreferences(this)
+                                         .edit()
+                                         .putString(KEY_PREFERENCE_CURRENT_INPUT,
+                                                    inputAsJson)
+                                         .apply();
+
+                        sendBroadcast(broadcastAction,
+                                      Status.FINISHED,
+                                      inputToSave);
+                    }
                 }
+
+                break;
+            case ACTION_DELETE:
+                sendBroadcast(broadcastAction,
+                              Status.STARTING);
+
+                PreferenceManager.getDefaultSharedPreferences(this)
+                                 .edit()
+                                 .remove(KEY_PREFERENCE_CURRENT_INPUT)
+                                 .apply();
+
+                sendBroadcast(broadcastAction,
+                              Status.FINISHED);
 
                 break;
             case ACTION_EXPORT:
@@ -212,47 +252,41 @@ public abstract class AbstractInputIntentService
 
                     sendBroadcast(broadcastAction,
                                   Status.FINISHED_WITH_ERRORS);
-
-                    break;
                 }
+                else {
+                    try {
+                        mInputJsonWriter.write(getInputExportWriter(inputToExport),
+                                               inputToExport);
 
-                try {
-                    final File inputDir = FileUtils.getInputsFolder(this);
+                        PreferenceManager.getDefaultSharedPreferences(this)
+                                         .edit()
+                                         .remove(KEY_PREFERENCE_CURRENT_INPUT)
+                                         .apply();
 
-                    // noinspection ResultOfMethodCallIgnored
-                    inputDir.mkdirs();
-
-                    final File inputFile = new File(inputDir,
-                                                    "input_" + inputToExport.getInputId() + ".json");
-
-                    final FileWriter fileWriter = new FileWriter(inputFile);
-
-                    mInputJsonWriter.write(fileWriter,
-                                           inputToExport);
-
-                    sendBroadcast(broadcastAction,
-                                  Status.FINISHED,
-                                  inputToExport);
-                }
-                catch (IOException ioe) {
-                    sendBroadcast(broadcastAction,
-                                  Status.FINISHED_WITH_ERRORS);
+                        sendBroadcast(broadcastAction,
+                                      Status.FINISHED,
+                                      inputToExport);
+                    }
+                    catch (IOException ioe) {
+                        sendBroadcast(broadcastAction,
+                                      Status.FINISHED_WITH_ERRORS);
+                    }
                 }
 
                 break;
         }
     }
 
-    private void sendBroadcast(@NonNull final String action,
-                               @NonNull final Status status) {
+    protected void sendBroadcast(@NonNull final String action,
+                                 @NonNull final Status status) {
         sendBroadcast(action,
                       status,
                       null);
     }
 
-    private void sendBroadcast(@NonNull final String action,
-                               @NonNull final Status status,
-                               @Nullable final AbstractInput input) {
+    protected void sendBroadcast(@NonNull final String action,
+                                 @NonNull final Status status,
+                                 @Nullable final AbstractInput input) {
         final Intent intent = new Intent();
         intent.setAction(action);
         intent.putExtra(EXTRA_STATUS,
@@ -263,8 +297,25 @@ public abstract class AbstractInputIntentService
                             input);
         }
 
+        Log.d(TAG,
+              "sendBroadcast, action: " + action + ", status: " + status);
+
         LocalBroadcastManager.getInstance(this)
                              .sendBroadcast(intent);
+    }
+
+    @NonNull
+    protected Writer getInputExportWriter(@NonNull final AbstractInput input) throws
+                                                                              IOException {
+        final File inputDir = FileUtils.getInputsFolder(this);
+
+        // noinspection ResultOfMethodCallIgnored
+        inputDir.mkdirs();
+
+        final File inputFile = new File(inputDir,
+                                        "input_" + input.getInputId() + ".json");
+
+        return new FileWriter(inputFile);
     }
 
     /**

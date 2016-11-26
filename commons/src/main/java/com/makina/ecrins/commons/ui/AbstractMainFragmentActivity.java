@@ -109,7 +109,7 @@ public abstract class AbstractMainFragmentActivity
 
     protected NetworkConnectivityListener mNetworkConnectivityListener;
 
-    private Button mButtonStartInput;
+    protected Button mButtonStartInput;
     private Button mButtonStartSynchronization;
     private ListView mListViewDeviceStatus;
     protected DeviceStatusAdapter mDeviceStatusAdapter;

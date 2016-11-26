@@ -165,11 +165,11 @@ public abstract class AbstractObserversAndDateInputFragment
         if ((resultCode == Activity.RESULT_OK) && (data != null)) {
             final ArrayList<Observer> selectedObservers = data.getParcelableArrayListExtra(AbstractObserverListActivity.EXTRA_SELECTED_OBSERVERS);
 
-            if (selectedObservers.size() > 0) {
-                mObserversAdapter.clear();
-                mInput.getObservers()
-                      .clear();
+            mObserversAdapter.clear();
+            mInput.getObservers()
+                  .clear();
 
+            if (selectedObservers.size() > 0) {
                 for (Observer observer : selectedObservers) {
                     mInput.getObservers()
                           .put(observer.getObserverId(),
