@@ -44,6 +44,8 @@ public class PagerJsonWriterTest {
         final String expectedJsonString = new StringBuilder().append('{')
                                                              .append("\"id\":")
                                                              .append(0)
+                                                             .append(",\"size\":")
+                                                             .append(0)
                                                              .append(",\"position\":")
                                                              .append(0)
                                                              .append(",\"history\":[]")
@@ -59,6 +61,7 @@ public class PagerJsonWriterTest {
                             Exception {
         // given a pager metadata
         final Pager pager = new Pager(1234L);
+        pager.setSize(5);
         pager.setPosition(3);
         pager.getHistory()
              .add(1);
@@ -81,6 +84,8 @@ public class PagerJsonWriterTest {
         final String expectedJsonString = new StringBuilder().append('{')
                                                              .append("\"id\":")
                                                              .append(1234L)
+                                                             .append(",\"size\":")
+                                                             .append(5)
                                                              .append(",\"position\":")
                                                              .append(3)
                                                              .append(",\"history\":[1,4,3,2]")

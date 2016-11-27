@@ -54,6 +54,8 @@ public class PagerHelperTest {
         final String jsonString = new StringBuilder().append('{')
                                                      .append("\"id\":")
                                                      .append(1234L)
+                                                     .append(",\"size\":")
+                                                     .append(5)
                                                      .append(",\"position\":")
                                                      .append(3)
                                                      .append(",\"history\":[1,4,3,2]")
@@ -73,6 +75,8 @@ public class PagerHelperTest {
         assertNotNull(pager);
         assertEquals(1234L,
                      pager.getId());
+        assertEquals(5,
+                     pager.getSize());
         assertEquals(3,
                      pager.getPosition());
         assertEquals(4,
@@ -97,6 +101,7 @@ public class PagerHelperTest {
                            Exception {
         // given a pager metadata
         final Pager pager = new Pager(1234L);
+        pager.setSize(5);
         pager.setPosition(3);
         pager.getHistory()
              .add(1);
@@ -124,6 +129,8 @@ public class PagerHelperTest {
         final String jsonString = new StringBuilder().append('{')
                                                      .append("\"id\":")
                                                      .append(1234L)
+                                                     .append(",\"size\":")
+                                                     .append(5)
                                                      .append(",\"position\":")
                                                      .append(3)
                                                      .append(",\"history\":[1,4,3,2]")
@@ -141,6 +148,8 @@ public class PagerHelperTest {
 
         // then
         final Pager pagerLoader = pagerHelper.load(1234L);
+        assertEquals(0,
+                     pagerLoader.getSize());
         assertEquals(0,
                      pagerLoader.getPosition());
         assertTrue(pagerLoader.getHistory()

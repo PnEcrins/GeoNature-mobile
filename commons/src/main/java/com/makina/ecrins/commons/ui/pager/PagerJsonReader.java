@@ -83,6 +83,9 @@ public class PagerJsonReader {
                 case "id":
                     pager.mId = reader.nextLong();
                     break;
+                case "size":
+                    pager.setSize(reader.nextInt());
+                    break;
                 case "position":
                     pager.setPosition(reader.nextInt());
                     break;

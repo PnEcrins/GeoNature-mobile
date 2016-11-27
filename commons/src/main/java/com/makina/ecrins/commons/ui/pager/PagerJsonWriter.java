@@ -75,6 +75,8 @@ public class PagerJsonWriter {
 
         writer.name("id")
               .value(pager.getId());
+        writer.name("size")
+              .value(pager.getSize());
         writer.name("position")
               .value(pager.getPosition());
 

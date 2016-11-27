@@ -35,6 +35,8 @@ public class PagerJsonReaderTest {
         final String jsonString = new StringBuilder().append('{')
                                                      .append("\"id\":")
                                                      .append(0)
+                                                     .append(",\"size\":")
+                                                     .append(0)
                                                      .append(",\"position\":")
                                                      .append(0)
                                                      .append(",\"history\":[]")
@@ -50,6 +52,8 @@ public class PagerJsonReaderTest {
         assertEquals(0,
                      pager.getId());
         assertEquals(0,
+                     pager.getSize());
+        assertEquals(0,
                      pager.getPosition());
         assertTrue(pager.getHistory()
                         .isEmpty());
@@ -63,6 +67,8 @@ public class PagerJsonReaderTest {
         final String jsonString = new StringBuilder().append('{')
                                                      .append("\"id\":")
                                                      .append(1234L)
+                                                     .append(",\"size\":")
+                                                     .append(5)
                                                      .append(",\"position\":")
                                                      .append(3)
                                                      .append(",\"history\":[1,4,3,2]")
@@ -77,6 +83,8 @@ public class PagerJsonReaderTest {
         assertNotNull(pager);
         assertEquals(1234L,
                      pager.getId());
+        assertEquals(5,
+                     pager.getSize());
         assertEquals(3,
                      pager.getPosition());
         assertEquals(4,

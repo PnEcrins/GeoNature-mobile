@@ -24,6 +24,7 @@ public class Pager
         implements Parcelable {
 
     long mId;
+    private int mSize;
     private int mPosition;
     private final Deque<Integer> mHistory = new ArrayDeque<>();
 
@@ -33,6 +34,7 @@ public class Pager
 
     public Pager(Parcel source) {
         mId = source.readLong();
+        mSize = source.readInt();
         mPosition = source.readInt();
 
         final List<Integer> navigationHistoryList = new ArrayList<>();
@@ -44,6 +46,14 @@ public class Pager
 
     public long getId() {
         return mId;
+    }
+
+    public int getSize() {
+        return mSize;
+    }
+
+    public void setSize(int size) {
+        this.mSize = size;
     }
 
     public int getPosition() {
@@ -68,6 +78,7 @@ public class Pager
     public void writeToParcel(Parcel dest,
                               int flags) {
         dest.writeLong(mId);
+        dest.writeInt(mSize);
         dest.writeInt(mPosition);
         dest.writeList(new ArrayList<>(mHistory));
     }
@@ -76,6 +87,7 @@ public class Pager
     public String toString() {
         return "Pager{" +
                 "id=" + mId +
+                ", size=" + mSize +
                 ", position=" + mPosition +
                 ", history=" + mHistory +
                 '}';
@@ -98,6 +110,10 @@ public class Pager
             return false;
         }
 
+        if (mSize != pager.mSize) {
+            return false;
+        }
+
         // noinspection SimplifiableIfStatement
         if (mPosition != pager.mPosition) {
             return false;
@@ -110,6 +126,7 @@ public class Pager
     @Override
     public int hashCode() {
         int result = (int) (mId ^ (mId >>> 32));
+        result = 31 * result + mSize;
         result = 31 * result + mPosition;
         result = 31 * result + mHistory.hashCode();
 
