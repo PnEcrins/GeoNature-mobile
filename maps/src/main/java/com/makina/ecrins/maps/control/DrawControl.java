@@ -412,6 +412,34 @@ public class DrawControl
     }
 
     /**
+     * Adds a {@code List} of {@link Feature}s to edit.
+     *
+     * @param features a {@code List} of {@link Feature}s
+     */
+    public void setFeatures(@NonNull final List<Feature> features) {
+        getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (isControlInitialized()) {
+                    Log.d(getClass().getName(),
+                          "setFeatures, size: " + features.size());
+
+                    mWebViewFragment.getEditableFeatures()
+                                    .clearAllFeatures();
+                    mWebViewFragment.getEditableFeatures()
+                                    .addAllFeatures(features);
+                    mWebViewFragment.loadUrl(getJSUrlPrefix() + ".setFeatures()");
+                    updateButtons();
+                }
+                else {
+                    Log.w(DrawControl.class.getName(),
+                          "setFeatures: Control '" + getName() + "' is not initialized !");
+                }
+            }
+        });
+    }
+
+    /**
      * Clears all {@link Feature}s.
      */
     public void clearFeatures() {

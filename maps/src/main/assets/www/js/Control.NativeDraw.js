@@ -219,6 +219,11 @@ L.Control.NativeDraw = L.Control.extend(
 		this._moveRefreshPosition();
 	},
 
+    setFeatures: function()
+    {
+        this.loadFeatures();
+    },
+
 	loadFeatures: function()
 	{
 		this._clearEvents();
@@ -257,6 +262,11 @@ L.Control.NativeDraw = L.Control.extend(
 			{
 				this._addFeature(selectedFeature, style);
 			}
+		}
+
+		if (this._features.getLayers().length > 0)
+		{
+            this._map.fitBounds(this._features.getBounds());
 		}
 
 		this._moveRefreshPosition();
