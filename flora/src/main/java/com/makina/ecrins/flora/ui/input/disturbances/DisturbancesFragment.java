@@ -428,7 +428,7 @@ public class DisturbancesFragment
     }
 
     private void updateActionMode() {
-        if ((mInput.getCurrentSelectedTaxon() == null) || !mIsVisibleToUser) {
+        if ((mInput == null) || (mInput.getCurrentSelectedTaxon() == null) || !mIsVisibleToUser) {
             if (mMode != null) {
                 mMode.finish();
             }
