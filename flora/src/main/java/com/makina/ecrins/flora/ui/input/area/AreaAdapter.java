@@ -203,6 +203,7 @@ public class AreaAdapter
         @Override
         public void bind(@NonNull Area area,
                          int position) {
+            mPointArea = area.getComputedArea();
             mEditTextPointArea.setText(mPointArea == 0 ? null : mDecimalFormat.format(mPointArea));
         }
 
