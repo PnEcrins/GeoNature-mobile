@@ -3,6 +3,7 @@ package com.makina.ecrins.commons.input;
 import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -111,13 +112,12 @@ public abstract class AbstractTaxon
         this.mCriterionLabel = pCriterionLabel;
     }
 
+    @Nullable
     public String getComment() {
-
         return mComment;
     }
 
-    public void setComment(String pComment) {
-
+    public void setComment(@Nullable final String pComment) {
         this.mComment = pComment;
     }
 

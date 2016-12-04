@@ -263,7 +263,17 @@ public class InputJsonReader {
                     reader.endObject();
                     break;
                 case "comment":
-                    taxon.setComment(reader.nextString());
+                    final JsonToken commentJsonToken = reader.peek();
+
+                    switch (commentJsonToken) {
+                        case STRING:
+                            taxon.setComment(reader.nextString());
+                            break;
+                        default:
+                            taxon.setComment(null);
+                            reader.skipValue();
+                    }
+
                     break;
                 default:
                     onInputJsonReaderListener.readAdditionalTaxonData(reader,
