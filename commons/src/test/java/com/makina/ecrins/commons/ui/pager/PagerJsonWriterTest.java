@@ -30,7 +30,7 @@ public class PagerJsonWriterTest {
     public void testWriteEmptyPager() throws
                                       Exception {
         // given an empty pager metadata
-        final Pager pager = new Pager(0L);
+        final Pager pager = new Pager();
 
         // when write this pager as JSON string
         final StringWriter writer = new StringWriter();

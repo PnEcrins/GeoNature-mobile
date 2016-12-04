@@ -23,10 +23,13 @@ import java.util.List;
 public class Pager
         implements Parcelable {
 
-    long mId;
+    private long mId;
     private int mSize;
     private int mPosition;
     private final Deque<Integer> mHistory = new ArrayDeque<>();
+
+    public Pager() {
+    }
 
     public Pager(long id) {
         mId = id;
@@ -46,6 +49,10 @@ public class Pager
 
     public long getId() {
         return mId;
+    }
+
+    public void setId(long id) {
+        this.mId = id;
     }
 
     public int getSize() {

@@ -72,7 +72,7 @@ public class PagerJsonReader {
     @NonNull
     private Pager read(@NonNull final JsonReader reader) throws
                                                          IOException {
-        final Pager pager = new Pager(0);
+        final Pager pager = new Pager();
 
         reader.beginObject();
 
@@ -81,7 +81,7 @@ public class PagerJsonReader {
 
             switch (keyName) {
                 case "id":
-                    pager.mId = reader.nextLong();
+                    pager.setId(reader.nextLong());
                     break;
                 case "size":
                     pager.setSize(reader.nextInt());
