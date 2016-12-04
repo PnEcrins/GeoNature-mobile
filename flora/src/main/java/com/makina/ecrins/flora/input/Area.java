@@ -162,11 +162,12 @@ public class Area
         return mSelectedDisturbances;
     }
 
+    @Nullable
     public String getComment() {
         return mComment;
     }
 
-    public void setComment(String pComment) {
+    public void setComment(@Nullable final String pComment) {
         this.mComment = pComment;
     }
 

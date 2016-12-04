@@ -56,6 +56,7 @@ public class InputIntentService
             case "areas":
                 readAreas(reader,
                           ((Taxon) taxon).getAreas());
+                ((Taxon) taxon).setCurrentSelectedAreaId(((Taxon) taxon).getLastInsertedAreaId());
                 break;
             case "prospecting_area":
                 reader.beginObject();
@@ -172,6 +173,9 @@ public class InputIntentService
                             final JsonToken frequencyJsonToken = reader.peek();
 
                             switch (frequencyJsonToken) {
+                                case NULL:
+                                    reader.nextNull();
+                                    break;
                                 case BEGIN_OBJECT:
                                     area.setFrequency(readFrequency(reader));
                                     break;
@@ -205,7 +209,17 @@ public class InputIntentService
                             reader.endArray();
                             break;
                         case "comment":
-                            area.setComment(reader.nextString());
+                            final JsonToken commentJsonToken = reader.peek();
+
+                            switch (commentJsonToken) {
+                                case STRING:
+                                    area.setComment(reader.nextString());
+                                    break;
+                                default:
+                                    area.setComment(null);
+                                    reader.skipValue();
+                            }
+
                             break;
                     }
             }
