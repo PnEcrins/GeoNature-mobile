@@ -3,7 +3,6 @@ package com.makina.ecrins.flora.ui.input;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBar;
@@ -19,6 +18,7 @@ import android.widget.TextView;
 import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
 import com.makina.ecrins.commons.ui.input.IInputFragment;
+import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
 import com.makina.ecrins.commons.ui.pager.IValidateWithNavigationControlFragment;
 import com.makina.ecrins.flora.BuildConfig;
 import com.makina.ecrins.flora.R;
@@ -40,22 +40,14 @@ public class ChooseActionListFragment
 
     private static final String ALERT_DIALOG_DELETE_AREA_FRAGMENT = "alert_dialog_delete_area";
 
-    private static final int DEFAULT_SCREEN_OFF_TIMEOUT = 15000;
-    private static final String KEY_DEFAULT_SCREEN_OFF_TIMEOUT = "default_screen_off_timeout";
-
+    private OnInputFragmentListener mOnInputFragmentListener;
     private ActionItemArrayAdapter mAdapter = null;
 
     private Input mInput;
-    private int mDefaultScreenOffTimeOut;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mDefaultScreenOffTimeOut = (savedInstanceState == null) ? Settings.System.getInt(getActivity().getContentResolver(),
-                                                                                         Settings.System.SCREEN_OFF_TIMEOUT,
-                                                                                         DEFAULT_SCREEN_OFF_TIMEOUT) : savedInstanceState.getInt(KEY_DEFAULT_SCREEN_OFF_TIMEOUT,
-                                                                                                                                                 DEFAULT_SCREEN_OFF_TIMEOUT);
 
         final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getActivity().getSupportFragmentManager()
                                                                                            .findFragmentByTag(ALERT_DIALOG_DELETE_AREA_FRAGMENT);
@@ -91,9 +83,7 @@ public class ChooseActionListFragment
 
                 @Override
                 public void performAction() {
-                    Settings.System.putInt(getActivity().getContentResolver(),
-                                           Settings.System.SCREEN_OFF_TIMEOUT,
-                                           1000);
+                    mOnInputFragmentListener.onCloseApplication();
                 }
             });
             mAdapter.add(new ActionItem() {
@@ -128,11 +118,15 @@ public class ChooseActionListFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
-        outState.putInt(KEY_DEFAULT_SCREEN_OFF_TIMEOUT,
-                        mDefaultScreenOffTimeOut);
+        if (context instanceof OnInputFragmentListener) {
+            mOnInputFragmentListener = (OnInputFragmentListener) context;
+        }
+        else {
+            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
+        }
     }
 
     @Override
@@ -169,10 +163,7 @@ public class ChooseActionListFragment
         ((AppCompatActivity) getActivity()).getSupportActionBar()
                                            .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
-        // restore default settings
-        Settings.System.putInt(getActivity().getContentResolver(),
-                               Settings.System.SCREEN_OFF_TIMEOUT,
-                               mDefaultScreenOffTimeOut);
+        mOnInputFragmentListener.onSaveInput();
 
         if (mInput == null) {
             Log.w(TAG,

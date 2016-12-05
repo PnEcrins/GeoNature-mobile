@@ -114,7 +114,7 @@
     <string name="choose_action_yes">Yes: finish this step</string>
     <string name="choose_action_no">No: close this dialog</string>
     <string name="choose_action_message">Your presence area has been saved.</string>
-    <string name="choose_action_pause">Pause and continue the prospection</string>
+    <string name="choose_action_pause">Continue this prospection later</string>
     <string name="choose_action_area">Add a new presence area</string>
     <string name="choose_action_finish">Finish the prospection</string>
 

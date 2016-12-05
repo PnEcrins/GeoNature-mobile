@@ -116,7 +116,7 @@
     <string name="choose_action_yes">OUI, valider et poursuivre</string>
     <string name="choose_action_no">NON, fermer cette fenêtre</string>
     <string name="choose_action_message">Votre aire de présence a bien été enregistrée.</string>
-    <string name="choose_action_pause">Mettre en veille et continuer la prospection</string>
+    <string name="choose_action_pause">Reprendre la prospection plus tard</string>
     <string name="choose_action_area">Saisir une nouvelle aire de présence</string>
     <string name="choose_action_finish">Terminer la prospection</string>
 
