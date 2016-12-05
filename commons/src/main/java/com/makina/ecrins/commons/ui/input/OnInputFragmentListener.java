@@ -1,7 +1,5 @@
 package com.makina.ecrins.commons.ui.input;
 
-import android.support.annotation.NonNull;
-
 import com.makina.ecrins.commons.input.AbstractInput;
 
 /**
@@ -12,10 +10,12 @@ import com.makina.ecrins.commons.input.AbstractInput;
 public interface OnInputFragmentListener {
 
     /**
-     * Gets the current {@link AbstractInput} to update.
-     *
-     * @return the current {@link AbstractInput}
+     * Called when the input should be saved.
      */
-    @NonNull
-    AbstractInput getInput();
+    void onSaveInput();
+
+    /**
+     * Notify the application to close itself.
+     */
+    void onCloseApplication();
 }
