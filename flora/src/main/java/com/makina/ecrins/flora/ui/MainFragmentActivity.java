@@ -85,8 +85,14 @@ public class MainFragmentActivity
 
             final Intent intent = new Intent(MainFragmentActivity.this,
                                              PagerFragmentActivity.class);
-            intent.putExtra(PagerFragmentActivity.EXTRA_NEW_INPUT,
-                            false);
+
+            if (mInputHelper.getInput() != null) {
+                intent.putExtra(PagerFragmentActivity.EXTRA_NEW_INPUT,
+                                false);
+                intent.putExtra(PagerFragmentActivity.EXTRA_PAGER_ID,
+                               mInputHelper.getInput().getInputId());
+            }
+
             startActivity(intent);
         }
 

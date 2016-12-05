@@ -14,6 +14,7 @@ import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.ChooseActionDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.ProgressDialogFragment;
 import com.makina.ecrins.commons.ui.input.IInputFragment;
+import com.makina.ecrins.commons.ui.input.OnInputFragmentListener;
 import com.makina.ecrins.commons.ui.pager.AbstractNavigationHistoryPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.flora.BuildConfig;
@@ -40,12 +41,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Basic <code>ViewPager</code> implementation as <code>FragmentActivity</code>.
+ * {@code ViewPager} implementation as {@code AppCompatActivity} with navigation history support.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
 public class PagerFragmentActivity
-        extends AbstractNavigationHistoryPagerFragmentActivity {
+        extends AbstractNavigationHistoryPagerFragmentActivity
+        implements OnInputFragmentListener {
 
     private static final String TAG = PagerFragmentActivity.class.getName();
 
@@ -54,7 +56,8 @@ public class PagerFragmentActivity
     protected static final String CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT = "choose_quit_action_dialog";
 
     public static final String EXTRA_NEW_INPUT = "extra_new_input";
-    protected static final String KEY_INPUT_SAVED = "input_saved";
+
+    private long mInputIdSaved;
 
     private final AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
         @Override
@@ -135,6 +138,8 @@ public class PagerFragmentActivity
                         }
                     }
 
+                    mPager.setId(input.getInputId());
+
                     final IValidateFragment pageFragment = getCurrentPageFragment();
 
                     if (pageFragment instanceof IInputFragment) {
@@ -185,8 +190,7 @@ public class PagerFragmentActivity
                         return;
                     }
 
-                    mSavedState.putLong(KEY_INPUT_SAVED,
-                                        input.getInputId());
+                    mInputIdSaved = input.getInputId();
 
                     showChooseActionDialog();
 
@@ -221,7 +225,8 @@ public class PagerFragmentActivity
         if (getIntent().getBooleanExtra(EXTRA_NEW_INPUT,
                                         true)) {
             // instantiates a new Input
-            mInputHelper.startInput();
+            mPager.setId(mInputHelper.startInput()
+                                     .getInputId());
         }
         else {
             mInputHelper.readInput();
@@ -357,13 +362,23 @@ public class PagerFragmentActivity
             return;
         }
 
-        if (mSavedState.getLong(KEY_INPUT_SAVED,
-                                0) == input.getInputId()) {
+        if (mInputIdSaved == input.getInputId()) {
             showChooseActionDialog();
         }
         else {
             mInputHelper.exportInput();
         }
+    }
+
+    @Override
+    public void onSaveInput() {
+        mInputHelper.saveInput();
+    }
+
+    @Override
+    public void onCloseApplication() {
+        ((MainApplication) getApplication()).setCloseApplication(true);
+        finish();
     }
 
     @Override
