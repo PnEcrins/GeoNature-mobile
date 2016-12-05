@@ -38,7 +38,8 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(KEY_HISTORY_PREVIOUS, mHistoryPrevious);
+        outState.putBoolean(KEY_HISTORY_PREVIOUS,
+                            mHistoryPrevious);
 
         super.onSaveInstanceState(outState);
     }
@@ -112,25 +113,33 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity
         else {
             final IValidateFragment fragment = getPageFragment(mPager.getPosition());
 
-            if (fragment != null) {
+            if (fragment != null && (mPager.getHistory()
+                                           .isEmpty() || (mPager.getHistory()
+                                                                .getLast() != fragment.getResourceTitle())) && !mRestorePager) {
                 mPager.getHistory()
                       .addLast(fragment.getResourceTitle());
             }
 
             // checks validation before switching to the next page
-            final IValidateFragment getLastFragmentInHistory = getPageFragmentByKey(mPager.getHistory()
-                                                                                          .getLast());
+            if (!mPager.getHistory()
+                       .isEmpty() && !mRestorePager) {
+                final IValidateFragment getLastFragmentInHistory = getPageFragmentByKey(mPager.getHistory()
+                                                                                              .getLast());
 
-            if ((position > 0) && !((getLastFragmentInHistory == null) || getLastFragmentInHistory.validate())) {
-                goToPreviousPage();
-                return;
+                if ((position > 0) && !((getLastFragmentInHistory == null) || getLastFragmentInHistory.validate())) {
+                    Log.d(TAG,
+                          "onPageSelected: previous fragment " + getLastFragmentInHistory.getClass()
+                                                                                         .getName() + " is not valid");
+
+                    goToPreviousPage();
+
+                    return;
+                }
             }
         }
 
         mHistoryPrevious = false;
-
-        Log.d(TAG,
-              "onPageSelected: " + mPager);
+        mRestorePager = false;
 
         IValidateFragment fragment = getPageFragment(position);
 
@@ -148,8 +157,8 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity
         // updates navigation buttons statuses
         if ((fragment != null) && (fragment instanceof IValidateWithNavigationControlFragment)) {
             // disable or enable paging control for the current instance of IValidateWithNavigationControlFragment
-            mViewPager.setPagingLeftEnabled(((IValidateWithNavigationControlFragment) fragment).getPagingToPreviousEnabled());
-            mViewPager.setPagingRightEnabled(((IValidateWithNavigationControlFragment) fragment).getPagingToForwardEnabled());
+            mViewPager.setPagingPreviousEnabled(((IValidateWithNavigationControlFragment) fragment).getPagingToPreviousEnabled());
+            mViewPager.setPagingNextEnabled(((IValidateWithNavigationControlFragment) fragment).getPagingToForwardEnabled());
 
             if (((IValidateWithNavigationControlFragment) fragment).getPagingToPreviousEnabled()) {
                 mPreviousButton.setEnabled(mViewPager.getCurrentItem() > 0);
@@ -177,6 +186,9 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity
         }
 
         mPager.setPosition(mViewPager.getCurrentItem());
+
+        Log.d(TAG,
+              "onPageSelected: " + mPager);
     }
 
     @Override

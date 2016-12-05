@@ -28,6 +28,7 @@ public abstract class AbstractPagerFragmentActivity
 
     private static final String TAG = AbstractPagerFragmentActivity.class.getName();
 
+    public static final String EXTRA_PAGER_ID = "EXTRA_PAGER_ID";
     protected static final String KEY_PAGER = "KEY_PAGER";
 
     protected SimpleFragmentPagerAdapter mAdapter;
@@ -35,13 +36,17 @@ public abstract class AbstractPagerFragmentActivity
     protected Button mPreviousButton;
     protected Button mNextButton;
 
+    protected PagerHelper mPagerHelper;
     protected Pager mPager;
+    protected boolean mRestorePager = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.fragment_pager);
+
+        mPagerHelper = new PagerHelper(this);
 
         mAdapter = new SimpleFragmentPagerAdapter(this,
                                                   getSupportFragmentManager());
@@ -50,6 +55,21 @@ public abstract class AbstractPagerFragmentActivity
 
         mPreviousButton = (Button) findViewById(R.id.previousButton);
         mNextButton = (Button) findViewById(R.id.nextButton);
+
+        if (getIntent().hasExtra(EXTRA_PAGER_ID)) {
+            mPager = mPagerHelper.load(getIntent().getLongExtra(EXTRA_PAGER_ID,
+                                                                0L));
+            Log.d(TAG,
+                  "onCreate, pager loaded: " + mPager);
+        }
+
+        if (mPager == null) {
+            mPager = (savedInstanceState == null) ? new Pager() : (Pager) savedInstanceState.getParcelable(KEY_PAGER);
+        }
+
+        if (mPager == null) {
+            mPager = new Pager();
+        }
     }
 
     @Override
@@ -60,13 +80,7 @@ public abstract class AbstractPagerFragmentActivity
         indicator.setViewPager(mViewPager);
         mViewPager.addOnPageChangeListener(this);
 
-        mPager = (savedInstanceState == null) ? new Pager(0) : (Pager) savedInstanceState.getParcelable(KEY_PAGER);
-
-        if (mPager == null) {
-            mPager = new Pager(0);
-        }
-
-        if (savedInstanceState == null) {
+        if ((savedInstanceState == null) && (mPager.getSize() == 0)) {
             mPager.setSize(getPagerFragments().size());
             mPager.setPosition(mViewPager.getCurrentItem());
         }
@@ -91,18 +105,17 @@ public abstract class AbstractPagerFragmentActivity
         }
 
         mAdapter.notifyDataSetChanged();
+        mViewPager.post(new Runnable() {
+            @Override
+            public void run() {
+                mRestorePager = true;
+                mViewPager.setCurrentItem(mPager.getPosition());
 
-        if (savedInstanceState == null) {
-            mViewPager.post(new Runnable() {
-                @Override
-                public void run() {
+                if (mPager.getPosition() == 0) {
                     onPageSelected(mViewPager.getCurrentItem());
                 }
-            });
-        }
-        else {
-            mViewPager.setCurrentItem(mPager.getPosition());
-        }
+            }
+        });
 
         setTitle(mAdapter.getPageTitle(mViewPager.getCurrentItem()));
 
@@ -137,6 +150,15 @@ public abstract class AbstractPagerFragmentActivity
 
             // disable or enable paging control for the current instance of IValidateFragment
             mViewPager.setPagingEnabled(fragment.getPagingEnabled());
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mPager.getId() != 0) {
+            mPagerHelper.save(mPager);
         }
     }
 
