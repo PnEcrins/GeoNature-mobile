@@ -46,6 +46,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -193,6 +194,20 @@ public class WebViewFragment
             if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) {
                 clearEditableFeatures();
             }
+
+            if (getEditableFeatures().isEmpty() && mInput.getCurrentSelectedTaxon() != null && ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) {
+                final Area currentSelectedArea = ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea();
+
+                if (currentSelectedArea != null && currentSelectedArea.getFeature() != null) {
+                    setCurrentEditableFeature(currentSelectedArea.getFeature());
+
+                    final String drawControlName = ControlUtils.getControlName(DrawControl.class);
+
+                    if (hasControl(drawControlName)) {
+                        ((DrawControl) getControl(drawControlName)).setFeatures(Collections.singletonList(currentSelectedArea.getFeature()));
+                    }
+                }
+            }
         }
         else {
             displayAPs();
@@ -202,6 +217,16 @@ public class WebViewFragment
             }
             else {
                 final Feature prospectingArea = ((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea();
+
+                if (getEditableFeatures().isEmpty() && prospectingArea != null) {
+                    setCurrentEditableFeature(prospectingArea);
+
+                    final String drawControlName = ControlUtils.getControlName(DrawControl.class);
+
+                    if (hasControl(drawControlName)) {
+                        ((DrawControl) getControl(drawControlName)).setFeatures(Collections.singletonList(prospectingArea));
+                    }
+                }
 
                 // checks if this feature contains all features added to this taxon areas
                 if ((prospectingArea != null) && !checkIfProspectingAreaContainsAllAreasPresences(prospectingArea)) {
@@ -452,13 +477,30 @@ public class WebViewFragment
                     if ((mInput != null) && (mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) {
                         clearEditableFeatures();
                     }
+
+                    if (getEditableFeatures().isEmpty() && (mInput != null) && (mInput.getCurrentSelectedTaxon() != null) && ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) {
+                        final Area currentSelectedArea = ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea();
+
+                        if (currentSelectedArea != null && currentSelectedArea.getFeature() != null) {
+                            setCurrentEditableFeature(currentSelectedArea.getFeature());
+                            drawControl.setFeatures(Collections.singletonList(currentSelectedArea.getFeature()));
+                        }
+                    }
                 }
                 else {
                     if ((mInput != null) && (mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea() == null)) {
                         clearEditableFeatures();
                     }
-                }
 
+                    if (getEditableFeatures().isEmpty() && (mInput != null) && (mInput.getCurrentSelectedTaxon() != null) && ((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea() != null) {
+                        final Feature prospectingArea = ((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea();
+
+                        if (prospectingArea != null) {
+                            setCurrentEditableFeature(prospectingArea);
+                            drawControl.setFeatures(Collections.singletonList(prospectingArea));
+                        }
+                    }
+                }
             }
         });
 
