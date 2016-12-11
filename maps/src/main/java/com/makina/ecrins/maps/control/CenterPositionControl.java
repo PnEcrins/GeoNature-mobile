@@ -42,10 +42,13 @@ public final class CenterPositionControl
 
                 mIsCenterPosition = false;
                 final Location currentLocation = mWebViewFragment.getCurrentLocation();
-                mImageButtonCenterPosition.setEnabled((currentLocation != null) && mWebViewFragment.getMapSettings()
-                                                                                                   .getPolygonBounds()
-                                                                                                   .contains(new GeoPoint(currentLocation.getLatitude(),
-                                                                                                                          currentLocation.getLongitude()).getPoint()));
+                mImageButtonCenterPosition.setEnabled((currentLocation != null) &&
+                                                              (mWebViewFragment.getMapSettings()
+                                                                               .getPolygonBounds() != null) &&
+                                                              mWebViewFragment.getMapSettings()
+                                                                              .getPolygonBounds()
+                                                                              .contains(new GeoPoint(currentLocation.getLatitude(),
+                                                                                                     currentLocation.getLongitude()).getPoint()));
             }
         });
     }
@@ -107,10 +110,11 @@ public final class CenterPositionControl
               "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
 
         // checks if this location is inside the map or not
-        if (isControlInitialized() && mWebViewFragment.getMapSettings()
-                                                      .getPolygonBounds()
-                                                      .contains(new GeoPoint(location.getLatitude(),
-                                                                             location.getLongitude()).getPoint())) {
+        if (isControlInitialized() && (mWebViewFragment.getMapSettings()
+                                                       .getPolygonBounds() != null) && mWebViewFragment.getMapSettings()
+                                                                                                       .getPolygonBounds()
+                                                                                                       .contains(new GeoPoint(location.getLatitude(),
+                                                                                                                              location.getLongitude()).getPoint())) {
             mImageButtonCenterPosition.setEnabled(true);
 
             if (isControlInitialized() && mIsCenterPosition) {

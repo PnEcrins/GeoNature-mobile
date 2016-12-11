@@ -89,10 +89,11 @@ public class MainControl
               "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
 
         // checks if this location is inside the map or not
-        if (this.mWebViewFragment.getMapSettings()
-                                 .getPolygonBounds()
-                                 .contains(new GeoPoint(location.getLatitude(),
-                                                        location.getLongitude()).getPoint())) {
+        if ((this.mWebViewFragment.getMapSettings()
+                                  .getPolygonBounds() != null) && this.mWebViewFragment.getMapSettings()
+                                                                                       .getPolygonBounds()
+                                                                                       .contains(new GeoPoint(location.getLatitude(),
+                                                                                                              location.getLongitude()).getPoint())) {
             this.mWebViewFragment.setCurrentLocation(location);
 
             if (isControlInitialized()) {

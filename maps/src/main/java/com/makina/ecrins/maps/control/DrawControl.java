@@ -310,10 +310,11 @@ public class DrawControl
     @Override
     public void onLocationChanged(Location location) {
         if (isControlInitialized()) {
-            boolean checkIfLocationInsideMapBounds = mWebViewFragment.getMapSettings()
-                                                                     .getPolygonBounds()
-                                                                     .contains(new GeoPoint(location.getLatitude(),
-                                                                                            location.getLongitude()).getPoint());
+            boolean checkIfLocationInsideMapBounds = (mWebViewFragment.getMapSettings()
+                                                                      .getPolygonBounds() != null) && mWebViewFragment.getMapSettings()
+                                                                                                                      .getPolygonBounds()
+                                                                                                                      .contains(new GeoPoint(location.getLatitude(),
+                                                                                                                                             location.getLongitude()).getPoint());
 
             // checks if this location is inside the map or not
             if (mIsActionMarkerFromLocationSelected && checkIfLocationInsideMapBounds) {
