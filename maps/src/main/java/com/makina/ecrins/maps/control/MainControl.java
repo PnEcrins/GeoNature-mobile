@@ -264,10 +264,14 @@ public class MainControl
 
     @JavascriptInterface
     public String getMetadata(String mbTilesSource) {
-        jsonObject = this.mWebViewFragment.getTilesLayersDataSource(mbTilesSource)
-                                          .getMetadata();
+        final ITilesLayerDataSource dataSource = this.mWebViewFragment.getTilesLayersDataSource(mbTilesSource);
 
-        return jsonObject.toString();
+        if (dataSource == null) {
+            return "{}";
+        }
+
+        return dataSource.getMetadata()
+                         .toString();
     }
 
     /**
@@ -354,20 +358,9 @@ public class MainControl
      * @return {@link LayerSettings} as {@link JSONObject}
      */
     @JavascriptInterface
-    public String getSelectedLayer() {
-        try {
-            jsonObject = this.mWebViewFragment.getSelectedLayer()
-                                              .getJSONObject();
-
-            return jsonObject.toString();
-        }
-        catch (JSONException je) {
-            Log.w(MainControl.class.getName(),
-                  je.getMessage(),
-                  je);
-
-            return null;
-        }
+    public String getSelectedLayerName() {
+        return this.mWebViewFragment.getSelectedLayer()
+                                    .getName();
     }
 
     /**

@@ -250,12 +250,14 @@ public final class MenuUnitiesControl
 
     @JavascriptInterface
     public String getMetadata(String mbTilesSource) {
-        //Log.d(getClass().getName(), "getMetadata : " + mbTilesSource);
+        final ITilesLayerDataSource dataSource = this.mWebViewFragment.getTilesLayersDataSource(mbTilesSource);
 
-        jsonObject = this.mWebViewFragment.getTilesLayersDataSource(mbTilesSource)
-                                          .getMetadata();
+        if (dataSource == null) {
+            return "{}";
+        }
 
-        return jsonObject.toString();
+        return dataSource.getMetadata()
+                         .toString();
     }
 
     /**
