@@ -88,11 +88,17 @@ public class DisturbancesFragment
         @Override
         public boolean onCreateActionMode(ActionMode mode,
                                           Menu menu) {
-            if ((mInput.getCurrentSelectedTaxon() != null) &&
-                    (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
-                    !((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                               .getSelectedDisturbances()
-                                                               .isEmpty()) {
+            if (mInput == null) {
+                return false;
+            }
+
+            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+            if ((currentSelectedTaxon != null) &&
+                    (currentSelectedTaxon.getCurrentSelectedArea() != null) &&
+                    !currentSelectedTaxon.getCurrentSelectedArea()
+                                         .getSelectedDisturbances()
+                                         .isEmpty()) {
                 MenuItem menuItem = menu.add(Menu.NONE,
                                              0,
                                              Menu.NONE,
@@ -113,10 +119,16 @@ public class DisturbancesFragment
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-                                ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                          .getSelectedDisturbances()
-                                                                          .clear();
+                            if (mInput == null) {
+                                return;
+                            }
+
+                            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+                            if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
+                                currentSelectedTaxon.getCurrentSelectedArea()
+                                                    .getSelectedDisturbances()
+                                                    .clear();
                             }
 
                             mClearSelection = true;
@@ -189,15 +201,21 @@ public class DisturbancesFragment
                                                      convertView,
                                                      parent);
 
-                if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
+                if (mInput == null) {
+                    return view;
+                }
+
+                final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+                if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
                     final CheckedTextView checkedTextView = (CheckedTextView) view.findViewById(android.R.id.text1);
                     final Cursor cursor = mAdapter.getChild(groupPosition,
                                                             childPosition);
                     final long childId = cursor.getInt(cursor.getColumnIndex(MainDatabaseHelper.DisturbancesColumns.CODE));
 
-                    checkedTextView.setChecked(((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                         .getSelectedDisturbances()
-                                                                                         .contains(childId));
+                    checkedTextView.setChecked(currentSelectedTaxon.getCurrentSelectedArea()
+                                                                   .getSelectedDisturbances()
+                                                                   .contains(childId));
                 }
 
                 return view;
@@ -240,28 +258,34 @@ public class DisturbancesFragment
                                         int groupPosition,
                                         int childPosition,
                                         long id) {
-                if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
+                if (mInput == null) {
+                    return false;
+                }
+
+                final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+                if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
                     final CheckedTextView checkedTextView = (CheckedTextView) v.findViewById(android.R.id.text1);
                     final Cursor cursor = mAdapter.getChild(groupPosition,
                                                             childPosition);
                     final long childId = cursor.getInt(cursor.getColumnIndex(MainDatabaseHelper.DisturbancesColumns.CODE));
 
-                    if (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                  .getSelectedDisturbances()
-                                                                  .contains(childId)) {
-                        ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                  .getSelectedDisturbances()
-                                                                  .remove(childId);
+                    if (currentSelectedTaxon.getCurrentSelectedArea()
+                                            .getSelectedDisturbances()
+                                            .contains(childId)) {
+                        currentSelectedTaxon.getCurrentSelectedArea()
+                                            .getSelectedDisturbances()
+                                            .remove(childId);
                     }
                     else {
-                        ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                  .getSelectedDisturbances()
-                                                                  .add(childId);
+                        currentSelectedTaxon.getCurrentSelectedArea()
+                                            .getSelectedDisturbances()
+                                            .add(childId);
                     }
 
-                    checkedTextView.setChecked(((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                         .getSelectedDisturbances()
-                                                                                         .contains(childId));
+                    checkedTextView.setChecked(currentSelectedTaxon.getCurrentSelectedArea()
+                                                                   .getSelectedDisturbances()
+                                                                   .contains(childId));
 
                     updateActionMode();
                 }
@@ -428,16 +452,26 @@ public class DisturbancesFragment
     }
 
     private void updateActionMode() {
-        if ((mInput == null) || (mInput.getCurrentSelectedTaxon() == null) || !mIsVisibleToUser) {
+        if (mInput == null) {
+            if (mMode != null) {
+                mMode.finish();
+            }
+
+            return;
+        }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+        if ((currentSelectedTaxon == null) || !mIsVisibleToUser) {
             if (mMode != null) {
                 mMode.finish();
             }
         }
         else {
-            if ((((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && isVisible()) {
-                if (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                              .getSelectedDisturbances()
-                                                              .isEmpty()) {
+            if ((currentSelectedTaxon.getCurrentSelectedArea() != null) && isVisible()) {
+                if (currentSelectedTaxon.getCurrentSelectedArea()
+                                        .getSelectedDisturbances()
+                                        .isEmpty()) {
                     if (mMode != null) {
                         mMode.finish();
                     }
@@ -449,9 +483,9 @@ public class DisturbancesFragment
 
                     if (mMode != null) {
                         mMode.setTitle(String.format(getString(R.string.action_title_item_selected),
-                                                     ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                               .getSelectedDisturbances()
-                                                                                               .size()));
+                                                     currentSelectedTaxon.getCurrentSelectedArea()
+                                                                         .getSelectedDisturbances()
+                                                                         .size()));
                     }
                 }
             }
