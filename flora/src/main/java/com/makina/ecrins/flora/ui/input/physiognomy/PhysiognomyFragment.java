@@ -13,6 +13,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,6 +39,9 @@ import com.makina.ecrins.flora.input.Input;
 import com.makina.ecrins.flora.input.Taxon;
 import com.makina.ecrins.flora.ui.input.PagerFragmentActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Physiognomy as an {@code ExpendableListView}.
  *
@@ -50,6 +54,7 @@ public class PhysiognomyFragment
                    LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = PhysiognomyFragment.class.getName();
+    private static final String KEY_SELECTED_PHYSIOGNOMY_IDS = "KEY_SELECTED_PHYSIOGNOMY_IDS";
 
     private AbstractGroupsCursorAdapter<String> mAdapter;
 
@@ -61,6 +66,7 @@ public class PhysiognomyFragment
     protected final Handler mHandler = new Handler();
 
     private Input mInput;
+    private List<String> mSelectedPhysiognomyGroupNames = new ArrayList<>();
 
     private boolean mListShown;
     private boolean mIsVisibleToUser = false;
@@ -187,6 +193,29 @@ public class PhysiognomyFragment
                                                                    android.R.id.text1
                                                            }) {
             @Override
+            public View getGroupView(int groupPosition,
+                                     boolean isExpanded,
+                                     View convertView,
+                                     ViewGroup parent) {
+                final View view = super.getGroupView(groupPosition,
+                                                     isExpanded,
+                                                     convertView,
+                                                     parent);
+
+                if (!mSelectedPhysiognomyGroupNames.isEmpty()) {
+                    final Cursor cursor = mAdapter.getGroup(groupPosition);
+                    final String groupName = cursor.getString(cursor.getColumnIndex(MainDatabaseHelper.PhysiognomyColumns.GROUP_NAME));
+
+                    if (!TextUtils.isEmpty(groupName) && mSelectedPhysiognomyGroupNames.contains(groupName)) {
+                        mExpandableListView.smoothScrollToPosition(mExpandableListView.getFlatListPosition(ExpandableListView.getPackedPositionForGroup(groupPosition)));
+                        mExpandableListView.expandGroup(groupPosition);
+                    }
+                }
+
+                return view;
+            }
+
+            @Override
             public View getChildView(int groupPosition,
                                      int childPosition,
                                      boolean isLastChild,
@@ -232,7 +261,6 @@ public class PhysiognomyFragment
                 return PhysiognomyFragment.this;
             }
         };
-        mAdapter.setExpendAllGroups(false);
 
         mExpandableListView.setOnGroupClickListener(new OnGroupClickListener() {
             @Override
@@ -241,6 +269,7 @@ public class PhysiognomyFragment
                                         int groupPosition,
                                         long id) {
                 mAdapter.setExpendAllGroups(false);
+                mSelectedPhysiognomyGroupNames.clear();
 
                 return false;
             }
@@ -288,7 +317,6 @@ public class PhysiognomyFragment
 
         mExpandableListView.setEmptyView(mTextViewEmpty);
         mExpandableListView.setAdapter(mAdapter);
-        mExpandableListView.setFastScrollEnabled(true);
     }
 
     @Override
@@ -336,9 +364,30 @@ public class PhysiognomyFragment
 
     @Override
     public void refreshView() {
+        final Bundle args = new Bundle();
+
+        if (mInput != null) {
+            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+            if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null) && !currentSelectedTaxon.getCurrentSelectedArea()
+                                                                                                                                  .getSelectedPhysiognomy()
+                                                                                                                                  .isEmpty()) {
+                final List<Long> selectedPhysiognomyIds = currentSelectedTaxon.getCurrentSelectedArea()
+                                                                              .getSelectedPhysiognomy();
+                long[] selectedIds = new long[selectedPhysiognomyIds.size()];
+
+                for (int i = 0; i < selectedPhysiognomyIds.size(); i++) {
+                    selectedIds[i] = selectedPhysiognomyIds.get(i);
+                }
+
+                args.putLongArray(KEY_SELECTED_PHYSIOGNOMY_IDS,
+                                  selectedIds);
+            }
+        }
+
         // prepare the loader, either re-connect with an existing one, or start a new one
-        getLoaderManager().restartLoader(-1,
-                                         null,
+        getLoaderManager().restartLoader(args.containsKey(KEY_SELECTED_PHYSIOGNOMY_IDS) ? -2 : -1,
+                                         args,
                                          this);
 
         // start out with a progress indicator
@@ -360,12 +409,32 @@ public class PhysiognomyFragment
                 MainDatabaseHelper.PhysiognomyColumns.NAME
         };
 
-        if (id == -1) {
+        if (id < 0) {
+            StringBuilder selection = new StringBuilder();
+
+            if (args != null) {
+                final long[] selectedIds = args.getLongArray(KEY_SELECTED_PHYSIOGNOMY_IDS);
+
+                if ((selectedIds != null) && (selectedIds.length > 0)) {
+                    final List<Long> selectedIdsAsArray = new ArrayList<>();
+
+                    for (long selectedId : selectedIds) {
+                        selectedIdsAsArray.add(selectedId);
+                    }
+
+                    selection.append(MainDatabaseHelper.PhysiognomyColumns._ID);
+                    selection.append(" IN (");
+                    selection.append(TextUtils.join(",",
+                                                    selectedIdsAsArray));
+                    selection.append(")");
+                }
+            }
+
             // group cursor
             return new CursorLoader(getActivity(),
                                     MainContentProvider.CONTENT_PHYSIOGNOMY_GROUPS_URI,
                                     projection,
-                                    null,
+                                    (selection.length() == 0) ? null : selection.toString(),
                                     null,
                                     null);
         }
@@ -384,7 +453,27 @@ public class PhysiognomyFragment
     @Override
     public void onLoadFinished(Loader<Cursor> loader,
                                Cursor data) {
-        if (loader.getId() == -1) {
+        if (loader.getId() == -2) {
+            mSelectedPhysiognomyGroupNames.clear();
+
+            try {
+                if (data != null) {
+                    while (data.moveToNext()) {
+                        mSelectedPhysiognomyGroupNames.add(data.getString(data.getColumnIndex(MainDatabaseHelper.PhysiognomyColumns.GROUP_NAME)));
+                    }
+                }
+            }
+            finally {
+                if (data != null) {
+                    data.close();
+                }
+            }
+
+            getLoaderManager().restartLoader(-1,
+                                             null,
+                                             this);
+        }
+        else if (loader.getId() == -1) {
             mAdapter.setGroupCursor(data);
 
             // the list should now be shown
@@ -475,7 +564,7 @@ public class PhysiognomyFragment
     /**
      * Control whether the list is being displayed.
      * You can make it not displayed if you are waiting for the initial data to show in it.
-     * During this time an indeterminant progress indicator will be shown instead.
+     * During this time an indeterminate progress indicator will be shown instead.
      *
      * @param shown   If <code>true</code>, the list view is shown; if <code>false</code>, the
      *                progress indicator. The initial value is true.

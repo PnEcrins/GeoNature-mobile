@@ -13,6 +13,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,6 +39,9 @@ import com.makina.ecrins.flora.input.Input;
 import com.makina.ecrins.flora.input.Taxon;
 import com.makina.ecrins.flora.ui.input.PagerFragmentActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Disturbances as an {@code ExpendableListView}.
  *
@@ -50,6 +54,7 @@ public class DisturbancesFragment
                    LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = DisturbancesFragment.class.getName();
+    private static final String KEY_SELECTED_DISTURBANCE_IDS = "KEY_SELECTED_DISTURBANCE_IDS";
 
     private AbstractGroupsCursorAdapter<String> mAdapter;
 
@@ -61,6 +66,7 @@ public class DisturbancesFragment
     protected final Handler mHandler = new Handler();
 
     private Input mInput;
+    private List<String> mSelectedClassifications = new ArrayList<>();
 
     private boolean mListShown;
     private boolean mIsVisibleToUser = false;
@@ -99,11 +105,11 @@ public class DisturbancesFragment
                     !currentSelectedTaxon.getCurrentSelectedArea()
                                          .getSelectedDisturbances()
                                          .isEmpty()) {
-                MenuItem menuItem = menu.add(Menu.NONE,
-                                             0,
-                                             Menu.NONE,
-                                             R.string.action_unselect_all)
-                                        .setIcon(R.drawable.ic_action_unselect_all);
+                final MenuItem menuItem = menu.add(Menu.NONE,
+                                                   0,
+                                                   Menu.NONE,
+                                                   R.string.action_unselect_all)
+                                              .setIcon(R.drawable.ic_action_unselect_all);
                 MenuItemCompat.setShowAsAction(menuItem,
                                                MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
             }
@@ -148,9 +154,9 @@ public class DisturbancesFragment
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_expandable_list,
-                                     container,
-                                     false);
+        final View view = inflater.inflate(R.layout.fragment_expandable_list,
+                                           container,
+                                           false);
 
         mProgressContainer = view.findViewById(R.id.progressContainer);
         mListContainer = view.findViewById(R.id.listContainer);
@@ -165,9 +171,6 @@ public class DisturbancesFragment
                               Bundle savedInstanceState) {
         super.onViewCreated(view,
                             savedInstanceState);
-
-        // we have a menu item to show in action bar
-        setHasOptionsMenu(true);
 
         setListShown(false,
                      false);
@@ -189,6 +192,28 @@ public class DisturbancesFragment
                                                            new int[] {
                                                                    android.R.id.text1
                                                            }) {
+            @Override
+            public View getGroupView(int groupPosition,
+                                     boolean isExpanded,
+                                     View convertView,
+                                     ViewGroup parent) {
+                final View view = super.getGroupView(groupPosition,
+                                                     isExpanded,
+                                                     convertView,
+                                                     parent);
+                if (!mSelectedClassifications.isEmpty()) {
+                    final Cursor cursor = mAdapter.getGroup(groupPosition);
+                    final String classification = cursor.getString(cursor.getColumnIndex(MainDatabaseHelper.DisturbancesColumns.CLASSIFICATION));
+
+                    if (!TextUtils.isEmpty(classification) && mSelectedClassifications.contains(classification)) {
+                        mExpandableListView.smoothScrollToPosition(mExpandableListView.getFlatListPosition(ExpandableListView.getPackedPositionForGroup(groupPosition)));
+                        mExpandableListView.expandGroup(groupPosition);
+                    }
+                }
+
+                return view;
+            }
+
             @Override
             public View getChildView(int groupPosition,
                                      int childPosition,
@@ -212,10 +237,10 @@ public class DisturbancesFragment
                     final Cursor cursor = mAdapter.getChild(groupPosition,
                                                             childPosition);
                     final long childId = cursor.getInt(cursor.getColumnIndex(MainDatabaseHelper.DisturbancesColumns.CODE));
-
-                    checkedTextView.setChecked(currentSelectedTaxon.getCurrentSelectedArea()
-                                                                   .getSelectedDisturbances()
-                                                                   .contains(childId));
+                    final boolean selected = currentSelectedTaxon.getCurrentSelectedArea()
+                                                                 .getSelectedDisturbances()
+                                                                 .contains(childId);
+                    checkedTextView.setChecked(selected);
                 }
 
                 return view;
@@ -236,7 +261,6 @@ public class DisturbancesFragment
                 return DisturbancesFragment.this;
             }
         };
-        mAdapter.setExpendAllGroups(false);
 
         mExpandableListView.setOnGroupClickListener(new OnGroupClickListener() {
             @Override
@@ -246,6 +270,7 @@ public class DisturbancesFragment
                                         long id) {
 
                 mAdapter.setExpendAllGroups(false);
+                mSelectedClassifications.clear();
 
                 return false;
             }
@@ -296,18 +321,6 @@ public class DisturbancesFragment
 
         mExpandableListView.setEmptyView(mTextViewEmpty);
         mExpandableListView.setAdapter(mAdapter);
-        mExpandableListView.setFastScrollEnabled(true);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                ((PagerFragmentActivity) getActivity()).goToNextPage();
-                return true;
-            default:
-                return false;
-        }
     }
 
     @Override
@@ -355,9 +368,30 @@ public class DisturbancesFragment
 
     @Override
     public void refreshView() {
+        final Bundle args = new Bundle();
+
+        if (mInput != null) {
+            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+            if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null) && !currentSelectedTaxon.getCurrentSelectedArea()
+                                                                                                                                  .getSelectedDisturbances()
+                                                                                                                                  .isEmpty()) {
+                final List<Long> selectedDisturbances = currentSelectedTaxon.getCurrentSelectedArea()
+                                                                            .getSelectedDisturbances();
+                long[] selectedIds = new long[selectedDisturbances.size()];
+
+                for (int i = 0; i < selectedDisturbances.size(); i++) {
+                    selectedIds[i] = selectedDisturbances.get(i);
+                }
+
+                args.putLongArray(KEY_SELECTED_DISTURBANCE_IDS,
+                                  selectedIds);
+            }
+        }
+
         // prepare the loader, either re-connect with an existing one, or start a new one
-        getLoaderManager().restartLoader(-1,
-                                         null,
+        getLoaderManager().restartLoader(args.containsKey(KEY_SELECTED_DISTURBANCE_IDS) ? -2 : -1,
+                                         args,
                                          this);
 
         // start out with a progress indicator
@@ -380,12 +414,32 @@ public class DisturbancesFragment
                 MainDatabaseHelper.DisturbancesColumns.DESCRIPTION
         };
 
-        if (id == -1) {
+        if (id < 0) {
+            StringBuilder selection = new StringBuilder();
+
+            if (args != null) {
+                final long[] selectedIds = args.getLongArray(KEY_SELECTED_DISTURBANCE_IDS);
+
+                if ((selectedIds != null) && (selectedIds.length > 0)) {
+                    final List<Long> selectedIdsAsArray = new ArrayList<>();
+
+                    for (long selectedId : selectedIds) {
+                        selectedIdsAsArray.add(selectedId);
+                    }
+
+                    selection.append(MainDatabaseHelper.DisturbancesColumns.CODE);
+                    selection.append(" IN (");
+                    selection.append(TextUtils.join(",",
+                                                    selectedIdsAsArray));
+                    selection.append(")");
+                }
+            }
+
             // group cursor
             return new CursorLoader(getActivity(),
                                     MainContentProvider.CONTENT_DISTURBANCES_CLASSIFICATIONS_URI,
                                     projection,
-                                    null,
+                                    (selection.length() == 0) ? null : selection.toString(),
                                     null,
                                     null);
         }
@@ -404,7 +458,27 @@ public class DisturbancesFragment
     @Override
     public void onLoadFinished(Loader<Cursor> loader,
                                Cursor data) {
-        if (loader.getId() == -1) {
+        if (loader.getId() == -2) {
+            mSelectedClassifications.clear();
+
+            try {
+                if (data != null) {
+                    while (data.moveToNext()) {
+                        mSelectedClassifications.add(data.getString(data.getColumnIndex(MainDatabaseHelper.DisturbancesColumns.CLASSIFICATION)));
+                    }
+                }
+            }
+            finally {
+                if (data != null) {
+                    data.close();
+                }
+            }
+
+            getLoaderManager().restartLoader(-1,
+                                             null,
+                                             this);
+        }
+        else if (loader.getId() == -1) {
             mAdapter.setGroupCursor(data);
 
             // the list should now be shown
@@ -445,7 +519,7 @@ public class DisturbancesFragment
                 }
                 catch (NullPointerException npe) {
                     Log.w(TAG,
-                          "onLoaderReset : adapter expired");
+                          "onLoaderReset: adapter expired");
                 }
             }
         }
@@ -503,7 +577,6 @@ public class DisturbancesFragment
      */
     private void setListShown(boolean shown,
                               boolean animate) {
-
         if (mListShown == shown) {
             return;
         }
