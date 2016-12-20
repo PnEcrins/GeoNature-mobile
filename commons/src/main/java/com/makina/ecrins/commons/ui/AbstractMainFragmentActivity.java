@@ -39,7 +39,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.input.Observer;
@@ -364,11 +363,7 @@ public abstract class AbstractMainFragmentActivity
         mDeviceStatusAdapter = new DeviceStatusAdapter(this,
                                                        android.R.layout.simple_list_item_2);
         mListViewDeviceStatus.setAdapter(mDeviceStatusAdapter);
-
-        // only in debug mode
-        if (BuildConfig.DEBUG) {
-            mListViewDeviceStatus.setOnItemLongClickListener(this);
-        }
+        mListViewDeviceStatus.setOnItemLongClickListener(this);
 
         mNetworkConnectivityListener = new NetworkConnectivityListener(this);
 
