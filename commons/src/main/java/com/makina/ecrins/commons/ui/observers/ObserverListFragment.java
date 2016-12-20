@@ -333,10 +333,11 @@ public class ObserverListFragment
                     else {
                         if (mMode == null) {
                             mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+                            mMode.setTitle(R.string.activity_observers_title);
                         }
 
-                        mMode.setTitle(String.format(getString(R.string.action_title_item_selected),
-                                                     mSelectedObservers.size()));
+                        mMode.setSubtitle(String.format(getString(R.string.action_title_item_selected),
+                                                        mSelectedObservers.size()));
                     }
                 }
             }
@@ -445,10 +446,11 @@ public class ObserverListFragment
                 if (!mSelectedObservers.isEmpty()) {
                     if (mMode == null) {
                         mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+                        mMode.setTitle(R.string.activity_observers_title);
                     }
 
-                    mMode.setTitle(String.format(getString(R.string.action_title_item_selected),
-                                                 mSelectedObservers.size()));
+                    mMode.setSubtitle(String.format(getString(R.string.action_title_item_selected),
+                                                    mSelectedObservers.size()));
                     // update menu
                     ActivityCompat.invalidateOptionsMenu(getActivity());
                 }
@@ -474,10 +476,11 @@ public class ObserverListFragment
 
                     if (mMode == null) {
                         mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+                        mMode.setTitle(R.string.activity_observers_title);
                     }
 
-                    mMode.setTitle(String.format(getString(R.string.action_title_item_selected),
-                                                 mSelectedObservers.size()));
+                    mMode.setSubtitle(String.format(getString(R.string.action_title_item_selected),
+                                                    mSelectedObservers.size()));
                 }
                 else {
                     Log.w(TAG,

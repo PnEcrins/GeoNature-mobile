@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <string name="activity_observers_title">Observateurs</string>
+
     <string name="preference_category_observers_no_default_set">Non défini</string>
     <string name="preference_category_about">A propos</string>
     <string name="preference_category_about_app_version">Version de l\'application</string>

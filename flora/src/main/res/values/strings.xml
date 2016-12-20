@@ -6,7 +6,6 @@
     <string name="activity_main_title">Flora</string>
     <string name="activity_synchro_title">Data synchronization</string>
     <string name="activity_preferences_title">Settings</string>
-    <string name="activity_observers_title">Observers</string>
     <string name="activity_frequency_estimation_title">Estimation</string>
     <string name="activity_frequency_transect_title">Transect</string>
     <string name="activity_counting_exhaustive_title">Exhaustive</string>

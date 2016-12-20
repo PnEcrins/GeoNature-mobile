@@ -6,7 +6,6 @@
     <string name="activity_main_title">Flore prioritaire</string>
     <string name="activity_synchro_title">Synchronisation des données</string>
     <string name="activity_preferences_title">Paramètres</string>
-    <string name="activity_observers_title">Observateurs</string>
     <string name="activity_frequency_estimation_title">Estimation</string>
     <string name="activity_frequency_transect_title">Transect</string>
     <string name="activity_counting_exhaustive_title">Exhaustif</string>
