@@ -5,13 +5,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.makina.ecrins.commons.R;
+import com.makina.ecrins.commons.ui.AbstractBaseActivity;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -22,7 +22,7 @@ import java.util.Map;
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
 public abstract class AbstractPagerFragmentActivity
-        extends AppCompatActivity
+        extends AbstractBaseActivity
         implements OnClickListener,
                    OnPageChangeListener {
 

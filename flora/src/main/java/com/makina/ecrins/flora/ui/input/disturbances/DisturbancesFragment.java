@@ -1,5 +1,6 @@
 package com.makina.ecrins.flora.ui.input.disturbances;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +31,7 @@ import android.widget.TextView;
 
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.input.AbstractInput;
+import com.makina.ecrins.commons.ui.AbstractBaseActivity;
 import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.ui.widget.AbstractGroupsCursorAdapter;
@@ -41,6 +44,7 @@ import com.makina.ecrins.flora.ui.input.PagerFragmentActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Disturbances as an {@code ExpendableListView}.
@@ -70,7 +74,7 @@ public class DisturbancesFragment
 
     private boolean mListShown;
     private boolean mIsVisibleToUser = false;
-    private boolean mClearSelection = false;
+    private AtomicBoolean mBackButtonEvent = new AtomicBoolean();
 
     private ActionMode mMode;
     private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
@@ -84,11 +88,29 @@ public class DisturbancesFragment
         public void onDestroyActionMode(ActionMode mode) {
             mMode = null;
 
-            if (!mClearSelection) {
+            if (mInput == null) {
+                return;
+            }
+
+            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+            if (!mBackButtonEvent.get() &&
+                    (currentSelectedTaxon != null) &&
+                    (currentSelectedTaxon.getCurrentSelectedArea() != null) &&
+                    !currentSelectedTaxon.getCurrentSelectedArea()
+                                         .getSelectedDisturbances()
+                                         .isEmpty()) {
                 ((PagerFragmentActivity) getActivity()).goToNextPage();
             }
 
-            mClearSelection = false;
+            if (mBackButtonEvent.getAndSet(false) &&
+                    (currentSelectedTaxon != null) &&
+                    (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
+                currentSelectedTaxon.getCurrentSelectedArea()
+                                    .getSelectedDisturbances()
+                                    .clear();
+                mAdapter.notifyDataSetChanged();
+            }
         }
 
         @Override
@@ -137,7 +159,6 @@ public class DisturbancesFragment
                                                     .clear();
                             }
 
-                            mClearSelection = true;
                             mAdapter.notifyDataSetChanged();
                             mode.finish();
                         }
@@ -147,6 +168,22 @@ public class DisturbancesFragment
                 default:
                     return false;
             }
+        }
+    };
+
+    private AbstractBaseActivity.OnDispatchKeyEventListener mOnDispatchKeyEventListener = new AbstractBaseActivity.OnDispatchKeyEventListener() {
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent event) {
+            // catch back button event when ActionMode is still active
+            if (mMode != null) {
+                if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && (event.getAction() == KeyEvent.ACTION_UP || event.getAction() == KeyEvent.ACTION_DOWN)) {
+                    mBackButtonEvent.set(true);
+
+                    return true;
+                }
+            }
+
+            return false;
         }
     };
 
@@ -332,6 +369,15 @@ public class DisturbancesFragment
         mTextViewEmpty = null;
 
         super.onDestroyView();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof AbstractBaseActivity) {
+            ((AbstractBaseActivity) context).setOnDispatchKeyEventListener(mOnDispatchKeyEventListener);
+        }
     }
 
     @Override
