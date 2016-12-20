@@ -88,7 +88,7 @@ public class PhysiognomyFragment
         public void onDestroyActionMode(ActionMode mode) {
             mMode = null;
 
-            if (mInput == null) {
+            if ((mInput == null) || !mIsVisibleToUser) {
                 return;
             }
 
@@ -382,14 +382,12 @@ public class PhysiognomyFragment
 
         mIsVisibleToUser = isVisibleToUser;
 
-        if ((!this.isVisible() || !isVisibleToUser) && (mMode != null)) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG,
-                      "setUserVisibleHint: finish action mode");
-            }
-
-            mMode.finish();
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "setUserVisibleHint: " + mIsVisibleToUser);
         }
+
+        updateActionMode();
     }
 
     @Override
@@ -567,15 +565,7 @@ public class PhysiognomyFragment
     }
 
     private void updateActionMode() {
-        if (mInput == null) {
-            if (mMode != null) {
-                mMode.finish();
-            }
-
-            return;
-        }
-
-        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+        final Taxon currentSelectedTaxon = (mInput == null) ? null : (Taxon) mInput.getCurrentSelectedTaxon();
 
         if ((currentSelectedTaxon == null) || !mIsVisibleToUser) {
             if (mMode != null) {
@@ -594,13 +584,14 @@ public class PhysiognomyFragment
                 else {
                     if (mMode == null) {
                         mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+                        mMode.setTitle(getResourceTitle());
                     }
 
                     if (mMode != null) {
-                        mMode.setTitle(String.format(getString(R.string.action_title_item_selected),
-                                                     currentSelectedTaxon.getCurrentSelectedArea()
-                                                                         .getSelectedPhysiognomy()
-                                                                         .size()));
+                        mMode.setSubtitle(String.format(getString(R.string.action_title_item_selected),
+                                                        currentSelectedTaxon.getCurrentSelectedArea()
+                                                                            .getSelectedPhysiognomy()
+                                                                            .size()));
                     }
                 }
             }
