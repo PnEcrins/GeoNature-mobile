@@ -144,7 +144,7 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity
         IValidateFragment fragment = getPageFragment(position);
 
         // updates title
-        setTitle(mAdapter.getPageTitle(mViewPager.getCurrentItem()));
+        setTitle(mAdapter.getPageTitle(position));
 
         // refreshes the current view if needed
         if (fragment != null) {
@@ -161,8 +161,8 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity
             mViewPager.setPagingNextEnabled(((IValidateWithNavigationControlFragment) fragment).getPagingToForwardEnabled());
 
             if (((IValidateWithNavigationControlFragment) fragment).getPagingToPreviousEnabled()) {
-                mPreviousButton.setEnabled(mViewPager.getCurrentItem() > 0);
-                mPreviousButton.setVisibility((mViewPager.getCurrentItem() > 0) ? View.VISIBLE : View.INVISIBLE);
+                mPreviousButton.setEnabled(position > 0);
+                mPreviousButton.setVisibility((position > 0) ? View.VISIBLE : View.INVISIBLE);
             }
             else {
                 mPreviousButton.setVisibility(View.INVISIBLE);
@@ -177,15 +177,15 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity
             }
         }
         else {
-            mPreviousButton.setEnabled(mViewPager.getCurrentItem() > 0);
-            mPreviousButton.setVisibility((mViewPager.getCurrentItem() > 0) ? View.VISIBLE : View.INVISIBLE);
+            mPreviousButton.setEnabled(position > 0);
+            mPreviousButton.setVisibility((position > 0) ? View.VISIBLE : View.INVISIBLE);
 
-            mNextButton.setText((mViewPager.getCurrentItem() < (mAdapter.getCount() - 1)) ? R.string.button_pager_next : R.string.button_pager_finish);
+            mNextButton.setText((position < (mAdapter.getCount() - 1)) ? R.string.button_pager_next : R.string.button_pager_finish);
             mNextButton.setEnabled((fragment == null) || fragment.validate());
             mNextButton.setVisibility(View.VISIBLE);
         }
 
-        mPager.setPosition(mViewPager.getCurrentItem());
+        mPager.setPosition(position);
 
         Log.d(TAG,
               "onPageSelected: " + mPager);
