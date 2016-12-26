@@ -2,6 +2,7 @@ package com.makina.ecrins.commons.sync;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,7 +12,8 @@ import org.json.JSONObject;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class ExportSettings implements Parcelable {
+public class ExportSettings
+        implements Parcelable {
 
     public static final String KEY_URL = "url";
     public static final String KEY_FILE = "file";
@@ -19,8 +21,10 @@ public class ExportSettings implements Parcelable {
     private String mUrl;
     private String mFile;
 
-    public ExportSettings() {
-
+    public ExportSettings(@NonNull final String url,
+                          @NonNull final String file) {
+        this.mUrl = url;
+        this.mFile = file;
     }
 
     public ExportSettings(Parcel source) {
@@ -28,15 +32,19 @@ public class ExportSettings implements Parcelable {
         mFile = source.readString();
     }
 
-    public ExportSettings(JSONObject json) throws JSONException {
+    @Deprecated
+    public ExportSettings(JSONObject json) throws
+                                           JSONException {
         mUrl = json.getString(KEY_URL);
         mFile = json.getString(KEY_FILE);
     }
 
+    @NonNull
     public String getUrl() {
         return mUrl;
     }
 
+    @NonNull
     public String getFile() {
         return mFile;
     }
@@ -47,7 +55,8 @@ public class ExportSettings implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(Parcel dest,
+                              int flags) {
         dest.writeString(mUrl);
         dest.writeString(mFile);
     }
