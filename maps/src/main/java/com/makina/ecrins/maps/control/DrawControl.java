@@ -695,7 +695,7 @@ public class DrawControl
 
                 // refreshes all features
                 if (mWebViewFragment.deleteEditableFeature(featureId)) {
-                    mWebViewFragment.loadUrl(getJSUrlPrefix() + ".loadFeatures()");
+                    mWebViewFragment.loadUrl(getJSUrlPrefix() + ".loadFeatures(false)");
                 }
 
                 updateButtons();
@@ -862,7 +862,7 @@ public class DrawControl
 
             // refreshes all features
             mWebViewFragment.addOrUpdateEditableFeature(feature);
-            mWebViewFragment.loadUrl(getJSUrlPrefix() + ".loadFeatures()");
+            mWebViewFragment.loadUrl(getJSUrlPrefix() + ".loadFeatures(false)");
             mWebViewFragment.setCurrentEditableFeature(null);
 
             updateButtons();

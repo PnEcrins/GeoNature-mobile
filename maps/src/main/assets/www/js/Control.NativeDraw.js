@@ -19,7 +19,7 @@ L.Control.NativeDraw = L.Control.extend(
 
 		map.addLayer(this._features);
 
-		this.loadFeatures();
+        this.loadFeatures(true);
 
 		DrawControlHandler.setControlInitialized();
 
@@ -221,10 +221,10 @@ L.Control.NativeDraw = L.Control.extend(
 
     setFeatures: function()
     {
-        this.loadFeatures();
+        this.loadFeatures(true);
     },
 
-	loadFeatures: function()
+    loadFeatures: function(fitBounds)
 	{
 		this._clearEvents();
 		this._map.removeLayer(this._features);
@@ -264,10 +264,10 @@ L.Control.NativeDraw = L.Control.extend(
 			}
 		}
 
-		if (this._features.getLayers().length > 0)
-		{
+        if (this._features.getLayers().length > 0 && fitBounds)
+        {
             this._map.fitBounds(this._features.getBounds());
-		}
+        }
 
 		this._moveRefreshPosition();
 	},
