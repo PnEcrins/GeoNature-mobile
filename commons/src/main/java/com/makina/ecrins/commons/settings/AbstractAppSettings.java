@@ -3,6 +3,7 @@ package com.makina.ecrins.commons.settings;
 import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.makina.ecrins.commons.sync.SyncSettings;
 
@@ -21,41 +22,48 @@ public abstract class AbstractAppSettings
     public static final String KEY_DB = "db";
     public static final String KEY_SYNC = "sync";
 
-    private DbSettings mDbSettings;
-    private SyncSettings mSyncSettings;
+    protected DbSettings mDbSettings;
+    protected SyncSettings mSyncSettings;
+
+    public AbstractAppSettings() {
+        mDbSettings = DbSettings.DEFAULT;
+    }
 
     public AbstractAppSettings(Parcel source) {
+        this();
 
-        mDbSettings = source.readParcelable(DbSettings.class.getClassLoader());
+        final DbSettings dbSettings = source.readParcelable(DbSettings.class.getClassLoader());
+
+        if (dbSettings != null) {
+            mDbSettings = dbSettings;
+        }
+
         mSyncSettings = source.readParcelable(SyncSettings.class.getClassLoader());
     }
 
+    @Deprecated
     public AbstractAppSettings(JSONObject json) throws JSONException {
+        this();
 
         if (json.has(KEY_DB)) {
             mDbSettings = new DbSettings(json.getJSONObject(KEY_DB));
-        }
-        else {
-            mDbSettings = new DbSettings("data.db",
-                                         1);
         }
 
         mSyncSettings = new SyncSettings(json.getJSONObject(KEY_SYNC));
     }
 
+    @NonNull
     public DbSettings getDbSettings() {
-
         return mDbSettings;
     }
 
+    @NonNull
     public SyncSettings getSyncSettings() {
-
         return mSyncSettings;
     }
 
     @Override
     public int describeContents() {
-
         return 0;
     }
 
@@ -63,7 +71,6 @@ public abstract class AbstractAppSettings
     public void writeToParcel(
             Parcel dest,
             int flags) {
-
         dest.writeParcelable(mDbSettings,
                              0);
         dest.writeParcelable(mSyncSettings,

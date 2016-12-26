@@ -712,7 +712,7 @@ public abstract class AbstractMainFragmentActivity
                 result.add(FileUtils.getFile(FileUtils.getDatabaseFolder(AbstractMainFragmentActivity.this,
                                                                          MountPoint.StorageType.INTERNAL),
                                              getAppSettings().getDbSettings()
-                                                             .getDbName())
+                                                             .getName())
                                     .lastModified());
             }
             catch (IOException ioe) {

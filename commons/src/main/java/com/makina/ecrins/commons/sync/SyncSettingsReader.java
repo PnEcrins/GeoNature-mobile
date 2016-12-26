@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import static android.content.ContentValues.TAG;
-
 /**
  * Default {@code JsonReader} about reading a {@code JSON} stream and build the corresponding
  * {@link SyncSettings}.
@@ -22,6 +20,8 @@ import static android.content.ContentValues.TAG;
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class SyncSettingsReader {
+
+    private static final String TAG = SyncSettingsReader.class.getSimpleName();
 
     /**
      * parse a {@code JSON} string to convert as {@link SyncSettings}.
