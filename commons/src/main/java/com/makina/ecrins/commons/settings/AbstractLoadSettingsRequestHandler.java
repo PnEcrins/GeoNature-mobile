@@ -24,7 +24,9 @@ import java.io.IOException;
  * global application settings from a JSON file.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+ * @deprecated use instead {@link AbstractAppSettingsIntentService}
  */
+@Deprecated
 public abstract class AbstractLoadSettingsRequestHandler
         extends AbstractRequestHandler {
 
@@ -90,7 +92,8 @@ public abstract class AbstractLoadSettingsRequestHandler
     }
 
     @NonNull
-    protected abstract AbstractAppSettings getSettingsFromJsonObject(@NonNull JSONObject settingsJsonObject) throws JSONException;
+    protected abstract AbstractAppSettings getSettingsFromJsonObject(@NonNull JSONObject settingsJsonObject) throws
+                                                                                                             JSONException;
 
     public enum Command {
         START,

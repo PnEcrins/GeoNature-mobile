@@ -94,7 +94,7 @@ public class FileUtils
 
     /**
      * Gets the {@code inputs/} folder as {@code File} used by this context.
-     * The relative path used is {@code inputs/&lt;package_name&gt;}
+     * The relative path used is {@code inputs/<package_name>}
      *
      * @param context the current context
      *
