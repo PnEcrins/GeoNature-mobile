@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -33,6 +34,8 @@ import java.util.List;
  */
 public class FrequencyEstimationFragment
         extends Fragment {
+
+    private static final String TAG = FrequencyEstimationFragment.class.getName();
 
     private static final String KEY_FREQUENCY = "KEY_FREQUENCY";
 
@@ -101,8 +104,28 @@ public class FrequencyEstimationFragment
                               0.9));
 
         final GridView gridViewAbacus = (GridView) view.findViewById(R.id.gridViewAbacus);
-        gridViewAbacus.setAdapter(new AbacusAdapter(getActivity(),
-                                                    abacus));
+        final AbacusAdapter abacusAdapter = new AbacusAdapter(getActivity(),
+                                                              abacus);
+        gridViewAbacus.setAdapter(abacusAdapter);
+        gridViewAbacus.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent,
+                                    View view,
+                                    int position,
+                                    long id) {
+                final Abacus selectedAbacus = abacusAdapter.getItem(position);
+
+                if (selectedAbacus == null) {
+                    Log.w(TAG,
+                          "onItemClick: no abacus found");
+
+                    return;
+                }
+
+                updateFrequency(selectedAbacus.getValue() * 100,
+                                true);
+            }
+        });
 
         mSeekBarFrequency = (SeekBar) view.findViewById(R.id.seekBarFrequency);
         mSeekBarFrequency.setMax(100);
@@ -223,8 +246,8 @@ public class FrequencyEstimationFragment
         private final LayoutInflater mInflater;
         private final NumberFormat mNumberFormat;
 
-        public AbacusAdapter(Context context,
-                             List<Abacus> abacus) {
+        AbacusAdapter(Context context,
+                      List<Abacus> abacus) {
             super(context,
                   android.R.layout.simple_list_item_1,
                   android.R.id.text1,
@@ -234,16 +257,6 @@ public class FrequencyEstimationFragment
             mNumberFormat.setMaximumFractionDigits(0);
 
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-
-        @Override
-        public boolean areAllItemsEnabled() {
-            return false;
-        }
-
-        @Override
-        public boolean isEnabled(int position) {
-            return false;
         }
 
         @NonNull
@@ -283,13 +296,13 @@ public class FrequencyEstimationFragment
         private final int mResourceId;
         private final double mValue;
 
-        public Abacus(int pResourceId,
-                      double pValue) {
+        Abacus(int pResourceId,
+               double pValue) {
             mResourceId = pResourceId;
             mValue = pValue;
         }
 
-        public int getResourceId() {
+        int getResourceId() {
             return mResourceId;
         }
 
