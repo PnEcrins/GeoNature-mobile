@@ -56,6 +56,10 @@
     <string name="alert_dialog_add_comment_hint">Ajouter un commentaire</string>
     <string name="alert_dialog_ok">OK</string>
     <string name="alert_dialog_cancel">Annuler</string>
+    <string name="alert_dialog_confirm_input_continue_title">Saisie existante</string>
+    <string name="alert_dialog_confirm_input_continue_message">Une saisie n\'a pas été terminée, voulez-vous la reprendre ?\nCette saisie sera perdue si vous décidez de commencer une nouvelle.</string>
+    <string name="alert_dialog_confirm_input_continue_action_yes">Oui</string>
+    <string name="alert_dialog_confirm_input_continue_action_no">Démarrer une nouvelle saisie</string>
 
     <string name="progress_title">Patientez</string>
     <string name="progress_message_loading_settings">Chargement des paramètres &#8230;</string>

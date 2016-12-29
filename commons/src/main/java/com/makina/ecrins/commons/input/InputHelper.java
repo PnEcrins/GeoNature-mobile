@@ -181,18 +181,22 @@ public class InputHelper {
                              .unregisterReceiver(mBroadcastReceiver);
     }
 
+    @NonNull
     private String getBroadcastActionReadInput() {
         return mContext.getPackageName() + ".broadcast.input.read";
     }
 
+    @NonNull
     private String getBroadcastActionSaveInput() {
         return mContext.getPackageName() + ".broadcast.input.save";
     }
 
+    @NonNull
     private String getBroadcastActionDeleteInput() {
         return mContext.getPackageName() + ".broadcast.input.delete";
     }
 
+    @NonNull
     private String getBroadcastActionExportInput() {
         return mContext.getPackageName() + ".broadcast.input.export";
     }

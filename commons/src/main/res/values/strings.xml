@@ -14,7 +14,7 @@
     <string name="synchro_last_synchronization">Last synchronization</string>
     <string name="synchro_last_synchronization_date">EEE dd MMM yyyy, kk:mm:ss</string>
     <string name="synchro_last_synchronization_never">Never</string>
-    <string name="synchro_inputs_not_synchronized">Number of inputs not synchronized</string>
+    <string name="synchro_inputs_not_synchronized">Inputs not synchronized</string>
 
     <string name="synchro_server_status">Server status</string>
     <string name="synchro_data_transfer_server_mobile">Data transfer (from server)</string>
@@ -59,6 +59,10 @@
     <string name="alert_dialog_add_comment_hint">Add a comment</string>
     <string name="alert_dialog_ok">OK</string>
     <string name="alert_dialog_cancel">Cancel</string>
+    <string name="alert_dialog_confirm_input_continue_title">Existing input</string>
+    <string name="alert_dialog_confirm_input_continue_message">You have an existing input not finished.\nContinue ?\nNote: This input will be deleted if you want to start a new one</string>
+    <string name="alert_dialog_confirm_input_continue_action_yes">Yes</string>
+    <string name="alert_dialog_confirm_input_continue_action_no">Start a new input</string>
 
     <string name="progress_title">Please wait</string>
     <string name="progress_message_loading_settings">Loading global settings &#8230;</string>

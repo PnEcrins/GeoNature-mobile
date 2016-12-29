@@ -49,6 +49,7 @@ import com.makina.ecrins.commons.settings.AbstractSettingsService;
 import com.makina.ecrins.commons.settings.ServiceStatus;
 import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.ProgressDialogFragment;
+import com.makina.ecrins.commons.ui.home.AbstractHomeActivity;
 import com.makina.ecrins.commons.util.FileUtils;
 
 import java.io.File;
@@ -68,7 +69,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * This is the main <code>Activity</code> of this application.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+ * @deprecated use {@link AbstractHomeActivity} instead
  */
+@Deprecated
 public abstract class AbstractMainFragmentActivity
         extends AppCompatActivity
         implements OnClickListener,
@@ -118,9 +121,8 @@ public abstract class AbstractMainFragmentActivity
      */
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
-        public void onServiceConnected(
-                ComponentName name,
-                IBinder service) {
+        public void onServiceConnected(ComponentName name,
+                                       IBinder service) {
 
             Log.d(AbstractMainFragmentActivity.class.getName(),
                   "onServiceConnected " + name);
@@ -480,11 +482,10 @@ public abstract class AbstractMainFragmentActivity
     }
 
     @Override
-    public boolean onItemLongClick(
-            AdapterView<?> parent,
-            View view,
-            int position,
-            final long id) {
+    public boolean onItemLongClick(AdapterView<?> parent,
+                                   View view,
+                                   int position,
+                                   final long id) {
         // confirms before delete all inputs
         if (position == 1) {
             confirmBeforeDeleteAllInputs();
@@ -494,9 +495,8 @@ public abstract class AbstractMainFragmentActivity
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(
-            int id,
-            Bundle args) {
+    public Loader<Cursor> onCreateLoader(int id,
+                                         Bundle args) {
 
         String[] projection = {
                 MainDatabaseHelper.ObserversColumns._ID,
@@ -513,9 +513,8 @@ public abstract class AbstractMainFragmentActivity
     }
 
     @Override
-    public void onLoadFinished(
-            Loader<Cursor> loader,
-            Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader,
+                               Cursor data) {
 
         if ((data != null) && data.moveToFirst()) {
             setDefaultObserver(new Observer(data.getLong(data.getColumnIndex(MainDatabaseHelper.ObserversColumns._ID)),
@@ -535,13 +534,12 @@ public abstract class AbstractMainFragmentActivity
         // nothing to do ...
     }
 
-    public void showProgressDialog(
-            String tag,
-            int title,
-            int message,
-            int progressStyle,
-            int progress,
-            int max) {
+    public void showProgressDialog(String tag,
+                                   int title,
+                                   int message,
+                                   int progressStyle,
+                                   int progress,
+                                   int max) {
 
         ProgressDialogFragment dialogFragment = (ProgressDialogFragment) getSupportFragmentManager().findFragmentByTag(tag);
 
@@ -598,9 +596,8 @@ public abstract class AbstractMainFragmentActivity
 
     protected abstract boolean checkServiceMessageStatusTask();
 
-    protected abstract void performMessageStatusTaskHandler(
-            AbstractMainFragmentActivity mainFragmentActivity,
-            Message msg);
+    protected abstract void performMessageStatusTaskHandler(AbstractMainFragmentActivity mainFragmentActivity,
+                                                            Message msg);
 
     protected abstract Uri getObserverLoaderUri(long ObserverId);
 
@@ -770,9 +767,8 @@ public abstract class AbstractMainFragmentActivity
         private int mTextViewResourceId;
         private final LayoutInflater mInflater;
 
-        public DeviceStatusAdapter(
-                Context context,
-                int textViewResourceId) {
+        public DeviceStatusAdapter(Context context,
+                                   int textViewResourceId) {
 
             super(context,
                   textViewResourceId);
@@ -782,10 +778,9 @@ public abstract class AbstractMainFragmentActivity
         }
 
         @Override
-        public View getView(
-                int position,
-                View convertView,
-                ViewGroup parent) {
+        public View getView(int position,
+                            View convertView,
+                            ViewGroup parent) {
 
             View view;
 

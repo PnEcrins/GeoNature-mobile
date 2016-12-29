@@ -109,6 +109,9 @@ public abstract class AbstractAppSettingsIntentService
                                   AbstractAppSettingsIntentService.Status.FINISHED_WITH_ERRORS);
                 }
                 else {
+                    Log.i(TAG,
+                          "loading settings '" + filename + "'");
+
                     try {
                         final AbstractAppSettings appSettings = mAppSettingsReader.read(getAppSettingsReader(filename));
 
