@@ -48,10 +48,6 @@
     <string name="alert_dialog_action_start_new_input">Start a new prospection</string>
     <string name="alert_dialog_action_close_app">Close application</string>
     <string name="alert_dialog_confirm_quit_finish_message">Your Prospecting area has been saved.</string>
-    <string name="alert_dialog_confirm_input_continue_title">Existing input</string>
-    <string name="alert_dialog_confirm_input_continue_message">You have an existing input not finished.\nContinue ?\nNote: This input will be deleted if you want to start a new one</string>
-    <string name="alert_dialog_confirm_input_continue_action_yes">Yes</string>
-    <string name="alert_dialog_confirm_input_continue_action_no">Start a new input</string>
 
     <string name="observers_and_date_date_format">MMMM dd, yyyy</string>
 

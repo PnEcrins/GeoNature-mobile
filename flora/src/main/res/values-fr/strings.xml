@@ -48,10 +48,6 @@
     <string name="alert_dialog_action_start_new_input">Démarrer une nouvelle prospection</string>
     <string name="alert_dialog_action_close_app">Fermer l\'application</string>
     <string name="alert_dialog_confirm_quit_finish_message">Votre zone de prospection a bien été enregistrée.</string>
-    <string name="alert_dialog_confirm_input_continue_title">Saisie existante</string>
-    <string name="alert_dialog_confirm_input_continue_message">Une saisie n\'a pas été terminée, voulez-vous la reprendre ?\nCette saisie sera perdue si vous décidez de commencer une nouvelle.</string>
-    <string name="alert_dialog_confirm_input_continue_action_yes">Oui</string>
-    <string name="alert_dialog_confirm_input_continue_action_no">Démarrer une nouvelle saisie</string>
 
     <string name="observers_and_date_date_format">dd MMMM yyyy</string>
 

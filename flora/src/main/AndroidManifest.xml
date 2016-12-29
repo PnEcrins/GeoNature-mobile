@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:sharedUserId="com.makina.ecrins"
-    android:versionCode="946"
+    android:versionCode="1040"
     tools:ignore="GradleOverrides">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -25,7 +25,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".ui.MainFragmentActivity"
+            android:name=".ui.home.HomeActivity"
             android:label="@string/activity_main_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -67,13 +67,8 @@
             android:exported="false"/>
 
         <service
-            android:name="com.makina.ecrins.flora.settings.SettingsService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.makina.ecrins.flora.settings.SettingsService"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </service>
+            android:name="com.makina.ecrins.flora.settings.AppSettingsIntentService"
+            android:exported="false"/>
         <service
             android:name="com.makina.ecrins.commons.sync.CheckServerService"
             android:exported="false"/>
