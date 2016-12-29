@@ -12,6 +12,7 @@
     <string name="synchro_last_synchronization_date">le EEE dd MMM yyyy à kk:mm:ss</string>
     <string name="synchro_last_synchronization_never">Jamais</string>
     <string name="synchro_inputs_not_synchronized">Relevés non synchronisés</string>
+    <string name="synchro_inputs_not_finished">Vous avez un relevé en cours non terminé</string>
 
     <string name="synchro_server_status">Connexion au serveur</string>
     <string name="synchro_data_transfer_server_mobile">Mise à jour des données</string>

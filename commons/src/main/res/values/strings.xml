@@ -15,6 +15,7 @@
     <string name="synchro_last_synchronization_date">EEE dd MMM yyyy, kk:mm:ss</string>
     <string name="synchro_last_synchronization_never">Never</string>
     <string name="synchro_inputs_not_synchronized">Inputs not synchronized</string>
+    <string name="synchro_inputs_not_finished">You have a non finished input</string>
 
     <string name="synchro_server_status">Server status</string>
     <string name="synchro_data_transfer_server_mobile">Data transfer (from server)</string>

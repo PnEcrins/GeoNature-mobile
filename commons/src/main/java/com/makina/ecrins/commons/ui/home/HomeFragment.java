@@ -70,6 +70,7 @@ public class HomeFragment
                 case FINISHED_NOT_FOUND:
                 case FINISHED:
                     mButtonStartInput.setEnabled(mAppSettings != null);
+                    mHomeAdapter.setInput(mInputHelper.getInput());
                     break;
             }
         }
