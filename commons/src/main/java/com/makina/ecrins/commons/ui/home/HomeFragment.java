@@ -310,7 +310,8 @@ public class HomeFragment
         final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(R.string.alert_dialog_confirm_input_continue_title,
                                                                                         R.string.alert_dialog_confirm_input_continue_message,
                                                                                         R.string.alert_dialog_confirm_input_continue_action_yes,
-                                                                                        R.string.alert_dialog_confirm_input_continue_action_no);
+                                                                                        R.string.alert_dialog_confirm_input_continue_action_no,
+                                                                                        true);
         alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
         alertDialogFragment.show(getFragmentManager(),
                                  ALERT_CONFIRM_CONTINUE_INPUT_DIALOG_FRAGMENT);
