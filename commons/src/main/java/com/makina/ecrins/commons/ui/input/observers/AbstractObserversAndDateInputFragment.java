@@ -143,11 +143,16 @@ public abstract class AbstractObserversAndDateInputFragment
                                     View view,
                                     int position,
                                     long id) {
-                final DateTimePickerDialogFragment datePickerDialogFragment = DateTimePickerDialogFragment.Builder.newInstance()
-                                                                                                                  .showTime(false)
-                                                                                                                  .maxDate(Calendar.getInstance()
-                                                                                                                                   .getTime())
-                                                                                                                  .create();
+                final DateTimePickerDialogFragment.Builder builder = DateTimePickerDialogFragment.Builder.newInstance()
+                                                                                                         .showTime(false)
+                                                                                                         .maxDate(Calendar.getInstance()
+                                                                                                                          .getTime());
+
+                if (mInput != null) {
+                    builder.currentDate(mInput.getDate());
+                }
+
+                final DateTimePickerDialogFragment datePickerDialogFragment = builder.create();
                 datePickerDialogFragment.setOnCalendarSetListener(AbstractObserversAndDateInputFragment.this);
                 datePickerDialogFragment.show(AbstractObserversAndDateInputFragment.this.getActivity()
                                                                                         .getSupportFragmentManager(),
