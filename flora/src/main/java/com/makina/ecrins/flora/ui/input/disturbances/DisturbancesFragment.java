@@ -433,14 +433,16 @@ public class DisturbancesFragment
             }
         }
 
-        // prepare the loader, either re-connect with an existing one, or start a new one
-        getLoaderManager().restartLoader(args.containsKey(KEY_SELECTED_DISTURBANCE_IDS) ? -2 : -1,
-                                         args,
-                                         this);
+        if (isAdded()) {
+            // prepare the loader, either re-connect with an existing one, or start a new one
+            getLoaderManager().restartLoader(args.containsKey(KEY_SELECTED_DISTURBANCE_IDS) ? -2 : -1,
+                                             args,
+                                             this);
 
-        // start out with a progress indicator
-        setListShown(false,
-                     true);
+            // start out with a progress indicator
+            setListShown(false,
+                         true);
+        }
     }
 
     @Override
@@ -518,9 +520,11 @@ public class DisturbancesFragment
                 }
             }
 
-            getLoaderManager().restartLoader(-1,
-                                             null,
-                                             this);
+            if (isAdded()) {
+                getLoaderManager().restartLoader(-1,
+                                                 null,
+                                                 this);
+            }
         }
         else if (loader.getId() == -1) {
             mAdapter.setGroupCursor(data);

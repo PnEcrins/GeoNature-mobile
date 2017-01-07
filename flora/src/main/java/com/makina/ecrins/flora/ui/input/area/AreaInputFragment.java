@@ -124,8 +124,14 @@ public class AreaInputFragment
 
     @Override
     public void refreshView() {
-        ((AppCompatActivity) getActivity()).getSupportActionBar()
-                                           .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        final AppCompatActivity activity = (AppCompatActivity) getActivity();
+
+        if (activity == null) {
+            return;
+        }
+
+        activity.getSupportActionBar()
+                .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         if (mInput == null) {
             Log.w(TAG,
@@ -143,7 +149,7 @@ public class AreaInputFragment
 
             if ((selectedArea == null) || (selectedArea.getFeature() == null)) {
                 Log.w(TAG,
-                      "getResourceTitle : no feature selected!");
+                      "getResourceTitle: no feature selected!");
 
                 getActivity().setTitle(String.format(getString(getResourceTitle()),
                                                      getString(R.string.area_none)));

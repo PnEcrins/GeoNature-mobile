@@ -2,6 +2,7 @@ package com.makina.ecrins.flora.ui.input;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -84,7 +85,13 @@ public class PagerFragmentActivity
 
                     // restart the current activity
                     finish();
-                    startActivity(getIntent());
+
+                    final Intent intent = getIntent();
+                    intent.putExtra(EXTRA_NEW_INPUT,
+                                    true);
+                    intent.removeExtra(EXTRA_PAGER_ID);
+
+                    startActivity(intent);
 
                     break;
                 case R.string.alert_dialog_action_close_app:

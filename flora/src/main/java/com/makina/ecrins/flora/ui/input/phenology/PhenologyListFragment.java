@@ -90,13 +90,6 @@ public class PhenologyListFragment
     }
 
     @Override
-    public void onPause() {
-        getLoaderManager().destroyLoader(0);
-
-        super.onPause();
-    }
-
-    @Override
     public void onListItemClick(ListView l,
                                 View v,
                                 int position,
@@ -146,13 +139,15 @@ public class PhenologyListFragment
 
     @Override
     public void refreshView() {
-        // prepare the loader, either re-connect with an existing one, or start a new one
-        getLoaderManager().restartLoader(0,
-                                         null,
-                                         this);
+        if (isAdded()) {
+            // prepare the loader, either re-connect with an existing one, or start a new one
+            getLoaderManager().restartLoader(0,
+                                             null,
+                                             this);
 
-        // start out with a progress indicator
-        setListShown(false);
+            // start out with a progress indicator
+            setListShown(false);
+        }
     }
 
     @Override

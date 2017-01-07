@@ -160,8 +160,14 @@ public class ChooseActionListFragment
 
     @Override
     public void refreshView() {
-        ((AppCompatActivity) getActivity()).getSupportActionBar()
-                                           .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        final AppCompatActivity activity = (AppCompatActivity) getActivity();
+
+        if (activity == null) {
+            return;
+        }
+
+        activity.getSupportActionBar()
+                .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         mOnInputFragmentListener.onSaveInput();
 

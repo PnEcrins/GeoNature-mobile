@@ -121,14 +121,16 @@ public class WebViewFragment
                 this.mIsActionMarkerCollectionPAsSelected = !this.mIsActionMarkerCollectionPAsSelected;
 
                 if (this.mIsActionMarkerCollectionPAsSelected) {
-                    getLoaderManager().restartLoader(0,
-                                                     null,
-                                                     this);
+                    if (isAdded()) {
+                        getLoaderManager().restartLoader(0,
+                                                         null,
+                                                         this);
+                    }
                 }
                 else {
                     if (!getArguments().getBoolean(KEY_AP,
                                                    true)) {
-                        displayAPs();
+                        displayAPs(false);
                     }
                 }
 
@@ -188,15 +190,24 @@ public class WebViewFragment
             return;
         }
 
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+        if (currentSelectedTaxon == null) {
+            Log.w(TAG,
+                  "refreshView: no selected taxon found");
+
+            return;
+        }
+
         if (getArguments().getBoolean(KEY_AP,
                                       true)) {
             // clear all editable features if no area was edited yet.
-            if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) {
+            if (currentSelectedTaxon.getCurrentSelectedArea() == null) {
                 clearEditableFeatures();
             }
 
-            if (getEditableFeatures().isEmpty() && mInput.getCurrentSelectedTaxon() != null && ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) {
-                final Area currentSelectedArea = ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea();
+            if (getEditableFeatures().isEmpty() && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
+                final Area currentSelectedArea = currentSelectedTaxon.getCurrentSelectedArea();
 
                 if (currentSelectedArea != null && currentSelectedArea.getFeature() != null) {
                     setCurrentEditableFeature(currentSelectedArea.getFeature());
@@ -210,13 +221,13 @@ public class WebViewFragment
             }
         }
         else {
-            displayAPs();
+            displayAPs(true);
 
-            if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea() == null)) {
+            if (currentSelectedTaxon.getProspectingArea() == null) {
                 clearEditableFeatures();
             }
             else {
-                final Feature prospectingArea = ((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea();
+                final Feature prospectingArea = currentSelectedTaxon.getProspectingArea();
 
                 if (getEditableFeatures().isEmpty() && prospectingArea != null) {
                     setCurrentEditableFeature(prospectingArea);
@@ -231,8 +242,8 @@ public class WebViewFragment
                 // checks if this feature contains all features added to this taxon areas
                 if ((prospectingArea != null) && !checkIfProspectingAreaContainsAllAreasPresences(prospectingArea)) {
                     Log.d(TAG,
-                          "feature '" + ((Taxon) mInput.getCurrentSelectedTaxon()).getProspectingArea()
-                                                                                  .getId() + "' does not contains all previously added areas");
+                          "feature '" + currentSelectedTaxon.getProspectingArea()
+                                                            .getId() + "' does not contains all previously added areas");
 
                     Toast.makeText(getActivity(),
                                    R.string.message_pa_not_contains_all_aps,
@@ -513,7 +524,7 @@ public class WebViewFragment
 
                 invalidateMenu();
                 featuresControl.clearFeatures();
-                displayAPs();
+                displayAPs(true);
             }
         });
 
@@ -600,7 +611,7 @@ public class WebViewFragment
         // nothing to do ...
     }
 
-    protected void displayAPs() {
+    protected void displayAPs(boolean fitBounds) {
         if (mInput == null) {
             return;
         }
@@ -643,7 +654,7 @@ public class WebViewFragment
                                                                         .setColorResourceId(R.color.feature_ap)
                                                                         .setFillColorResourceId(R.color.feature_ap)
                                                                         .build(),
-                                                    false);
+                                                    fitBounds);
                     }
                 }
             }
