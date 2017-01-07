@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -40,7 +41,7 @@ import java.text.ParseException;
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
-public class AreaAdapter
+class AreaAdapter
         extends RecyclerView.Adapter<AreaAdapter.AbstractViewHolder> {
 
     private static final String TAG = AreaAdapter.class.getName();
@@ -58,9 +59,9 @@ public class AreaAdapter
 
     private Area mArea;
 
-    public AreaAdapter(@NonNull final Context context,
-                       @NonNull final LoaderManager loaderManager,
-                       @NonNull final OnAreaAdapterListener onAreaAdapterListener) {
+    AreaAdapter(@NonNull final Context context,
+                @NonNull final LoaderManager loaderManager,
+                @NonNull final OnAreaAdapterListener onAreaAdapterListener) {
         this.mContext = context;
         this.mLoaderManager = loaderManager;
         this.mOnAreaAdapterListener = onAreaAdapterListener;
@@ -198,6 +199,20 @@ public class AreaAdapter
                     }
                 }
             });
+            mEditTextPointArea.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v,
+                                          boolean hasFocus) {
+                    if (hasFocus) {
+                        ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(v,
+                                                                                                                     0);
+                    }
+                    else {
+                        ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(v.getWindowToken(),
+                                                                                                                               0);
+                    }
+                }
+            });
         }
 
         @Override
@@ -205,6 +220,14 @@ public class AreaAdapter
                          int position) {
             mPointArea = area.getComputedArea();
             mEditTextPointArea.setText(mPointArea == 0 ? null : mDecimalFormat.format(mPointArea));
+            mEditTextPointArea.requestFocus();
+            mEditTextPointArea.post(new Runnable() {
+                @Override
+                public void run() {
+                    ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(mEditTextPointArea,
+                                                                                                                 0);
+                }
+            });
         }
 
         @Override
@@ -274,6 +297,20 @@ public class AreaAdapter
                     }
                 }
             });
+            mEditTextPathWidth.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v,
+                                          boolean hasFocus) {
+                    if (hasFocus) {
+                        ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(v,
+                                                                                                                     0);
+                    }
+                    else {
+                        ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(v.getWindowToken(),
+                                                                                                                               0);
+                    }
+                }
+            });
 
             mSpinnerIncline = (Spinner) itemView.findViewById(R.id.spinnerIncline);
             mSpinnerIncline.setOnItemSelectedListener(mOnItemSelectedListener);
@@ -322,6 +359,14 @@ public class AreaAdapter
 
             mEditTextPathWidth.setEnabled(true);
             mEditTextPathWidth.setText(mPathWidth == 0 ? null : mDecimalFormat.format(mPathWidth));
+            mEditTextPathWidth.requestFocus();
+            mEditTextPathWidth.post(new Runnable() {
+                @Override
+                public void run() {
+                    ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(mEditTextPathWidth,
+                                                                                                                 0);
+                }
+            });
         }
 
         @Override
@@ -553,7 +598,7 @@ public class AreaAdapter
      *
      * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
      */
-    public interface OnAreaAdapterListener {
+    interface OnAreaAdapterListener {
         void onAreaComputed(double incline,
                             double area,
                             double computedArea);
