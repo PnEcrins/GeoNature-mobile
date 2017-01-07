@@ -342,13 +342,14 @@ public abstract class AbstractTaxaInputListFragment
 
     @Override
     public void refreshView() {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG,
-                  "refreshView");
+        final AppCompatActivity activity = (AppCompatActivity) getActivity();
+
+        if (activity == null) {
+            return;
         }
 
-        ((AbstractPagerFragmentActivity) getActivity()).getSupportActionBar()
-                                                       .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        activity.getSupportActionBar()
+                .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         if (mInput == null) {
             Log.w(TAG,

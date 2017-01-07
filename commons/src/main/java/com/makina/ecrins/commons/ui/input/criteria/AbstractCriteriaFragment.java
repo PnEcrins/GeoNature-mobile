@@ -8,7 +8,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -67,15 +66,6 @@ public abstract class AbstractCriteriaFragment extends ListFragment
     }
 
     @Override
-    public void onPause() {
-        Log.d(AbstractCriteriaFragment.class.getName(), "onPause");
-
-        getLoaderManager().destroyLoader(0);
-
-        super.onPause();
-    }
-
-    @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Cursor cursor = (Cursor) mAdapter.getItem(position);
         long criterionId = cursor.getLong(cursor.getColumnIndex(MainDatabaseHelper.CriteriaColumns._ID));
@@ -108,11 +98,13 @@ public abstract class AbstractCriteriaFragment extends ListFragment
 
     @Override
     public void refreshView() {
-        // prepare the loader, either re-connect with an existing one, or start a new one
-        getLoaderManager().restartLoader(0, null, this);
+        if (isAdded()) {
+            // prepare the loader, either re-connect with an existing one, or start a new one
+            getLoaderManager().restartLoader(0, null, this);
 
-        // start out with a progress indicator
-        setListShown(false);
+            // start out with a progress indicator
+            setListShown(false);
+        }
     }
 
     @Override

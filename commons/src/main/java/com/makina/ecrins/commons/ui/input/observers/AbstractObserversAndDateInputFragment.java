@@ -204,8 +204,14 @@ public abstract class AbstractObserversAndDateInputFragment
 
     @Override
     public void refreshView() {
-        ((AppCompatActivity) getActivity()).getSupportActionBar()
-                                           .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        final AppCompatActivity activity = (AppCompatActivity) getActivity();
+
+        if (activity == null) {
+            return;
+        }
+
+        activity.getSupportActionBar()
+                .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
         if (mInput == null) {
             Log.w(TAG,
@@ -280,17 +286,19 @@ public abstract class AbstractObserversAndDateInputFragment
     }
 
     private void loadObservers() {
-        long defaultObserverId = PreferenceManager.getDefaultSharedPreferences(getContext())
-                                                  .getLong(PreferencesFragment.KEY_PREFERENCE_DEFAULT_OBSERVER,
-                                                           0);
+        if (isAdded()) {
+            long defaultObserverId = PreferenceManager.getDefaultSharedPreferences(getContext())
+                                                      .getLong(PreferencesFragment.KEY_PREFERENCE_DEFAULT_OBSERVER,
+                                                               0);
 
-        final Bundle args = new Bundle();
-        args.putLong(KEY_SELECTED_OBSERVER,
-                     defaultObserverId);
+            final Bundle args = new Bundle();
+            args.putLong(KEY_SELECTED_OBSERVER,
+                         defaultObserverId);
 
-        getLoaderManager().restartLoader(0,
-                                         args,
-                                         this);
+            getLoaderManager().restartLoader(0,
+                                             args,
+                                             this);
+        }
     }
 
     @NonNull

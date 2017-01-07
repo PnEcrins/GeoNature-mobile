@@ -141,9 +141,11 @@ public class InputHelper {
     }
 
     public void deleteInput() {
+        mInput = null;
+
         AbstractInputIntentService.deleteInput(mContext,
                                                mOnInputHelperListener.getInputIntentServiceClass(),
-                                               getBroadcastActionSaveInput());
+                                               getBroadcastActionDeleteInput());
     }
 
     public void exportInput() {

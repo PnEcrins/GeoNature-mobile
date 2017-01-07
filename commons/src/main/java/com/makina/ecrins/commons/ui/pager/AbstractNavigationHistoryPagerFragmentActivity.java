@@ -64,6 +64,8 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity
 
     @Override
     public void onPageScrollStateChanged(int state) {
+        super.onPageScrollStateChanged(state);
+
         // only if the pager is currently being dragged by the user
         if (state != ViewPager.SCROLL_STATE_SETTLING) {
             mScrollState = state;
