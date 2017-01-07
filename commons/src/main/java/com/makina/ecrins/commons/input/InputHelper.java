@@ -121,6 +121,7 @@ public class InputHelper {
     }
 
     public void readInput() {
+        mInput = null;
         AbstractInputIntentService.readInput(mContext,
                                              mOnInputHelperListener.getInputIntentServiceClass(),
                                              getBroadcastActionReadInput(),
@@ -142,7 +143,6 @@ public class InputHelper {
 
     public void deleteInput() {
         mInput = null;
-
         AbstractInputIntentService.deleteInput(mContext,
                                                mOnInputHelperListener.getInputIntentServiceClass(),
                                                getBroadcastActionDeleteInput());
@@ -177,6 +177,9 @@ public class InputHelper {
     }
 
     public void dispose() {
+        Log.d(TAG,
+              "dispose");
+
         saveInput();
 
         LocalBroadcastManager.getInstance(mContext)
