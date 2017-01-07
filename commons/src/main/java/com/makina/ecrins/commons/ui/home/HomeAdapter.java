@@ -3,7 +3,6 @@ package com.makina.ecrins.commons.ui.home;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -14,7 +13,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.makina.ecrins.commons.R;
-import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.model.MountPoint;
 import com.makina.ecrins.commons.settings.AbstractAppSettings;
 import com.makina.ecrins.commons.util.FileUtils;
@@ -30,7 +28,7 @@ import java.util.Date;
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
-public class HomeAdapter
+class HomeAdapter
         extends RecyclerView.Adapter<HomeAdapter.AbstractViewHolder> {
 
     private static final String TAG = HomeAdapter.class.getName();
@@ -40,10 +38,9 @@ public class HomeAdapter
     private final Context mContext;
     private final OnHomeAdapterListener mOnHomeAdapterListener;
     private AbstractAppSettings mAppSettings;
-    private AbstractInput mInput;
 
-    public HomeAdapter(@NonNull final Context context,
-                       @NonNull final OnHomeAdapterListener onHomeAdapterListener) {
+    HomeAdapter(@NonNull final Context context,
+                @NonNull final OnHomeAdapterListener onHomeAdapterListener) {
         this.mContext = context;
         this.mOnHomeAdapterListener = onHomeAdapterListener;
     }
@@ -84,18 +81,11 @@ public class HomeAdapter
         notifyDataSetChanged();
     }
 
-    public void setInput(@Nullable final AbstractInput input) {
-        this.mInput = input;
-
-        notifyDataSetChanged();
-    }
-
     private class SyncViewHolder
             extends AbstractViewHolder {
         private TextView mTextViewLastSync;
         private TextView mTextViewInputsToSync;
         private Button mButtonStartSync;
-        private View mContainerInputsNotFinished;
 
         SyncViewHolder(View itemView) {
             super(itemView);
@@ -103,7 +93,6 @@ public class HomeAdapter
             mTextViewLastSync = (TextView) itemView.findViewById(R.id.textViewLastSync);
             mTextViewInputsToSync = (TextView) itemView.findViewById(R.id.textViewInputsToSync);
             mButtonStartSync = (Button) itemView.findViewById(R.id.buttonStartSync);
-            mContainerInputsNotFinished = itemView.findViewById(R.id.containerInputsNotFinished);
         }
 
         @Override
@@ -116,8 +105,6 @@ public class HomeAdapter
                     mOnHomeAdapterListener.onStartSync();
                 }
             });
-
-            mContainerInputsNotFinished.setVisibility(mInput == null ? View.GONE : View.VISIBLE);
 
             // get the last synchronization date using the last modified date of local database file
             new AsyncTask<Void, Void, Date>() {
@@ -214,7 +201,7 @@ public class HomeAdapter
      *
      * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
      */
-    public interface OnHomeAdapterListener {
+    interface OnHomeAdapterListener {
         void onStartSync();
     }
 }

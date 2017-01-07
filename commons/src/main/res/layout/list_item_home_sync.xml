@@ -57,27 +57,6 @@
         android:layout_marginTop="10dp"
         android:background="@color/darker_gray_translucent"/>
 
-    <LinearLayout
-        android:id="@+id/containerInputsNotFinished"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/synchro_inputs_not_finished"
-            android:textAppearance="?android:attr/textAppearanceListItem"/>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/darker_gray_translucent"/>
-
-    </LinearLayout>
-
     <Button
         android:id="@+id/buttonStartSync"
         android:layout_width="match_parent"

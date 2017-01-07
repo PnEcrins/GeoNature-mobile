@@ -2,7 +2,6 @@ package com.makina.ecrins.commons.ui.home;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -29,7 +28,6 @@ import com.makina.ecrins.commons.input.AbstractInputIntentService;
 import com.makina.ecrins.commons.input.InputHelper;
 import com.makina.ecrins.commons.settings.AbstractAppSettings;
 import com.makina.ecrins.commons.settings.AbstractAppSettingsIntentService;
-import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
 
 /**
  * Home screen {@code Fragment}.
@@ -40,8 +38,6 @@ public class HomeFragment
         extends Fragment {
 
     private static final String TAG = HomeFragment.class.getSimpleName();
-
-    private static final String ALERT_CONFIRM_CONTINUE_INPUT_DIALOG_FRAGMENT = "ALERT_CONFIRM_CONTINUE_INPUT_DIALOG_FRAGMENT";
 
     private HomeAdapter mHomeAdapter;
     private Button mButtonStartInput;
@@ -70,7 +66,18 @@ public class HomeFragment
                 case FINISHED_NOT_FOUND:
                 case FINISHED:
                     mButtonStartInput.setEnabled(mAppSettings != null);
-                    mHomeAdapter.setInput(mInputHelper.getInput());
+
+                    final AbstractInput input = mInputHelper.getInput();
+
+                    if (input != null) {
+                        mOnHomeFragmentListener.onContinueInput(input.getInputId());
+
+                        Toast.makeText(getContext(),
+                                       getString(R.string.message_input_reloaded),
+                                       Toast.LENGTH_LONG)
+                             .show();
+                    }
+
                     break;
             }
         }
@@ -88,28 +95,6 @@ public class HomeFragment
         @Override
         public void onExportInput(@NonNull AbstractInputIntentService.Status status) {
             // nothing to do ...
-        }
-    };
-
-    private final AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
-        @Override
-        public void onPositiveButtonClick(DialogInterface dialog) {
-            if (mInputHelper.getInput() == null) {
-                Log.w(TAG,
-                      "input not found, start a new input instead");
-
-                mOnHomeFragmentListener.onStartInput();
-
-                return;
-            }
-
-            mOnHomeFragmentListener.onContinueInput(mInputHelper.getInput()
-                                                                .getInputId());
-        }
-
-        @Override
-        public void onNegativeButtonClick(DialogInterface dialog) {
-            mOnHomeFragmentListener.onStartInput();
         }
     };
 
@@ -150,7 +135,6 @@ public class HomeFragment
                         break;
                     case FINISHED:
                         mAppSettings = appSettings;
-                        mButtonStartInput.setEnabled(appSettings != null);
 
                         if (appSettings != null) {
                             mOnHomeFragmentListener.onAppSettingsLoaded(appSettings);
@@ -159,6 +143,8 @@ public class HomeFragment
                             if (getActivity() != null) {
                                 ActivityCompat.invalidateOptionsMenu(getActivity());
                             }
+
+                            mInputHelper.readInput();
                         }
 
                         break;
@@ -212,16 +198,9 @@ public class HomeFragment
         mButtonStartInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mInputHelper.getInput() == null) {
-                    mOnHomeFragmentListener.onStartInput();
-                }
-                else {
-                    showConfirmContinueInputDialog();
-                }
+                mOnHomeFragmentListener.onStartInput();
             }
         });
-
-        loadAppSettings();
     }
 
     @Override
@@ -264,7 +243,6 @@ public class HomeFragment
         loadAppSettings();
 
         mInputHelper.resume();
-        mInputHelper.readInput();
     }
 
     @Override
@@ -305,17 +283,6 @@ public class HomeFragment
         final String packageName = getContext().getPackageName();
 
         return "settings_" + packageName.substring(packageName.lastIndexOf('.') + 1) + ".json";
-    }
-
-    private void showConfirmContinueInputDialog() {
-        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(R.string.alert_dialog_confirm_input_continue_title,
-                                                                                        R.string.alert_dialog_confirm_input_continue_message,
-                                                                                        R.string.alert_dialog_confirm_input_continue_action_yes,
-                                                                                        R.string.alert_dialog_confirm_input_continue_action_no,
-                                                                                        true);
-        alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
-        alertDialogFragment.show(getFragmentManager(),
-                                 ALERT_CONFIRM_CONTINUE_INPUT_DIALOG_FRAGMENT);
     }
 
     private void showAppSettingsLoadingFailedAlert() {

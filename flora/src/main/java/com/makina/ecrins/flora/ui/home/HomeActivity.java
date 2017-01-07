@@ -25,6 +25,16 @@ import com.makina.ecrins.flora.ui.sync.SynchronizationActivity;
 public class HomeActivity
         extends AbstractHomeActivity {
 
+    @Override
+    protected boolean isCloseApplication() {
+        return ((MainApplication) getApplication()).isCloseApplication();
+    }
+
+    @Override
+    protected void setCloseApplication(boolean closeApplication) {
+        ((MainApplication) getApplication()).setCloseApplication(closeApplication);
+    }
+
     @NonNull
     @Override
     public AbstractInput createInput() {

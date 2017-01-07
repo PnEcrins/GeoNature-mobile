@@ -18,10 +18,26 @@ public abstract class AbstractHomeActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState == null) {
+            setCloseApplication(false);
+        }
+
         // Display the fragment as the main content.
         getSupportFragmentManager().beginTransaction()
                                    .replace(android.R.id.content,
                                             HomeFragment.newInstance())
                                    .commit();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (isCloseApplication()) {
+            finish();
+        }
+    }
+
+    protected abstract boolean isCloseApplication();
+    protected abstract void setCloseApplication(boolean closeApplication);
 }

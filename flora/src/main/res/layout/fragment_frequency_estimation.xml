@@ -76,7 +76,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/editTextFrequency"
         android:layout_toRightOf="@id/editTextFrequency"
-        android:text="@string/frequency_estimation_frequency_precentage"
+        android:text="@string/frequency_estimation_frequency_percentage"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textStyle="bold"
         tools:ignore="RtlHardcoded"/>

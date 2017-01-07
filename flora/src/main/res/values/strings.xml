@@ -37,17 +37,19 @@
 
     <string name="progress_message_saving_current_input">Saving current input &#8230;</string>
 
-    <string name="alert_dialog_confirm_cancel_title">Quit ?</string>
-    <string name="alert_dialog_confirm_cancel_input_all_message">The current entry is still in progress. Do you want to quit now and continue later ?</string>
     <string name="alert_dialog_confirm_delete_area_title">Delete this AP ?</string>
     <string name="alert_dialog_confirm_delete_area_message">A AP is in progress.\nDelete this AP ?</string>
     <string name="alert_dialog_confirm_delete_areas_title">Delete all APs ?</string>
     <string name="alert_dialog_confirm_delete_areas_message">This taxon contains APs.\nDelete all APs ?</string>
     <string name="alert_dialog_confirm_quit_title">Quit ?</string>
+    <string name="alert_dialog_confirm_quit_message">This prospecting is still in progress.\nChoose an action below:</string>
     <string name="alert_dialog_confirm_quit_finish_title">Choose an action</string>
-    <string name="alert_dialog_action_start_new_input">Start a new prospection</string>
-    <string name="alert_dialog_action_close_app">Close application</string>
     <string name="alert_dialog_confirm_quit_finish_message">Your Prospecting area has been saved.</string>
+    <string name="alert_dialog_action_start_new_input">Start a new prospecting</string>
+    <string name="alert_dialog_action_cancel_input">Cancel this prospecting</string>
+    <string name="alert_dialog_action_suspend_input">Suspend this prospecting</string>
+    <string name="alert_dialog_action_continue_input">Continue this prospecting</string>
+    <string name="alert_dialog_action_close_app">Close application</string>
 
     <string name="observers_and_date_date_format">MMMM dd, yyyy</string>
 
@@ -70,11 +72,11 @@
     <string name="frequency_estimation_abacus_hint">abacus</string>
     <string name="frequency_estimation_min_value">0</string>
     <string name="frequency_estimation_frequency">Frequency:</string>
-    <string name="frequency_estimation_frequency_precentage">&#37;</string>
+    <string name="frequency_estimation_frequency_percentage">&#37;</string>
     <string name="frequency_transect_step_advice">Recommended step length for 100 points: %d cm</string>
     <string name="frequency_transect_number_of_transects">Number of transects:</string>
-    <string name="frequency_transect_yes">YES</string>
-    <string name="frequency_transect_no">NO</string>
+    <string name="frequency_transect_yes">yes</string>
+    <string name="frequency_transect_no">no</string>
     <string name="frequency_transect_number_of_steps">Number of steps: %d</string>
     <string name="frequency_transect_frequency">Frequency: %s</string>
     <string name="frequency_transect_frequency_undefined">Frequency: undefined</string>
@@ -99,7 +101,7 @@
         <item quantity="other">%d sterile</item>
     </plurals>
 
-    <string name="physionomy_no_data">No physionomy to display</string>
+    <string name="physiognomy_no_data">No physiognomy to display</string>
 
     <string name="disturbances_no_data">No disturbances to display</string>
 
@@ -109,9 +111,9 @@
     <string name="choose_action_yes">Yes: finish this step</string>
     <string name="choose_action_no">No: close this dialog</string>
     <string name="choose_action_message">Your presence area has been saved.</string>
-    <string name="choose_action_pause">Continue this prospection later</string>
+    <string name="choose_action_pause">Continue this prospecting later</string>
     <string name="choose_action_area">Add a new presence area</string>
-    <string name="choose_action_finish">Finish the prospection</string>
+    <string name="choose_action_finish">Finish the prospecting</string>
 
     <string name="action_collection_pa_display_hide">Display or hide all PAs</string>
 

@@ -212,7 +212,7 @@ public class PhysiognomyFragment
         setListShown(false,
                      false);
 
-        mTextViewEmpty.setText(R.string.physionomy_no_data);
+        mTextViewEmpty.setText(R.string.physiognomy_no_data);
 
         mAdapter = new AbstractGroupsCursorAdapter<String>(getActivity(),
                                                            R.layout.simple_expandable_list_item_1,

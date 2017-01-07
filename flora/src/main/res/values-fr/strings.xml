@@ -37,17 +37,19 @@
 
     <string name="progress_message_saving_current_input">Sauvegarde de la saisie &#8230;</string>
 
-    <string name="alert_dialog_confirm_cancel_title">Quitter ?</string>
-    <string name="alert_dialog_confirm_cancel_input_all_message">Votre saisie n\'est pas terminée. Voulez vous quitter maintenant ?\n Vous pourrez la reprendre plus tard.</string>
     <string name="alert_dialog_confirm_delete_area_title">Supprimer l\'AP en cours ?</string>
     <string name="alert_dialog_confirm_delete_area_message">Une AP est en cours de saisie.\nSouhaitez vous la supprimer ?</string>
     <string name="alert_dialog_confirm_delete_areas_title">Supprimer toutes les APs ?</string>
     <string name="alert_dialog_confirm_delete_areas_message">Ce taxon contient au moins une AP.\nSouhaitez vous tout supprimer ?</string>
     <string name="alert_dialog_confirm_quit_title">Quitter ?</string>
+    <string name="alert_dialog_confirm_quit_message">Votre saisie n\'est pas terminée.\nQue voulez vous faire ?</string>
     <string name="alert_dialog_confirm_quit_finish_title">Que voulez vous faire ?</string>
-    <string name="alert_dialog_action_start_new_input">Démarrer une nouvelle prospection</string>
-    <string name="alert_dialog_action_close_app">Fermer l\'application</string>
     <string name="alert_dialog_confirm_quit_finish_message">Votre zone de prospection a bien été enregistrée.</string>
+    <string name="alert_dialog_action_start_new_input">Démarrer une nouvelle prospection</string>
+    <string name="alert_dialog_action_cancel_input">Abandonner et perdre la saisie en cours</string>
+    <string name="alert_dialog_action_suspend_input">Suspendre la saisie en cours</string>
+    <string name="alert_dialog_action_continue_input">Poursuivre la saisie en cours</string>
+    <string name="alert_dialog_action_close_app">Fermer l\'application</string>
 
     <string name="observers_and_date_date_format">dd MMMM yyyy</string>
 
@@ -70,11 +72,11 @@
     <string name="frequency_estimation_abacus_hint">abaque</string>
     <string name="frequency_estimation_min_value">0</string>
     <string name="frequency_estimation_frequency">Fréquence :</string>
-    <string name="frequency_estimation_frequency_precentage">&#37;</string>
+    <string name="frequency_estimation_frequency_percentage">&#37;</string>
     <string name="frequency_transect_step_advice">Longueur du pas conseillé pour 100 points : %d cm</string>
     <string name="frequency_transect_number_of_transects">Nombre de transects :</string>
-    <string name="frequency_transect_yes">OUI</string>
-    <string name="frequency_transect_no">NON</string>
+    <string name="frequency_transect_yes">oui</string>
+    <string name="frequency_transect_no">non</string>
     <string name="frequency_transect_number_of_steps">Nombre de pas : %d</string>
     <string name="frequency_transect_frequency">Fréquence : %s</string>
     <string name="frequency_transect_frequency_undefined">Fréquence : non définie</string>
@@ -101,7 +103,7 @@
         <item quantity="other">%d stériles</item>
     </plurals>
 
-    <string name="physionomy_no_data">Aucune physionomie</string>
+    <string name="physiognomy_no_data">Aucune physionomie</string>
 
     <string name="disturbances_no_data">Aucune perturbation</string>
 

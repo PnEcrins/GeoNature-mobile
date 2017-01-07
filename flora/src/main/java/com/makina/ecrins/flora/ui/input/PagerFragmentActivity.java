@@ -11,7 +11,6 @@ import android.widget.Toast;
 import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.input.AbstractInputIntentService;
 import com.makina.ecrins.commons.input.InputHelper;
-import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.ChooseActionDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.ProgressDialogFragment;
 import com.makina.ecrins.commons.ui.input.IInputFragment;
@@ -35,8 +34,7 @@ import com.makina.ecrins.flora.ui.input.remarks.RemarksFragment;
 import com.makina.ecrins.flora.ui.input.taxa.TaxaFoundFragment;
 import com.makina.ecrins.flora.ui.input.taxa.TaxaInputListFragment;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,26 +50,12 @@ public class PagerFragmentActivity
 
     private static final String TAG = PagerFragmentActivity.class.getName();
 
-    protected static final String ALERT_CANCEL_DIALOG_FRAGMENT = "alert_cancel_dialog_fragment";
-    protected static final String PROGRESS_DIALOG_FRAGMENT = "progress_dialog";
-    protected static final String CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT = "choose_quit_action_dialog";
+    protected static final String PROGRESS_DIALOG_FRAGMENT = "PROGRESS_DIALOG_FRAGMENT";
+    protected static final String CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT = "CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT";
 
     public static final String EXTRA_NEW_INPUT = "extra_new_input";
 
     private long mInputIdSaved;
-
-    private final AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
-        @Override
-        public void onPositiveButtonClick(DialogInterface dialog) {
-            mInputHelper.saveInput();
-            PagerFragmentActivity.this.finish();
-        }
-
-        @Override
-        public void onNegativeButtonClick(DialogInterface dialog) {
-            // nothing to do ...
-        }
-    };
 
     private final ChooseActionDialogFragment.OnChooseActionDialogListener mOnChooseActionDialogListener = new ChooseActionDialogFragment.OnChooseActionDialogListener() {
         @Override
@@ -93,6 +77,25 @@ public class PagerFragmentActivity
 
                     startActivity(intent);
 
+                    break;
+                case R.string.alert_dialog_action_cancel_input:
+                    dialog.dismiss();
+                    final AbstractInput input = mInputHelper.getInput();
+
+                    if (input != null) {
+                        mPagerHelper.delete(input.getInputId());
+                        mInputHelper.deleteInput();
+                    }
+
+                    break;
+                case R.string.alert_dialog_action_suspend_input:
+                    dialog.dismiss();
+                    mInputHelper.saveInput();
+                    ((MainApplication) getApplication()).setCloseApplication(true);
+                    finish();
+                    break;
+                case R.string.alert_dialog_action_continue_input:
+                    dialog.dismiss();
                     break;
                 case R.string.alert_dialog_action_close_app:
                     dialog.dismiss();
@@ -127,9 +130,9 @@ public class PagerFragmentActivity
             }
 
             switch (status) {
-                case FINISHED_WITH_ERRORS:
-                case FINISHED_NOT_FOUND:
                 case FINISHED:
+                case FINISHED_NOT_FOUND:
+                case FINISHED_WITH_ERRORS:
                     AbstractInput input = mInputHelper.getInput();
 
                     if (input == null) {
@@ -165,7 +168,13 @@ public class PagerFragmentActivity
 
         @Override
         public void onDeleteInput(@NonNull AbstractInputIntentService.Status status) {
-            // nothing to do ...
+            switch (status) {
+                case FINISHED:
+                case FINISHED_NOT_FOUND:
+                case FINISHED_WITH_ERRORS:
+                    finish();
+                    break;
+            }
         }
 
         @Override
@@ -199,7 +208,10 @@ public class PagerFragmentActivity
 
                     mInputIdSaved = input.getInputId();
 
-                    showChooseActionDialog();
+                    showChooseActionDialog(R.string.alert_dialog_confirm_quit_finish_title,
+                                           R.string.alert_dialog_confirm_quit_finish_message,
+                                           Arrays.asList(R.string.alert_dialog_action_start_new_input,
+                                                         R.string.alert_dialog_action_close_app));
 
                     break;
                 case FINISHED_WITH_ERRORS:
@@ -237,13 +249,6 @@ public class PagerFragmentActivity
         }
         else {
             mInputHelper.readInput();
-        }
-
-        // restore AlertDialogFragment state after resume if needed
-        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getSupportFragmentManager().findFragmentByTag(ALERT_CANCEL_DIALOG_FRAGMENT);
-
-        if (alertDialogFragment != null) {
-            alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
         }
 
         // restore ChooseActionDialogFragment state after resume if needed
@@ -370,7 +375,10 @@ public class PagerFragmentActivity
         }
 
         if (mInputIdSaved == input.getInputId()) {
-            showChooseActionDialog();
+            showChooseActionDialog(R.string.alert_dialog_confirm_quit_finish_title,
+                                   R.string.alert_dialog_confirm_quit_finish_message,
+                                   Arrays.asList(R.string.alert_dialog_action_start_new_input,
+                                                 R.string.alert_dialog_action_close_app));
         }
         else {
             mInputHelper.exportInput();
@@ -390,17 +398,11 @@ public class PagerFragmentActivity
 
     @Override
     public void onBackPressed() {
-        showAlertDialog(R.string.alert_dialog_confirm_cancel_title,
-                        R.string.alert_dialog_confirm_cancel_input_all_message);
-    }
-
-    protected void showAlertDialog(int titleResourceId,
-                                   int messageResourceId) {
-        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(titleResourceId,
-                                                                                        messageResourceId);
-        alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
-        alertDialogFragment.show(getSupportFragmentManager(),
-                                 ALERT_CANCEL_DIALOG_FRAGMENT);
+        showChooseActionDialog(R.string.alert_dialog_confirm_quit_title,
+                               R.string.alert_dialog_confirm_quit_message,
+                               Arrays.asList(R.string.alert_dialog_action_cancel_input,
+                                             R.string.alert_dialog_action_suspend_input,
+                                             R.string.alert_dialog_action_continue_input));
     }
 
     protected void showProgressDialog(int titleResourceId,
@@ -415,14 +417,11 @@ public class PagerFragmentActivity
                                     PROGRESS_DIALOG_FRAGMENT);
     }
 
-    protected void showChooseActionDialog() {
-        // display a confirmation dialog to choose an action
-        final List<Integer> actions = new ArrayList<>();
-        Collections.addAll(actions,
-                           R.string.alert_dialog_action_start_new_input,
-                           R.string.alert_dialog_action_close_app);
-        final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(R.string.alert_dialog_confirm_quit_finish_title,
-                                                                                                             R.string.alert_dialog_confirm_quit_finish_message,
+    protected void showChooseActionDialog(int titleResourceId,
+                                          int messageResourceId,
+                                          @NonNull final List<Integer> actions) {
+        final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(titleResourceId,
+                                                                                                             messageResourceId,
                                                                                                              actions);
         chooseActionDialogFragment.setOnChooseActionDialogListener(mOnChooseActionDialogListener);
         chooseActionDialogFragment.show(getSupportFragmentManager(),
