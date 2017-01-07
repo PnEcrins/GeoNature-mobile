@@ -268,8 +268,10 @@ L.Control.NativeDraw = L.Control.extend(
         {
             this._map.fitBounds(this._features.getBounds());
         }
-
-		this._moveRefreshPosition();
+        else
+        {
+            this._moveRefreshPosition();
+        }
 	},
 
 	deleteFeature: function(featureId) {
