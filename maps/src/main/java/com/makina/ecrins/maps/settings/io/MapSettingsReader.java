@@ -9,7 +9,6 @@ import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.Log;
 
-import com.makina.ecrins.maps.RenderQualityEnum;
 import com.makina.ecrins.maps.jts.geojson.GeoPoint;
 import com.makina.ecrins.maps.settings.CRSSettings;
 import com.makina.ecrins.maps.settings.LayerSettings;
@@ -100,9 +99,6 @@ public class MapSettingsReader {
             switch (keyName) {
                 case "display_scale":
                     builder.showScale(reader.nextBoolean());
-                    break;
-                case "render_quality":
-                    builder.setRenderQuality(RenderQualityEnum.asRenderQuality(reader.nextString()));
                     break;
                 case "show_unities_layer":
                     builder.showUnitiesLayer(reader.nextBoolean());

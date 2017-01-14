@@ -3,11 +3,6 @@
 
     <string name="app_name" tools:ignore="MissingTranslation">maps</string>
 
-    <string name="viewport_target_density_dpi_auto_label">Best quality</string>
-    <string name="viewport_target_density_dpi_low_label">Low</string>
-    <string name="viewport_target_density_dpi_medium_label">Medium</string>
-    <string name="viewport_target_density_dpi_high_label">High</string>
-
     <string name="message_location_outside_map_boundaries">Your position is outside map boundaries</string>
     <string name="message_mbtiles_not_found">Unable to load MBTiles \'%1$s\'</string>
     <string name="message_current_location">Your current position</string>

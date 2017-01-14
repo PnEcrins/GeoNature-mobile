@@ -1,6 +1,5 @@
 package com.makina.ecrins.maps.settings.io;
 
-import com.makina.ecrins.maps.RenderQualityEnum;
 import com.makina.ecrins.maps.TestHelper;
 import com.makina.ecrins.maps.jts.geojson.GeoPoint;
 import com.makina.ecrins.maps.settings.LayerSettings;
@@ -49,8 +48,6 @@ public class MapSettingsReaderTest {
         // then
         assertNotNull(mapSettings);
         assertFalse(mapSettings.isDisplayScale());
-        assertEquals(RenderQualityEnum.HIGH,
-                     mapSettings.getRenderQuality());
         assertTrue(mapSettings.isShowUnitiesLayer());
         assertNotNull(mapSettings.getCRSSettings());
         assertEquals("EPSG:2154",

@@ -423,13 +423,6 @@ public class MainControl
     }
 
     @JavascriptInterface
-    public String getDensityDpi() {
-        return this.mWebViewFragment.getMapSettings()
-                                    .getRenderQuality()
-                                    .getValueAsString();
-    }
-
-    @JavascriptInterface
     public String getLocalizedMessage(String messageId) {
         return this.mWebViewFragment.getLocalizedMessage(messageId);
     }

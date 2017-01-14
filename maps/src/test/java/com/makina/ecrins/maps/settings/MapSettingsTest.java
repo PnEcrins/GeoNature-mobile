@@ -1,6 +1,5 @@
 package com.makina.ecrins.maps.settings;
 
-import com.makina.ecrins.maps.RenderQualityEnum;
 import com.makina.ecrins.maps.jts.geojson.GeoPoint;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -34,8 +33,6 @@ public class MapSettingsTest {
         // then
         assertNotNull(mapSettings);
         assertTrue(mapSettings.isDisplayScale());
-        assertEquals(RenderQualityEnum.AUTO,
-                     mapSettings.getRenderQuality());
         assertFalse(mapSettings.isShowUnitiesLayer());
         assertNull(mapSettings.getCRSSettings());
         assertNotNull(mapSettings.getMaxBounds());
@@ -65,7 +62,6 @@ public class MapSettingsTest {
 
         // when building an instance of MapSettings
         final MapSettings mapSettings = builder.showScale(false)
-                                               .setRenderQuality(RenderQualityEnum.HIGH)
                                                .setCRSSettings(new CRSSettings("EPSG:2154",
                                                                                "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
                                                                                Arrays.asList(914987,
@@ -96,8 +92,6 @@ public class MapSettingsTest {
         // then
         assertNotNull(mapSettings);
         assertFalse(mapSettings.isDisplayScale());
-        assertEquals(RenderQualityEnum.HIGH,
-                     mapSettings.getRenderQuality());
         assertTrue(mapSettings.isShowUnitiesLayer());
         assertNotNull(mapSettings.getCRSSettings());
         assertEquals("EPSG:2154",

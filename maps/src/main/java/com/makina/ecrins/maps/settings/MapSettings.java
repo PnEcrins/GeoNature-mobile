@@ -5,7 +5,6 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.makina.ecrins.maps.RenderQualityEnum;
 import com.makina.ecrins.maps.jts.geojson.Feature;
 import com.makina.ecrins.maps.jts.geojson.GeoPoint;
 import com.vividsolutions.jts.geom.Envelope;
@@ -30,7 +29,6 @@ public class MapSettings
         implements Parcelable {
 
     public static final String KEY_DISPLAY_SCALE = "display_scale";
-    public static final String KEY_RENDER_QUALITY = "render_quality";
     public static final String KEY_SHOW_UNITIES_LAYER = "show_unities_layer";
     public static final String KEY_CRS = "crs";
     public static final String KEY_MAX_BOUNDS = "max_bounds";
@@ -44,7 +42,6 @@ public class MapSettings
     public static final String KEY_UNITY_LAYER = "unity_layer";
 
     private boolean mDisplayScale = true;
-    private RenderQualityEnum mRenderQuality = RenderQualityEnum.AUTO;
     private boolean mShowUnitiesLayer = true;
     private CRSSettings mCRSSettings;
     private final List<GeoPoint> mMaxBounds = new ArrayList<>();
@@ -59,7 +56,6 @@ public class MapSettings
 
     public MapSettings(Parcel source) {
         this.mDisplayScale = source.readByte() == 1;
-        this.mRenderQuality = RenderQualityEnum.asRenderQuality(source.readString());
         this.mShowUnitiesLayer = source.readByte() == 1;
         mCRSSettings = source.readParcelable(CRSSettings.class.getClassLoader());
         source.readTypedList(mMaxBounds,
@@ -81,10 +77,6 @@ public class MapSettings
                                         JSONException {
         if (json.has(KEY_DISPLAY_SCALE)) {
             this.mDisplayScale = json.getBoolean(KEY_DISPLAY_SCALE);
-        }
-
-        if (json.has(KEY_RENDER_QUALITY)) {
-            this.mRenderQuality = RenderQualityEnum.asRenderQuality(json.getString(KEY_RENDER_QUALITY));
         }
 
         if (json.has(KEY_SHOW_UNITIES_LAYER)) {
@@ -147,7 +139,6 @@ public class MapSettings
     }
 
     private MapSettings(boolean displayScale,
-                        @NonNull final RenderQualityEnum renderQuality,
                         boolean showUnitiesLayer,
                         @Nullable final CRSSettings crsSettings,
                         @NonNull final List<GeoPoint> maxBounds,
@@ -160,7 +151,6 @@ public class MapSettings
                         @NonNull final List<LayerSettings> layers,
                         @Nullable final LayerSettings unitiesLayer) {
         this.mDisplayScale = displayScale;
-        this.mRenderQuality = renderQuality;
         this.mShowUnitiesLayer = showUnitiesLayer;
         this.mCRSSettings = crsSettings;
         this.mMaxBounds.addAll(maxBounds);
@@ -180,15 +170,6 @@ public class MapSettings
 
     public void setDisplayScale(boolean pDisplayScale) {
         this.mDisplayScale = pDisplayScale;
-    }
-
-    @NonNull
-    public RenderQualityEnum getRenderQuality() {
-        return mRenderQuality;
-    }
-
-    public void setRenderQuality(@NonNull final RenderQualityEnum pRenderQuality) {
-        this.mRenderQuality = pRenderQuality;
     }
 
     public boolean isShowUnitiesLayer() {
@@ -313,7 +294,6 @@ public class MapSettings
     public void writeToParcel(Parcel dest,
                               int flags) {
         dest.writeByte((byte) (mDisplayScale ? 1 : 0)); // as boolean value
-        dest.writeString(mRenderQuality.getValueAsString());
         dest.writeByte((byte) (mShowUnitiesLayer ? 1 : 0)); // as boolean value
         dest.writeParcelable(mCRSSettings,
                              0);
@@ -337,7 +317,6 @@ public class MapSettings
     public static final class Builder {
 
         private boolean displayScale;
-        private RenderQualityEnum renderQuality;
         private boolean showUnitiesLayer;
         private CRSSettings crsSettings;
         private final List<GeoPoint> maxBounds = new ArrayList<>();
@@ -352,7 +331,6 @@ public class MapSettings
 
         private Builder() {
             displayScale = true;
-            renderQuality = RenderQualityEnum.AUTO;
             showUnitiesLayer = false;
         }
 
@@ -372,20 +350,6 @@ public class MapSettings
         @NonNull
         public Builder showScale(boolean showScale) {
             this.displayScale = showScale;
-
-            return this;
-        }
-
-        /**
-         * Set the render quality.
-         *
-         * @param renderQuality the render quality to use (default: {@link RenderQualityEnum#AUTO})
-         *
-         * @return Fluent interface
-         */
-        @NonNull
-        public Builder setRenderQuality(@NonNull final RenderQualityEnum renderQuality) {
-            this.renderQuality = renderQuality;
 
             return this;
         }
@@ -596,7 +560,6 @@ public class MapSettings
         @NonNull
         public MapSettings build() {
             return new MapSettings(displayScale,
-                                   renderQuality,
                                    showUnitiesLayer,
                                    crsSettings,
                                    maxBounds,

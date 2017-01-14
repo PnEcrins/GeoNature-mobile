@@ -11,8 +11,6 @@ L.MapControl = L.Class.extend(
     // constructor
     initialize: function(options)
     {
-        this._setViewport();
-
         L.Util.setOptions(this, options);
 
         var center = JSON.parse(MainControlHandler.getCenter());
@@ -151,12 +149,6 @@ L.MapControl = L.Class.extend(
         console.log("LM._onMapLoaded : map loaded");
 
         MainControlHandler.setMapInitialized();
-    },
-
-    _setViewport: function()
-    {
-        var viewport = document.querySelector("meta[name=viewport]");
-        viewport.setAttribute("content", "target-densitydpi=" + MainControlHandler.getDensityDpi() + ", user-scalable=no");
     },
 
     _addTilesSourcesLayer: function()

@@ -226,10 +226,12 @@ L.Control.NativeDraw = L.Control.extend(
 
     loadFeatures: function(fitBounds)
 	{
-		this._clearEvents();
-		this._map.removeLayer(this._features);
-		this._features.clearLayers();
-		this._map.addLayer(this._features);
+        this._clearEvents();
+        this._map.removeLayer(this._features);
+        this._map.removeLayer(this._markers);
+        this._features.clearLayers();
+        this._markers.clearLayers();
+        this._map.addLayer(this._features);
 
 		var featuresAsString = DrawControlHandler.loadFeatures();
 		var features = JSON.parse(featuresAsString);

@@ -1,6 +1,7 @@
 package com.makina.ecrins.maps;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -159,8 +160,12 @@ public abstract class AbstractWebViewFragment
                 .setBuiltInZoomControls(false);
 
         // see: http://code.google.com/p/android/issues/detail?id=35288
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             mWebView.setLayerType(View.LAYER_TYPE_SOFTWARE,
+                                  null);
+        }
+        else {
+            mWebView.setLayerType(View.LAYER_TYPE_HARDWARE,
                                   null);
         }
 
@@ -499,9 +504,10 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public void invalidateMenu() {
+        final Activity activity = getActivity();
 
-        if (getActivity() != null) {
-            ActivityCompat.invalidateOptionsMenu(getActivity());
+        if (activity != null) {
+            ActivityCompat.invalidateOptionsMenu(activity);
         }
     }
 
@@ -526,7 +532,8 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public boolean addOrUpdateEditableFeature(@NonNull Feature selectedFeature) {
-        if (selectedFeature.getGeometry().isValid()) {
+        if (selectedFeature.getGeometry()
+                           .isValid()) {
             final FeatureCollection featureCollection = this.mSavedState.getParcelable(KEY_EDITABLE_FEATURES);
 
             if (featureCollection == null) {
