@@ -26,7 +26,8 @@ import com.makina.ecrins.flora.ui.input.area.AreaInputFragment;
 import com.makina.ecrins.flora.ui.input.counting.CountingListFragment;
 import com.makina.ecrins.flora.ui.input.disturbances.DisturbancesFragment;
 import com.makina.ecrins.flora.ui.input.frequencies.FrequenciesListFragment;
-import com.makina.ecrins.flora.ui.input.map.WebViewFragment;
+import com.makina.ecrins.flora.ui.input.map.MapAPFragment;
+import com.makina.ecrins.flora.ui.input.map.MapPAFragment;
 import com.makina.ecrins.flora.ui.input.observers.ObserversAndDateInputFragment;
 import com.makina.ecrins.flora.ui.input.phenology.PhenologyListFragment;
 import com.makina.ecrins.flora.ui.input.physiognomy.PhysiognomyFragment;
@@ -288,19 +289,6 @@ public class PagerFragmentActivity
     protected Map<Integer, IValidateFragment> getPagerFragments() {
         final Map<Integer, IValidateFragment> fragments = new LinkedHashMap<>();
 
-        WebViewFragment mapAPFragment = new WebViewFragment();
-
-        WebViewFragment mapPAFragment = new WebViewFragment();
-        mapPAFragment.getArguments()
-                     .putBoolean(WebViewFragment.KEY_AP,
-                                 false);
-        mapPAFragment.getArguments()
-                     .putBoolean(WebViewFragment.KEY_ADD_MARKER,
-                                 false);
-        mapPAFragment.getArguments()
-                     .putBoolean(WebViewFragment.KEY_ADD_PATH,
-                                 false);
-
         fragments.put(R.string.pager_fragment_observers_and_date_title,
                       new ObserversAndDateInputFragment());
         fragments.put(R.string.pager_fragment_taxa_title,
@@ -308,7 +296,7 @@ public class PagerFragmentActivity
         fragments.put(R.string.pager_fragment_taxa_found_title,
                       new TaxaFoundFragment());
         fragments.put(R.string.pager_fragment_webview_ap_title,
-                      mapAPFragment);
+                      new MapAPFragment());
         fragments.put(R.string.pager_fragment_area_title,
                       new AreaInputFragment());
         fragments.put(R.string.pager_fragment_frequencies_title,
@@ -326,7 +314,7 @@ public class PagerFragmentActivity
         fragments.put(R.string.pager_fragment_choose_action_title,
                       new ChooseActionListFragment());
         fragments.put(R.string.pager_fragment_webview_pa_title,
-                      mapPAFragment);
+                      new MapPAFragment());
 
         return fragments;
     }
