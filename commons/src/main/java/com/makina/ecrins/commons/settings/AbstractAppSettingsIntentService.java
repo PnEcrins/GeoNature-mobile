@@ -120,10 +120,16 @@ public abstract class AbstractAppSettingsIntentService
                                       appSettings);
                     }
                     catch (FileNotFoundException fnfe) {
+                        Log.w(TAG,
+                              fnfe.getMessage());
+
                         sendBroadcast(broadcastAction,
                                       Status.FINISHED_NOT_FOUND);
                     }
                     catch (IOException ioe) {
+                        Log.w(TAG,
+                              ioe.getMessage());
+
                         sendBroadcast(broadcastAction,
                                       AbstractAppSettingsIntentService.Status.FINISHED_WITH_ERRORS);
                     }

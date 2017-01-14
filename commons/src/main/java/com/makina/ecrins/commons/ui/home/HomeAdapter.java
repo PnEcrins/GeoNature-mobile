@@ -156,17 +156,18 @@ class HomeAdapter
                 @Override
                 protected Integer doInBackground(Void... params) {
                     try {
-                        File inputDir = FileUtils.getInputsFolder(mContext);
+                        final File inputDir = FileUtils.getInputsFolder(mContext);
 
                         if (inputDir.exists()) {
-                            return inputDir.listFiles(new FileFilter() {
+                            final File[] listFiles = inputDir.listFiles(new FileFilter() {
                                 @Override
                                 public boolean accept(File pathname) {
                                     return pathname.getName()
                                                    .startsWith("input_") && pathname.getName()
                                                                                     .endsWith(".json");
                                 }
-                            }).length;
+                            });
+                            return (listFiles == null) ? 0 : listFiles.length;
                         }
                     }
                     catch (IOException ioe) {

@@ -38,7 +38,6 @@ public class PreferencesFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String KEY_PREFERENCE_DEFAULT_OBSERVER = "default_observer";
-    private static final String KEY_LIST_PREFERENCE_DENSITY_DISPLAY_MAP = "density_display_map";
     private static final String KEY_PREFERENCE_ABOUT_APP_VERSION = "app_version";
     private static final String KEY_SELECTED_OBSERVER = "selected_observer";
 
@@ -97,25 +96,6 @@ public class PreferencesFragment
                     return true;
                 }
             });
-        }
-
-        final Preference densityDisplayMapListPreference = getPreferenceScreen().findPreference(KEY_LIST_PREFERENCE_DENSITY_DISPLAY_MAP);
-
-        if (densityDisplayMapListPreference != null) {
-            densityDisplayMapListPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference,
-                                                  Object newValue) {
-
-                    preference.setSummary(mListener.getSummaryForMapDensity(Integer.parseInt((String) newValue)));
-
-                    return true;
-                }
-            });
-
-            densityDisplayMapListPreference.setSummary(mListener.getSummaryForMapDensity(Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getContext())
-                                                                                                                           .getString(KEY_LIST_PREFERENCE_DENSITY_DISPLAY_MAP,
-                                                                                                                                      "0"))));
         }
 
         final Preference aboutAppVersionPreference = getPreferenceScreen().findPreference(KEY_PREFERENCE_ABOUT_APP_VERSION);
@@ -267,9 +247,6 @@ public class PreferencesFragment
 
         @Nullable
         InputType getInputTypeFilter();
-
-        @NonNull
-        String getSummaryForMapDensity(int density);
 
         @NonNull
         String getAppVersion();
