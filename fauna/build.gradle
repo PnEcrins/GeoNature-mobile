@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.makina.ecrins.fauna"
-        minSdkVersion 10
+        minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.compileSdkVersion
         versionName version
         buildConfigField "String", "BUILD_DATE", "\"" + new Date().getTime() + "\""

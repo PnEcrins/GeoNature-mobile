@@ -7,7 +7,7 @@ import com.makina.ecrins.commons.input.Observer;
 import com.makina.ecrins.commons.util.MountPointUtils;
 import com.makina.ecrins.fauna.input.Input;
 import com.makina.ecrins.fauna.settings.AppSettings;
-import com.makina.ecrins.maps.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.Feature;
 
 import java.util.ArrayList;
 import java.util.List;

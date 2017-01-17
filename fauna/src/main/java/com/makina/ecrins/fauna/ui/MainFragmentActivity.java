@@ -20,7 +20,7 @@ import com.makina.ecrins.fauna.settings.SettingsService;
 import com.makina.ecrins.fauna.ui.input.PagerFragmentActivity;
 import com.makina.ecrins.fauna.ui.settings.MainPreferencesActivity;
 import com.makina.ecrins.fauna.ui.sync.SynchronizationActivity;
-import com.makina.ecrins.maps.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.Feature;
 
 import java.util.List;
 
