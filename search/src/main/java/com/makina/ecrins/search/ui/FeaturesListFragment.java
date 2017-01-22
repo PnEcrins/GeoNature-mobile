@@ -3,6 +3,7 @@ package com.makina.ecrins.search.ui;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.View;
@@ -41,10 +42,11 @@ public class FeaturesListFragment
         mAdapter = new ArrayAdapter<Feature>(getActivity(),
                                              android.R.layout.simple_list_item_1,
                                              android.R.id.text1) {
+            @NonNull
             @Override
             public View getView(int position,
                                 View convertView,
-                                ViewGroup parent) {
+                                @NonNull ViewGroup parent) {
                 View view = super.getView(position,
                                           convertView,
                                           parent);

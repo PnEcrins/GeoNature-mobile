@@ -13,9 +13,6 @@
 
     <string name="preference_category_pointing">Pointing</string>
     <string name="preference_category_pointing_display_scale">Display the map scale</string>
-    <string name="preference_category_density">Quality</string>
-    <string name="preference_category_density_title">Quality rendering of map</string>
-    <string name="preference_category_density_dialog">Choice of rendering</string>
 
     <string name="alert_dialog_confirm_quit_title">Quit ?</string>
     <string name="alert_dialog_confirm_quit_message">Close application ?</string>
