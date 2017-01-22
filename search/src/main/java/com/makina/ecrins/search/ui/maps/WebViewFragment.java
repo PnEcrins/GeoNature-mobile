@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -18,17 +19,17 @@ import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.model.MountPoint;
 import com.makina.ecrins.commons.util.FileUtils;
 import com.makina.ecrins.maps.AbstractWebViewFragment;
-import com.makina.ecrins.maps.settings.MapSettings;
-import com.makina.ecrins.maps.RenderQualityEnum;
 import com.makina.ecrins.maps.control.AbstractControl.OnIControlListener;
 import com.makina.ecrins.maps.control.CenterPositionControl;
 import com.makina.ecrins.maps.control.ControlUtils;
 import com.makina.ecrins.maps.control.FeaturesControl;
 import com.makina.ecrins.maps.control.SwitchLayersControl;
 import com.makina.ecrins.maps.control.ZoomControl;
-import com.makina.ecrins.maps.geojson.Feature;
-import com.makina.ecrins.maps.geojson.geometry.GeoPoint;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.FeatureStyle;
+import com.makina.ecrins.maps.jts.geojson.GeoPoint;
 import com.makina.ecrins.maps.location.Geolocation;
+import com.makina.ecrins.maps.settings.MapSettings;
 import com.makina.ecrins.search.BuildConfig;
 import com.makina.ecrins.search.MainApplication;
 import com.makina.ecrins.search.R;
@@ -107,10 +108,9 @@ public class WebViewFragment
 
     private OnSearchDialogValidateListener mOnSearchDialogValidateListener = new OnSearchDialogValidateListener() {
         @Override
-        public void onSearchCriteria(
-                DialogInterface dialog,
-                int radius,
-                GeoPoint location) {
+        public void onSearchCriteria(DialogInterface dialog,
+                                     int radius,
+                                     GeoPoint location) {
 
             if (BuildConfig.DEBUG) {
                 Log.d(getClass().getName(),
@@ -191,9 +191,8 @@ public class WebViewFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(
-            Menu menu,
-            MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu,
+                                    MenuInflater inflater) {
 
         super.onCreateOptionsMenu(menu,
                                   inflater);
@@ -248,6 +247,7 @@ public class WebViewFragment
         return mapSettings;
     }
 
+    @NonNull
     @Override
     public List<Feature> getFeatures() {
 
@@ -260,9 +260,8 @@ public class WebViewFragment
     }
 
     @Override
-    public void setSelectedFeature(
-            Geolocation geolocation,
-            Feature selectedFeature) {
+    public void setSelectedFeature(Geolocation geolocation,
+                                   Feature selectedFeature) {
 
         mOnFeaturesFoundListener.onFeatureSelected((GeoPoint) getSavedInstanceState().getParcelable(KEY_SEARCH_LOCATION),
                                                    selectedFeature);
@@ -285,9 +284,11 @@ public class WebViewFragment
 
         final FeaturesControl featuresControl = new FeaturesControl(getActivity());
         featuresControl.setFeaturesClickable(true);
-        featuresControl.setFeatureSelectedStyle(featuresControl.getFeatureSelectedStyle()
-                                                               .setColorResourceId(R.color.feature_selected)
-                                                               .setFillColorResourceId(R.color.feature_selected));
+        featuresControl.setFeatureSelectedStyle(FeatureStyle.Builder.newInstance(getContext())
+                                                                    .from(featuresControl.getFeatureSelectedStyle())
+                                                                    .setColorResourceId(R.color.feature_selected)
+                                                                    .setFillColorResourceId(R.color.feature_selected)
+                                                                    .build());
         featuresControl.addControlListener(mFeaturesControlListener);
 
         addControl(new ZoomControl(getActivity()),
@@ -303,16 +304,16 @@ public class WebViewFragment
     }
 
     @Override
-    protected File getTilesSourcePath() throws IOException {
+    protected File getTilesSourcePath() throws
+                                        IOException {
 
         return FileUtils.getDatabaseFolder(getActivity(),
                                            MountPoint.StorageType.EXTERNAL);
     }
 
     @Override
-    public Loader<List<Feature>> onCreateLoader(
-            int id,
-            Bundle args) {
+    public Loader<List<Feature>> onCreateLoader(int id,
+                                                Bundle args) {
 
         switch (id) {
             case LOADER_TAXA_GROUPBY:
@@ -344,9 +345,8 @@ public class WebViewFragment
     }
 
     @Override
-    public void onLoadFinished(
-            Loader<List<Feature>> loader,
-            List<Feature> data) {
+    public void onLoadFinished(Loader<List<Feature>> loader,
+                               List<Feature> data) {
 
         switch (loader.getId()) {
             case LOADER_TAXA_GROUPBY:
@@ -404,21 +404,15 @@ public class WebViewFragment
 
     private boolean updateMapSettings() {
 
-        boolean update = (getMapSettings().isDisplayScale() != PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                                .getBoolean("pointing_display_scale",
-                                                                                            true)) || (getMapSettings().getRenderQuality()
-                                                                                                                       .getValue() != Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                                                                                                                        .getString("density_display_map",
-                                                                                                                                                                                   "0")));
+        boolean update = getMapSettings().isDisplayScale() != PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                                                               .getBoolean("pointing_display_scale",
+                                                                                           true);
 
         if (update) {
             MapSettings mapSettings = getMapSettings();
             mapSettings.setDisplayScale(PreferenceManager.getDefaultSharedPreferences(getActivity())
                                                          .getBoolean("pointing_display_scale",
                                                                      true));
-            mapSettings.setRenderQuality(RenderQualityEnum.asRenderQuality(Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                                                             .getString("density_display_map",
-                                                                                                                        "0"))));
             mapSettings.setShowUnitiesLayer(PreferenceManager.getDefaultSharedPreferences(getActivity())
                                                              .getBoolean("pointing_display_geographic_units",
                                                                          true));
@@ -450,12 +444,11 @@ public class WebViewFragment
 
     public interface OnFeaturesFoundListener {
 
-        public void onFeaturesFound(List<Feature> features);
+        void onFeaturesFound(List<Feature> features);
 
-        public Feature getSelectedFeature();
+        Feature getSelectedFeature();
 
-        public void onFeatureSelected(
-                GeoPoint geoPoint,
-                Feature feature);
+        void onFeatureSelected(GeoPoint geoPoint,
+                               Feature feature);
     }
 }

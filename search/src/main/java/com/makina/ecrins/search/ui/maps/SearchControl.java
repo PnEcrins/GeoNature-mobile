@@ -16,16 +16,12 @@ import com.makina.ecrins.maps.IWebViewFragment;
 import com.makina.ecrins.maps.control.AbstractControl;
 import com.makina.ecrins.maps.control.FeaturesControl;
 import com.makina.ecrins.maps.control.IControl;
-import com.makina.ecrins.maps.geojson.Feature;
-import com.makina.ecrins.maps.geojson.geometry.GeoPoint;
-import com.makina.ecrins.maps.geojson.geometry.GeometryUtils;
-import com.makina.ecrins.maps.geojson.geometry.Point;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.GeoPoint;
 import com.makina.ecrins.search.BuildConfig;
 import com.makina.ecrins.search.R;
 import com.makina.ecrins.search.ui.dialog.SearchDialogFragment;
 import com.makina.ecrins.search.ui.dialog.SearchDialogFragment.OnSearchDialogValidateListener;
-
-import org.json.JSONArray;
 
 /**
  * Basic control to perform search and give a list of {@link Feature}s found.
@@ -42,8 +38,6 @@ public class SearchControl
     protected static final String KEY_SEARCH_LOCATION = "search_location";
 
     private static final String SEARCH_DIALOG_FRAGMENT = "search_dialog";
-
-    private static JSONArray jsonArray = new JSONArray();
 
     private OnSearchDialogValidateListener mOnSearchDialogValidateListener;
 
@@ -63,15 +57,13 @@ public class SearchControl
     public SearchControl(Context pContext) {
         super(pContext);
 
-        setControlListener(
-                new OnIControlListener() {
-                    @Override
-                    public void onControlInitialized() {
-                        mIsActionMarkerSelected = false;
-                        mWebViewFragment.invalidateMenu();
-                    }
-                }
-        );
+        setControlListener(new OnIControlListener() {
+            @Override
+            public void onControlInitialized() {
+                mIsActionMarkerSelected = false;
+                mWebViewFragment.invalidateMenu();
+            }
+        });
     }
 
     @Override
@@ -83,10 +75,8 @@ public class SearchControl
     public void add(IWebViewFragment webViewFragment) {
         super.add(webViewFragment);
 
-        initializeJSController(
-                "js/Control.Search.js",
-                "new L.Control.Search()"
-        );
+        initializeJSController("js/Control.Search.js",
+                               "new L.Control.Search()");
     }
 
     @Override
@@ -95,14 +85,11 @@ public class SearchControl
     }
 
     @Override
-    public void onCreateOptionsMenu(
-            Menu menu,
-            MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu,
+                                    MenuInflater inflater) {
         if (isControlInitialized()) {
-            inflater.inflate(
-                    R.menu.menu_search,
-                    menu
-            );
+            inflater.inflate(R.menu.menu_search,
+                             menu);
         }
     }
 
@@ -151,22 +138,16 @@ public class SearchControl
     @Override
     public void onLocationChanged(Location location) {
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    getClass().getName(),
-                    "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing()
-            );
+            Log.d(getClass().getName(),
+                  "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
         }
 
         // checks if this location is inside the map or not
-        mIsItemMarkerFromLocationEnabled = isControlInitialized() && GeometryUtils.contains(
-                new Point(
-                        new GeoPoint(
-                                location.getLatitude(),
-                                location.getLongitude()
-                        )
-                ),
-                this.mWebViewFragment.getMapSettings().getPolygonBounds()
-        );
+        mIsItemMarkerFromLocationEnabled = isControlInitialized() && (mWebViewFragment.getMapSettings()
+                                                                                      .getPolygonBounds() != null) && mWebViewFragment.getMapSettings()
+                                                                                                                                      .getPolygonBounds()
+                                                                                                                                      .contains(new GeoPoint(location.getLatitude(),
+                                                                                                                                                             location.getLongitude()).getPoint());
 
         if (mWebViewFragment != null) {
             mWebViewFragment.invalidateMenu();
@@ -192,10 +173,9 @@ public class SearchControl
     }
 
     @Override
-    public void onStatusChanged(
-            String provider,
-            int status,
-            Bundle extras) {
+    public void onStatusChanged(String provider,
+                                int status,
+                                Bundle extras) {
         // nothing to do ...
     }
 
@@ -230,23 +210,20 @@ public class SearchControl
     }
 
     /**
-     * Gets the current marker position as {@link org.json.JSONArray}.
+     * Gets the current marker position as JSON array string.
      *
      * @return the current marker position
      */
     @JavascriptInterface
     public String getMarkerPosition() {
         final GeoPoint pointing = mWebViewFragment.getSavedInstanceState()
-                .getParcelable(KEY_SEARCH_LOCATION);
+                                                  .getParcelable(KEY_SEARCH_LOCATION);
 
-        if (pointing != null) {
-            jsonArray = pointing.getJSONObject(GeoPoint.LAT_LON);
-            return jsonArray.toString();
+        if (pointing == null) {
+            return "[]";
         }
-        else {
-            jsonArray = new JSONArray();
-            return jsonArray.toString();
-        }
+
+        return pointing.toString();
     }
 
     /**
@@ -257,34 +234,25 @@ public class SearchControl
      * @param accuracy  the accuracy of this position
      */
     @JavascriptInterface
-    public void setMarkerPosition(
-            final double latitude,
-            final double longitude,
-            int accuracy) {
-        getHandler().post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        mIsActionMarkerSelected = false;
-                        mWebViewFragment.invalidateMenu();
+    public void setMarkerPosition(final double latitude,
+                                  final double longitude,
+                                  int accuracy) {
+        getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                mIsActionMarkerSelected = false;
+                mWebViewFragment.invalidateMenu();
 
-                        if ((mWebViewFragment.getContext() != null) && (mWebViewFragment.getContext() instanceof FragmentActivity)) {
-                            SearchDialogFragment dialogFragment = SearchDialogFragment.newInstance(
-                                    getMaxRadius(),
-                                    getRadius(),
-                                    new GeoPoint(
-                                            latitude,
-                                            longitude
-                                    )
-                            );
-                            dialogFragment.setOnSearchDialogValidateListener(mOnSearchDialogValidateListener);
-                            dialogFragment.show(
-                                    ((FragmentActivity) mWebViewFragment.getContext()).getSupportFragmentManager(),
-                                    SEARCH_DIALOG_FRAGMENT
-                            );
-                        }
-                    }
+                if ((mWebViewFragment.getContext() != null) && (mWebViewFragment.getContext() instanceof FragmentActivity)) {
+                    SearchDialogFragment dialogFragment = SearchDialogFragment.newInstance(getMaxRadius(),
+                                                                                           getRadius(),
+                                                                                           new GeoPoint(latitude,
+                                                                                                        longitude));
+                    dialogFragment.setOnSearchDialogValidateListener(mOnSearchDialogValidateListener);
+                    dialogFragment.show(((FragmentActivity) mWebViewFragment.getContext()).getSupportFragmentManager(),
+                                        SEARCH_DIALOG_FRAGMENT);
                 }
-        );
+            }
+        });
     }
 }

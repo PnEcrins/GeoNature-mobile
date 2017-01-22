@@ -19,8 +19,8 @@ import com.makina.ecrins.commons.service.RequestHandlerServiceClient;
 import com.makina.ecrins.commons.service.RequestHandlerStatus;
 import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
 import com.makina.ecrins.commons.ui.dialog.ProgressDialogFragment;
-import com.makina.ecrins.maps.geojson.Feature;
-import com.makina.ecrins.maps.geojson.geometry.GeoPoint;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.GeoPoint;
 import com.makina.ecrins.search.BuildConfig;
 import com.makina.ecrins.search.MainApplication;
 import com.makina.ecrins.search.R;
@@ -31,8 +31,6 @@ import com.makina.ecrins.search.ui.maps.WebViewFragment;
 import com.makina.ecrins.search.ui.maps.WebViewFragment.OnFeaturesFoundListener;
 import com.makina.ecrins.search.ui.settings.MainPreferencesActivity;
 import com.makina.ecrins.search.ui.sync.SynchronizationActivity;
-
-import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,9 +100,8 @@ public class MainFragmentActivity
         }
 
         @Override
-        public void onHandleMessage(
-                @NonNull AbstractRequestHandler requestHandler,
-                @NonNull Bundle data) {
+        public void onHandleMessage(@NonNull AbstractRequestHandler requestHandler,
+                                    @NonNull Bundle data) {
 
             if (requestHandler instanceof LoadSettingsRequestHandler) {
                 handleMessageForLoadSettingsRequestHandler(data);
@@ -184,10 +181,9 @@ public class MainFragmentActivity
     }
 
     @Override
-    protected void onActivityResult(
-            int requestCode,
-            int resultCode,
-            Intent data) {
+    protected void onActivityResult(int requestCode,
+                                    int resultCode,
+                                    Intent data) {
 
         super.onActivityResult(requestCode,
                                resultCode,
@@ -196,6 +192,13 @@ public class MainFragmentActivity
         if ((requestCode == 0) && (resultCode == RESULT_OK) && (data.getExtras() != null)) {
             final Feature selectedFeature = data.getExtras()
                                                 .getParcelable(FeaturesFragmentActivity.KEY_SELECTED_FEATURE);
+
+            if (selectedFeature == null) {
+                Log.d(TAG,
+                      "onActivityResult, no feature selected");
+
+                return;
+            }
 
             if (BuildConfig.DEBUG) {
                 Log.d(TAG,
@@ -275,32 +278,23 @@ public class MainFragmentActivity
     }
 
     @Override
-    public void onFeatureSelected(
-            GeoPoint geoPoint,
-            Feature feature) {
-
-        try {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG,
-                      "onFeatureSelected, geoPoint : " + geoPoint.toString() + ", feature : " + feature.getJSONObject()
-                                                                                                       .toString());
-            }
-
-            FeatureDialogFragment dialogFragment = (FeatureDialogFragment) getSupportFragmentManager().findFragmentByTag(SHOW_FEATURE_DIALOG);
-
-            if (dialogFragment != null) {
-                dialogFragment.dismiss();
-            }
-
-            dialogFragment = FeatureDialogFragment.newInstance(feature,
-                                                               geoPoint);
-            dialogFragment.show(getSupportFragmentManager(),
-                                SHOW_FEATURE_DIALOG);
+    public void onFeatureSelected(GeoPoint geoPoint,
+                                  Feature feature) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onFeatureSelected, geoPoint: " + geoPoint.toString() + ", feature: " + feature.getId());
         }
-        catch (JSONException je) {
-            Log.w(TAG,
-                  je.getMessage());
+
+        FeatureDialogFragment dialogFragment = (FeatureDialogFragment) getSupportFragmentManager().findFragmentByTag(SHOW_FEATURE_DIALOG);
+
+        if (dialogFragment != null) {
+            dialogFragment.dismiss();
         }
+
+        dialogFragment = FeatureDialogFragment.newInstance(feature,
+                                                           geoPoint);
+        dialogFragment.show(getSupportFragmentManager(),
+                            SHOW_FEATURE_DIALOG);
     }
 
     private void handleMessageForLoadSettingsRequestHandler(@NonNull final Bundle data) {
@@ -379,13 +373,12 @@ public class MainFragmentActivity
                          QUIT_ACTION_DIALOG);
     }
 
-    private void showProgressDialog(
-            String tag,
-            int title,
-            int message,
-            int progressStyle,
-            int progress,
-            int max) {
+    private void showProgressDialog(String tag,
+                                    int title,
+                                    int message,
+                                    int progressStyle,
+                                    int progress,
+                                    int max) {
 
         ProgressDialogFragment progressDialogFragment = (ProgressDialogFragment) getSupportFragmentManager().findFragmentByTag(tag);
 

@@ -12,7 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
-import com.makina.ecrins.maps.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.Feature;
 import com.makina.ecrins.search.BuildConfig;
 import com.makina.ecrins.search.R;
 
@@ -38,26 +38,19 @@ public class FeaturesListFragment
         super.onCreate(savedInstanceState);
 
         // create an empty adapter we will use to display the loaded data
-        mAdapter = new ArrayAdapter<Feature>(
-                getActivity(),
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1
-        ) {
+        mAdapter = new ArrayAdapter<Feature>(getActivity(),
+                                             android.R.layout.simple_list_item_1,
+                                             android.R.id.text1) {
             @Override
-            public View getView(
-                    int position,
-                    View convertView,
-                    ViewGroup parent) {
-                View view = super.getView(
-                        position,
-                        convertView,
-                        parent
-                );
+            public View getView(int position,
+                                View convertView,
+                                ViewGroup parent) {
+                View view = super.getView(position,
+                                          convertView,
+                                          parent);
 
-                ((TextView) view.findViewById(android.R.id.text1)).setText(
-                        getItem(position).getProperties()
-                                .getString(MainDatabaseHelper.SearchColumns.TAXON)
-                );
+                ((TextView) view.findViewById(android.R.id.text1)).setText(getItem(position).getProperties()
+                                                                                            .getString(MainDatabaseHelper.SearchColumns.TAXON));
 
                 return view;
             }
@@ -65,13 +58,10 @@ public class FeaturesListFragment
     }
 
     @Override
-    public void onViewCreated(
-            View view,
-            Bundle savedInstanceState) {
-        super.onViewCreated(
-                view,
-                savedInstanceState
-        );
+    public void onViewCreated(View view,
+                              Bundle savedInstanceState) {
+        super.onViewCreated(view,
+                            savedInstanceState);
 
         // give some text to display if there is no data
         setEmptyText(getString(R.string.taxa_no_data));
@@ -101,10 +91,8 @@ public class FeaturesListFragment
     @Override
     public void onResume() {
         if (BuildConfig.DEBUG) {
-            Log.d(
-                    getClass().getName(),
-                    "onResume"
-            );
+            Log.d(getClass().getName(),
+                  "onResume");
         }
 
         super.onResume();
@@ -112,51 +100,44 @@ public class FeaturesListFragment
         mAdapter.clear();
 
         if (getArguments().containsKey(KEY_FEATURES) && (!getArguments().getParcelableArrayList(KEY_FEATURES)
-                .isEmpty())) {
+                                                                        .isEmpty())) {
             List<Feature> features = getArguments().getParcelableArrayList(KEY_FEATURES);
 
             if (BuildConfig.DEBUG) {
-                Log.d(
-                        getClass().getName(),
-                        "onResume : features found : " + features.size()
-                );
+                Log.d(getClass().getName(),
+                      "onResume : features found : " + features.size());
             }
 
             for (Feature feature : features) {
                 if (BuildConfig.DEBUG) {
-                    Log.d(
-                            getClass().getName(),
-                            "onResume : add feature " + feature.getId()
-                    );
+                    Log.d(getClass().getName(),
+                          "onResume : add feature " + feature.getId());
                 }
 
                 mAdapter.add(feature);
             }
         }
         else {
-            mHandler.postDelayed(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            getActivity().finish();
-                        }
-                    },
-                    1500
-            );
+            mHandler.postDelayed(new Runnable() {
+                                     @Override
+                                     public void run() {
+                                         getActivity().finish();
+                                     }
+                                 },
+                                 1500);
         }
     }
 
     @Override
-    public void onListItemClick(
-            ListView l,
-            View v,
-            int position,
-            long id) {
+    public void onListItemClick(ListView l,
+                                View v,
+                                int position,
+                                long id) {
         mOnFeatureSelectedListener.onFeatureSelected(mAdapter.getItem(position));
     }
 
     public interface OnFeatureSelectedListener {
 
-        public void onFeatureSelected(Feature selectedFeature);
+        void onFeatureSelected(Feature selectedFeature);
     }
 }

@@ -7,7 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.makina.ecrins.maps.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.Feature;
 import com.makina.ecrins.search.R;
 import com.makina.ecrins.search.ui.FeaturesListFragment.OnFeatureSelectedListener;
 
