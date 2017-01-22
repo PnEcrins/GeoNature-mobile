@@ -2,8 +2,9 @@ package com.makina.ecrins.maps.content;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
@@ -26,7 +27,7 @@ import java.util.TreeSet;
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
 public class MBTilesSplitDataSource
-        extends MBTilesDataSource {
+        extends AbstractMBTilesDataSource {
 
     private static final String TAG = MBTilesSplitDataSource.class.getSimpleName();
 
@@ -37,29 +38,49 @@ public class MBTilesSplitDataSource
     private final SortedSet<Integer> mZooms = new TreeSet<>();
 
     private final SparseArray<String> mMbTilesPath = new SparseArray<>();
+    private final String mDefaultMbTilesPath;
 
     public MBTilesSplitDataSource(@NonNull final File sourcePath,
                                   @NonNull final LayerSettings pLayerSettings) throws
                                                                                IOException {
-        super(sourcePath,
-              pLayerSettings);
+        super(pLayerSettings);
 
         mbTilesDirectory = FileUtils.getFile(sourcePath,
                                              pLayerSettings.getName());
 
         if (mbTilesDirectory.exists() && mbTilesDirectory.isDirectory()) {
-            Log.d(getClass().getName(),
+            Log.d(TAG,
                   "loading MBTiles from path '" + pLayerSettings.getName() + "'");
         }
         else {
-            throw new FileNotFoundException("unable to load MBTiles from path '" + mbTilesDirectory + "'");
+            throw new FileNotFoundException("unable to load MBTiles '" + pLayerSettings.getName() + "' from path '" + mbTilesDirectory + "'");
         }
+
+        mDefaultMbTilesPath = getMBTilesPath(0);
+
+        if (TextUtils.isEmpty(mDefaultMbTilesPath)) {
+            throw new FileNotFoundException("unable to load default MBTiles from path '" + mbTilesDirectory + "'");
+        }
+
+        final SQLiteDatabase database = openDatabase(mDefaultMbTilesPath);
+
+        if (database == null) {
+            throw new IOException("database cannot be opened");
+        }
+
+        this.mMetadata = readMetadata(database);
+    }
+
+    @NonNull
+    @Override
+    public Metadata getMetadata() {
+        return mMetadata;
     }
 
     @Override
     public int getMinZoom() {
         if (mMinZoom == Integer.MAX_VALUE) {
-            SQLiteDatabase database = openDatabase(getMBTilesPath(0));
+            final SQLiteDatabase database = openDatabase(mDefaultMbTilesPath);
 
             if (database != null) {
                 Cursor cursor = database.rawQuery("SELECT MIN(zoom_level) AS min_zoom FROM tiles",
@@ -85,23 +106,27 @@ public class MBTilesSplitDataSource
     public int getMaxZoom() {
         if (mMaxZoom == 0) {
             for (int i = 0; i < 10; i++) {
-                SQLiteDatabase database = openDatabase(getMBTilesPath(i));
+                final String mbTilesPath = getMBTilesPath(i);
 
-                if (database != null) {
-                    Cursor cursor = database.rawQuery("SELECT MAX(zoom_level) AS max_zoom FROM tiles",
-                                                      null);
+                if (!TextUtils.isEmpty(mbTilesPath)) {
+                    final SQLiteDatabase database = openDatabase(mbTilesPath);
 
-                    // we should have only one result
-                    if (cursor.moveToFirst()) {
-                        int maxZoom = cursor.getInt(cursor.getColumnIndex("max_zoom"));
-                        mMaxZoom = (maxZoom > mMaxZoom) ? maxZoom : mMaxZoom;
+                    if (database != null) {
+                        Cursor cursor = database.rawQuery("SELECT MAX(zoom_level) AS max_zoom FROM tiles",
+                                                          null);
+
+                        // we should have only one result
+                        if (cursor.moveToFirst()) {
+                            int maxZoom = cursor.getInt(cursor.getColumnIndex("max_zoom"));
+                            mMaxZoom = (maxZoom > mMaxZoom) ? maxZoom : mMaxZoom;
+                        }
+
+                        cursor.close();
                     }
-
-                    cursor.close();
-                }
-                else {
-                    Log.w(TAG,
-                          "getMaxZoom(): db is null !");
+                    else {
+                        Log.w(TAG,
+                              "getMaxZoom(): db is null !");
+                    }
                 }
             }
         }
@@ -114,30 +139,34 @@ public class MBTilesSplitDataSource
     public List<Integer> getZooms() {
         if (mZooms.isEmpty()) {
             for (int i = 0; i < 10; i++) {
-                SQLiteDatabase database = openDatabase(getMBTilesPath(i));
+                final String mbTilesPath = getMBTilesPath(i);
 
-                if (database != null) {
-                    Cursor cursor = database.rawQuery("SELECT DISTINCT zoom_level AS zooms FROM tiles ORDER BY zoom_level ASC",
-                                                      null);
+                if (!TextUtils.isEmpty(mbTilesPath)) {
+                    final SQLiteDatabase database = openDatabase(mbTilesPath);
 
-                    if (cursor.moveToFirst()) {
-                        while (!cursor.isAfterLast()) {
-                            mZooms.add(cursor.getInt(cursor.getColumnIndex("zooms")));
+                    if (database != null) {
+                        Cursor cursor = database.rawQuery("SELECT DISTINCT zoom_level AS zooms FROM tiles ORDER BY zoom_level ASC",
+                                                          null);
 
-                            cursor.moveToNext();
+                        if (cursor.moveToFirst()) {
+                            while (!cursor.isAfterLast()) {
+                                mZooms.add(cursor.getInt(cursor.getColumnIndex("zooms")));
+
+                                cursor.moveToNext();
+                            }
                         }
-                    }
 
-                    cursor.close();
-                }
-                else {
-                    Log.w(TAG,
-                          "getZooms(): db is null !");
+                        cursor.close();
+                    }
+                    else {
+                        Log.w(TAG,
+                              "getZooms(): db is null !");
+                    }
                 }
             }
 
             Log.d(TAG,
-                  getLayerSettings().getName() + " getZooms : " + mZooms.toString());
+                  mLayerSettings.getName() + " getZooms : " + mZooms.toString());
         }
 
         return new ArrayList<>(mZooms);
@@ -162,45 +191,42 @@ public class MBTilesSplitDataSource
         // invert y axis to top origin
         int yMercator = (1 << currentZoomLevel) - row - 1;
 
-        SQLiteDatabase database = openDatabase(getMBTilesPath(column));
+        final String mbTilesPath = getMBTilesPath(column);
 
-        if (database != null) {
-            Cursor cursor = database.query("tiles",
-                                           new String[] {"tile_data"},
-                                           "zoom_level = ? AND tile_column = ? AND tile_row = ?",
-                                           new String[] {
-                                                   String.valueOf(currentZoomLevel),
-                                                   String.valueOf(column),
-                                                   String.valueOf(yMercator)
-                                           },
-                                           null,
-                                           null,
-                                           null);
+        if (!TextUtils.isEmpty(mbTilesPath)) {
+            final SQLiteDatabase database = openDatabase(mbTilesPath);
 
-            // we should have only one result
-            if (cursor.moveToFirst()) {
-                tileData = Base64.encodeToString(cursor.getBlob(cursor.getColumnIndex("tile_data")),
-                                                 Base64.DEFAULT);
+            if (database != null) {
+                Cursor cursor = database.query("tiles",
+                                               new String[] {"tile_data"},
+                                               "zoom_level = ? AND tile_column = ? AND tile_row = ?",
+                                               new String[] {
+                                                       String.valueOf(currentZoomLevel),
+                                                       String.valueOf(column),
+                                                       String.valueOf(yMercator)
+                                               },
+                                               null,
+                                               null,
+                                               null);
+
+                // we should have only one result
+                if (cursor.moveToFirst()) {
+                    tileData = Base64.encodeToString(cursor.getBlob(cursor.getColumnIndex("tile_data")),
+                                                     Base64.DEFAULT);
+                }
+
+                cursor.close();
             }
-
-            cursor.close();
-        }
-        else {
-            Log.w(TAG,
-                  "getTile(): db is null!");
+            else {
+                Log.w(TAG,
+                      "getTile(): db is null!");
+            }
         }
 
         return tileData;
     }
 
-    @NonNull
-    @Override
-    protected Metadata readMetadata(@NonNull SQLiteDatabase database) throws
-                                                                      IOException {
-        return super.readMetadata(openDatabase(getMBTilesPath(0)));
-    }
-
-    @NonNull
+    @Nullable
     private String getMBTilesPath(int column) {
         if (mMbTilesPath.get(column) == null) {
             String columnAsString = Integer.toString(column);
@@ -208,8 +234,8 @@ public class MBTilesSplitDataSource
                                                                                                2) : columnAsString.substring(0,
                                                                                                                              1);
 
-            File mbTiles = FileUtils.getFile(mbTilesDirectory,
-                                             mbTilesDirectory.getName() + "-" + mbTilesSuffix + ".mbtiles");
+            final File mbTiles = FileUtils.getFile(mbTilesDirectory,
+                                                   mbTilesDirectory.getName() + "-" + mbTilesSuffix + ".mbtiles");
 
             if (mbTiles.exists() && mbTiles.isFile()) {
                 mMbTilesPath.put(column,
@@ -217,7 +243,10 @@ public class MBTilesSplitDataSource
                 return mMbTilesPath.get(column);
             }
             else {
-                throw new SQLiteException("unable to load MBTiles for column " + column);
+                Log.w(TAG,
+                      "unable to load MBTiles for column " + column);
+
+                return null;
             }
         }
         else {

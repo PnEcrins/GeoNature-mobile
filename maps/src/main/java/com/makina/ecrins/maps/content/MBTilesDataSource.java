@@ -1,12 +1,7 @@
 package com.makina.ecrins.maps.content;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteCursor;
-import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
-import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteQuery;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
@@ -26,12 +21,11 @@ import java.util.List;
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
 public class MBTilesDataSource
-        implements ITilesLayerDataSource {
+        extends AbstractMBTilesDataSource {
 
     private static final String TAG = MBTilesDataSource.class.getSimpleName();
 
     private final File mMbTiles;
-    private final LayerSettings mLayerSettings;
     private Metadata mMetadata;
     private int mMinZoom = Integer.MAX_VALUE;
     private int mMaxZoom = 0;
@@ -40,9 +34,18 @@ public class MBTilesDataSource
     public MBTilesDataSource(@NonNull final File sourcePath,
                              @NonNull final LayerSettings pLayerSettings) throws
                                                                           IOException {
-        this.mLayerSettings = pLayerSettings;
+        super(pLayerSettings);
+
         this.mMbTiles = FileUtils.getFile(sourcePath,
                                           pLayerSettings.getName());
+
+        if (mMbTiles.exists()) {
+            Log.d(TAG,
+                  "loading MBTiles '" + pLayerSettings.getName() + "'");
+        }
+        else {
+            throw new FileNotFoundException("unable to load MBTiles '" + pLayerSettings.getName() + "' from path '" + mMbTiles + "'");
+        }
 
         final SQLiteDatabase database = openDatabase(this.mMbTiles.getPath());
 
@@ -51,14 +54,6 @@ public class MBTilesDataSource
         }
 
         this.mMetadata = readMetadata(database);
-
-        if (mMbTiles.exists()) {
-            Log.d(TAG,
-                  "loading MBTiles '" + pLayerSettings.getName() + "'");
-        }
-        else {
-            throw new FileNotFoundException("unable to load MBTiles file from path '" + mMbTiles + "'");
-        }
     }
 
     @NonNull
@@ -75,7 +70,7 @@ public class MBTilesDataSource
     @Override
     public int getMinZoom() {
         if (mMinZoom == Integer.MAX_VALUE) {
-            SQLiteDatabase database = openDatabase(mMbTiles.getPath());
+            final SQLiteDatabase database = openDatabase(mMbTiles.getPath());
 
             if (database != null) {
                 Cursor cursor = database.rawQuery("SELECT MIN(zoom_level) AS min_zoom FROM tiles",
@@ -105,7 +100,7 @@ public class MBTilesDataSource
     @Override
     public int getMaxZoom() {
         if (mMaxZoom == 0) {
-            SQLiteDatabase database = openDatabase(mMbTiles.getPath());
+            final SQLiteDatabase database = openDatabase(mMbTiles.getPath());
 
             if (database != null) {
                 Cursor cursor = database.rawQuery("SELECT MAX(zoom_level) AS max_zoom FROM tiles",
@@ -136,7 +131,7 @@ public class MBTilesDataSource
     @Override
     public List<Integer> getZooms() {
         if (mZooms.isEmpty()) {
-            SQLiteDatabase database = openDatabase(mMbTiles.getPath());
+            final SQLiteDatabase database = openDatabase(mMbTiles.getPath());
 
             if (database != null) {
                 Cursor cursor = database.rawQuery("SELECT DISTINCT zoom_level AS zooms FROM tiles ORDER BY zoom_level ASC",
@@ -188,7 +183,7 @@ public class MBTilesDataSource
         // invert y axis to top origin
         int yMercator = (1 << currentZoomLevel) - row - 1;
 
-        SQLiteDatabase database = openDatabase(mMbTiles.getPath());
+        final SQLiteDatabase database = openDatabase(mMbTiles.getPath());
 
         if (database != null) {
             Cursor cursor = database.query("tiles",
@@ -217,122 +212,5 @@ public class MBTilesDataSource
         }
 
         return tileData;
-    }
-
-    @NonNull
-    protected LayerSettings getLayerSettings() {
-        return this.mLayerSettings;
-    }
-
-    protected SQLiteDatabase openDatabase(@NonNull final String path) throws
-                                                                      SQLiteException {
-        return SQLiteDatabase.openDatabase(path,
-                                           new LeaklessCursorFactory(),
-                                           SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READONLY);
-    }
-
-    /**
-     * Custom implementation of <code>CursorFactory</code> that use {@link LeaklessCursor} to close
-     * automatically database instance.
-     *
-     * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
-     */
-    public static class LeaklessCursorFactory
-            implements CursorFactory {
-        @Override
-        public Cursor newCursor(SQLiteDatabase db,
-                                SQLiteCursorDriver masterQuery,
-                                String editTable,
-                                SQLiteQuery query) {
-            return new LeaklessCursor(db,
-                                      masterQuery,
-                                      editTable,
-                                      query);
-        }
-    }
-
-    /**
-     * Custom implementation of <code>SQLiteCursor</code> to close automatically database instance.
-     *
-     * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
-     */
-    public static class LeaklessCursor
-            extends SQLiteCursor {
-        final SQLiteDatabase mDatabase;
-
-        @SuppressWarnings("deprecation")
-        public LeaklessCursor(SQLiteDatabase db,
-                              SQLiteCursorDriver driver,
-                              String editTable,
-                              SQLiteQuery query) {
-            super(db,
-                  driver,
-                  editTable,
-                  query);
-            this.mDatabase = db;
-        }
-
-        @Override
-        public void close() {
-            super.close();
-
-            if (mDatabase != null) {
-                mDatabase.close();
-            }
-        }
-    }
-
-    @NonNull
-    protected Metadata readMetadata(@NonNull final SQLiteDatabase database) throws
-                                                                            IOException {
-        Cursor cursor = database.query("metadata",
-                                       new String[] {
-                                               "name",
-                                               "value"
-                                       },
-                                       null,
-                                       null,
-                                       null,
-                                       null,
-                                       null);
-
-        final Metadata metadata = new Metadata("");
-
-        if (cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
-                final String keyName = cursor.getString(cursor.getColumnIndex("name"));
-
-                switch (keyName) {
-                    case "name":
-                        metadata.name = cursor.getString(cursor.getColumnIndex("value"));
-                        break;
-                    case "type":
-                        metadata.type = cursor.getString(cursor.getColumnIndex("value"));
-                        break;
-                    case "version":
-                        try {
-                            metadata.version = Double.valueOf(cursor.getString(cursor.getColumnIndex("value")));
-                        }
-                        catch (NumberFormatException nfe) {
-                            Log.w(TAG,
-                                  nfe.getMessage());
-                        }
-
-                        break;
-                    case "description":
-                        metadata.description = cursor.getString(cursor.getColumnIndex("value"));
-                        break;
-                    case "format":
-                        metadata.format = cursor.getString(cursor.getColumnIndex("value"));
-                        break;
-                }
-
-                cursor.moveToNext();
-            }
-        }
-
-        cursor.close();
-
-        return metadata;
     }
 }
