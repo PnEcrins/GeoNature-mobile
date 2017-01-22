@@ -48,12 +48,6 @@ public class MainPreferencesActivity
 
     @NonNull
     @Override
-    public String getSummaryForMapDensity(int density) {
-        return getResources().getStringArray(R.array.viewport_target_density_labels)[density];
-    }
-
-    @NonNull
-    @Override
     public String getAppVersion() {
         return getString(R.string.app_version,
                          BuildConfig.VERSION_NAME,
