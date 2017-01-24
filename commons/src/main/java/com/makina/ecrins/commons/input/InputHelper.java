@@ -180,8 +180,6 @@ public class InputHelper {
         Log.d(TAG,
               "dispose");
 
-        saveInput();
-
         LocalBroadcastManager.getInstance(mContext)
                              .unregisterReceiver(mBroadcastReceiver);
     }

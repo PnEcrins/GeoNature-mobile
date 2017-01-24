@@ -281,6 +281,7 @@ public class PagerFragmentActivity
                   "onPause");
         }
 
+        mInputHelper.saveInput();
         mInputHelper.dispose();
     }
 
