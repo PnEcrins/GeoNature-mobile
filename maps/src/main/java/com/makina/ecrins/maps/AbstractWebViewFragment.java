@@ -162,7 +162,7 @@ public abstract class AbstractWebViewFragment
                 .setBuiltInZoomControls(false);
 
         // see: http://code.google.com/p/android/issues/detail?id=35288
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
             mWebView.setLayerType(View.LAYER_TYPE_SOFTWARE,
                                   null);
         }
