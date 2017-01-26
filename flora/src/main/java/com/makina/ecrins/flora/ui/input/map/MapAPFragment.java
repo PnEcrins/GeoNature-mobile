@@ -59,6 +59,8 @@ public class MapAPFragment
                   "refreshView");
         }
 
+        validateCurrentPage();
+
         // clear all editable features if no area was edited yet.
         if (currentSelectedTaxon.getCurrentSelectedArea() == null) {
             clearEditableFeatures();

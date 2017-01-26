@@ -64,6 +64,8 @@ public class MapPAFragment
                   "refreshView");
         }
 
+        validateCurrentPage();
+
         displayAPs(true);
 
         if (currentSelectedTaxon.getProspectingArea() == null) {
