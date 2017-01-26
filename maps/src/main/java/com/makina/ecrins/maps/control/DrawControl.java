@@ -584,6 +584,7 @@ public class DrawControl
                     else {
                         // refreshes all features
                         if (mWebViewFragment.deleteEditableFeature(featureFound.getId())) {
+                            mWebViewFragment.setCurrentEditableFeature(null);
                             mWebViewFragment.loadUrl(getJSUrlPrefix() + ".loadFeatures()");
                         }
 
