@@ -1,10 +1,10 @@
 L.Control.NativeDraw = L.Control.extend(
 {
+    _densityDpi: null,
 	_features: null,
 	_currentFeature: null,
 	_markers: null,
 	_mode: null,
-	_savingQueued: null,
 
 	onAdd: function(map)
 	{
@@ -14,6 +14,7 @@ L.Control.NativeDraw = L.Control.extend(
 
 		map.on("zoomend", this._onZoomEvent, this);
 
+        this._densityDpi = DrawControlHandler.getDensityDpi();
 		this._features = new L.FeatureGroup();
 		this._markers = new L.LayerGroup();
 
@@ -32,16 +33,17 @@ L.Control.NativeDraw = L.Control.extend(
 	},
 
     clearFeatures: function()
-	{
-		this._clearEvents();
-		this._map.removeLayer(this._features);
-		this._map.removeLayer(this._markers);
-		this._features.clearLayers();
-		this._markers.clearLayers();
-		this._map.addLayer(this._features);
+    {
+        this._clearEvents();
 
-		this._moveRefreshPosition();
-	},
+        this._map.removeLayer(this._features);
+        this._map.removeLayer(this._markers);
+        this._features.clearLayers();
+        this._markers.clearLayers();
+        this._map.addLayer(this._features);
+
+        this._moveRefreshPosition();
+    },
 
 	startDrawFeature: function(layerType)
 	{
@@ -225,13 +227,8 @@ L.Control.NativeDraw = L.Control.extend(
     },
 
     loadFeatures: function(fitBounds)
-	{
-        this._clearEvents();
-        this._map.removeLayer(this._features);
-        this._map.removeLayer(this._markers);
-        this._features.clearLayers();
-        this._markers.clearLayers();
-        this._map.addLayer(this._features);
+    {
+        this.clearFeatures();
 
 		var featuresAsString = DrawControlHandler.loadFeatures();
 		var features = JSON.parse(featuresAsString);
@@ -510,6 +507,18 @@ L.Control.NativeDraw = L.Control.extend(
 		return featureMarker;
 	},
 
+	_createMarkerIcon: function()
+	{
+	    var size = (this._densityDpi && (this._densityDpi !== null)) ? 20 : 15;
+
+	    return new L.DivIcon(
+        {
+            iconSize: new L.Point(size, size),
+            className: "leaflet-div-icon leaflet-editing-icon",
+            zIndexOffset: 100
+        });
+	},
+
 	/**
 	 * Creates a marker.
 	 * @return instance of L.Marker
@@ -518,12 +527,7 @@ L.Control.NativeDraw = L.Control.extend(
 	{
 		var marker = new L.Marker(latlng,
 		{
-			icon: new L.DivIcon(
-			{
-				iconSize: new L.Point(20, 20),
-				className: "leaflet-div-icon leaflet-editing-icon",
-				zIndexOffset: 100
-			}),
+			icon: this._createMarkerIcon(),
 			draggable: true
 		});
 
@@ -547,12 +551,7 @@ L.Control.NativeDraw = L.Control.extend(
 	{
 		var ghostMarker = new L.Marker(this._getMiddleLatLng(marker1.getLatLng(), marker2.getLatLng()),
 		{
-			icon: new L.DivIcon(
-			{
-				iconSize: new L.Point(20, 20),
-				className: "leaflet-div-icon leaflet-editing-icon",
-				zIndexOffset: 100
-			}),
+			icon: this._createMarkerIcon(),
 			draggable: true,
 			opacity: 0.5
 		});
@@ -846,7 +845,7 @@ L.Control.NativeDraw = L.Control.extend(
 	_moveRefreshPosition: function()
 	{
 		var currentCenterPoint = this._map.latLngToContainerPoint(this._map.getCenter());
-		var refreshCenter = this._map.containerPointToLatLng(currentCenterPoint);
+		var refreshCenter = this._map.containerPointToLatLng([currentCenterPoint.x, currentCenterPoint.y + 1]);
 		this._map.setView(refreshCenter, this._map.getZoom());
 		this._map.setView(this._map.getCenter(), this._map.getZoom());
 	},

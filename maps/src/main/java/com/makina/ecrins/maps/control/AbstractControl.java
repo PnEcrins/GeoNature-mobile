@@ -1,8 +1,10 @@
 package com.makina.ecrins.maps.control;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -146,6 +148,16 @@ public abstract class AbstractControl
                 }
             }
         });
+    }
+
+    @Nullable
+    @JavascriptInterface
+    public String getDensityDpi() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            return "device-dpi";
+        }
+
+        return null;
     }
 
     /**

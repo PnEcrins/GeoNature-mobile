@@ -23,7 +23,6 @@ import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
-import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -123,11 +122,8 @@ public abstract class AbstractWebViewFragment
               "onCreate [center : " + getMapSettings().getCenter() + ", zoom : " + getMapSettings().getZoom() + "]");
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
-    @SuppressLint({
-                          "SetJavaScriptEnabled",
-                          "NewApi"
-                  })
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
@@ -151,18 +147,13 @@ public abstract class AbstractWebViewFragment
 
         mWebView.getSettings()
                 .setJavaScriptEnabled(true);
-
-        // noinspection deprecation
-        mWebView.getSettings()
-                .setRenderPriority(RenderPriority.HIGH);
-
         mWebView.getSettings()
                 .setSupportZoom(true);
         mWebView.getSettings()
                 .setBuiltInZoomControls(false);
 
         // see: http://code.google.com/p/android/issues/detail?id=35288
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             mWebView.setLayerType(View.LAYER_TYPE_SOFTWARE,
                                   null);
         }

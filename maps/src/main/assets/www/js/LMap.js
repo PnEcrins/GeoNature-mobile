@@ -11,6 +11,8 @@ L.MapControl = L.Class.extend(
     // constructor
     initialize: function(options)
     {
+        this._setViewport();
+
         L.Util.setOptions(this, options);
 
         var center = JSON.parse(MainControlHandler.getCenter());
@@ -132,7 +134,7 @@ L.MapControl = L.Class.extend(
         }
         else
         {
-            console.log("LM.getControl : no such control '" + controlHandlerName + "'");
+            console.log("LM.getControl: no such control '" + controlHandlerName + "'");
         }
     },
 
@@ -146,9 +148,22 @@ L.MapControl = L.Class.extend(
 
     _onMapLoaded: function()
     {
-        console.log("LM._onMapLoaded : map loaded");
+        console.log("LM._onMapLoaded: map loaded");
 
         MainControlHandler.setMapInitialized();
+    },
+
+    _setViewport: function()
+    {
+        var densityDpi = MainControlHandler.getDensityDpi();
+
+        console.log("LM._setViewport: " + densityDpi);
+
+        if (densityDpi && (densityDpi !== null))
+        {
+            var viewport = document.querySelector("meta[name=viewport]");
+            viewport.setAttribute("content", "target-densitydpi=" + densityDpi + ", initial-scale=1.0, maximum-scale=1.0, user-scalable=no");
+        }
     },
 
     _addTilesSourcesLayer: function()
