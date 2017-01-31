@@ -9,10 +9,11 @@ import android.view.MenuItem;
  * Global settings.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
- * @see AbstractPreferencesFragment
+ * @see PreferencesFragment
  */
 public abstract class AbstractPreferencesActivity
-        extends AppCompatActivity {
+        extends AppCompatActivity
+        implements PreferencesFragment.OnPreferencesFragmentListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +29,7 @@ public abstract class AbstractPreferencesActivity
         // Display the fragment as the main content.
         getSupportFragmentManager().beginTransaction()
                                    .replace(android.R.id.content,
-                                            newFragment())
+                                            PreferencesFragment.newInstance())
                                    .commit();
     }
 
@@ -44,6 +45,4 @@ public abstract class AbstractPreferencesActivity
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    protected abstract AbstractPreferencesFragment newFragment();
 }

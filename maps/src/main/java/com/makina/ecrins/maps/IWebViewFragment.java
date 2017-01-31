@@ -6,6 +6,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.view.ViewGroup;
@@ -13,8 +14,8 @@ import android.webkit.WebView;
 
 import com.makina.ecrins.maps.content.ITilesLayerDataSource;
 import com.makina.ecrins.maps.control.IControl;
-import com.makina.ecrins.maps.geojson.Feature;
-import com.makina.ecrins.maps.geojson.FeatureCollection;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.FeatureCollection;
 import com.makina.ecrins.maps.location.Geolocation;
 import com.makina.ecrins.maps.location.MockLocationProvider;
 import com.makina.ecrins.maps.settings.LayerSettings;
@@ -184,10 +185,11 @@ public interface IWebViewFragment {
     void invalidateMenu();
 
     /**
-     * Returns a <code>List</code> of {@link Feature}.
+     * Returns a {@code List} of {@link Feature}.
      *
-     * @return <code>List</code> of {@link Feature}.
+     * @return a {@code List} of {@link Feature}.
      */
+    @NonNull
     List<Feature> getFeatures();
 
     /**
@@ -214,14 +216,15 @@ public interface IWebViewFragment {
      *
      * @return the selected {@link Feature} edited or <code>null</code> if none.
      */
+    @Nullable
     Feature getCurrentEditableFeature();
 
     /**
      * Sets the current {@link Feature} currently edited.
      *
-     * @param selectedFeature the selected {@link Feature} edited (may be <code>null</code>).
+     * @param selectedFeature the selected {@link Feature} edited (may be {@code null}).
      */
-    void setCurrentEditableFeature(Feature selectedFeature);
+    void setCurrentEditableFeature(@Nullable final Feature selectedFeature);
 
     /**
      * Updates the selected {@link Feature}.
@@ -231,9 +234,9 @@ public interface IWebViewFragment {
      *
      * @param selectedFeature the selected {@link Feature} to update
      *
-     * @return <code>true</code> if the given {@link Feature} was successfully updated or added, <code>false</code> otherwise
+     * @return {@code true} if the given {@link Feature} was successfully updated or added, {@code false} otherwise
      */
-    boolean addOrUpdateEditableFeature(Feature selectedFeature);
+    boolean addOrUpdateEditableFeature(@NonNull final Feature selectedFeature);
 
     /**
      * Delete a previously added {@link Feature}.

@@ -1,9 +1,11 @@
 package com.makina.ecrins.flora.ui.input.physiognomy;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -12,7 +14,9 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,24 +30,35 @@ import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.TextView;
 
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
+import com.makina.ecrins.commons.input.AbstractInput;
+import com.makina.ecrins.commons.ui.AbstractBaseActivity;
+import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.ui.widget.AbstractGroupsCursorAdapter;
-import com.makina.ecrins.flora.MainApplication;
+import com.makina.ecrins.flora.BuildConfig;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.content.MainContentProvider;
+import com.makina.ecrins.flora.input.Input;
 import com.makina.ecrins.flora.input.Taxon;
+import com.makina.ecrins.flora.ui.input.PagerFragmentActivity;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Physiognomy as an <code>ExpendableListView</code>.
+ * Physiognomy as an {@code ExpendableListView}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
 public class PhysiognomyFragment
         extends Fragment
         implements IValidateFragment,
+                   IInputFragment,
                    LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = PhysiognomyFragment.class.getName();
+    private static final String KEY_SELECTED_PHYSIOGNOMY_IDS = "KEY_SELECTED_PHYSIOGNOMY_IDS";
 
     private AbstractGroupsCursorAdapter<String> mAdapter;
 
@@ -54,39 +69,64 @@ public class PhysiognomyFragment
 
     protected final Handler mHandler = new Handler();
 
+    private Input mInput;
+    private List<String> mSelectedPhysiognomyGroupNames = new ArrayList<>();
+
     private boolean mListShown;
     private boolean mIsVisibleToUser = false;
+    private AtomicBoolean mBackButtonEvent = new AtomicBoolean();
 
     private ActionMode mMode;
     private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
-
         @Override
-        public boolean onPrepareActionMode(
-                ActionMode mode,
-                Menu menu) {
-
+        public boolean onPrepareActionMode(ActionMode mode,
+                                           Menu menu) {
             return false;
         }
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-
             mMode = null;
+
+            if ((mInput == null) || !mIsVisibleToUser) {
+                return;
+            }
+
+            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+            if (!mBackButtonEvent.get() &&
+                    (currentSelectedTaxon != null) &&
+                    (currentSelectedTaxon.getCurrentSelectedArea() != null) &&
+                    !currentSelectedTaxon.getCurrentSelectedArea()
+                                         .getSelectedPhysiognomy()
+                                         .isEmpty()) {
+                ((PagerFragmentActivity) getActivity()).goToNextPage();
+            }
+
+            if (mBackButtonEvent.getAndSet(false) &&
+                    (currentSelectedTaxon != null) &&
+                    (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
+                currentSelectedTaxon.getCurrentSelectedArea()
+                                    .getSelectedPhysiognomy()
+                                    .clear();
+                mAdapter.notifyDataSetChanged();
+            }
         }
 
         @Override
-        public boolean onCreateActionMode(
-                ActionMode mode,
-                Menu menu) {
+        public boolean onCreateActionMode(ActionMode mode,
+                                          Menu menu) {
+            if (mInput == null) {
+                return false;
+            }
 
-            if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                                   .getCurrentSelectedTaxon() != null) &&
-                    (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
-                    !((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                           .getSelectedPhysiognomy()
-                                                                                                           .isEmpty()) {
+            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+            if ((currentSelectedTaxon != null) &&
+                    (currentSelectedTaxon.getCurrentSelectedArea() != null) &&
+                    !currentSelectedTaxon.getCurrentSelectedArea()
+                                         .getSelectedPhysiognomy()
+                                         .isEmpty()) {
                 final MenuItem menuItem = menu.add(Menu.NONE,
                                                    0,
                                                    Menu.NONE,
@@ -100,23 +140,23 @@ public class PhysiognomyFragment
         }
 
         @Override
-        public boolean onActionItemClicked(
-                final ActionMode mode,
-                final MenuItem item) {
-
+        public boolean onActionItemClicked(final ActionMode mode,
+                                           final MenuItem item) {
             switch (item.getItemId()) {
                 case 0:
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
+                            if (mInput == null) {
+                                return;
+                            }
 
-                            if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                                      .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-                                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                           .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                      .getSelectedPhysiognomy()
-                                                                                                                      .clear();
+                            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+                            if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
+                                currentSelectedTaxon.getCurrentSelectedArea()
+                                                    .getSelectedPhysiognomy()
+                                                    .clear();
                             }
 
                             mAdapter.notifyDataSetChanged();
@@ -131,15 +171,29 @@ public class PhysiognomyFragment
         }
     };
 
-    @Override
-    public View onCreateView(
-            LayoutInflater inflater,
-            ViewGroup container,
-            Bundle savedInstanceState) {
+    private AbstractBaseActivity.OnDispatchKeyEventListener mOnDispatchKeyEventListener = new AbstractBaseActivity.OnDispatchKeyEventListener() {
+        @Override
+        public boolean dispatchKeyEvent(KeyEvent event) {
+            // catch back button event when ActionMode is still active
+            if (mMode != null) {
+                if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && (event.getAction() == KeyEvent.ACTION_UP || event.getAction() == KeyEvent.ACTION_DOWN)) {
+                    mBackButtonEvent.set(true);
 
-        View view = inflater.inflate(R.layout.fragment_expandable_list,
-                                     container,
-                                     false);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    };
+
+    @Override
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_expandable_list,
+                                           container,
+                                           false);
 
         mProgressContainer = view.findViewById(R.id.progressContainer);
         mListContainer = view.findViewById(R.id.listContainer);
@@ -150,17 +204,15 @@ public class PhysiognomyFragment
     }
 
     @Override
-    public void onViewCreated(
-            View view,
-            Bundle savedInstanceState) {
-
+    public void onViewCreated(View view,
+                              Bundle savedInstanceState) {
         super.onViewCreated(view,
                             savedInstanceState);
 
         setListShown(false,
                      false);
 
-        mTextViewEmpty.setText(R.string.physionomy_no_data);
+        mTextViewEmpty.setText(R.string.physiognomy_no_data);
 
         mAdapter = new AbstractGroupsCursorAdapter<String>(getActivity(),
                                                            R.layout.simple_expandable_list_item_1,
@@ -178,30 +230,54 @@ public class PhysiognomyFragment
                                                                    android.R.id.text1
                                                            }) {
             @Override
-            public View getChildView(
-                    int groupPosition,
-                    int childPosition,
-                    boolean isLastChild,
-                    View convertView,
-                    ViewGroup parent) {
+            public View getGroupView(int groupPosition,
+                                     boolean isExpanded,
+                                     View convertView,
+                                     ViewGroup parent) {
+                final View view = super.getGroupView(groupPosition,
+                                                     isExpanded,
+                                                     convertView,
+                                                     parent);
 
-                View view = super.getChildView(groupPosition,
-                                               childPosition,
-                                               isLastChild,
-                                               convertView,
-                                               parent);
+                if (!mSelectedPhysiognomyGroupNames.isEmpty()) {
+                    final Cursor cursor = mAdapter.getGroup(groupPosition);
+                    final String groupName = cursor.getString(cursor.getColumnIndex(MainDatabaseHelper.PhysiognomyColumns.GROUP_NAME));
 
-                if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                                       .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                          .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
+                    if (!TextUtils.isEmpty(groupName) && mSelectedPhysiognomyGroupNames.contains(groupName)) {
+                        mExpandableListView.smoothScrollToPosition(mExpandableListView.getFlatListPosition(ExpandableListView.getPackedPositionForGroup(groupPosition)));
+                        mExpandableListView.expandGroup(groupPosition);
+                    }
+                }
+
+                return view;
+            }
+
+            @Override
+            public View getChildView(int groupPosition,
+                                     int childPosition,
+                                     boolean isLastChild,
+                                     View convertView,
+                                     ViewGroup parent) {
+                final View view = super.getChildView(groupPosition,
+                                                     childPosition,
+                                                     isLastChild,
+                                                     convertView,
+                                                     parent);
+
+                if (mInput == null) {
+                    return view;
+                }
+
+                final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+                if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
                     final CheckedTextView checkedTextView = (CheckedTextView) view.findViewById(android.R.id.text1);
                     final long childId = mAdapter.getChildId(groupPosition,
                                                              childPosition);
 
-                    checkedTextView.setChecked(((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                          .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                     .getSelectedPhysiognomy()
-                                                                                                                                     .contains(childId));
+                    checkedTextView.setChecked(currentSelectedTaxon.getCurrentSelectedArea()
+                                                                   .getSelectedPhysiognomy()
+                                                                   .contains(childId));
                 }
 
                 return view;
@@ -209,33 +285,28 @@ public class PhysiognomyFragment
 
             @Override
             protected LoaderManager getLoaderManager() {
-
                 return PhysiognomyFragment.this.getLoaderManager();
             }
 
             @Override
             protected String getGroupId(Cursor groupCursor) {
-
                 return groupCursor.getString(groupCursor.getColumnIndex(MainDatabaseHelper.PhysiognomyColumns.GROUP_NAME));
             }
 
             @Override
             protected LoaderCallbacks<Cursor> getLoaderCallbacks() {
-
                 return PhysiognomyFragment.this;
             }
         };
-        mAdapter.setExpendAllGroups(false);
 
         mExpandableListView.setOnGroupClickListener(new OnGroupClickListener() {
             @Override
-            public boolean onGroupClick(
-                    ExpandableListView parent,
-                    View v,
-                    int groupPosition,
-                    long id) {
-
+            public boolean onGroupClick(ExpandableListView parent,
+                                        View v,
+                                        int groupPosition,
+                                        long id) {
                 mAdapter.setExpendAllGroups(false);
+                mSelectedPhysiognomyGroupNames.clear();
 
                 return false;
             }
@@ -243,38 +314,36 @@ public class PhysiognomyFragment
 
         mExpandableListView.setOnChildClickListener(new OnChildClickListener() {
             @Override
-            public boolean onChildClick(
-                    ExpandableListView parent,
-                    View v,
-                    int groupPosition,
-                    int childPosition,
-                    long id) {
+            public boolean onChildClick(ExpandableListView parent,
+                                        View v,
+                                        int groupPosition,
+                                        int childPosition,
+                                        long id) {
+                if (mInput == null) {
+                    return false;
+                }
 
-                if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                                       .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                                                          .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
+                final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+                if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
                     final CheckedTextView checkedTextView = (CheckedTextView) v.findViewById(android.R.id.text1);
 
-                    if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                              .getSelectedPhysiognomy()
-                                                                                                              .contains(id)) {
-                        ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                              .getSelectedPhysiognomy()
-                                                                                                              .remove(id);
+                    if (currentSelectedTaxon.getCurrentSelectedArea()
+                                            .getSelectedPhysiognomy()
+                                            .contains(id)) {
+                        currentSelectedTaxon.getCurrentSelectedArea()
+                                            .getSelectedPhysiognomy()
+                                            .remove(id);
                     }
                     else {
-                        ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                              .getSelectedPhysiognomy()
-                                                                                                              .add(id);
+                        currentSelectedTaxon.getCurrentSelectedArea()
+                                            .getSelectedPhysiognomy()
+                                            .add(id);
                     }
 
-                    checkedTextView.setChecked(((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                          .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                     .getSelectedPhysiognomy()
-                                                                                                                                     .contains(id));
+                    checkedTextView.setChecked(currentSelectedTaxon.getCurrentSelectedArea()
+                                                                   .getSelectedPhysiognomy()
+                                                                   .contains(id));
 
                     updateActionMode();
                 }
@@ -285,12 +354,10 @@ public class PhysiognomyFragment
 
         mExpandableListView.setEmptyView(mTextViewEmpty);
         mExpandableListView.setAdapter(mAdapter);
-        mExpandableListView.setFastScrollEnabled(true);
     }
 
     @Override
     public void onDestroyView() {
-
         mListShown = false;
 
         mProgressContainer = null;
@@ -301,35 +368,35 @@ public class PhysiognomyFragment
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
-        super.setUserVisibleHint(isVisibleToUser);
-
-        Log.d(TAG,
-              "setUserVisibleHint: isVisible = " +
-                      this.isVisible() +
-                      ", isVisibleToUser = " +
-                      isVisibleToUser);
-
-        mIsVisibleToUser = isVisibleToUser;
-
-        if ((!this.isVisible() || !isVisibleToUser) && (mMode != null)) {
-            Log.d(TAG,
-                  "setUserVisibleHint finish action mode");
-
-            mMode.finish();
+        if (context instanceof AbstractBaseActivity) {
+            ((AbstractBaseActivity) context).setOnDispatchKeyEventListener(mOnDispatchKeyEventListener);
         }
     }
 
     @Override
-    public int getResourceTitle() {
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
 
+        mIsVisibleToUser = isVisibleToUser;
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "setUserVisibleHint: " + mIsVisibleToUser);
+        }
+
+        updateActionMode();
+    }
+
+    @Override
+    public int getResourceTitle() {
         return R.string.pager_fragment_physiognomy_title;
     }
 
     @Override
     public boolean getPagingEnabled() {
-
         return true;
     }
 
@@ -341,33 +408,79 @@ public class PhysiognomyFragment
 
     @Override
     public void refreshView() {
-        // prepare the loader, either re-connect with an existing one, or start a new one
-        getLoaderManager().restartLoader(-1,
-                                         null,
-                                         this);
+        final Bundle args = new Bundle();
 
-        // start out with a progress indicator
-        setListShown(false,
-                     true);
+        if (mInput != null) {
+            final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+            if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null) && !currentSelectedTaxon.getCurrentSelectedArea()
+                                                                                                                                  .getSelectedPhysiognomy()
+                                                                                                                                  .isEmpty()) {
+                final List<Long> selectedPhysiognomyIds = currentSelectedTaxon.getCurrentSelectedArea()
+                                                                              .getSelectedPhysiognomy();
+                long[] selectedIds = new long[selectedPhysiognomyIds.size()];
+
+                for (int i = 0; i < selectedPhysiognomyIds.size(); i++) {
+                    selectedIds[i] = selectedPhysiognomyIds.get(i);
+                }
+
+                args.putLongArray(KEY_SELECTED_PHYSIOGNOMY_IDS,
+                                  selectedIds);
+            }
+        }
+
+        if (isAdded()) {
+            // prepare the loader, either re-connect with an existing one, or start a new one
+            getLoaderManager().restartLoader(args.containsKey(KEY_SELECTED_PHYSIOGNOMY_IDS) ? -2 : -1,
+                                             args,
+                                             this);
+
+            // start out with a progress indicator
+            setListShown(false,
+                         true);
+        }
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(
-            int id,
-            Bundle args) {
+    public void setInput(@NonNull AbstractInput input) {
+        this.mInput = (Input) input;
+    }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id,
+                                         Bundle args) {
         final String[] projection = {
                 MainDatabaseHelper.PhysiognomyColumns._ID,
                 MainDatabaseHelper.PhysiognomyColumns.GROUP_NAME,
                 MainDatabaseHelper.PhysiognomyColumns.NAME
         };
 
-        if (id == -1) {
+        if (id < 0) {
+            StringBuilder selection = new StringBuilder();
+
+            if (args != null) {
+                final long[] selectedIds = args.getLongArray(KEY_SELECTED_PHYSIOGNOMY_IDS);
+
+                if ((selectedIds != null) && (selectedIds.length > 0)) {
+                    final List<Long> selectedIdsAsArray = new ArrayList<>();
+
+                    for (long selectedId : selectedIds) {
+                        selectedIdsAsArray.add(selectedId);
+                    }
+
+                    selection.append(MainDatabaseHelper.PhysiognomyColumns._ID);
+                    selection.append(" IN (");
+                    selection.append(TextUtils.join(",",
+                                                    selectedIdsAsArray));
+                    selection.append(")");
+                }
+            }
+
             // group cursor
             return new CursorLoader(getActivity(),
                                     MainContentProvider.CONTENT_PHYSIOGNOMY_GROUPS_URI,
                                     projection,
-                                    null,
+                                    (selection.length() == 0) ? null : selection.toString(),
                                     null,
                                     null);
         }
@@ -384,14 +497,31 @@ public class PhysiognomyFragment
     }
 
     @Override
-    public void onLoadFinished(
-            Loader<Cursor> loader,
-            Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader,
+                               Cursor data) {
+        if (loader.getId() == -2) {
+            mSelectedPhysiognomyGroupNames.clear();
 
-        Log.d(TAG,
-              "onLoadFinished " + loader.getId());
+            try {
+                if (data != null) {
+                    while (data.moveToNext()) {
+                        mSelectedPhysiognomyGroupNames.add(data.getString(data.getColumnIndex(MainDatabaseHelper.PhysiognomyColumns.GROUP_NAME)));
+                    }
+                }
+            }
+            finally {
+                if (data != null) {
+                    data.close();
+                }
+            }
 
-        if (loader.getId() == -1) {
+            if (isAdded()) {
+                getLoaderManager().restartLoader(-1,
+                                                 null,
+                                                 this);
+            }
+        }
+        else if (loader.getId() == -1) {
             mAdapter.setGroupCursor(data);
 
             // the list should now be shown
@@ -412,7 +542,7 @@ public class PhysiognomyFragment
                                            data);
             }
             catch (NullPointerException npe) {
-                Log.d(TAG,
+                Log.w(TAG,
                       "onLoadFinished : adapter expired");
             }
         }
@@ -431,7 +561,7 @@ public class PhysiognomyFragment
                                                null);
                 }
                 catch (NullPointerException npe) {
-                    Log.d(TAG,
+                    Log.w(TAG,
                           "onLoaderReset: adapter expired");
                 }
             }
@@ -439,38 +569,33 @@ public class PhysiognomyFragment
     }
 
     private void updateActionMode() {
+        final Taxon currentSelectedTaxon = (mInput == null) ? null : (Taxon) mInput.getCurrentSelectedTaxon();
 
-        if ((((MainApplication) getActivity().getApplication()).getInput()
-                                                               .getCurrentSelectedTaxon() == null) || !mIsVisibleToUser) {
+        if ((currentSelectedTaxon == null) || !mIsVisibleToUser) {
             if (mMode != null) {
                 mMode.finish();
             }
         }
         else {
-            if ((((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                            .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) && isVisible()) {
-                if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                               .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                          .getSelectedPhysiognomy()
-                                                                                                          .isEmpty()) {
+            if ((currentSelectedTaxon.getCurrentSelectedArea() != null) && isVisible()) {
+                if (currentSelectedTaxon.getCurrentSelectedArea()
+                                        .getSelectedPhysiognomy()
+                                        .isEmpty()) {
                     if (mMode != null) {
                         mMode.finish();
                     }
                 }
                 else {
-                    Log.d(TAG,
-                          "updateActionMode");
-
                     if (mMode == null) {
                         mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+                        mMode.setTitle(getResourceTitle());
                     }
 
                     if (mMode != null) {
-                        mMode.setTitle(String.format(getString(R.string.action_title_item_selected),
-                                                     ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                                                           .getSelectedPhysiognomy()
-                                                                                                                                           .size()));
+                        mMode.setSubtitle(String.format(getString(R.string.action_title_item_selected),
+                                                        currentSelectedTaxon.getCurrentSelectedArea()
+                                                                            .getSelectedPhysiognomy()
+                                                                            .size()));
                     }
                 }
             }
@@ -480,16 +605,14 @@ public class PhysiognomyFragment
     /**
      * Control whether the list is being displayed.
      * You can make it not displayed if you are waiting for the initial data to show in it.
-     * During this time an indeterminant progress indicator will be shown instead.
+     * During this time an indeterminate progress indicator will be shown instead.
      *
      * @param shown   If <code>true</code>, the list view is shown; if <code>false</code>, the
      *                progress indicator. The initial value is true.
      * @param animate If <code>true</code>, an animation will be used to transition to the new state.
      */
-    private void setListShown(
-            boolean shown,
-            boolean animate) {
-
+    private void setListShown(boolean shown,
+                              boolean animate) {
         if (mListShown == shown) {
             return;
         }

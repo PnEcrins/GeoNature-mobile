@@ -20,7 +20,7 @@ import com.makina.ecrins.invertebrate.settings.SettingsService;
 import com.makina.ecrins.invertebrate.ui.input.PagerFragmentActivity;
 import com.makina.ecrins.invertebrate.ui.settings.MainPreferencesActivity;
 import com.makina.ecrins.invertebrate.ui.sync.SynchronizationActivity;
-import com.makina.ecrins.maps.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.Feature;
 
 import java.util.List;
 

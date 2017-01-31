@@ -1,7 +1,7 @@
 package com.makina.ecrins.commons.ui.pager;
 
 /**
- * <{@code Fragment} with a validation control step.
+ * {@code Fragment} with a validation control step.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */

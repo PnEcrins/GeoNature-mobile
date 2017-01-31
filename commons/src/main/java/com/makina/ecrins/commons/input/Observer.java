@@ -13,7 +13,7 @@ public class Observer
         implements Parcelable,
                    Comparable<Observer> {
 
-    private long mObserverId;
+    long mObserverId;
     private String mLastname;
     private String mFirstname;
 
@@ -25,6 +25,10 @@ public class Observer
         this.mObserverId = pObserverId;
         this.mLastname = pLastname;
         this.mFirstname = pFirstname;
+    }
+
+    protected Observer() {
+
     }
 
     public Observer(Parcel source) {

@@ -111,9 +111,8 @@ public final class DateTimePickerDialogFragment
                                                                                       .setPositiveButton(R.string.alert_dialog_ok,
                                                                                                          new OnClickListener() {
                                                                                                              @Override
-                                                                                                             public void onClick(
-                                                                                                                     DialogInterface dialog,
-                                                                                                                     int which) {
+                                                                                                             public void onClick(DialogInterface dialog,
+                                                                                                                                 int which) {
 
                                                                                                                  mOnCalendarSetListener.onCalendarSet(mSelectedDateCalendar);
                                                                                                              }
@@ -165,11 +164,10 @@ public final class DateTimePickerDialogFragment
     }
 
     @SuppressLint("NewApi")
-    private void configureDatePicker(
-            @NonNull final DatePicker datePicker,
-            @NonNull final AlertDialog dialog,
-            @Nullable final Date minDate,
-            @Nullable final Date maxDate) {
+    private void configureDatePicker(@NonNull final DatePicker datePicker,
+                                     @NonNull final AlertDialog dialog,
+                                     @Nullable final Date minDate,
+                                     @Nullable final Date maxDate) {
 
         // bug fix: DatePicker and NumberPicker causes 'force close' when rotating screen
         // see: https://code.google.com/p/android/issues/detail?id=22754
@@ -183,11 +181,10 @@ public final class DateTimePickerDialogFragment
                         mSelectedDateCalendar.get(Calendar.DAY_OF_MONTH),
                         new OnDateChangedListener() {
                             @Override
-                            public void onDateChanged(
-                                    DatePicker view,
-                                    int year,
-                                    int monthOfYear,
-                                    int dayOfMonth) {
+                            public void onDateChanged(DatePicker view,
+                                                      int year,
+                                                      int monthOfYear,
+                                                      int dayOfMonth) {
 
                                 mSelectedDateCalendar.set(Calendar.YEAR,
                                                           year);
@@ -229,10 +226,9 @@ public final class DateTimePickerDialogFragment
         }
     }
 
-    private void configureTimePicker(
-            @NonNull final TimePicker timePicker,
-            @NonNull final AlertDialog dialog,
-            final int timeInterval) {
+    private void configureTimePicker(@NonNull final TimePicker timePicker,
+                                     @NonNull final AlertDialog dialog,
+                                     final int timeInterval) {
 
         // bug fix: TimePicker and NumberPicker causes 'force close' when rotating screen
         // see: https://code.google.com/p/android/issues/detail?id=22754
@@ -256,10 +252,9 @@ public final class DateTimePickerDialogFragment
 
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
-            public void onTimeChanged(
-                    TimePicker view,
-                    int hourOfDay,
-                    int minute) {
+            public void onTimeChanged(TimePicker view,
+                                      int hourOfDay,
+                                      int minute) {
 
                 mSelectedDateCalendar.set(Calendar.HOUR_OF_DAY,
                                           hourOfDay);
@@ -275,9 +270,8 @@ public final class DateTimePickerDialogFragment
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void forceInterval(
-            @NonNull final TimePicker timePicker,
-            int timeInterval) {
+    private void forceInterval(@NonNull final TimePicker timePicker,
+                               int timeInterval) {
 
         try {
             Class<?> classForid = Class.forName("com.android.internal.R$id");
@@ -340,7 +334,6 @@ public final class DateTimePickerDialogFragment
          * should NOT be constructed in standard programming.
          */
         private Builder() {
-
             this.mSelectedTabindex = TAB_DATE_INDEX;
             this.mShowTime = true;
             this.mCurrentDate = Calendar.getInstance()
@@ -350,8 +343,8 @@ public final class DateTimePickerDialogFragment
             this.mTimeInterval = 1;
         }
 
+        @NonNull
         public static Builder newInstance() {
-
             return new Builder();
         }
 
@@ -367,8 +360,8 @@ public final class DateTimePickerDialogFragment
          * @return This {@link com.makina.ecrins.commons.ui.dialog.DateTimePickerDialogFragment.Builder}
          * object to allow for chaining of calls to set methods
          */
+        @NonNull
         public Builder selectTabIndex(int pSelectedTabindex) {
-
             this.mSelectedTabindex = pSelectedTabindex;
 
             return this;
@@ -382,8 +375,8 @@ public final class DateTimePickerDialogFragment
          * @return This {@link com.makina.ecrins.commons.ui.dialog.DateTimePickerDialogFragment.Builder}
          * object to allow for chaining of calls to set methods
          */
+        @NonNull
         public Builder showTime(boolean pShowTime) {
-
             this.mShowTime = pShowTime;
 
             return this;
@@ -397,9 +390,11 @@ public final class DateTimePickerDialogFragment
          * @return This {@link com.makina.ecrins.commons.ui.dialog.DateTimePickerDialogFragment.Builder}
          * object to allow for chaining of calls to set methods
          */
-        public Builder currentDate(Date pCurrentDate) {
-
-            this.mCurrentDate = pCurrentDate;
+        @NonNull
+        public Builder currentDate(@Nullable final Date pCurrentDate) {
+            if (pCurrentDate != null) {
+                this.mCurrentDate = pCurrentDate;
+            }
 
             return this;
         }
@@ -414,8 +409,8 @@ public final class DateTimePickerDialogFragment
          * @return This {@link com.makina.ecrins.commons.ui.dialog.DateTimePickerDialogFragment.Builder}
          * object to allow for chaining of calls to set methods
          */
+        @NonNull
         public Builder minDate(@Nullable final Date pMinDate) {
-
             if (pMinDate == null) {
                 this.mMinDate = null;
             }
@@ -448,8 +443,8 @@ public final class DateTimePickerDialogFragment
          * @return This {@link com.makina.ecrins.commons.ui.dialog.DateTimePickerDialogFragment.Builder}
          * object to allow for chaining of calls to set methods
          */
+        @NonNull
         public Builder maxDate(@Nullable final Date pMaxDate) {
-
             if (pMaxDate == null) {
                 this.mMaxDate = null;
             }
@@ -481,8 +476,8 @@ public final class DateTimePickerDialogFragment
          * @return This {@link com.makina.ecrins.commons.ui.dialog.DateTimePickerDialogFragment.Builder}
          * object to allow for chaining of calls to set methods
          */
+        @NonNull
         public Builder timeInterval(int pTimeInterval) {
-
             this.mTimeInterval = pTimeInterval;
 
             if ((Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) || (this.mTimeInterval < 1) || (this.mTimeInterval > 60)) {
@@ -498,8 +493,8 @@ public final class DateTimePickerDialogFragment
          *
          * @return a new instance of {@link com.makina.ecrins.commons.ui.dialog.DateTimePickerDialogFragment}
          */
+        @NonNull
         public DateTimePickerDialogFragment create() {
-
             final DateTimePickerDialogFragment dialogFragment = new DateTimePickerDialogFragment();
             final Bundle args = new Bundle();
             dialogFragment.setArguments(args);

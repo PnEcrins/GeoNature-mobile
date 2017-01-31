@@ -7,7 +7,7 @@ import com.makina.ecrins.commons.input.Observer;
 import com.makina.ecrins.commons.util.MountPointUtils;
 import com.makina.ecrins.invertebrate.inputs.Input;
 import com.makina.ecrins.invertebrate.settings.AppSettings;
-import com.makina.ecrins.maps.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.Feature;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +29,6 @@ public class MainApplication
     public static final int HANDLER_UNITIES_LOADING = 21;
     public static final int HANDLER_UNITIES_LOADED = 22;
     public static final int HANDLER_UNITIES_LOADED_FAILED = 23;
-
-    public static final int HANDLER_CONNECTIVITY_CHANGE = 30;
 
     private static MainApplication sInstance;
 

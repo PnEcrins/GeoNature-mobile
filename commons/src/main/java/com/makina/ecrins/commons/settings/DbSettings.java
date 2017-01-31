@@ -2,6 +2,7 @@ package com.makina.ecrins.commons.settings;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,55 +15,52 @@ import org.json.JSONObject;
 public class DbSettings
         implements Parcelable {
 
+    public static final DbSettings DEFAULT = new DbSettings("data.db",
+                                                            1);
+
     public static final String KEY_DB_NAME = "name";
     public static final String KEY_DB_VERSION = "version";
 
-    private String mDbName;
-    private int mDbVersion;
+    private String mName;
+    private int mVersion;
 
     public DbSettings(Parcel source) {
-
-        this.mDbName = source.readString();
-        this.mDbVersion = source.readInt();
+        this.mName = source.readString();
+        this.mVersion = source.readInt();
     }
 
-    public DbSettings(
-            String pDbName,
-            int pDbVersion) {
-
-        this.mDbName = pDbName;
-        this.mDbVersion = pDbVersion;
+    public DbSettings(@NonNull final String name,
+                      int version) {
+        this.mName = name;
+        this.mVersion = version;
     }
 
-    public DbSettings(JSONObject json) throws JSONException {
-
-        this.mDbName = json.getString(KEY_DB_NAME);
-        this.mDbVersion = json.getInt(KEY_DB_VERSION);
+    @Deprecated
+    public DbSettings(JSONObject json) throws
+                                       JSONException {
+        this.mName = json.getString(KEY_DB_NAME);
+        this.mVersion = json.getInt(KEY_DB_VERSION);
     }
 
-    public String getDbName() {
-
-        return mDbName;
+    @NonNull
+    public String getName() {
+        return mName;
     }
 
-    public int getDbVersion() {
-
-        return mDbVersion;
+    public int getVersion() {
+        return mVersion;
     }
 
     @Override
     public int describeContents() {
-
         return 0;
     }
 
     @Override
-    public void writeToParcel(
-            Parcel dest,
-            int flags) {
-
-        dest.writeString(mDbName);
-        dest.writeInt(mDbVersion);
+    public void writeToParcel(Parcel dest,
+                              int flags) {
+        dest.writeString(mName);
+        dest.writeInt(mVersion);
     }
 
     public static final Creator<DbSettings> CREATOR = new Creator<DbSettings>() {

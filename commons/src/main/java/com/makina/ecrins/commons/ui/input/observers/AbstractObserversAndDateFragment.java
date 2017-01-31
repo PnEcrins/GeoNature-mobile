@@ -40,11 +40,14 @@ import java.util.Map;
  * {@link com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+ * @deprecated use {@link AbstractObserversAndDateInputFragment} instead
  */
-public abstract class AbstractObserversAndDateFragment extends Fragment
-        implements
-        IValidateFragment,
-        LoaderManager.LoaderCallbacks<Cursor>, OnCalendarSetListener {
+@Deprecated
+public abstract class AbstractObserversAndDateFragment
+        extends Fragment
+        implements IValidateFragment,
+                   LoaderManager.LoaderCallbacks<Cursor>,
+                   OnCalendarSetListener {
     private static final String ALERT_DIALOG_CALENDAR_FRAGMENT = "alert_dialog_calendar_fragment";
     private static final String KEY_SELECTED_OBSERVERS = "selected_observers";
 
@@ -66,32 +69,43 @@ public abstract class AbstractObserversAndDateFragment extends Fragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(AbstractObserversAndDateFragment.class.getName(), "onCreateView");
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        Log.d(AbstractObserversAndDateFragment.class.getName(),
+              "onCreateView");
 
-        View view = inflater.inflate(R.layout.fragment_observers_and_date, container, false);
+        View view = inflater.inflate(R.layout.fragment_observers_and_date,
+                                     container,
+                                     false);
 
-        mObserversAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_2, null,
-                new String[]
-                        {
-                                MainDatabaseHelper.ObserversColumns.LASTNAME,
-                                MainDatabaseHelper.ObserversColumns.FIRSTNAME
-                        },
-                new int[]
-                        {
-                                android.R.id.text1,
-                                android.R.id.text2
-                        }, 0
-        );
-        mDatesAdapter = new DatesAdapter(getActivity(), android.R.layout.simple_list_item_2, getDateFormatResourceId());
+        mObserversAdapter = new SimpleCursorAdapter(getActivity(),
+                                                    android.R.layout.simple_list_item_2,
+                                                    null,
+                                                    new String[] {
+                                                            MainDatabaseHelper.ObserversColumns.LASTNAME,
+                                                            MainDatabaseHelper.ObserversColumns.FIRSTNAME
+                                                    },
+                                                    new int[] {
+                                                            android.R.id.text1,
+                                                            android.R.id.text2
+                                                    },
+                                                    0);
+        mDatesAdapter = new DatesAdapter(getActivity(),
+                                         android.R.layout.simple_list_item_2,
+                                         getDateFormatResourceId());
 
         ListView listSelectedObserversView = (ListView) view.findViewById(R.id.listSelectedObservers);
         listSelectedObserversView.setAdapter(mObserversAdapter);
         listSelectedObserversView.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent,
+                                    View view,
+                                    int position,
+                                    long id) {
                 Intent intent = new Intent(getObserversIntentAction());
-                intent.putExtra(AbstractObserversFragmentActivity.CHOICE_MODE, ListView.CHOICE_MODE_MULTIPLE);
+                intent.putExtra(AbstractObserversFragmentActivity.CHOICE_MODE,
+                                ListView.CHOICE_MODE_MULTIPLE);
                 startActivity(intent);
             }
         });
@@ -100,20 +114,19 @@ public abstract class AbstractObserversAndDateFragment extends Fragment
         listCurrenDateView.setAdapter(mDatesAdapter);
         listCurrenDateView.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent,
+                                    View view,
+                                    int position,
+                                    long id) {
                 final DateTimePickerDialogFragment datePickerDialogFragment = DateTimePickerDialogFragment.Builder.newInstance()
-                        .showTime(false)
-                        .maxDate(
-                                Calendar.getInstance()
-                                        .getTime()
-                        )
-                        .create();
+                                                                                                                  .showTime(false)
+                                                                                                                  .maxDate(Calendar.getInstance()
+                                                                                                                                   .getTime())
+                                                                                                                  .create();
                 datePickerDialogFragment.setOnCalendarSetListener(AbstractObserversAndDateFragment.this);
-                datePickerDialogFragment.show(
-                        AbstractObserversAndDateFragment.this.getActivity()
-                                .getSupportFragmentManager(),
-                        ALERT_DIALOG_CALENDAR_FRAGMENT
-                );
+                datePickerDialogFragment.show(AbstractObserversAndDateFragment.this.getActivity()
+                                                                                   .getSupportFragmentManager(),
+                                              ALERT_DIALOG_CALENDAR_FRAGMENT);
             }
         });
 
@@ -124,28 +137,41 @@ public abstract class AbstractObserversAndDateFragment extends Fragment
     public void onResume() {
         super.onResume();
 
-        Log.d(AbstractObserversAndDateFragment.class.getName(), "onResume");
+        Log.d(AbstractObserversAndDateFragment.class.getName(),
+              "onResume");
 
         // adds the default observer if needed
         if (getSelectedObservers().isEmpty()) {
             if (getDefaultObserver() != null) {
-                getSelectedObservers().put(getDefaultObserver().getObserverId(), getDefaultObserver());
+                getSelectedObservers().put(getDefaultObserver().getObserverId(),
+                                           getDefaultObserver());
             }
         }
 
         // adds a dummy observer used as first entry in the listView to give user the ability to click and access to the observers list
         if (getSelectedObservers().isEmpty()) {
-            MatrixCursor matrixCursor = new MatrixCursor(new String[]{MainDatabaseHelper.ObserversColumns._ID, MainDatabaseHelper.ObserversColumns.LASTNAME, MainDatabaseHelper.ObserversColumns.FIRSTNAME});
-            matrixCursor.addRow(new Object[]{-1, getString(R.string.observers_and_date_add_observer), ""});
+            MatrixCursor matrixCursor = new MatrixCursor(new String[] {
+                    MainDatabaseHelper.ObserversColumns._ID,
+                    MainDatabaseHelper.ObserversColumns.LASTNAME,
+                    MainDatabaseHelper.ObserversColumns.FIRSTNAME
+            });
+            matrixCursor.addRow(new Object[] {
+                    -1,
+                    getString(R.string.observers_and_date_add_observer),
+                    ""
+            });
             mObserversAdapter.swapCursor(matrixCursor);
         }
         else {
-            mSavedState.putParcelableArrayList(KEY_SELECTED_OBSERVERS, new ArrayList<>(getSelectedObservers().values()));
-            getLoaderManager().restartLoader(0, mSavedState, this);
+            mSavedState.putParcelableArrayList(KEY_SELECTED_OBSERVERS,
+                                               new ArrayList<>(getSelectedObservers().values()));
+            getLoaderManager().restartLoader(0,
+                                             mSavedState,
+                                             this);
         }
 
         final DateTimePickerDialogFragment dialogFragment = (DateTimePickerDialogFragment) getActivity().getSupportFragmentManager()
-                .findFragmentByTag(ALERT_DIALOG_CALENDAR_FRAGMENT);
+                                                                                                        .findFragmentByTag(ALERT_DIALOG_CALENDAR_FRAGMENT);
 
         if (dialogFragment != null) {
             dialogFragment.setOnCalendarSetListener(this);
@@ -181,19 +207,21 @@ public abstract class AbstractObserversAndDateFragment extends Fragment
 
     @Override
     public void refreshView() {
-        Log.d(AbstractObserversAndDateFragment.class.getName(), "refreshView");
+        Log.d(AbstractObserversAndDateFragment.class.getName(),
+              "refreshView");
 
-        ((AbstractPagerFragmentActivity) getActivity()).getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        ((AbstractPagerFragmentActivity) getActivity()).getSupportActionBar()
+                                                       .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] projection =
-                {
-                        MainDatabaseHelper.ObserversColumns._ID,
-                        MainDatabaseHelper.ObserversColumns.LASTNAME,
-                        MainDatabaseHelper.ObserversColumns.FIRSTNAME
-                };
+    public Loader<Cursor> onCreateLoader(int id,
+                                         Bundle args) {
+        String[] projection = {
+                MainDatabaseHelper.ObserversColumns._ID,
+                MainDatabaseHelper.ObserversColumns.LASTNAME,
+                MainDatabaseHelper.ObserversColumns.FIRSTNAME
+        };
 
         final List<Observer> selectedObservers = args.getParcelableArrayList(KEY_SELECTED_OBSERVERS);
 
@@ -204,26 +232,39 @@ public abstract class AbstractObserversAndDateFragment extends Fragment
 
         if ((selectedObservers == null) || selectedObservers.isEmpty()) {
             selection.append("?)");
-            selectionArgs.add(Long.valueOf(-1).toString());
+            selectionArgs.add(Long.valueOf(-1)
+                                  .toString());
         }
         else {
             for (Observer observer : selectedObservers) {
                 selection.append("?,");
-                selectionArgs.add(Long.valueOf(observer.getObserverId()).toString());
+                selectionArgs.add(Long.valueOf(observer.getObserverId())
+                                      .toString());
             }
 
-            selection.replace(selection.length() - 1, selection.length(), ")");
+            selection.replace(selection.length() - 1,
+                              selection.length(),
+                              ")");
         }
 
-        Log.d(AbstractObserversAndDateFragment.class.getName(), "selection " + selection);
-        Log.d(AbstractObserversAndDateFragment.class.getName(), "selectionArgs " + selectionArgs.toString());
+        Log.d(AbstractObserversAndDateFragment.class.getName(),
+              "selection " + selection);
+        Log.d(AbstractObserversAndDateFragment.class.getName(),
+              "selectionArgs " + selectionArgs.toString());
 
-        return new CursorLoader(getActivity(), getLoaderUri(), projection, selection.toString(), selectionArgs.toArray(new String[selectionArgs.size()]), null);
+        return new CursorLoader(getActivity(),
+                                getLoaderUri(),
+                                projection,
+                                selection.toString(),
+                                selectionArgs.toArray(new String[selectionArgs.size()]),
+                                null);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.d(AbstractObserversAndDateFragment.class.getName(), "onLoadFinished, observers selected : " + data.getCount());
+    public void onLoadFinished(Loader<Cursor> loader,
+                               Cursor data) {
+        Log.d(AbstractObserversAndDateFragment.class.getName(),
+              "onLoadFinished, observers selected : " + data.getCount());
 
         mObserversAdapter.swapCursor(data);
     }

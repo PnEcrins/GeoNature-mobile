@@ -15,10 +15,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
-import com.makina.ecrins.maps.geojson.Feature;
-import com.makina.ecrins.maps.geojson.geometry.GeoPoint;
-import com.makina.ecrins.maps.geojson.geometry.GeometryUtils;
-import com.makina.ecrins.maps.geojson.geometry.Point;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.GeoPoint;
+import com.makina.ecrins.maps.jts.geojson.GeometryUtils;
 import com.makina.ecrins.search.R;
 
 import java.text.ParseException;
@@ -26,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 /**
- * Custom {@code Dialog} used to display some data from a given {@link com.makina.ecrins.maps.geojson.Feature}.
+ * Custom {@code Dialog} used to display some data from a given {@link Feature}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
@@ -36,9 +35,8 @@ public class FeatureDialogFragment
     private static final String KEY_FEATURE = "feature";
     private static final String KEY_LOCATION = "location";
 
-    public static FeatureDialogFragment newInstance(
-            Feature pFeature,
-            GeoPoint pGeoPoint) {
+    public static FeatureDialogFragment newInstance(Feature pFeature,
+                                                    GeoPoint pGeoPoint) {
 
         final FeatureDialogFragment dialogFragment = new FeatureDialogFragment();
         final Bundle args = new Bundle();
@@ -104,27 +102,27 @@ public class FeatureDialogFragment
                                                                                            .create();
 
         alertDialog.setOnShowListener(new OnShowListener() {
-                                          @Override
-                                          public void onShow(DialogInterface dialog) {
+            @Override
+            public void onShow(DialogInterface dialog) {
 
-                                              new Handler().post(new Runnable() {
-                                                                     @Override
-                                                                     public void run() {
-                                                                         // this fragment may be not attached to the activity
-                                                                         if (isAdded()) {
-                                                                             final GeoPoint location = getArguments().getParcelable(KEY_LOCATION);
-                                                                             final Feature feature = getArguments().getParcelable(KEY_FEATURE);
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // this fragment may be not attached to the activity
+                        if (isAdded()) {
+                            final GeoPoint location = getArguments().getParcelable(KEY_LOCATION);
+                            final Feature feature = getArguments().getParcelable(KEY_FEATURE);
 
-                                                                             if ((location != null) && (feature != null)) {
-                                                                                 textViewFeatureDistance.setText(getString(R.string.alert_dialog_feature_distance,
-                                                                                                                           GeometryUtils.distanceTo(new Point(location),
-                                                                                                                                                    feature.getGeometry())));
-                                                                             }
-                                                                         }
-                                                                     }
-                                                                 });
-                                          }
-                                      });
+                            if ((location != null) && (feature != null)) {
+                                textViewFeatureDistance.setText(getString(R.string.alert_dialog_feature_distance,
+                                                                          GeometryUtils.distanceTo(location.getPoint(),
+                                                                                                   feature.getGeometry())));
+                            }
+                        }
+                    }
+                });
+            }
+        });
 
         return alertDialog;
     }

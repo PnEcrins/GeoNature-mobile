@@ -54,7 +54,9 @@ import java.util.regex.Pattern;
  * Lists all taxa from database.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+ * @deprecated use {@link AbstractTaxaInputListFragment} instead
  */
+@Deprecated
 public abstract class AbstractTaxaFragment extends ListFragment
         implements
         IValidateFragment,
@@ -676,6 +678,7 @@ public abstract class AbstractTaxaFragment extends ListFragment
         }
     }
 
+    @Deprecated
     protected static enum LabelSwitcher {
         LATIN,
         FRENCH

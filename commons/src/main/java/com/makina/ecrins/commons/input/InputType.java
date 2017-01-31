@@ -1,5 +1,8 @@
 package com.makina.ecrins.commons.input;
 
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
+
 /**
  * Describes {@link AbstractInput} type.
  *
@@ -19,9 +22,8 @@ public enum InputType {
     private final int key;
     private final String value;
 
-    InputType(
-            int key,
-            String value) {
+    InputType(int key,
+              String value) {
 
         this.key = key;
         this.value = value;
@@ -35,5 +37,21 @@ public enum InputType {
     public String getValue() {
 
         return this.value;
+    }
+
+    @Nullable
+    public static InputType fromValue(@Nullable final String value) {
+        if (TextUtils.isEmpty(value)) {
+            return null;
+        }
+
+        for (InputType inputType : values()) {
+            if (inputType.getValue()
+                         .equals(value)) {
+                return inputType;
+            }
+        }
+
+        return null;
     }
 }

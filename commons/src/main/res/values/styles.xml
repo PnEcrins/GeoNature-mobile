@@ -10,7 +10,13 @@
         <item name="android:textColorSecondary">#ddd</item>
 
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_action_done</item>
+        <item name="underlinePageIndicatorStyle">@style/UnderlinePageIndicator</item>
 
+    </style>
+
+    <style name="UnderlinePageIndicator">
+        <item name="selectedColor">@color/colorAccent</item>
     </style>
 
     <style name="CommonsDialogStyle" parent="Theme.AppCompat.Dialog">

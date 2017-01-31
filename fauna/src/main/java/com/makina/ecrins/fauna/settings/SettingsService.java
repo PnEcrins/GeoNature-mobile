@@ -10,7 +10,7 @@ import com.makina.ecrins.commons.settings.ServiceStatus;
 import com.makina.ecrins.commons.util.FileUtils;
 import com.makina.ecrins.fauna.MainApplication;
 import com.makina.ecrins.maps.AbstractLoadFeaturesFromFileAsyncTask;
-import com.makina.ecrins.maps.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.Feature;
 
 import org.json.JSONException;
 import org.json.JSONObject;

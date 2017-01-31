@@ -9,22 +9,21 @@ import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 
-import com.makina.ecrins.maps.R;
 import com.makina.ecrins.maps.IWebViewFragment;
+import com.makina.ecrins.maps.R;
+import com.makina.ecrins.maps.content.ITilesLayerDataSource;
+import com.makina.ecrins.maps.jts.geojson.GeoPoint;
+import com.makina.ecrins.maps.location.Geolocation;
 import com.makina.ecrins.maps.settings.CRSSettings;
 import com.makina.ecrins.maps.settings.LayerSettings;
 import com.makina.ecrins.maps.settings.MapSettings;
-import com.makina.ecrins.maps.content.ITilesLayerDataSource;
-import com.makina.ecrins.maps.geojson.geometry.GeoPoint;
-import com.makina.ecrins.maps.geojson.geometry.GeometryUtils;
-import com.makina.ecrins.maps.geojson.geometry.Point;
-import com.makina.ecrins.maps.location.Geolocation;
 import com.makina.ecrins.maps.util.DebugUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -37,7 +36,6 @@ public class MainControl
         extends AbstractControl
         implements LocationListener {
 
-    private static JSONArray jsonArray = new JSONArray();
     private static JSONObject jsonObject = new JSONObject();
 
     private boolean mDisplayWarningAboutLocationOutsideMapBoundaries = true;
@@ -91,10 +89,11 @@ public class MainControl
               "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
 
         // checks if this location is inside the map or not
-        if (GeometryUtils.contains(new Point(new GeoPoint(location.getLatitude(),
-                                                          location.getLongitude())),
-                                   this.mWebViewFragment.getMapSettings()
-                                                        .getPolygonBounds())) {
+        if ((this.mWebViewFragment.getMapSettings()
+                                  .getPolygonBounds() != null) && this.mWebViewFragment.getMapSettings()
+                                                                                       .getPolygonBounds()
+                                                                                       .contains(new GeoPoint(location.getLatitude(),
+                                                                                                              location.getLongitude()).getPoint())) {
             this.mWebViewFragment.setCurrentLocation(location);
 
             if (isControlInitialized()) {
@@ -185,23 +184,31 @@ public class MainControl
 
     @JavascriptInterface
     public String getMaxBounds() {
-        jsonArray = new JSONArray();
+        final List<GeoPoint> maxBounds = this.mWebViewFragment.getMapSettings()
+                                                              .getMaxBounds();
 
-        for (GeoPoint geoPoint : this.mWebViewFragment.getMapSettings()
-                                                      .getMaxBounds()) {
-            jsonArray.put(geoPoint.getJSONObject(GeoPoint.LAT_LON));
+        final StringBuilder jsonArray = new StringBuilder();
+        jsonArray.append('[');
+
+        for (int i = 0; i < maxBounds.size(); i++) {
+            if (i > 0) {
+                jsonArray.append(',');
+            }
+
+            jsonArray.append(maxBounds.get(i)
+                                      .toString());
         }
+
+        jsonArray.append(']');
 
         return jsonArray.toString();
     }
 
     @JavascriptInterface
     public String getCenter() {
-        jsonArray = this.mWebViewFragment.getMapSettings()
-                                         .getCenter()
-                                         .getJSONObject(GeoPoint.LAT_LON);
-
-        return jsonArray.toString();
+        return this.mWebViewFragment.getMapSettings()
+                                    .getCenter()
+                                    .toString();
     }
 
     @JavascriptInterface
@@ -257,10 +264,14 @@ public class MainControl
 
     @JavascriptInterface
     public String getMetadata(String mbTilesSource) {
-        jsonObject = this.mWebViewFragment.getTilesLayersDataSource(mbTilesSource)
-                                          .getMetadata();
+        final ITilesLayerDataSource dataSource = this.mWebViewFragment.getTilesLayersDataSource(mbTilesSource);
 
-        return jsonObject.toString();
+        if (dataSource == null) {
+            return "{}";
+        }
+
+        return dataSource.getMetadata()
+                         .toString();
     }
 
     /**
@@ -336,7 +347,7 @@ public class MainControl
             }
         }
 
-        jsonArray = new JSONArray(zooms);
+        final JSONArray jsonArray = new JSONArray(zooms);
 
         return jsonArray.toString();
     }
@@ -347,20 +358,9 @@ public class MainControl
      * @return {@link LayerSettings} as {@link JSONObject}
      */
     @JavascriptInterface
-    public String getSelectedLayer() {
-        try {
-            jsonObject = this.mWebViewFragment.getSelectedLayer()
-                                              .getJSONObject();
-
-            return jsonObject.toString();
-        }
-        catch (JSONException je) {
-            Log.w(MainControl.class.getName(),
-                  je.getMessage(),
-                  je);
-
-            return null;
-        }
+    public String getSelectedLayerName() {
+        return this.mWebViewFragment.getSelectedLayer()
+                                    .getName();
     }
 
     /**
@@ -420,13 +420,6 @@ public class MainControl
     public boolean displayScale() {
         return this.mWebViewFragment.getMapSettings()
                                     .isDisplayScale();
-    }
-
-    @JavascriptInterface
-    public String getDensityDpi() {
-        return this.mWebViewFragment.getMapSettings()
-                                    .getRenderQuality()
-                                    .getValueAsString();
     }
 
     @JavascriptInterface

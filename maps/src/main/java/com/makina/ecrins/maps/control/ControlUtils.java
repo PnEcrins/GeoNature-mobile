@@ -18,7 +18,9 @@ public class ControlUtils {
      * Builds the {@link IControl} name.
      *
      * @param control the {@link IControl} instance on which to build its given name
+     *
      * @return the generated {@link IControl} name.
+     *
      * @see #getControlName(Class)
      * @see IControl#getName()
      */
@@ -30,7 +32,9 @@ public class ControlUtils {
      * Builds the {@link IControl} name.
      *
      * @param controlClass {@link IControl} class on which to build its given name
+     *
      * @return the generated {@link IControl} name.
+     *
      * @see #getControlName(Class)
      * @see IControl#getName()
      */

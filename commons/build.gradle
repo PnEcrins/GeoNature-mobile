@@ -1,13 +1,13 @@
 apply plugin: 'com.android.library'
 
-version = "0.7.1"
+version = "0.7.3"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 10
+        minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.compileSdkVersion
         versionName version
     }
@@ -31,11 +31,11 @@ dependencies {
     compile "com.android.support:appcompat-v7:${rootProject.ext.androidSupportVersion}"
     compile "com.android.support:preference-v7:${rootProject.ext.androidSupportVersion}"
 
-    compile "commons-io:commons-io:2.4"
-    compile "com.viewpagerindicator:library:2.4.1@aar"
+    compile 'commons-io:commons-io:2.4'
 
     testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:2.4'
+    testCompile 'org.robolectric:robolectric:3.1.2'
+    testCompile 'org.mockito:mockito-core:2.2.7'
 }
 
 task('increaseVersionCode') << {

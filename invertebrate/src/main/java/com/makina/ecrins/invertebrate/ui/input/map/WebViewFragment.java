@@ -1,5 +1,6 @@
 package com.makina.ecrins.invertebrate.ui.input.map;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.makina.ecrins.commons.model.MountPoint;
@@ -9,13 +10,13 @@ import com.makina.ecrins.invertebrate.MainApplication;
 import com.makina.ecrins.invertebrate.R;
 import com.makina.ecrins.invertebrate.ui.input.PagerFragmentActivity;
 import com.makina.ecrins.maps.AbstractWebViewFragment;
-import com.makina.ecrins.maps.settings.MapSettings;
 import com.makina.ecrins.maps.control.CenterPositionControl;
 import com.makina.ecrins.maps.control.MenuUnitiesControl;
 import com.makina.ecrins.maps.control.SwitchLayersControl;
 import com.makina.ecrins.maps.control.ZoomControl;
-import com.makina.ecrins.maps.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.Feature;
 import com.makina.ecrins.maps.location.Geolocation;
+import com.makina.ecrins.maps.settings.MapSettings;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,6 +85,7 @@ public class WebViewFragment
         return mapSettings;
     }
 
+    @NonNull
     @Override
     public List<Feature> getFeatures() {
         // may be null

@@ -17,8 +17,8 @@ L.TileLayer.TilesSources = L.TileLayer.extend(
 		var tileData = MainControlHandler.getTile(this._getZoomForUrl(), tilePoint.x, tilePoint.y);
 		
 		// then gets the selected tiles layer for this tile
-		var format = JSON.parse(MainControlHandler.getMetadata(JSON.parse(MainControlHandler.getSelectedLayer()).name)).format;
-		
+		var format = JSON.parse(MainControlHandler.getMetadata(MainControlHandler.getSelectedLayerName())).format;
+
 		if (format)
 		{
 			return "data:image/" + format + ";base64," + tileData;

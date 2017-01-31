@@ -6,8 +6,8 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class RequestHandlerFactoryTest {
         Assert.assertNull(
                 RequestHandlerFactory.getInstance()
                         .getRequestHandler(
-                                Robolectric.application,
+                                RuntimeEnvironment.application,
                                 message
                         )
         );
@@ -40,7 +40,7 @@ public class RequestHandlerFactoryTest {
 
         final AbstractRequestHandler connectClientRequestHandler = RequestHandlerFactory.getInstance()
                 .getRequestHandler(
-                        Robolectric.application,
+                        RuntimeEnvironment.application,
                         message
                 );
 
@@ -55,7 +55,7 @@ public class RequestHandlerFactoryTest {
 
         final AbstractRequestHandler disconnectClientRequestHandler = RequestHandlerFactory.getInstance()
                 .getRequestHandler(
-                        Robolectric.application,
+                        RuntimeEnvironment.application,
                         message
                 );
 
@@ -90,7 +90,7 @@ public class RequestHandlerFactoryTest {
                         )
         );
 
-        requestHandlers.add(new ConnectClientRequestHandler(Robolectric.application));
+        requestHandlers.add(new ConnectClientRequestHandler(RuntimeEnvironment.application));
 
         final AbstractRequestHandler connectClientRequestHandler = RequestHandlerFactory.getInstance()
                 .getRequestHandler(

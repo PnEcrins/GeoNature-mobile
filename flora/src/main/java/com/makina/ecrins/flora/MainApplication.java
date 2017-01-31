@@ -5,19 +5,15 @@ import android.util.Log;
 
 import com.makina.ecrins.commons.input.Observer;
 import com.makina.ecrins.commons.util.MountPointUtils;
-import com.makina.ecrins.flora.input.Input;
 import com.makina.ecrins.flora.settings.AppSettings;
-import com.makina.ecrins.maps.geojson.Feature;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Base class to maintain global application state.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class MainApplication extends Application {
+public class MainApplication
+        extends Application {
 
     public static final int HANDLER_SETTINGS_LOADING_START = 10;
     public static final int HANDLER_SETTINGS_LOADING = 11;
@@ -28,9 +24,7 @@ public class MainApplication extends Application {
 
     private boolean mCloseApplication;
     private AppSettings mAppSettings;
-    private Input mInput;
     private Observer mDefaultObserver;
-    private List<Feature> mUnities;
 
     public static MainApplication getInstance() {
         return sInstance;
@@ -51,9 +45,7 @@ public class MainApplication extends Application {
         */
 
         this.mAppSettings = null;
-        this.mInput = null;
         this.mDefaultObserver = null;
-        this.mUnities = new ArrayList<>();
 
         Log.i(getClass().getName(),
               "internal storage: " + MountPointUtils.getInternalStorage());
@@ -77,27 +69,11 @@ public class MainApplication extends Application {
         this.mAppSettings = pAppSettings;
     }
 
-    public Input getInput() {
-        return mInput;
-    }
-
-    public void setInput(Input pInput) {
-        this.mInput = pInput;
-    }
-
     public Observer getDefaultObserver() {
         return mDefaultObserver;
     }
 
     public void setDefaultObserver(Observer pDefaultObserver) {
         this.mDefaultObserver = pDefaultObserver;
-    }
-
-    public List<Feature> getUnities() {
-        return mUnities;
-    }
-
-    public void setUnities(List<Feature> pUnities) {
-        this.mUnities = pUnities;
     }
 }

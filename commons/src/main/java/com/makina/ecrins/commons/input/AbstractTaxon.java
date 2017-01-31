@@ -3,6 +3,7 @@ package com.makina.ecrins.commons.input;
 import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,8 +24,8 @@ public abstract class AbstractTaxon
     public static final String KEY_OBSERVATION_CRITERION = "criterion";
     public static final String KEY_COMMENT = "comment";
 
-    private long mId;
-    private long mTaxonId;
+    long mId;
+    long mTaxonId;
     private long mClassId;
     private int mClassCount;
     private String mNameEntered;
@@ -111,17 +112,21 @@ public abstract class AbstractTaxon
         this.mCriterionLabel = pCriterionLabel;
     }
 
+    @Nullable
     public String getComment() {
-
         return mComment;
     }
 
-    public void setComment(String pComment) {
-
+    public void setComment(@Nullable final String pComment) {
         this.mComment = pComment;
     }
 
-    public JSONObject getJSONObject() throws JSONException {
+    /**
+     * @deprecated use {@link InputJsonReader} instead
+     */
+    @Deprecated
+    public JSONObject getJSONObject() throws
+                                      JSONException {
 
         JSONObject json = new JSONObject();
         json.put(KEY_ID,
@@ -150,9 +155,8 @@ public abstract class AbstractTaxon
     }
 
     @Override
-    public void writeToParcel(
-            Parcel dest,
-            int flags) {
+    public void writeToParcel(Parcel dest,
+                              int flags) {
 
         dest.writeLong(mId);
         dest.writeLong(mTaxonId);

@@ -1,38 +1,44 @@
 package com.makina.ecrins.commons.ui.pager;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.makina.ecrins.commons.R;
-import com.viewpagerindicator.UnderlinePageIndicator;
+import com.makina.ecrins.commons.ui.AbstractBaseActivity;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * Basic {@code ViewPager} implementation as {@code FragmentActivity}.
+ * Basic {@code ViewPager} implementation as {@code AppCompatActivity}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
 public abstract class AbstractPagerFragmentActivity
-        extends AppCompatActivity
+        extends AbstractBaseActivity
         implements OnClickListener,
                    OnPageChangeListener {
 
-    protected static final String KEY_PAGER_SIZE = "pager_size";
-    protected static final String KEY_PAGER_POSITION = "pager_position";
+    private static final String TAG = AbstractPagerFragmentActivity.class.getName();
+
+    public static final String EXTRA_PAGER_ID = "EXTRA_PAGER_ID";
+    protected static final String KEY_PAGER = "KEY_PAGER";
 
     protected SimpleFragmentPagerAdapter mAdapter;
-    protected Bundle mSavedState;
-    protected EnablePagingViewPager mPager;
+    protected EnablePagingViewPager mViewPager;
     protected Button mPreviousButton;
     protected Button mNextButton;
+
+    protected PagerHelper mPagerHelper;
+    protected Pager mPager;
+    protected boolean mRestorePager = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,72 +46,81 @@ public abstract class AbstractPagerFragmentActivity
 
         setContentView(R.layout.fragment_pager);
 
-        mAdapter = new SimpleFragmentPagerAdapter(this, getSupportFragmentManager());
-        mPager = (EnablePagingViewPager) findViewById(R.id.pager);
-        mPager.setAdapter(mAdapter);
+        mPagerHelper = new PagerHelper(this);
+
+        mAdapter = new SimpleFragmentPagerAdapter(this,
+                                                  getSupportFragmentManager());
+        mViewPager = (EnablePagingViewPager) findViewById(R.id.pager);
+        mViewPager.setAdapter(mAdapter);
 
         mPreviousButton = (Button) findViewById(R.id.previousButton);
         mNextButton = (Button) findViewById(R.id.nextButton);
+
+        if (getIntent().hasExtra(EXTRA_PAGER_ID)) {
+            mPager = mPagerHelper.load(getIntent().getLongExtra(EXTRA_PAGER_ID,
+                                                                0L));
+            Log.d(TAG,
+                  "onCreate, pager loaded: " + mPager);
+        }
+
+        if (mPager == null) {
+            mPager = (savedInstanceState == null) ? new Pager() : (Pager) savedInstanceState.getParcelable(KEY_PAGER);
+        }
+
+        if (mPager == null) {
+            mPager = new Pager();
+        }
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        if (savedInstanceState == null) {
-            Log.d(AbstractPagerFragmentActivity.class.getName(), "onPostCreate, savedInstanceState null");
+        final UnderlinePageIndicator indicator = (UnderlinePageIndicator) findViewById(R.id.indicator);
+        indicator.setViewPager(mViewPager);
+        mViewPager.addOnPageChangeListener(this);
 
-            mSavedState = new Bundle();
-
-            for (Integer fragmentKey : getPagerFragments().keySet()) {
-                IValidateFragment fragment = getPagerFragments().get(fragmentKey);
-
-                if (fragment instanceof Fragment) {
-                    mAdapter.getFragments().put(fragmentKey, (Fragment) fragment);
-                }
-                else {
-                    Log.w(AbstractPagerFragmentActivity.class.getName(), "fragment '" + fragmentKey + "' must extends Fragment class");
-                }
-            }
-
-            mAdapter.notifyDataSetChanged();
-            mSavedState.putInt(KEY_PAGER_SIZE, getPagerFragments().size());
-            mSavedState.putInt(KEY_PAGER_POSITION, mPager.getCurrentItem());
-        }
-        else {
-            Log.d(AbstractPagerFragmentActivity.class.getName(), "onPostCreate, savedInstanceState initialized");
-
-            mSavedState = savedInstanceState;
-
-            for (int i = 0; i < mSavedState.getInt(KEY_PAGER_SIZE); i++) {
-                IValidateFragment fragment = getPageFragment(i);
-
-                if (fragment == null) {
-                    // no fragment found through getSupportFragmentManager() so try to find it through getPagerFragments()
-                    fragment = (new ArrayList<>(getPagerFragments().values())).get(i);
-                }
-
-                if (fragment == null) {
-                    Log.w(AbstractPagerFragmentActivity.class.getName(), "onPostCreate : no fragment found at position " + i);
-                }
-                else {
-                    mAdapter.getFragments().put(fragment.getResourceTitle(), (Fragment) fragment);
-                }
-            }
-
-            mAdapter.notifyDataSetChanged();
-            mPager.setCurrentItem(savedInstanceState.getInt(KEY_PAGER_POSITION));
+        if ((savedInstanceState == null) && (mPager.getSize() == 0)) {
+            mPager.setSize(getPagerFragments().size());
+            mPager.setPosition(mViewPager.getCurrentItem());
         }
 
-        setTitle(mAdapter.getPageTitle(mPager.getCurrentItem()));
+        for (int i = 0; i < getPagerFragments().size(); i++) {
+            IValidateFragment fragment = getPageFragment(i);
 
-        UnderlinePageIndicator indicator = (UnderlinePageIndicator) findViewById(R.id.indicator);
-        indicator.setViewPager(mPager);
-        indicator.setFades(false);
-        indicator.setOnPageChangeListener(this);
+            if (fragment == null) {
+                // no fragment found through getSupportFragmentManager() so try to find it through getPagerFragments()
+                fragment = (new ArrayList<>(getPagerFragments().values())).get(i);
+            }
 
-        mPreviousButton.setEnabled(mPager.getCurrentItem() > 0);
-        mPreviousButton.setVisibility((mPager.getCurrentItem() > 0) ? View.VISIBLE : View.INVISIBLE);
+            if (fragment == null) {
+                Log.w(TAG,
+                      "onPostCreate: no fragment found at position " + i);
+            }
+            else {
+                mAdapter.getFragments()
+                        .put(fragment.getResourceTitle(),
+                             (Fragment) fragment);
+            }
+        }
+
+        mAdapter.notifyDataSetChanged();
+        mViewPager.post(new Runnable() {
+            @Override
+            public void run() {
+                mRestorePager = true;
+                mViewPager.setCurrentItem(mPager.getPosition());
+
+                if (mPager.getPosition() == 0) {
+                    onPageSelected(mViewPager.getCurrentItem());
+                }
+            }
+        });
+
+        setTitle(mAdapter.getPageTitle(mViewPager.getCurrentItem()));
+
+        mPreviousButton.setEnabled(mViewPager.getCurrentItem() > 0);
+        mPreviousButton.setVisibility((mViewPager.getCurrentItem() > 0) ? View.VISIBLE : View.INVISIBLE);
         mPreviousButton.setOnClickListener(this);
 
         mNextButton.setEnabled(false);
@@ -114,7 +129,8 @@ public abstract class AbstractPagerFragmentActivity
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putAll(mSavedState);
+        outState.putParcelable(KEY_PAGER,
+                               mPager);
 
         super.onSaveInstanceState(outState);
     }
@@ -123,20 +139,30 @@ public abstract class AbstractPagerFragmentActivity
     protected void onResume() {
         super.onResume();
 
-        Log.d(AbstractPagerFragmentActivity.class.getName(), "onResume");
+        final IValidateFragment fragment = getPageFragment(mViewPager.getCurrentItem());
 
-        mNextButton.setEnabled((getPageFragment(mPager.getCurrentItem()) == null) || getPageFragment(mPager.getCurrentItem()).validate());
-        mNextButton.setText((mPager.getCurrentItem() < (mAdapter.getCount() - 1)) ? R.string.button_pager_next : R.string.button_pager_finish);
+        mNextButton.setEnabled((fragment == null) || fragment.validate());
+        mNextButton.setText((mViewPager.getCurrentItem() < (mAdapter.getCount() - 1)) ? R.string.button_pager_next : R.string.button_pager_finish);
 
         // refreshes the current view if needed
-        if (getPageFragment(mPager.getCurrentItem()) != null) {
-            getPageFragment(mPager.getCurrentItem()).refreshView();
+        if (fragment != null) {
+            fragment.refreshView();
 
             // disable or enable paging control for the current instance of IValidateFragment
-            mPager.setPagingEnabled(getPageFragment(mPager.getCurrentItem()).getPagingEnabled());
+            mViewPager.setPagingEnabled(fragment.getPagingEnabled());
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mPager.getId() != 0) {
+            mPagerHelper.save(mPager);
+        }
+    }
+
+    @NonNull
     protected abstract Map<Integer, IValidateFragment> getPagerFragments();
 
     protected abstract void performFinishAction();
@@ -144,15 +170,17 @@ public abstract class AbstractPagerFragmentActivity
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.previousButton) {
-            if (mPager.getCurrentItem() > 0) {
-                mPager.setCurrentItem(mPager.getCurrentItem() - 1, true);
+            if (mViewPager.getCurrentItem() > 0) {
+                mViewPager.setCurrentItem(mViewPager.getCurrentItem() - 1,
+                                          true);
             }
         }
         else if (v.getId() == R.id.nextButton) {
-            if (mPager.getCurrentItem() < (mAdapter.getCount() - 1)) {
-                mPager.setCurrentItem(mPager.getCurrentItem() + 1, true);
+            if (mViewPager.getCurrentItem() < (mAdapter.getCount() - 1)) {
+                mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1,
+                                          true);
             }
-            else if (mPager.getCurrentItem() == (mAdapter.getCount() - 1)) {
+            else if (mViewPager.getCurrentItem() == (mAdapter.getCount() - 1)) {
                 // the last page
                 performFinishAction();
             }
@@ -165,104 +193,163 @@ public abstract class AbstractPagerFragmentActivity
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    public void onPageScrolled(int position,
+                               float positionOffset,
+                               int positionOffsetPixels) {
         // nothing to do ...
     }
 
     @Override
     public void onPageSelected(int position) {
-        Log.d(AbstractPagerFragmentActivity.class.getName(), "onPageSelected : " + position);
+        Log.d(TAG,
+              "onPageSelected: " + position);
 
         // sets default paging control
-        mPager.setPagingEnabled(true);
+        mViewPager.setPagingEnabled(true);
 
         // checks validation before switching to the next page
-        if ((position > 0) && !((getPageFragment(position - 1) == null) || getPageFragment(position - 1).validate())) {
-            mPager.setCurrentItem(position - 1, true);
+        final IValidateFragment fragmentAtPreviousPosition = getPageFragment(position - 1);
+
+        if ((position > 0) && !((fragmentAtPreviousPosition == null) || fragmentAtPreviousPosition.validate())) {
+            mViewPager.setCurrentItem(position - 1,
+                                      true);
             return;
         }
 
         // updates title
-        setTitle(mAdapter.getPageTitle(mPager.getCurrentItem()));
+        setTitle(mAdapter.getPageTitle(position));
+
+        final IValidateFragment fragmentAtPosition = getPageFragment(position);
 
         // refreshes the current view if needed
-        if (getPageFragment(position) != null) {
-            getPageFragment(position).refreshView();
+        if (fragmentAtPosition != null) {
+            fragmentAtPosition.refreshView();
 
             // disable or enable paging control for the current instance of IValidateFragment
-            mPager.setPagingEnabled(getPageFragment(position).getPagingEnabled());
+            mViewPager.setPagingEnabled(fragmentAtPosition.getPagingEnabled());
         }
 
         // updates navigation buttons statuses
-        setTitle(mAdapter.getPageTitle(mPager.getCurrentItem()));
 
-        mPreviousButton.setEnabled(mPager.getCurrentItem() > 0);
-        mPreviousButton.setVisibility((mPager.getCurrentItem() > 0) ? View.VISIBLE : View.INVISIBLE);
+        mPreviousButton.setEnabled(position > 0);
+        mPreviousButton.setVisibility((position > 0) ? View.VISIBLE : View.INVISIBLE);
 
-        mNextButton.setText((mPager.getCurrentItem() < (mAdapter.getCount() - 1)) ? R.string.button_pager_next : R.string.button_pager_finish);
-        mNextButton.setEnabled((getPageFragment(position) == null) || getPageFragment(position).validate());
+        mNextButton.setText((position < (mAdapter.getCount() - 1)) ? R.string.button_pager_next : R.string.button_pager_finish);
+        mNextButton.setEnabled((fragmentAtPosition == null) || fragmentAtPosition.validate());
 
-        mSavedState.putInt(KEY_PAGER_POSITION, mPager.getCurrentItem());
+        mPager.setPosition(position);
     }
 
     public void validateCurrentPage() {
-        if (mPager.getCurrentItem() < mAdapter.getCount()) {
-            IValidateFragment fragment = getPageFragment(mPager.getCurrentItem());
+        int currentItem = mViewPager.getCurrentItem();
+
+        if (currentItem < mAdapter.getCount()) {
+            IValidateFragment fragment = getPageFragment(currentItem);
             mNextButton.setEnabled((fragment == null) || fragment.validate());
         }
     }
 
     public void goToPreviousPage() {
-        if (mPager.getCurrentItem() > 0) {
-            mPager.setCurrentItem(mPager.getCurrentItem() - 1, true);
+        int currentItem = mViewPager.getCurrentItem();
+
+        if (currentItem > 0) {
+            mViewPager.setCurrentItem(currentItem - 1,
+                                      true);
         }
     }
 
     public void goToNextPage() {
-        if (mPager.getCurrentItem() < (mAdapter.getCount() - 1)) {
-            mPager.setCurrentItem(mPager.getCurrentItem() + 1, true);
+        int currentItem = mViewPager.getCurrentItem();
+
+        if (currentItem < (mAdapter.getCount() - 1)) {
+            IValidateFragment fragment = getPageFragment(currentItem);
+
+            if ((fragment != null) && fragment.validate()) {
+                Log.d(TAG,
+                      "goToNextPage: " + fragment.getResourceTitle());
+
+                mViewPager.setCurrentItem(currentItem + 1,
+                                          true);
+            }
         }
     }
 
     public void goToPage(int position) {
-        mPager.setCurrentItem(position, true);
+        mViewPager.setCurrentItem(position,
+                                  true);
     }
 
     public void goToPageByKey(int key) {
-        Fragment fragment = mAdapter.getFragments().get(key);
+        Fragment fragment = mAdapter.getFragments()
+                                    .get(key);
 
         if ((fragment != null) && (fragment instanceof IValidateFragment)) {
-            Log.d(AbstractPagerFragmentActivity.class.getName(), "goToPageByKey : key '" + key + "'");
+            Log.d(TAG,
+                  "goToPageByKey: key '" + key + "'");
 
-            mPager.setCurrentItem((new ArrayList<>(mAdapter.getFragments().values())).lastIndexOf(fragment), true);
+            mViewPager.setCurrentItem((new ArrayList<>(mAdapter.getFragments()
+                                                               .values())).lastIndexOf(fragment),
+                                      true);
         }
         else {
-            Log.w(AbstractPagerFragmentActivity.class.getName(), "goToPageByKey : key '" + key + "' undefined");
+            Log.w(TAG,
+                  "goToPageByKey: key '" + key + "' undefined");
         }
     }
 
     public void goToFirstPage() {
-        mPager.setCurrentItem(0, true);
+        mViewPager.setCurrentItem(0,
+                                  true);
     }
 
     public void goToLastPage() {
-        mPager.setCurrentItem(mAdapter.getCount() - 1, true);
+        mViewPager.setCurrentItem(mAdapter.getCount() - 1,
+                                  true);
+    }
+
+    /**
+     * Gets the current {@link IValidateFragment} instance at the current position of this pager.
+     *
+     * @return {@link IValidateFragment} instance
+     */
+    @Nullable
+    public IValidateFragment getCurrentPageFragment() {
+        int currentItem = mViewPager.getCurrentItem();
+
+        IValidateFragment pageFragment = getPageFragment(currentItem);
+
+        if (pageFragment == null) {
+            // no fragment found through getSupportFragmentManager() so try to find it through getPagerFragments()
+            pageFragment = (new ArrayList<>(getPagerFragments().values())).get(currentItem);
+        }
+
+        if (pageFragment == null) {
+            Log.w(TAG,
+                  "getCurrentPageFragment: no fragment found at position " + currentItem);
+        }
+
+        return pageFragment;
     }
 
     /**
      * Gets the current {@link IValidateFragment} instance at the current position of this pager.
      *
      * @param position the position of {@link IValidateFragment} to retrieve
+     *
      * @return {@link IValidateFragment} instance
      */
+    @Nullable
     protected IValidateFragment getPageFragment(Integer position) {
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + ((position == null) ? mPager.getCurrentItem() : position));
+        int currentItem = mViewPager.getCurrentItem();
+
+        final Fragment fragment = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + ((position == null) ? currentItem : position));
 
         if ((fragment != null) && (fragment instanceof IValidateFragment)) {
             return (IValidateFragment) fragment;
         }
         else {
-            Log.w(AbstractPagerFragmentActivity.class.getName(), "getPageFragment : no fragment found through getSupportFragmentManager() at position " + ((position == null) ? mPager.getCurrentItem() : position));
+            Log.w(TAG,
+                  "getPageFragment: no fragment found through getSupportFragmentManager() at position " + ((position == null) ? currentItem : position));
 
             return null;
         }
@@ -272,10 +359,14 @@ public abstract class AbstractPagerFragmentActivity
      * Gets the current {@link IValidateFragment} instance for a given key of this pager.
      *
      * @param key the key of {@link IValidateFragment} to retrieve
+     *
      * @return {@link IValidateFragment} instance
+     *
      * @see AbstractPagerFragmentActivity#getPageFragment(Integer)
      */
+    @Nullable
     protected IValidateFragment getPageFragmentByKey(Integer key) {
-        return getPageFragment((new ArrayList<>(mAdapter.getFragments().keySet())).indexOf(key));
+        return getPageFragment((new ArrayList<>(mAdapter.getFragments()
+                                                        .keySet())).indexOf(key));
     }
 }

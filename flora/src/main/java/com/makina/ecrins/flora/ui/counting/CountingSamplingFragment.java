@@ -1,6 +1,8 @@
 package com.makina.ecrins.flora.ui.counting;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,24 +15,25 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.makina.ecrins.flora.MainApplication;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.input.Area;
-import com.makina.ecrins.flora.input.Taxon;
+import com.makina.ecrins.flora.input.Counting;
+
+import java.text.NumberFormat;
 
 /**
  * Counting: Sampling method.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class CountingSamplingFragment extends Fragment implements OnClickListener {
+public class CountingSamplingFragment
+        extends Fragment
+        implements OnClickListener {
 
-    protected static final String KEY_PLOT_SURFACE = "plot_surface";
-    protected static final String KEY_COUNTING_PLOT = "counting_plot";
-    protected static final String KEY_COUNTING_FERTILE = "counting_fertile";
-    protected static final String KEY_COUNTING_STERILE = "counting_sterile";
+    private static final String TAG = CountingSamplingFragment.class.getName();
 
-    protected Bundle mSavedState;
+    private static final String ARG_AREA = "ARG_AREA";
+    private static final String KEY_COUNTING = "KEY_COUNTING";
 
     protected EditText mEditTextPlotSurface;
     protected EditText mEditTextCountingPlot;
@@ -41,48 +44,51 @@ public class CountingSamplingFragment extends Fragment implements OnClickListene
     protected EditText mEditTextCountingSterile;
     private TextView mTextViewTotalCountingSterile;
 
+    private Area mArea;
+    private Counting mCounting;
+
+    private OnCountingListener mOnCountingListener;
+
+    public CountingSamplingFragment() {
+        // Required empty public constructor
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @return A new instance of fragment {@link CountingSamplingFragment}.
+     */
+    @NonNull
+    public static CountingSamplingFragment newInstance(@NonNull final Area area,
+                                                       @NonNull final Counting counting) {
+        final Bundle args = new Bundle();
+        args.putParcelable(ARG_AREA,
+                           area);
+        args.putParcelable(KEY_COUNTING,
+                           counting);
+
+        final CountingSamplingFragment fragment = new CountingSamplingFragment();
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState == null) {
-            Log.d(CountingSamplingFragment.class.getName(), "onCreate, savedInstanceState null");
-
-            mSavedState = new Bundle();
-        }
-        else {
-            Log.d(CountingSamplingFragment.class.getName(), "onCreate, savedInstanceState initialized");
-
-            mSavedState = savedInstanceState;
-        }
-
-        // restore all data
-        if ((((MainApplication) getActivity().getApplication()).getInput()
-                .getCurrentSelectedTaxon() != null) &&
-                (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-            mSavedState.putDouble(KEY_PLOT_SURFACE, ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                    .getCounting()
-                    .getPlotSurface());
-            mSavedState.putInt(KEY_COUNTING_PLOT, ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                    .getCounting()
-                    .getPlots());
-            mSavedState.putInt(KEY_COUNTING_FERTILE, ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                    .getCounting()
-                    .getCountFertile());
-            mSavedState.putInt(KEY_COUNTING_STERILE, ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                    .getCounting()
-                    .getCountSterile());
-        }
+        mArea = getArguments().getParcelable(ARG_AREA);
+        mCounting = (savedInstanceState == null) ? (Counting) getArguments().getParcelable(KEY_COUNTING) : (Counting) savedInstanceState.getParcelable(KEY_COUNTING);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_counting_sampling, container, false);
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_counting_sampling,
+                                           container,
+                                           false);
 
         mEditTextPlotSurface = (EditText) view.findViewById(R.id.editTextPlotSurface);
         mEditTextCountingPlot = (EditText) view.findViewById(R.id.editTextCountingPlot);
@@ -91,31 +97,38 @@ public class CountingSamplingFragment extends Fragment implements OnClickListene
 
         mEditTextPlotSurface.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(CharSequence s,
+                                      int start,
+                                      int before,
+                                      int count) {
                 // nothing to do ...
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged(CharSequence s,
+                                          int start,
+                                          int count,
+                                          int after) {
                 // nothing to do ...
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.toString()
-                        .isEmpty()) {
-                    mSavedState.putDouble(KEY_PLOT_SURFACE, 0);
+                     .isEmpty()) {
+                    mCounting.setPlotSurface(0);
                     updateCountingSampling(false);
                 }
                 else {
                     try {
-                        mSavedState.putDouble(KEY_PLOT_SURFACE, Double.valueOf(s.toString()));
+                        mCounting.setPlotSurface(Double.valueOf(s.toString()));
                         updateCountingSampling(false);
                     }
                     catch (NumberFormatException nfe) {
-                        Log.w(CountingSamplingFragment.class.getName(), nfe.getMessage());
+                        Log.w(TAG,
+                              nfe.getMessage());
 
-                        mSavedState.putDouble(KEY_PLOT_SURFACE, 0);
+                        mCounting.setPlotSurface(0);
                         updateCountingSampling(false);
                     }
                 }
@@ -124,34 +137,41 @@ public class CountingSamplingFragment extends Fragment implements OnClickListene
 
         mEditTextCountingPlot.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(CharSequence s,
+                                      int start,
+                                      int before,
+                                      int count) {
                 // nothing to do ...
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged(CharSequence s,
+                                          int start,
+                                          int count,
+                                          int after) {
                 // nothing to do ...
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 if (s.toString()
-                        .isEmpty()) {
+                     .isEmpty()) {
                     mButtonCountingMinusPlot.setEnabled(false);
-                    mSavedState.putInt(KEY_COUNTING_PLOT, 0);
+                    mCounting.setPlots(0);
                     updateCountingSampling(false);
                 }
                 else {
                     try {
-                        mSavedState.putInt(KEY_COUNTING_PLOT, Integer.valueOf(s.toString()));
-                        mButtonCountingMinusPlot.setEnabled(mSavedState.getInt(KEY_COUNTING_PLOT) > 0);
+                        mCounting.setPlots(Integer.valueOf(s.toString()));
+                        mButtonCountingMinusPlot.setEnabled(mCounting.getPlots() > 0);
                         updateCountingSampling(false);
                     }
                     catch (NumberFormatException nfe) {
-                        Log.w(CountingSamplingFragment.class.getName(), nfe.getMessage());
+                        Log.w(TAG,
+                              nfe.getMessage());
 
                         mButtonCountingMinusPlot.setEnabled(false);
-                        mSavedState.putInt(KEY_COUNTING_PLOT, 0);
+                        mCounting.setPlots(0);
                         updateCountingSampling(false);
                     }
                 }
@@ -166,27 +186,35 @@ public class CountingSamplingFragment extends Fragment implements OnClickListene
 
         mEditTextCountingFertile.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(CharSequence s,
+                                      int start,
+                                      int before,
+                                      int count) {
                 // nothing to do ...
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged(CharSequence s,
+                                          int start,
+                                          int count,
+                                          int after) {
                 // nothing to do ...
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 if (!s.toString()
-                        .isEmpty()) {
+                      .isEmpty()) {
                     try {
-                        mSavedState.putInt(KEY_COUNTING_FERTILE, Integer.valueOf(s.toString()));
+                        mCounting.setCountFertile(Integer.valueOf(s.toString()));
                         updateCountingSampling(false);
                     }
                     catch (NumberFormatException nfe) {
-                        Log.w(CountingSamplingFragment.class.getName(), nfe.getMessage());
+                        Log.w(TAG,
+                              nfe.getMessage());
 
-                        mEditTextCountingFertile.setText(Integer.toString(0));
+                        mEditTextCountingFertile.setText(NumberFormat.getInstance()
+                                                                     .format(0));
                     }
                 }
             }
@@ -197,33 +225,53 @@ public class CountingSamplingFragment extends Fragment implements OnClickListene
 
         mEditTextCountingSterile.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(CharSequence s,
+                                      int start,
+                                      int before,
+                                      int count) {
                 // nothing to do ...
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged(CharSequence s,
+                                          int start,
+                                          int count,
+                                          int after) {
                 // nothing to do ...
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 if (!s.toString()
-                        .isEmpty()) {
+                      .isEmpty()) {
                     try {
-                        mSavedState.putInt(KEY_COUNTING_STERILE, Integer.valueOf(s.toString()));
+                        mCounting.setCountSterile(Integer.valueOf(s.toString()));
                         updateCountingSampling(false);
                     }
                     catch (NumberFormatException nfe) {
-                        Log.w(CountingSamplingFragment.class.getName(), nfe.getMessage());
+                        Log.w(TAG,
+                              nfe.getMessage());
 
-                        mEditTextCountingSterile.setText(Integer.toString(0));
+                        mEditTextCountingSterile.setText(NumberFormat.getInstance()
+                                                                     .format(0));
                     }
                 }
             }
         });
 
         return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof OnCountingListener) {
+            mOnCountingListener = (OnCountingListener) context;
+        }
+        else {
+            throw new RuntimeException(getContext().toString() + " must implement OnCountingListener");
+        }
     }
 
     @Override
@@ -235,128 +283,99 @@ public class CountingSamplingFragment extends Fragment implements OnClickListene
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        Log.d(CountingSamplingFragment.class.getName(), "onSaveInstanceState");
-
-        outState.putAll(mSavedState);
-
         super.onSaveInstanceState(outState);
+
+        outState.putParcelable(KEY_COUNTING,
+                               mCounting);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.buttonCountingMinusPlot:
-                updateEditText(mEditTextCountingPlot, -1);
+                updateEditText(mEditTextCountingPlot,
+                               -1);
                 break;
             case R.id.buttonCountingPlusPlot:
-                updateEditText(mEditTextCountingPlot, 1);
+                updateEditText(mEditTextCountingPlot,
+                               1);
                 break;
         }
     }
 
-    private void updateEditText(final EditText editText, final int value) {
+    private void updateEditText(final EditText editText,
+                                final int value) {
         int newValue = value;
 
         if ((editText.getText() != null) && !(editText.getText()
-                .toString()
-                .isEmpty())) {
+                                                      .toString()
+                                                      .isEmpty())) {
             try {
                 newValue += Integer.valueOf(editText.getText()
-                        .toString());
+                                                    .toString());
             }
             catch (NumberFormatException nfe) {
-                Log.w(CountingSamplingFragment.class.getName(), nfe.getMessage());
+                Log.w(TAG,
+                      nfe.getMessage());
             }
         }
 
-        editText.setText(Integer.toString((newValue < 0) ? 0 : newValue));
+        editText.setText(NumberFormat.getInstance()
+                                     .format((newValue < 0) ? 0 : newValue));
     }
 
     private void updateCountingSampling(boolean updateEditText) {
-        double computedArea = 0.0;
+        final double computedArea = mArea.getComputedArea();
 
-        if ((((MainApplication) getActivity().getApplication()).getInput()
-                .getCurrentSelectedTaxon() != null) &&
-                (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null)) {
-            final Area selectedArea = ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon()).getCurrentSelectedArea();
+        if (mCounting.getPlotSurface() * mCounting.getPlots() > 0) {
+            final double countingFertile = (computedArea * mCounting.getCountFertile()) / (mCounting.getPlotSurface() * mCounting.getPlots());
+            final double countingSterile = (computedArea * mCounting.getCountSterile()) / (mCounting.getPlotSurface() * mCounting.getPlots());
 
-            if (selectedArea != null) {
-                computedArea = selectedArea.getComputedArea();
-            }
+            mCounting.setTotalFertile(Double.valueOf(countingFertile)
+                                            .intValue());
+            mCounting.setTotalSterile(Double.valueOf(countingSterile)
+                                            .intValue());
 
-            ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                    .getCounting()
-                    .setPlotSurface(mSavedState.getDouble(KEY_PLOT_SURFACE, 0));
-            ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                    .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                    .getCounting()
-                    .setPlots(mSavedState.getInt(KEY_COUNTING_PLOT, 0));
+            mTextViewTotalCountingFertile.setText(getResources().getQuantityString(R.plurals.counting_sampling_fertile_total_count,
+                                                                                   Double.valueOf(countingFertile)
+                                                                                         .intValue(),
+                                                                                   Double.valueOf(countingFertile)
+                                                                                         .intValue()));
+            mTextViewTotalCountingSterile.setText(getResources().getQuantityString(R.plurals.counting_sampling_sterile_total_count,
+                                                                                   Double.valueOf(countingSterile)
+                                                                                         .intValue(),
+                                                                                   Double.valueOf(countingSterile)
+                                                                                         .intValue()));
 
-            if (mSavedState.getDouble(KEY_PLOT_SURFACE, 0) * mSavedState.getInt(KEY_COUNTING_PLOT, 0) > 0) {
-                ((CountingFragmentActivity) getActivity()).enableFinish(true);
+            mOnCountingListener.OnCountingUpdated(mCounting,
+                                                  true);
+        }
+        else {
+            mCounting.setCountFertile(0);
+            mCounting.setCountSterile(0);
+            mCounting.setTotalFertile(0);
+            mCounting.setTotalSterile(0);
 
-                double countingFertile = (computedArea * mSavedState.getInt(KEY_COUNTING_FERTILE, 0)) / (mSavedState.getDouble(KEY_PLOT_SURFACE, 0) * mSavedState.getInt(KEY_COUNTING_PLOT, 0));
-                double countingSterile = (computedArea * mSavedState.getInt(KEY_COUNTING_STERILE, 0)) / (mSavedState.getDouble(KEY_PLOT_SURFACE, 0) * mSavedState.getInt(KEY_COUNTING_PLOT, 0));
+            mTextViewTotalCountingFertile.setText(getResources().getQuantityString(R.plurals.counting_sampling_fertile_total_count,
+                                                                                   0,
+                                                                                   0));
+            mTextViewTotalCountingSterile.setText(getResources().getQuantityString(R.plurals.counting_sampling_sterile_total_count,
+                                                                                   0,
+                                                                                   0));
 
-                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                        .getCounting()
-                        .setCountFertile(mSavedState.getInt(KEY_COUNTING_FERTILE, 0));
-                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                        .getCounting()
-                        .setCountSterile(mSavedState.getInt(KEY_COUNTING_STERILE, 0));
-                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                        .getCounting()
-                        .setTotalFertile(Double.valueOf(countingFertile)
-                                .intValue());
-                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                        .getCounting()
-                        .setTotalSterile(Double.valueOf(countingSterile)
-                                .intValue());
+            mOnCountingListener.OnCountingUpdated(mCounting,
+                                                  false);
+        }
 
-                mTextViewTotalCountingFertile.setText(getResources().getQuantityString(R.plurals.counting_sampling_fertile_total_count, Double.valueOf(countingFertile)
-                        .intValue(), Double.valueOf(countingFertile)
-                        .intValue()));
-                mTextViewTotalCountingSterile.setText(getResources().getQuantityString(R.plurals.counting_sampling_sterile_total_count, Double.valueOf(countingSterile)
-                        .intValue(), Double.valueOf(countingSterile)
-                        .intValue()));
-            }
-            else {
-                ((CountingFragmentActivity) getActivity()).enableFinish(false);
-
-                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                        .getCounting()
-                        .setCountFertile(0);
-                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                        .getCounting()
-                        .setCountSterile(0);
-                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                        .getCounting()
-                        .setTotalFertile(0);
-                ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                        .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                        .getCounting()
-                        .setTotalSterile(0);
-
-                mTextViewTotalCountingFertile.setText(getResources().getQuantityString(R.plurals.counting_sampling_fertile_total_count, 0, 0));
-                mTextViewTotalCountingSterile.setText(getResources().getQuantityString(R.plurals.counting_sampling_sterile_total_count, 0, 0));
-            }
-
-            if (updateEditText) {
-                mEditTextPlotSurface.setText(Double.toString(mSavedState.getDouble(KEY_PLOT_SURFACE, 0)));
-                mEditTextCountingPlot.setText(Integer.toString(mSavedState.getInt(KEY_COUNTING_PLOT, 0)));
-                mEditTextCountingFertile.setText(Integer.toString(mSavedState.getInt(KEY_COUNTING_FERTILE, 0)));
-                mEditTextCountingSterile.setText(Integer.toString(mSavedState.getInt(KEY_COUNTING_STERILE, 0)));
-            }
+        if (updateEditText) {
+            mEditTextPlotSurface.setText(NumberFormat.getInstance()
+                                                     .format(mCounting.getPlotSurface()));
+            mEditTextCountingPlot.setText(NumberFormat.getInstance()
+                                                      .format(mCounting.getPlots()));
+            mEditTextCountingFertile.setText(NumberFormat.getInstance()
+                                                         .format(mCounting.getCountFertile()));
+            mEditTextCountingSterile.setText(NumberFormat.getInstance()
+                                                         .format(mCounting.getCountSterile()));
         }
     }
 }

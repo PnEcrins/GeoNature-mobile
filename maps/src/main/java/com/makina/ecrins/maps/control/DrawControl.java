@@ -4,6 +4,8 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,18 +16,20 @@ import android.view.View.OnClickListener;
 import android.webkit.JavascriptInterface;
 import android.widget.ImageButton;
 
-import com.makina.ecrins.maps.R;
 import com.makina.ecrins.maps.IWebViewFragment;
-import com.makina.ecrins.maps.geojson.Feature;
-import com.makina.ecrins.maps.geojson.FeatureStyle;
-import com.makina.ecrins.maps.geojson.GeoJSONType;
-import com.makina.ecrins.maps.geojson.geometry.GeoPoint;
-import com.makina.ecrins.maps.geojson.geometry.GeometryUtils;
-import com.makina.ecrins.maps.geojson.geometry.LineString;
-import com.makina.ecrins.maps.geojson.geometry.Point;
-import com.makina.ecrins.maps.geojson.geometry.Polygon;
-import com.makina.ecrins.maps.geojson.operation.DistanceFilter;
+import com.makina.ecrins.maps.R;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.FeatureStyle;
+import com.makina.ecrins.maps.jts.geojson.GeoPoint;
+import com.makina.ecrins.maps.jts.geojson.filter.NearestFeaturesFilter;
+import com.makina.ecrins.maps.jts.geojson.io.GeoJsonWriter;
 import com.makina.ecrins.maps.util.DebugUtils;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,44 +49,48 @@ public class DrawControl
         implements OnClickListener,
                    LocationListener {
 
-    protected static final String KEY_ADD_OR_UPDATE_FEATURE = "add_or_update_feature";
+    private static final String KEY_ADD_OR_UPDATE_FEATURE = "add_or_update_feature";
 
-    protected ImageButton mImageButtonAddMarker;
-    protected ImageButton mImageButtonAddPath;
-    protected ImageButton mImageButtonAddPolygon;
-    protected ImageButton mImageButtonEdit;
-    protected ImageButton mImageButtonDelete;
+    private ImageButton mImageButtonAddMarker;
+    private ImageButton mImageButtonAddPath;
+    private ImageButton mImageButtonAddPolygon;
+    private ImageButton mImageButtonEdit;
+    private ImageButton mImageButtonDelete;
 
-    protected boolean mAddingSingleFeature = false;
+    private boolean mAddingSingleFeature = false;
 
-    protected boolean mIsImageButtonAddMarkerEnabled = true;
-    protected boolean mIsImageButtonAddPathEnabled = true;
-    protected boolean mIsImageButtonAddPolygonEnabled = true;
-    protected boolean mIsLocationProviderEnabled = true;
+    private boolean mIsImageButtonAddMarkerEnabled = true;
+    private boolean mIsImageButtonAddPathEnabled = true;
+    private boolean mIsImageButtonAddPolygonEnabled = true;
+    private boolean mIsLocationProviderEnabled = true;
 
-    protected boolean mIsImageButtonAddMarkerSelected = false;
-    protected boolean mIsImageButtonAddPathSelected = false;
-    protected boolean mIsImageButtonAddPolygonSelected = false;
-    protected boolean mIsImageButtonEditSelected = false;
-    protected boolean mIsImageButtonDeleteSelected = false;
-    protected boolean mIsActionMarkerFromLocationSelected = false;
+    private boolean mIsImageButtonAddMarkerSelected = false;
+    private boolean mIsImageButtonAddPathSelected = false;
+    private boolean mIsImageButtonAddPolygonSelected = false;
+    private boolean mIsImageButtonEditSelected = false;
+    private boolean mIsImageButtonDeleteSelected = false;
+    private boolean mIsActionMarkerFromLocationSelected = false;
 
-    protected int mZoom;
+    private int mZoom;
 
-    private final LayoutInflater mInflater;
     private View mView = null;
 
     private OnDrawControlListener mOnDrawControlListener;
 
-    private FeatureStyle mFeatureDefaultStyle = new FeatureStyle().setOpacity(0.9);
-    private FeatureStyle mFeatureAddStyle = new FeatureStyle();
-    private FeatureStyle mFeatureEditStyle = new FeatureStyle();
+    private FeatureStyle mFeatureDefaultStyle;
+    private FeatureStyle mFeatureAddStyle;
+    private FeatureStyle mFeatureEditStyle;
 
     public DrawControl(Context pContext) {
         super(pContext);
 
-        mInflater = (LayoutInflater) pContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
+        mFeatureDefaultStyle = FeatureStyle.Builder.newInstance(pContext)
+                                                   .setOpacity(0.9)
+                                                   .build();
+        mFeatureAddStyle = FeatureStyle.Builder.newInstance(pContext)
+                                               .build();
+        mFeatureEditStyle = FeatureStyle.Builder.newInstance(pContext)
+                                                .build();
         setControlListener(new OnIControlListener() {
             @Override
             public void onControlInitialized() {
@@ -107,23 +115,20 @@ public class DrawControl
                         mIsImageButtonEditSelected = true;
                     }
                     else {
-                        if (mWebViewFragment.getCurrentEditableFeature()
-                                            .getGeometry() != null) {
-                            switch (mWebViewFragment.getCurrentEditableFeature()
-                                                    .getGeometry()
-                                                    .getType()) {
-                                case POINT:
-                                    mIsImageButtonAddMarkerSelected = true;
-                                    break;
-                                case LINE_STRING:
-                                    mIsImageButtonAddPathSelected = true;
-                                    break;
-                                case POLYGON:
-                                    mIsImageButtonAddPolygonSelected = true;
-                                    break;
-                                default:
-                                    break;
-                            }
+                        switch (mWebViewFragment.getCurrentEditableFeature()
+                                                .getGeometry()
+                                                .getGeometryType()) {
+                            case "Point":
+                                mIsImageButtonAddMarkerSelected = true;
+                                break;
+                            case "LineString":
+                                mIsImageButtonAddPathSelected = true;
+                                break;
+                            case "Polygon":
+                                mIsImageButtonAddPolygonSelected = true;
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }
@@ -142,8 +147,9 @@ public class DrawControl
     @Override
     public View getView(boolean forceCreate) {
         if ((this.mView == null) || forceCreate) {
-            this.mView = mInflater.inflate(R.layout.control_draw_toolbar_layout,
-                                           null);
+            this.mView = LayoutInflater.from(getContext())
+                                       .inflate(R.layout.control_draw_toolbar_layout,
+                                                null);
 
             mImageButtonAddMarker = (ImageButton) this.mView.findViewById(R.id.imageButtonAddMarker);
             mImageButtonAddPath = (ImageButton) this.mView.findViewById(R.id.imageButtonAddPath);
@@ -261,7 +267,7 @@ public class DrawControl
 
         if (v.getId() == R.id.imageButtonAddMarker) {
             if (v.isSelected()) {
-                this.mWebViewFragment.loadUrl(getJSUrlPrefix() + ".startDrawFeature(\"" + GeoJSONType.POINT.getValue() + "\")");
+                this.mWebViewFragment.loadUrl(getJSUrlPrefix() + ".startDrawFeature(\"" + Point.class.getSimpleName() + "\")");
             }
             else {
                 this.mWebViewFragment.loadUrl(getJSUrlPrefix() + ".endDrawFeature()");
@@ -269,7 +275,7 @@ public class DrawControl
         }
         else if (v.getId() == R.id.imageButtonAddPath) {
             if (v.isSelected()) {
-                this.mWebViewFragment.loadUrl(getJSUrlPrefix() + ".startDrawFeature(\"" + GeoJSONType.LINE_STRING.getValue() + "\")");
+                this.mWebViewFragment.loadUrl(getJSUrlPrefix() + ".startDrawFeature(\"" + LineString.class.getSimpleName() + "\")");
             }
             else {
                 this.mWebViewFragment.loadUrl(getJSUrlPrefix() + ".endDrawFeature()");
@@ -277,7 +283,7 @@ public class DrawControl
         }
         else if (v.getId() == R.id.imageButtonAddPolygon) {
             if (v.isSelected()) {
-                this.mWebViewFragment.loadUrl(getJSUrlPrefix() + ".startDrawFeature(\"" + GeoJSONType.POLYGON.getValue() + "\")");
+                this.mWebViewFragment.loadUrl(getJSUrlPrefix() + ".startDrawFeature(\"" + Polygon.class.getSimpleName() + "\")");
             }
             else {
                 this.mWebViewFragment.loadUrl(getJSUrlPrefix() + ".endDrawFeature()");
@@ -304,10 +310,11 @@ public class DrawControl
     @Override
     public void onLocationChanged(Location location) {
         if (isControlInitialized()) {
-            boolean checkIfLocationInsideMapBounds = GeometryUtils.contains(new Point(new GeoPoint(location.getLatitude(),
-                                                                                                   location.getLongitude())),
-                                                                            this.mWebViewFragment.getMapSettings()
-                                                                                                 .getPolygonBounds());
+            boolean checkIfLocationInsideMapBounds = (mWebViewFragment.getMapSettings()
+                                                                      .getPolygonBounds() != null) && mWebViewFragment.getMapSettings()
+                                                                                                                      .getPolygonBounds()
+                                                                                                                      .contains(new GeoPoint(location.getLatitude(),
+                                                                                                                                             location.getLongitude()).getPoint());
 
             // checks if this location is inside the map or not
             if (mIsActionMarkerFromLocationSelected && checkIfLocationInsideMapBounds) {
@@ -378,28 +385,83 @@ public class DrawControl
         this.mOnDrawControlListener = pOnDrawControlListener;
     }
 
+    @NonNull
     public FeatureStyle getFeatureDefaultStyle() {
         return mFeatureDefaultStyle;
     }
 
-    public void setFeatureDefaultStyle(FeatureStyle pFeatureDefaultStyle) {
+    public void setFeatureDefaultStyle(@NonNull final FeatureStyle pFeatureDefaultStyle) {
         this.mFeatureDefaultStyle = pFeatureDefaultStyle;
     }
 
+    @NonNull
     public FeatureStyle getFeatureAddStyle() {
         return mFeatureAddStyle;
     }
 
-    public void setFeatureAddStyle(FeatureStyle pFeatureAddStyle) {
+    public void setFeatureAddStyle(@NonNull final FeatureStyle pFeatureAddStyle) {
         this.mFeatureAddStyle = pFeatureAddStyle;
     }
 
+    @NonNull
     public FeatureStyle getFeatureEditStyle() {
         return mFeatureEditStyle;
     }
 
-    public void setFeatureEditStyle(FeatureStyle pFeatureEditStyle) {
+    public void setFeatureEditStyle(@NonNull final FeatureStyle pFeatureEditStyle) {
         this.mFeatureEditStyle = pFeatureEditStyle;
+    }
+
+    /**
+     * Adds a {@code List} of {@link Feature}s to edit.
+     *
+     * @param features a {@code List} of {@link Feature}s
+     */
+    public void setFeatures(@NonNull final List<Feature> features) {
+        getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (isControlInitialized()) {
+                    Log.d(getClass().getName(),
+                          "setFeatures, size: " + features.size());
+
+                    mWebViewFragment.getEditableFeatures()
+                                    .clearAllFeatures();
+                    mWebViewFragment.getEditableFeatures()
+                                    .addAllFeatures(features);
+                    mWebViewFragment.loadUrl(getJSUrlPrefix() + ".setFeatures()");
+                    updateButtons();
+                }
+                else {
+                    Log.w(DrawControl.class.getName(),
+                          "setFeatures: Control '" + getName() + "' is not initialized !");
+                }
+            }
+        });
+    }
+
+    /**
+     * Clears all {@link Feature}s.
+     */
+    public void clearFeatures() {
+        getHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (isControlInitialized()) {
+                    Log.d(getClass().getName(),
+                          "clearFeatures");
+
+                    mWebViewFragment.getEditableFeatures()
+                                    .clearAllFeatures();
+                    mWebViewFragment.loadUrl(getJSUrlPrefix() + ".clearFeatures()");
+                    updateButtons();
+                }
+                else {
+                    Log.w(DrawControl.class.getName(),
+                          "clearFeatures: Control '" + getName() + "' is not initialized !");
+                }
+            }
+        });
     }
 
     /**
@@ -430,85 +492,39 @@ public class DrawControl
 
     @JavascriptInterface
     public String loadFeatures() {
-        try {
-            return mWebViewFragment.getEditableFeatures()
-                                   .getJSONObject()
-                                   .toString();
-        }
-        catch (JSONException je) {
-            Log.w(DrawControl.class.getName(),
-                  je.getMessage(),
-                  je);
+        final String featuresAsJson = new GeoJsonWriter().write(mWebViewFragment.getEditableFeatures());
 
+        if (TextUtils.isEmpty(featuresAsJson)) {
             return "{}";
         }
+
+        return featuresAsJson;
     }
 
     @JavascriptInterface
     public String loadSelectedFeature() {
-        try {
-            if (mWebViewFragment.getCurrentEditableFeature() == null) {
-                return "{}";
-            }
-            else {
-                return mWebViewFragment.getCurrentEditableFeature()
-                                       .getJSONObject()
-                                       .toString();
-            }
+        final String featureAsJson = new GeoJsonWriter().write(mWebViewFragment.getCurrentEditableFeature());
 
-        }
-        catch (JSONException je) {
-            Log.w(DrawControl.class.getName(),
-                  je.getMessage(),
-                  je);
-
+        if (TextUtils.isEmpty(featureAsJson)) {
             return "{}";
         }
+
+        return featureAsJson;
     }
 
     @JavascriptInterface
     public String getFeatureDefaultStyleAsString() {
-        try {
-            return mFeatureDefaultStyle.getJSONObject(getContext())
-                                       .toString();
-        }
-        catch (JSONException je) {
-            Log.w(DrawControl.class.getName(),
-                  je.getMessage(),
-                  je);
-
-            return "{}";
-        }
+        return mFeatureDefaultStyle.toString();
     }
 
     @JavascriptInterface
     public String getFeatureAddStyleAsString() {
-        try {
-            return mFeatureAddStyle.getJSONObject(getContext())
-                                   .toString();
-        }
-        catch (JSONException je) {
-            Log.w(DrawControl.class.getName(),
-                  je.getMessage(),
-                  je);
-
-            return "{}";
-        }
+        return mFeatureAddStyle.toString();
     }
 
     @JavascriptInterface
     public String getFeatureEditStyleAsString() {
-        try {
-            return mFeatureEditStyle.getJSONObject(getContext())
-                                    .toString();
-        }
-        catch (JSONException je) {
-            Log.w(DrawControl.class.getName(),
-                  je.getMessage(),
-                  je);
-
-            return "{}";
-        }
+        return mFeatureEditStyle.toString();
     }
 
     @JavascriptInterface
@@ -520,10 +536,9 @@ public class DrawControl
             public void run() {
                 final GeoPoint location = new GeoPoint(latitude,
                                                        longitude);
-                final Point locationAsPoint = new Point(location);
 
                 Log.d(DrawControl.class.getName(),
-                      "findFeature on location " + location.toString());
+                      "findFeature on location: " + location.toString());
 
                 Feature featureFound = null;
                 final Iterator<Feature> iterator = mWebViewFragment.getEditableFeatures()
@@ -533,25 +548,22 @@ public class DrawControl
                 while ((featureFound == null) && iterator.hasNext()) {
                     Feature featureToCheck = iterator.next();
 
-                    if (GeometryUtils.contains(locationAsPoint,
-                                               featureToCheck.getGeometry())) {
+                    if (featureToCheck.getGeometry()
+                                      .contains(location.getPoint())) {
                         featureFound = featureToCheck;
                     }
                 }
 
                 if (featureFound == null) {
                     Log.d(DrawControl.class.getName(),
-                          "findFeature : no feature found at location " + location.toString() + ", try to find the closest feature ...");
+                          "findFeature: no feature found at location " + location.toString() + ", try to find the closest feature ...");
 
-                    final DistanceFilter distanceFilter = new DistanceFilter(location,
-                                                                             100);
-                    mWebViewFragment.getEditableFeatures()
-                                    .apply(distanceFilter);
-
-                    if (!distanceFilter.getFilteredFeatures()
-                                       .isEmpty()) {
-                        featureFound = distanceFilter.getFilteredFeatures()
-                                                     .get(0);
+                    final List<Feature> filteredFeatures = NearestFeaturesFilter.getFilteredFeatures(location,
+                                                                                                     100d,
+                                                                                                     mWebViewFragment.getEditableFeatures());
+                    // use the closest Feature found
+                    if (!filteredFeatures.isEmpty()) {
+                        featureFound = filteredFeatures.get(0);
                     }
                 }
 
@@ -572,6 +584,7 @@ public class DrawControl
                     else {
                         // refreshes all features
                         if (mWebViewFragment.deleteEditableFeature(featureFound.getId())) {
+                            mWebViewFragment.setCurrentEditableFeature(null);
                             mWebViewFragment.loadUrl(getJSUrlPrefix() + ".loadFeatures()");
                         }
 
@@ -584,46 +597,86 @@ public class DrawControl
 
     @JavascriptInterface
     public void addOrUpdateFeature(final String featureAsString) {
+        Log.d(DrawControl.class.getName(),
+              "addOrUpdateFeature: " + featureAsString);
+
         getHandler().post(new Runnable() {
             @Override
             public void run() {
                 try {
+                    // warning: this is not a real GeoJSON Feature...
                     final JSONObject featureAsJson = new JSONObject(featureAsString);
-                    final Feature feature = new Feature(featureAsJson.getString("key"));
+                    final String id = featureAsJson.getString("key");
 
-                    if (featureAsJson.getString("type")
-                                     .equals(GeoJSONType.POINT.getValue())) {
-                        JSONObject coordinates = featureAsJson.getJSONObject("coordinates");
+                    if (TextUtils.isEmpty(id)) {
+                        Log.w(DrawControl.class.getName(),
+                              "addOrUpdateFeature, No ID defined for Feature: " + featureAsString);
 
-                        if (coordinates.has("lat") && coordinates.has("lng")) {
-                            feature.setGeometry(new Point(new GeoPoint(coordinates.getDouble("lat"),
-                                                                       coordinates.getDouble("lng"))));
-                        }
-                    }
-                    else if (featureAsJson.getString("type")
-                                          .equals(GeoJSONType.LINE_STRING.getValue()) || featureAsJson.getString("type")
-                                                                                                      .equals(GeoJSONType.POLYGON.getValue())) {
-                        JSONArray coordinates = featureAsJson.getJSONArray("coordinates");
-                        List<Point> points = new ArrayList<>();
-
-                        for (int i = 0; i < coordinates.length(); i++) {
-                            points.add(new Point(new GeoPoint(coordinates.getJSONObject(i)
-                                                                         .getDouble("lat"),
-                                                              coordinates.getJSONObject(i)
-                                                                         .getDouble("lng"))));
-                        }
-
-                        if (featureAsJson.getString("type")
-                                         .equals(GeoJSONType.LINE_STRING.getValue())) {
-                            feature.setGeometry(new LineString(points));
-                        }
-                        else if (featureAsJson.getString("type")
-                                              .equals(GeoJSONType.POLYGON.getValue())) {
-                            feature.setGeometry(new Polygon(points));
-                        }
+                        return;
                     }
 
-                    mWebViewFragment.setCurrentEditableFeature(feature);
+                    final String type = featureAsJson.getString("type");
+
+                    if (TextUtils.isEmpty(type)) {
+                        Log.w(DrawControl.class.getName(),
+                              "addOrUpdateFeature, No type defined for Feature: " + featureAsString);
+
+                        return;
+                    }
+
+                    Geometry geometry = null;
+
+                    switch (type) {
+                        case "Point":
+                            JSONObject pointCoordinates = featureAsJson.getJSONObject("coordinates");
+
+                            if (pointCoordinates.has("lat") && pointCoordinates.has("lng")) {
+                                final GeoPoint geoPoint = new GeoPoint(pointCoordinates.getDouble("lat"),
+                                                                       pointCoordinates.getDouble("lng"));
+                                geometry = geoPoint.getPoint();
+                            }
+
+                            break;
+                        case "LineString":
+                        case "Polygon":
+                            final JSONArray arrayCoordinates = featureAsJson.getJSONArray("coordinates");
+                            final List<Coordinate> coordinates = new ArrayList<>();
+
+                            for (int i = 0; i < arrayCoordinates.length(); i++) {
+                                final GeoPoint geoPoint = new GeoPoint(arrayCoordinates.getJSONObject(i)
+                                                                                       .getDouble("lat"),
+                                                                       arrayCoordinates.getJSONObject(i)
+                                                                                       .getDouble("lng"));
+                                coordinates.add(new Coordinate(geoPoint.getPoint()
+                                                                       .getCoordinate()));
+                            }
+
+                            if (type.equals("LineString") && (coordinates.size() > 1)) {
+                                geometry = new GeometryFactory().createLineString(coordinates.toArray(new Coordinate[coordinates.size()]));
+                            }
+
+                            if (type.equals("Polygon") && (coordinates.size() > 2)) {
+                                // add a last coordinate as the same first coordinate to create a valid closed LineString
+                                if (!coordinates.get(0)
+                                                .equals(coordinates.get(coordinates.size() - 1))) {
+                                    coordinates.add(coordinates.get(0));
+                                }
+
+                                geometry = new GeometryFactory().createPolygon(coordinates.toArray(new Coordinate[coordinates.size()]));
+                            }
+
+                            break;
+                    }
+
+                    if (geometry == null) {
+                        Log.w(DrawControl.class.getName(),
+                              "addOrUpdateFeature, No geometry found or valid for Feature: " + featureAsString);
+
+                        return;
+                    }
+
+                    mWebViewFragment.setCurrentEditableFeature(new Feature(id,
+                                                                           geometry));
                 }
                 catch (JSONException je) {
                     Log.w(DrawControl.class.getName(),
@@ -643,7 +696,7 @@ public class DrawControl
 
                 // refreshes all features
                 if (mWebViewFragment.deleteEditableFeature(featureId)) {
-                    mWebViewFragment.loadUrl(getJSUrlPrefix() + ".loadFeatures()");
+                    mWebViewFragment.loadUrl(getJSUrlPrefix() + ".loadFeatures(false)");
                 }
 
                 updateButtons();
@@ -711,7 +764,7 @@ public class DrawControl
         });
     }
 
-    protected void updateButtons() {
+    private void updateButtons() {
         if (isControlInitialized()) {
             boolean checkZoom = mWebViewFragment.getMapSettings()
                                                 .getMinimumZoomPointing() <= mZoom;
@@ -794,25 +847,23 @@ public class DrawControl
             updateButtons();
         }
         else {
-            if (feature.getGeometry() != null) {
-                // specific case for feature type Point
-                if (!mWebViewFragment.getEditableFeatures()
-                                     .hasFeature(feature.getId()) && feature.getGeometry()
-                                                                            .getType()
-                                                                            .equals(GeoJSONType.POINT)) {
-                    getHandler().post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mImageButtonAddMarker.setSelected(false);
-                            mIsImageButtonAddMarkerSelected = false;
-                        }
-                    });
-                }
+            // specific case for feature type Point
+            if (!mWebViewFragment.getEditableFeatures()
+                                 .hasFeature(feature.getId()) && feature.getGeometry()
+                                                                        .getGeometryType()
+                                                                        .equals("Point")) {
+                getHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mImageButtonAddMarker.setSelected(false);
+                        mIsImageButtonAddMarkerSelected = false;
+                    }
+                });
             }
 
             // refreshes all features
             mWebViewFragment.addOrUpdateEditableFeature(feature);
-            mWebViewFragment.loadUrl(getJSUrlPrefix() + ".loadFeatures()");
+            mWebViewFragment.loadUrl(getJSUrlPrefix() + ".loadFeatures(false)");
             mWebViewFragment.setCurrentEditableFeature(null);
 
             updateButtons();

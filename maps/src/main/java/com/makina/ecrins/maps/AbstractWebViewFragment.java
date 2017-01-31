@@ -1,6 +1,7 @@
 package com.makina.ecrins.maps;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -22,7 +23,6 @@ import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
-import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -32,15 +32,12 @@ import com.makina.ecrins.maps.content.ITilesLayerDataSource;
 import com.makina.ecrins.maps.content.TilesLayerDataSourceFactory;
 import com.makina.ecrins.maps.control.IControl;
 import com.makina.ecrins.maps.control.MainControl;
-import com.makina.ecrins.maps.geojson.Feature;
-import com.makina.ecrins.maps.geojson.FeatureCollection;
-import com.makina.ecrins.maps.geojson.geometry.GeometryUtils;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.FeatureCollection;
 import com.makina.ecrins.maps.location.MockLocationProvider;
 import com.makina.ecrins.maps.settings.LayerSettings;
 import com.makina.ecrins.maps.settings.MapSettings;
 import com.makina.ecrins.maps.util.DebugUtils;
-
-import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,6 +55,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class AbstractWebViewFragment
         extends Fragment
         implements IWebViewFragment {
+
+    private static final String TAG = AbstractWebViewFragment.class.getSimpleName();
 
     private static final String KEY_MAP_SETTINGS = "map_settings";
     private static final String KEY_LOCATION = "location";
@@ -97,7 +96,7 @@ public abstract class AbstractWebViewFragment
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Log.d(AbstractWebViewFragment.class.getName(),
+            Log.d(TAG,
                   "onCreate, savedInstanceState null");
 
             mSavedState = new Bundle();
@@ -111,7 +110,7 @@ public abstract class AbstractWebViewFragment
                                       new FeatureCollection());
         }
         else {
-            Log.d(AbstractWebViewFragment.class.getName(),
+            Log.d(TAG,
                   "onCreate, savedInstanceState initialized");
             mSavedState = savedInstanceState;
         }
@@ -119,20 +118,17 @@ public abstract class AbstractWebViewFragment
         mIsTilesLayersDataSourcesInitialized = initializeTilesLayersDataSources();
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        Log.d(AbstractWebViewFragment.class.getName(),
+        Log.d(TAG,
               "onCreate [center : " + getMapSettings().getCenter() + ", zoom : " + getMapSettings().getZoom() + "]");
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
-    @SuppressLint({
-                          "SetJavaScriptEnabled",
-                          "NewApi"
-                  })
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.d(AbstractWebViewFragment.class.getName(),
+        Log.d(TAG,
               "onCreateView");
 
         View view = inflater.inflate(R.layout.fragment_webview,
@@ -151,19 +147,18 @@ public abstract class AbstractWebViewFragment
 
         mWebView.getSettings()
                 .setJavaScriptEnabled(true);
-
-        // noinspection deprecation
-        mWebView.getSettings()
-                .setRenderPriority(RenderPriority.HIGH);
-
         mWebView.getSettings()
                 .setSupportZoom(true);
         mWebView.getSettings()
                 .setBuiltInZoomControls(false);
 
         // see: http://code.google.com/p/android/issues/detail?id=35288
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             mWebView.setLayerType(View.LAYER_TYPE_SOFTWARE,
+                                  null);
+        }
+        else {
+            mWebView.setLayerType(View.LAYER_TYPE_HARDWARE,
                                   null);
         }
 
@@ -174,6 +169,7 @@ public abstract class AbstractWebViewFragment
         mWebView.getSettings().setAppCacheEnabled(true);
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         */
+
         mWebView.getSettings()
                 .setCacheMode(WebSettings.LOAD_NO_CACHE);
 
@@ -185,7 +181,7 @@ public abstract class AbstractWebViewFragment
 
         super.onResume();
 
-        Log.d(AbstractWebViewFragment.class.getName(),
+        Log.d(TAG,
               "onResume");
 
         if (DebugUtils.isDebuggable(getActivity())) {
@@ -209,7 +205,7 @@ public abstract class AbstractWebViewFragment
     @Override
     public void onPause() {
 
-        Log.d(AbstractWebViewFragment.class.getName(),
+        Log.d(TAG,
               "onPause");
 
         mIsMapInitialized.set(false);
@@ -236,7 +232,7 @@ public abstract class AbstractWebViewFragment
     @Override
     public void onDestroyView() {
 
-        Log.d(AbstractWebViewFragment.class.getName(),
+        Log.d(TAG,
               "onDestroyView");
 
         if (mLayout != null) {
@@ -301,7 +297,7 @@ public abstract class AbstractWebViewFragment
 
         super.setUserVisibleHint(isVisibleToUser);
 
-        Log.d(AbstractWebViewFragment.class.getName(),
+        Log.d(TAG,
               "setUserVisibleHint : isVisible = " + this.isVisible() + ", isVisibleToUser = " + isVisibleToUser);
 
         this.mIsMapVisibleToUser.set(isVisibleToUser);
@@ -384,7 +380,7 @@ public abstract class AbstractWebViewFragment
             this.mWebView.loadUrl(url);
         }
         else {
-            Log.w(AbstractWebViewFragment.class.getName(),
+            Log.w(TAG,
                   "unable to load url '" + url + "'");
         }
     }
@@ -392,7 +388,7 @@ public abstract class AbstractWebViewFragment
     @Override
     public void reload() {
 
-        Log.d(AbstractWebViewFragment.class.getName(),
+        Log.d(TAG,
               "reload");
 
         if (!this.mIsMapInitialized.getAndSet(true)) {
@@ -431,11 +427,11 @@ public abstract class AbstractWebViewFragment
     public void addControl(IControl control,
                            ViewGroup parent) {
 
-        Log.d(AbstractWebViewFragment.class.getName(),
+        Log.d(TAG,
               "addControl " + control.getName());
 
         if (this.mControls.containsKey(control.getName())) {
-            Log.w(AbstractWebViewFragment.class.getName(),
+            Log.w(TAG,
                   "addControl: '" + control.getName() + "' is already registered");
         }
         else {
@@ -465,7 +461,7 @@ public abstract class AbstractWebViewFragment
     @SuppressLint("NewApi")
     public void removeControl(IControl control) {
 
-        Log.d(AbstractWebViewFragment.class.getName(),
+        Log.d(TAG,
               "removeControl " + control.getName());
 
         if (control instanceof LocationListener) {
@@ -502,25 +498,23 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public void invalidateMenu() {
+        final Activity activity = getActivity();
 
-        if (getActivity() != null) {
-            ActivityCompat.invalidateOptionsMenu(getActivity());
+        if (activity != null) {
+            ActivityCompat.invalidateOptionsMenu(activity);
         }
     }
 
     @Override
     public FeatureCollection getEditableFeatures() {
-
         return this.mSavedState.getParcelable(KEY_EDITABLE_FEATURES);
     }
 
     public Feature getCurrentEditableFeature() {
-
         return this.mSavedState.getParcelable(KEY_SELECTED_EDITABLE_FEATURE);
     }
 
     public void setCurrentEditableFeature(Feature selectedFeature) {
-
         if (selectedFeature == null) {
             this.mSavedState.remove(KEY_SELECTED_EDITABLE_FEATURE);
         }
@@ -531,21 +525,10 @@ public abstract class AbstractWebViewFragment
     }
 
     @Override
-    public boolean addOrUpdateEditableFeature(Feature selectedFeature) {
-        try {
-            Log.d(AbstractWebViewFragment.class.getName(),
-                  "addOrUpdateEditableFeature " + selectedFeature.getJSONObject()
-                                                                 .toString());
-        }
-        catch (JSONException je) {
-            Log.w(AbstractWebViewFragment.class.getName(),
-                  je.getMessage());
-
-            return false;
-        }
-
-        if ((selectedFeature.getGeometry() != null) && GeometryUtils.isValid(selectedFeature.getGeometry())) {
-            FeatureCollection featureCollection = this.mSavedState.getParcelable(KEY_EDITABLE_FEATURES);
+    public boolean addOrUpdateEditableFeature(@NonNull Feature selectedFeature) {
+        if (selectedFeature.getGeometry()
+                           .isValid()) {
+            final FeatureCollection featureCollection = this.mSavedState.getParcelable(KEY_EDITABLE_FEATURES);
 
             if (featureCollection == null) {
                 return false;
@@ -558,7 +541,7 @@ public abstract class AbstractWebViewFragment
             return true;
         }
         else {
-            Log.w(AbstractWebViewFragment.class.getName(),
+            Log.w(TAG,
                   "addOrUpdateEditableFeature feature '" + selectedFeature.getId() + "' invalid !");
 
             return false;
@@ -568,7 +551,7 @@ public abstract class AbstractWebViewFragment
     @Override
     public boolean deleteEditableFeature(String featureId) {
 
-        Log.d(AbstractWebViewFragment.class.getName(),
+        Log.d(TAG,
               "deleteEditableFeature '" + featureId + "'");
 
         FeatureCollection featureCollection = this.mSavedState.getParcelable(KEY_EDITABLE_FEATURES);
@@ -657,9 +640,8 @@ public abstract class AbstractWebViewFragment
             }
         }
         catch (IOException ioe) {
-            Log.e(AbstractWebViewFragment.class.getName(),
-                  ioe.getMessage(),
-                  ioe);
+            Log.e(TAG,
+                  ioe.getMessage());
         }
 
         return !getTilesLayersDataSources().isEmpty();
@@ -684,8 +666,9 @@ public abstract class AbstractWebViewFragment
 
     private void noTilesSourceFound(LayerSettings pLayerSettings,
                                     Throwable t) {
-        Log.w(AbstractWebViewFragment.class.getName(),
-              t);
+        Log.w(TAG,
+              t.getMessage());
+
         Toast.makeText(getActivity(),
                        String.format(getString(R.string.message_mbtiles_not_found),
                                      pLayerSettings.getName()),

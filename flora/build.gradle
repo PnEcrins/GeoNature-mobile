@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-version = "1.1.0"
+version = "1.2.0"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.makina.ecrins.flora"
-        minSdkVersion 10
+        minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.compileSdkVersion
         versionName version
         buildConfigField "String", "BUILD_DATE", "\"" + new Date().getTime() + "\""
@@ -61,7 +61,9 @@ dependencies {
     compile project(':commons')
     compile project(':maps')
 
-    compile "com.android.support:appcompat-v7:${rootProject.ext.androidSupportVersion}"
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.robolectric:robolectric:3.1.2'
+    testCompile 'org.mockito:mockito-core:2.2.7'
 }
 
 task('increaseVersionCode') << {

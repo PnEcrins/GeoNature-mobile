@@ -2,7 +2,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="app_name" tools:ignore="MissingTranslation">commons</string>
-    <string name="app_version" tools:ignore="MissingTranslation">%1$s (%2$s)\n%3$s</string>
+    <string name="app_version" tools:ignore="MissingTranslation">%1$s (%2$d)\n%3$s</string>
+
+    <string name="activity_observers_title">Observers</string>
 
     <string name="preference_category_observers_no_default_set">Not defined</string>
     <string name="preference_category_about">About</string>
@@ -12,7 +14,7 @@
     <string name="synchro_last_synchronization">Last synchronization</string>
     <string name="synchro_last_synchronization_date">EEE dd MMM yyyy, kk:mm:ss</string>
     <string name="synchro_last_synchronization_never">Never</string>
-    <string name="synchro_inputs_not_synchronized">Number of inputs not synchronized</string>
+    <string name="synchro_inputs_not_synchronized">Inputs not synchronized</string>
 
     <string name="synchro_server_status">Server status</string>
     <string name="synchro_data_transfer_server_mobile">Data transfer (from server)</string>
@@ -61,6 +63,7 @@
     <string name="progress_title">Please wait</string>
     <string name="progress_message_loading_settings">Loading global settings &#8230;</string>
 
+    <string name="message_input_reloaded">Previously started prospecting reloaded</string>
     <string name="message_device_status_waiting">Please wait &#8230;</string>
     <string name="message_settings_not_found">Unable to load settings \'%1$s\'</string>
 
