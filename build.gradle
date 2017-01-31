@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'com.android.tools.build:gradle:2.2.3'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -16,13 +16,13 @@ buildscript {
 allprojects {
     repositories {
         // this order matters
-        maven { url "http://dl.bintray.com/populov/maven" }
         mavenCentral()
         jcenter()
     }
 }
 
 ext {
+    minSdkVersion = 15
     compileSdkVersion = 23
     buildToolsVersion = "23.0.1"
     androidSupportVersion = "23.1.1"
