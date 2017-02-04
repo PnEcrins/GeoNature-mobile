@@ -120,6 +120,11 @@
     <string name="action_delete_taxon">Delete taxon</string>
     <string name="action_comment_add">Add comment</string>
     <string name="action_comment_edit">Edit comment</string>
+    <string name="action_ok">ok</string>
+
+    <string name="snackbar_permissions_not_granted">Permissions were not granted.</string>
+    <string name="snackbar_permission_external_storage_rationale">External storage permission is needed.</string>
+    <string name="snackbar_permission_external_storage_available">External storage Permissions have been granted.</string>
 
     <string name="storage_status_mounted">mounted (rw)</string>
     <string name="storage_status_mounted_ro">mounted (ro)</string>

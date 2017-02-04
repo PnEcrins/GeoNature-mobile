@@ -1,5 +1,6 @@
 package com.makina.ecrins.commons.ui.home;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -28,6 +30,7 @@ import com.makina.ecrins.commons.input.AbstractInputIntentService;
 import com.makina.ecrins.commons.input.InputHelper;
 import com.makina.ecrins.commons.settings.AbstractAppSettings;
 import com.makina.ecrins.commons.settings.AbstractAppSettingsIntentService;
+import com.makina.ecrins.commons.util.PermissionUtils;
 
 /**
  * Home screen {@code Fragment}.
@@ -39,11 +42,14 @@ public class HomeFragment
 
     private static final String TAG = HomeFragment.class.getSimpleName();
 
+    private View mLayout;
     private HomeAdapter mHomeAdapter;
     private Button mButtonStartInput;
     private OnHomeFragmentListener mOnHomeFragmentListener;
 
     private AbstractAppSettings mAppSettings;
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 0;
 
     private InputHelper mInputHelper;
     private InputHelper.OnInputHelperListener mOnInputHelperListener = new InputHelper.OnInputHelperListener() {
@@ -188,6 +194,8 @@ public class HomeFragment
 
         setHasOptionsMenu(true);
 
+        mLayout = view.findViewById(android.R.id.content);
+
         final RecyclerView mRecyclerView = (RecyclerView) view.findViewById(android.R.id.list);
         mRecyclerView.setHasFixedSize(false);
         // use a linear layout manager as default layout manager
@@ -240,7 +248,24 @@ public class HomeFragment
         LocalBroadcastManager.getInstance(getContext())
                              .registerReceiver(mBroadcastReceiver,
                                                new IntentFilter(getBroadcastActionReadAppSettings()));
-        loadAppSettings();
+
+        PermissionUtils.checkSelfPermissions(getContext(),
+                                             new PermissionUtils.OnCheckSelfPermissionListener() {
+                                                 @Override
+                                                 public void onPermissionsGranted() {
+                                                     loadAppSettings();
+                                                 }
+
+                                                 @Override
+                                                 public void onRequestPermissions(@NonNull String... permissions) {
+                                                     PermissionUtils.requestPermissions(getActivity(),
+                                                                                        mLayout,
+                                                                                        R.string.snackbar_permission_external_storage_rationale,
+                                                                                        REQUEST_EXTERNAL_STORAGE,
+                                                                                        permissions);
+                                                 }
+                                             },
+                                             Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         mInputHelper.resume();
     }
@@ -263,6 +288,35 @@ public class HomeFragment
         }
         else {
             throw new RuntimeException(context.toString() + " must implement OnHomeFragmentListener");
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_EXTERNAL_STORAGE:
+                if (PermissionUtils.checkPermissions(grantResults)) {
+                    Snackbar.make(mLayout,
+                                  R.string.snackbar_permission_external_storage_available,
+                                  Snackbar.LENGTH_SHORT)
+                            .show();
+
+                    loadAppSettings();
+                }
+                else {
+                    Snackbar.make(mLayout,
+                                  R.string.snackbar_permissions_not_granted,
+                                  Snackbar.LENGTH_SHORT)
+                            .show();
+                }
+
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode,
+                                                 permissions,
+                                                 grantResults);
         }
     }
 

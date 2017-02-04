@@ -117,6 +117,11 @@
     <string name="action_delete_taxon">Supprimer un taxon</string>
     <string name="action_comment_add">Ajouter un commentaire</string>
     <string name="action_comment_edit">Supprimer un commentaire</string>
+    <string name="action_ok">ok</string>
+
+    <string name="snackbar_permissions_not_granted">Les permissions n\'ont pas été accordées.</string>
+    <string name="snackbar_permission_external_storage_rationale">L\'application requiert la permission d\'accéder au contenu de la mémoire de stockage.</string>
+    <string name="snackbar_permission_external_storage_available">L\'accès à la mémoire de stockage a été accordée.</string>
 
     <string name="storage_status_mounted">monté (accès complet)</string>
     <string name="storage_status_mounted_ro">monté (lecture seule)</string>
