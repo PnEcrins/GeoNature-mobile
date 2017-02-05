@@ -27,7 +27,7 @@ import java.util.Map;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class InputJsonReader {
 
-    private static final String TAG = InputJsonReader.class.getSimpleName();
+    private static final String TAG = InputJsonReader.class.getName();
 
     private String dateFormat;
     private final OnInputJsonReaderListener onInputJsonReaderListener;

@@ -5,6 +5,7 @@ version = "0.7.3"
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
+    publishNonDefault true
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion

@@ -118,24 +118,23 @@ public class MountPointUtils {
      * @return a human representation of the storage size
      */
     @NonNull
-    public static String formatStorageSize(
-            Context context,
-            long storageSize) {
+    public static String formatStorageSize(Context context,
+                                           long storageSize) {
 
         String storageSuffix = "b";
-        float formatedStorageSize = storageSize;
+        float formattedStorageSize = storageSize;
 
-        if (formatedStorageSize >= 1024) {
+        if (formattedStorageSize >= 1024) {
             storageSuffix = "kb";
-            formatedStorageSize /= 1024f;
+            formattedStorageSize /= 1024f;
 
-            if (formatedStorageSize >= 1024) {
+            if (formattedStorageSize >= 1024) {
                 storageSuffix = "mb";
-                formatedStorageSize /= 1024f;
+                formattedStorageSize /= 1024f;
 
-                if (formatedStorageSize >= 1024) {
+                if (formattedStorageSize >= 1024) {
                     storageSuffix = "gb";
-                    formatedStorageSize /= 1024f;
+                    formattedStorageSize /= 1024f;
                 }
             }
         }
@@ -151,7 +150,7 @@ public class MountPointUtils {
         }
 
         return context.getString(stringResource,
-                                 formatedStorageSize);
+                                 formattedStorageSize);
     }
 
     /**
@@ -163,9 +162,8 @@ public class MountPointUtils {
      * @return a human representation of the storage status
      */
     @NonNull
-    public static String formatStorageStatus(
-            Context context,
-            @NonNull final String status) {
+    public static String formatStorageStatus(Context context,
+                                             @NonNull final String status) {
 
         int stringResource = context.getResources()
                                     .getIdentifier("storage_status_" + status,
@@ -185,7 +183,7 @@ public class MountPointUtils {
      * @return a {@code List} of available {@link MountPoint}s
      */
     @NonNull
-    static List<MountPoint> getMountPointsFromVold() {
+    private static List<MountPoint> getMountPointsFromVold() {
 
         final List<MountPoint> mountPoints = new ArrayList<>();
         final File voldFstabFile = new File("/system/etc/vold.fstab");
@@ -288,7 +286,7 @@ public class MountPointUtils {
      * @return a {@code List} of available {@link MountPoint}s
      */
     @NonNull
-    static List<MountPoint> getMountPointsFromSystemEnv() {
+    private static List<MountPoint> getMountPointsFromSystemEnv() {
 
         final List<MountPoint> mountPoints = new ArrayList<>();
 

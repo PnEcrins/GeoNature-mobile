@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
 import com.makina.ecrins.commons.ui.AbstractBaseActivity;
 
@@ -59,8 +60,11 @@ public abstract class AbstractPagerFragmentActivity
         if (getIntent().hasExtra(EXTRA_PAGER_ID)) {
             mPager = mPagerHelper.load(getIntent().getLongExtra(EXTRA_PAGER_ID,
                                                                 0L));
-            Log.d(TAG,
-                  "onCreate, pager loaded: " + mPager);
+
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      "onCreate, pager loaded: " + mPager);
+            }
         }
 
         if (mPager == null) {
@@ -201,8 +205,10 @@ public abstract class AbstractPagerFragmentActivity
 
     @Override
     public void onPageSelected(int position) {
-        Log.d(TAG,
-              "onPageSelected: " + position);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onPageSelected: " + position);
+        }
 
         // sets default paging control
         mViewPager.setPagingEnabled(true);
@@ -265,8 +271,10 @@ public abstract class AbstractPagerFragmentActivity
             IValidateFragment fragment = getPageFragment(currentItem);
 
             if ((fragment != null) && fragment.validate()) {
-                Log.d(TAG,
-                      "goToNextPage: " + fragment.getResourceTitle());
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "goToNextPage: " + fragment.getResourceTitle());
+                }
 
                 mViewPager.setCurrentItem(currentItem + 1,
                                           true);
@@ -284,8 +292,10 @@ public abstract class AbstractPagerFragmentActivity
                                     .get(key);
 
         if ((fragment != null) && (fragment instanceof IValidateFragment)) {
-            Log.d(TAG,
-                  "goToPageByKey: key '" + key + "'");
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      "goToPageByKey: key '" + key + "'");
+            }
 
             mViewPager.setCurrentItem((new ArrayList<>(mAdapter.getFragments()
                                                                .values())).lastIndexOf(fragment),

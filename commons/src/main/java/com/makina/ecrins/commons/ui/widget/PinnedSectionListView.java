@@ -46,8 +46,6 @@ import android.widget.SectionIndexer;
 public class PinnedSectionListView
         extends ListView {
 
-    //-- inner classes
-
     /**
      * List adapter to be implemented for being used with PinnedSectionListView adapter.
      */
@@ -69,8 +67,6 @@ public class PinnedSectionListView
         public int position;
         public long id;
     }
-
-    //-- class fields
 
     // fields used for handling touch events
     private final Rect mTouchRect = new Rect();

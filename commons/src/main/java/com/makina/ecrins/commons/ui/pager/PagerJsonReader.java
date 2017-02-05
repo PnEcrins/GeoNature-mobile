@@ -22,7 +22,7 @@ import java.io.StringReader;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class PagerJsonReader {
 
-    private static final String TAG = PagerJsonReader.class.getSimpleName();
+    private static final String TAG = PagerJsonReader.class.getName();
 
     /**
      * parse a {@code JSON} string to convert as {@link Pager}.

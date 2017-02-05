@@ -25,7 +25,7 @@ import java.util.Calendar;
  */
 public class InputHelper {
 
-    private static final String TAG = InputHelper.class.getSimpleName();
+    private static final String TAG = InputHelper.class.getName();
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
 

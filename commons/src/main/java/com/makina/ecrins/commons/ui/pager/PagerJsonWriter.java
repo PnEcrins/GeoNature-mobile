@@ -17,7 +17,7 @@ import java.io.Writer;
  */
 public class PagerJsonWriter {
 
-    private static final String TAG = PagerJsonWriter.class.getSimpleName();
+    private static final String TAG = PagerJsonWriter.class.getName();
 
     /**
      * Convert the given {@link Pager} as {@code JSON} string.

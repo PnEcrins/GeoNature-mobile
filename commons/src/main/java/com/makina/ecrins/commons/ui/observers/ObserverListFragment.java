@@ -333,7 +333,10 @@ public class ObserverListFragment
                     else {
                         if (mMode == null) {
                             mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
-                            mMode.setTitle(R.string.activity_observers_title);
+
+                            if (mMode != null) {
+                                mMode.setTitle(R.string.activity_observers_title);
+                            }
                         }
 
                         mMode.setSubtitle(String.format(getString(R.string.action_title_item_selected),
@@ -446,7 +449,10 @@ public class ObserverListFragment
                 if (!mSelectedObservers.isEmpty()) {
                     if (mMode == null) {
                         mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
-                        mMode.setTitle(R.string.activity_observers_title);
+
+                        if (mMode != null) {
+                            mMode.setTitle(R.string.activity_observers_title);
+                        }
                     }
 
                     mMode.setSubtitle(String.format(getString(R.string.action_title_item_selected),
@@ -476,7 +482,10 @@ public class ObserverListFragment
 
                     if (mMode == null) {
                         mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
-                        mMode.setTitle(R.string.activity_observers_title);
+
+                        if (mMode != null) {
+                            mMode.setTitle(R.string.activity_observers_title);
+                        }
                     }
 
                     mMode.setSubtitle(String.format(getString(R.string.action_title_item_selected),

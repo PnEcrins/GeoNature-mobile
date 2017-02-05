@@ -28,7 +28,7 @@ public abstract class AbstractInputIntentService
         implements InputJsonReader.OnInputJsonReaderListener,
                    InputJsonWriter.OnInputJsonWriterListener {
 
-    private static final String TAG = AbstractInputIntentService.class.getSimpleName();
+    private static final String TAG = AbstractInputIntentService.class.getName();
 
     private static final String BROADCAST_ACTION = "BROADCAST_ACTION";
 
@@ -153,8 +153,10 @@ public abstract class AbstractInputIntentService
             return;
         }
 
-        Log.d(TAG,
-              "onHandleIntent, action: " + intent.getAction());
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onHandleIntent, action: " + intent.getAction());
+        }
 
         switch (intent.getAction()) {
             case ACTION_READ:
@@ -204,8 +206,10 @@ public abstract class AbstractInputIntentService
                                   Status.FINISHED_WITH_ERRORS);
                 }
                 else {
-                    Log.d(TAG,
-                          "onHandleIntent, " + intent.getAction() + ", input to save: " + inputToSave.getInputId());
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "onHandleIntent, " + intent.getAction() + ", input to save: " + inputToSave.getInputId());
+                    }
 
                     final String inputAsJson = mInputJsonWriter.write(inputToSave);
 
@@ -297,8 +301,10 @@ public abstract class AbstractInputIntentService
                             input);
         }
 
-        Log.d(TAG,
-              "sendBroadcast, action: " + action + ", status: " + status);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "sendBroadcast, action: " + action + ", status: " + status);
+        }
 
         LocalBroadcastManager.getInstance(this)
                              .sendBroadcast(intent);

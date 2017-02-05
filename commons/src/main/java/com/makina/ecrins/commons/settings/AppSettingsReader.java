@@ -23,7 +23,7 @@ import java.io.StringReader;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class AppSettingsReader {
 
-    private static final String TAG = AppSettingsReader.class.getSimpleName();
+    private static final String TAG = AppSettingsReader.class.getName();
 
     private SyncSettingsReader mSyncSettingsReader;
     private final AppSettingsReader.OnAppSettingsReaderListener mOnAppSettingsReaderListener;

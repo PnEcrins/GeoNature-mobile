@@ -13,6 +13,7 @@ import android.widget.AlphabetIndexer;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
 
 import java.util.Collections;
@@ -30,8 +31,10 @@ public class AlphabetSectionIndexerCursorAdapter
         implements SectionIndexer,
                    PinnedSectionListView.PinnedSectionListAdapter {
 
-    public static final int TYPE_NORMAL = 0;
-    public static final int TYPE_HEADER = 1;
+    private static final String TAG = AlphabetSectionIndexerCursorAdapter.class.getName();
+
+    protected static final int TYPE_NORMAL = 0;
+    private static final int TYPE_HEADER = 1;
 
     private static final String ALPHABET = " ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final int TYPE_COUNT = 2;
@@ -270,8 +273,10 @@ public class AlphabetSectionIndexerCursorAdapter
      * @return position of this item
      */
     public int getItemPosition(final long itemId) {
-        Log.d(AlphabetSectionIndexerCursorAdapter.class.getName(),
-              "getItemPosition : mSelectedItemPosition = " + this.mSelectedItemPosition + ", itemId = " + itemId);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "getItemPosition: mSelectedItemPosition = " + this.mSelectedItemPosition + ", itemId = " + itemId);
+        }
 
         if ((this.mSelectedItemPosition == -1) || (itemId != this.mSelectedItem)) {
             final int count = getCount();
@@ -287,8 +292,10 @@ public class AlphabetSectionIndexerCursorAdapter
                 i++;
             }
 
-            Log.d(AlphabetSectionIndexerCursorAdapter.class.getName(),
-                  "getItemPosition : mSelectedItemPosition = " + this.mSelectedItemPosition);
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      "getItemPosition : mSelectedItemPosition = " + this.mSelectedItemPosition);
+            }
 
             if (this.mSelectedItemPosition != -1) {
                 this.mSelectedItem = itemId;

@@ -216,6 +216,7 @@ public abstract class AbstractObserversAndDateInputFragment
         if (mInput == null) {
             Log.w(TAG,
                   "refreshView: null input");
+
             return;
         }
 

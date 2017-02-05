@@ -3,6 +3,7 @@ package com.makina.ecrins.commons.ui.home;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 /**
  * Home screen {@code Activity}.
@@ -13,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 public abstract class AbstractHomeActivity
         extends AppCompatActivity
         implements HomeFragment.OnHomeFragmentListener {
+
+    private static final String TAG = AbstractHomeActivity.class.getName();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,10 +37,14 @@ public abstract class AbstractHomeActivity
         super.onResume();
 
         if (isCloseApplication()) {
+            Log.i(TAG,
+                  "onResume: request closing app");
+
             finish();
         }
     }
 
     protected abstract boolean isCloseApplication();
+
     protected abstract void setCloseApplication(boolean closeApplication);
 }

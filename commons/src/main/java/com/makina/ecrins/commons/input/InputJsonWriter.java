@@ -22,7 +22,7 @@ import java.util.Collection;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class InputJsonWriter {
 
-    private static final String TAG = InputJsonWriter.class.getSimpleName();
+    private static final String TAG = InputJsonWriter.class.getName();
 
     private String dateFormat;
     private final OnInputJsonWriterListener onInputJsonWriterListener;

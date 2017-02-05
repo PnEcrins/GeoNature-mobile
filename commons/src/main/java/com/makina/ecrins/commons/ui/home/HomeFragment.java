@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
 import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.input.AbstractInputIntentService;
@@ -40,7 +41,7 @@ import com.makina.ecrins.commons.util.PermissionUtils;
 public class HomeFragment
         extends Fragment {
 
-    private static final String TAG = HomeFragment.class.getSimpleName();
+    private static final String TAG = HomeFragment.class.getName();
 
     private View mLayout;
     private HomeAdapter mHomeAdapter;
@@ -129,8 +130,10 @@ public class HomeFragment
                 return;
             }
 
-            Log.d(TAG,
-                  "onReceive, action: " + intent.getAction() + ", status: " + status);
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      "onReceive, action: " + intent.getAction() + ", status: " + status);
+            }
 
             if (intent.getAction()
                       .equals(getBroadcastActionReadAppSettings())) {

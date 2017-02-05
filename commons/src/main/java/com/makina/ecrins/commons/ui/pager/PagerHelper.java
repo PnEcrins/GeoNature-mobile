@@ -14,7 +14,7 @@ import android.util.Log;
  */
 public class PagerHelper {
 
-    private static final String TAG = PagerHelper.class.getSimpleName();
+    private static final String TAG = PagerHelper.class.getName();
 
     private static final String KEY_PAGER_PREFIX = "KEY_PAGER_";
 

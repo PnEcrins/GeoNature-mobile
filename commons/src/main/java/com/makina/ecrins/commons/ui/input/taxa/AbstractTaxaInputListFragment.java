@@ -90,12 +90,6 @@ public abstract class AbstractTaxaInputListFragment
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG,
-                      "onCreate, savedInstanceState null");
-            }
-
             mSavedState = new Bundle();
             mSavedState.putSerializable(KEY_SWITCH_LABEL,
                                         LabelSwitcher.FRENCH);
@@ -109,11 +103,6 @@ public abstract class AbstractTaxaInputListFragment
                                                                 true));
         }
         else {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG,
-                      "onCreate, savedInstanceState initialized");
-            }
-
             mSavedState = savedInstanceState;
         }
     }
@@ -165,11 +154,6 @@ public abstract class AbstractTaxaInputListFragment
 
     @Override
     public void onPause() {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG,
-                  "onPause");
-        }
-
         getLoaderManager().destroyLoader(0);
         mAdapter = null;
 
@@ -318,9 +302,11 @@ public abstract class AbstractTaxaInputListFragment
          .setVisibility(View.VISIBLE);
         mAdapter.notifyDataSetChanged();
 
-        Log.d(TAG,
-              "number of taxa : " + mInput.getTaxa()
-                                          .size());
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "number of taxa: " + mInput.getTaxa()
+                                             .size());
+        }
 
         ((AbstractPagerFragmentActivity) getActivity()).validateCurrentPage();
     }
@@ -354,6 +340,7 @@ public abstract class AbstractTaxaInputListFragment
         if (mInput == null) {
             Log.w(TAG,
                   "refreshView: null input");
+
             return;
         }
 

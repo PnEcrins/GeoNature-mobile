@@ -9,6 +9,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.model.MountPoint;
 import com.makina.ecrins.commons.util.FileUtils;
 
@@ -27,7 +28,7 @@ public abstract class AbstractAppSettingsIntentService
         extends IntentService
         implements AppSettingsReader.OnAppSettingsReaderListener {
 
-    private static final String TAG = AbstractAppSettingsIntentService.class.getSimpleName();
+    private static final String TAG = AbstractAppSettingsIntentService.class.getName();
 
     private static final String BROADCAST_ACTION = "BROADCAST_ACTION";
 
@@ -91,8 +92,10 @@ public abstract class AbstractAppSettingsIntentService
             return;
         }
 
-        Log.d(TAG,
-              "onHandleIntent, action: " + intent.getAction());
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onHandleIntent, action: " + intent.getAction());
+        }
 
         switch (intent.getAction()) {
             case ACTION_READ:
@@ -159,8 +162,10 @@ public abstract class AbstractAppSettingsIntentService
                             appSettings);
         }
 
-        Log.d(TAG,
-              "sendBroadcast, action: " + action + ", status: " + status);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "sendBroadcast, action: " + action + ", status: " + status);
+        }
 
         LocalBroadcastManager.getInstance(this)
                              .sendBroadcast(intent);

@@ -90,7 +90,7 @@ public abstract class AbstractMainContentProvider
 
         if (BuildConfig.DEBUG) {
             Log.d(TAG,
-                  "query : " + uri);
+                  "query: " + uri);
         }
 
         final StringBuilder groupBy = new StringBuilder();

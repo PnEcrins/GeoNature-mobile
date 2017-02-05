@@ -5,6 +5,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 
+import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
 
 /**
@@ -84,8 +85,10 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity
 
     @Override
     public void onPageSelected(int position) {
-        Log.d(TAG,
-              "onPageSelected, position: " + position + ", previous: " + mHistoryPrevious);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onPageSelected, position: " + position + ", previous: " + mHistoryPrevious);
+        }
 
         // sets default paging control
         mViewPager.setPagingEnabled(true);
@@ -129,9 +132,11 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity
                                                                                               .getLast());
 
                 if ((position > 0) && !((getLastFragmentInHistory == null) || getLastFragmentInHistory.validate())) {
-                    Log.d(TAG,
-                          "onPageSelected: previous fragment " + getLastFragmentInHistory.getClass()
-                                                                                         .getName() + " is not valid");
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "onPageSelected: previous fragment " + getLastFragmentInHistory.getClass()
+                                                                                             .getName() + " is not valid");
+                    }
 
                     goToPreviousPage();
 
@@ -189,8 +194,10 @@ public abstract class AbstractNavigationHistoryPagerFragmentActivity
 
         mPager.setPosition(position);
 
-        Log.d(TAG,
-              "onPageSelected: " + mPager);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onPageSelected: " + mPager);
+        }
     }
 
     @Override
