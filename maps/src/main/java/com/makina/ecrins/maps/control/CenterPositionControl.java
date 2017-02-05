@@ -13,6 +13,7 @@ import android.view.View.OnClickListener;
 import android.webkit.JavascriptInterface;
 import android.widget.ImageButton;
 
+import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.IWebViewFragment;
 import com.makina.ecrins.maps.R;
 import com.makina.ecrins.maps.jts.geojson.GeoPoint;
@@ -27,6 +28,8 @@ public final class CenterPositionControl
         implements OnClickListener,
                    LocationListener {
 
+    private static final String TAG = CenterPositionControl.class.getName();
+
     private ImageButton mImageButtonCenterPosition;
     private Boolean mIsCenterPosition = false;
 
@@ -38,6 +41,11 @@ public final class CenterPositionControl
         setControlListener(new OnIControlListener() {
             @Override
             public void onControlInitialized() {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "onControlInitialized");
+                }
+
                 mWebViewFragment.requestLocationUpdates(CenterPositionControl.this);
 
                 mIsCenterPosition = false;
@@ -106,8 +114,10 @@ public final class CenterPositionControl
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d(CenterPositionControl.class.getName(),
-              "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
+        }
 
         // checks if this location is inside the map or not
         if (isControlInitialized() && (mWebViewFragment.getMapSettings()

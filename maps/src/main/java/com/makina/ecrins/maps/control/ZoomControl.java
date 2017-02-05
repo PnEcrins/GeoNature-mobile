@@ -8,8 +8,9 @@ import android.view.View.OnClickListener;
 import android.webkit.JavascriptInterface;
 import android.widget.ImageButton;
 
-import com.makina.ecrins.maps.R;
+import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.IWebViewFragment;
+import com.makina.ecrins.maps.R;
 
 /**
  * A basic zoom control with two buttons (zoom in and zoom out).
@@ -19,6 +20,8 @@ import com.makina.ecrins.maps.IWebViewFragment;
 public final class ZoomControl
         extends AbstractControl
         implements OnClickListener {
+
+    private static final String TAG = ZoomControl.class.getName();
 
     private ImageButton mImageButtonZoomIn;
     private ImageButton mImageButtonZoomOut;
@@ -34,6 +37,11 @@ public final class ZoomControl
         setControlListener(new OnIControlListener() {
             @Override
             public void onControlInitialized() {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "onControlInitialized");
+                }
+
                 if (mWebViewFragment.getMapSettings()
                                     .getMinZoom() < mWebViewFragment.getMapSettings()
                                                                     .getZoom()) {
@@ -96,12 +104,14 @@ public final class ZoomControl
      */
     @JavascriptInterface
     public void setZoom(final int zoom) {
-        Log.d(ZoomControl.class.getName(),
-              "setZoom " + zoom);
-
         getHandler().post(new Runnable() {
             @Override
             public void run() {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "setZoom " + zoom);
+                }
+
                 if (mWebViewFragment.getMapSettings()
                                     .getMinZoom() < zoom) {
                     mImageButtonZoomOut.setEnabled(true);

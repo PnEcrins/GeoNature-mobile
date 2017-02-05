@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 
+import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.settings.LayerSettings;
 import com.makina.ecrins.maps.util.FileUtils;
 
@@ -23,7 +24,7 @@ import java.util.List;
 public class MBTilesDataSource
         extends AbstractMBTilesDataSource {
 
-    private static final String TAG = MBTilesDataSource.class.getSimpleName();
+    private static final String TAG = MBTilesDataSource.class.getName();
 
     private final File mMbTiles;
     private Metadata mMetadata;
@@ -39,12 +40,13 @@ public class MBTilesDataSource
         this.mMbTiles = FileUtils.getFile(sourcePath,
                                           pLayerSettings.getName());
 
-        if (mMbTiles.exists()) {
+        if (!mMbTiles.exists()) {
+            throw new FileNotFoundException("unable to load MBTiles '" + pLayerSettings.getName() + "' from path '" + mMbTiles + "'");
+        }
+
+        if (BuildConfig.DEBUG) {
             Log.d(TAG,
                   "loading MBTiles '" + pLayerSettings.getName() + "'");
-        }
-        else {
-            throw new FileNotFoundException("unable to load MBTiles '" + pLayerSettings.getName() + "' from path '" + mMbTiles + "'");
         }
 
         final SQLiteDatabase database = openDatabase(this.mMbTiles.getPath());
@@ -147,8 +149,10 @@ public class MBTilesDataSource
 
                 cursor.close();
 
-                Log.d(TAG,
-                      mLayerSettings.getName() + " getZooms: " + mZooms.toString());
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          mLayerSettings.getName() + " getZooms: " + mZooms.toString());
+                }
             }
             else {
                 Log.w(TAG,

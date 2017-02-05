@@ -1,8 +1,10 @@
 package com.makina.ecrins.maps;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -38,6 +40,7 @@ import com.makina.ecrins.maps.location.MockLocationProvider;
 import com.makina.ecrins.maps.settings.LayerSettings;
 import com.makina.ecrins.maps.settings.MapSettings;
 import com.makina.ecrins.maps.util.DebugUtils;
+import com.makina.ecrins.maps.util.PermissionUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,13 +59,15 @@ public abstract class AbstractWebViewFragment
         extends Fragment
         implements IWebViewFragment {
 
-    private static final String TAG = AbstractWebViewFragment.class.getSimpleName();
+    private static final String TAG = AbstractWebViewFragment.class.getName();
 
     private static final String KEY_MAP_SETTINGS = "map_settings";
     private static final String KEY_LOCATION = "location";
     private static final String KEY_SELECTED_LAYER = "selected_layer";
     private static final String KEY_EDITABLE_FEATURES = "editable_features";
     private static final String KEY_SELECTED_EDITABLE_FEATURE = "selected_editable_feature";
+
+    private static final int REQUEST_LOCATION = 0;
 
     private Bundle mSavedState;
     private WebView mWebView = null;
@@ -84,7 +89,6 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-
         super.onActivityCreated(savedInstanceState);
 
         setHasOptionsMenu(true);
@@ -92,13 +96,9 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            Log.d(TAG,
-                  "onCreate, savedInstanceState null");
-
             mSavedState = new Bundle();
 
             // sets the default selected layer
@@ -110,16 +110,16 @@ public abstract class AbstractWebViewFragment
                                       new FeatureCollection());
         }
         else {
-            Log.d(TAG,
-                  "onCreate, savedInstanceState initialized");
             mSavedState = savedInstanceState;
         }
 
         mIsTilesLayersDataSourcesInitialized = initializeTilesLayersDataSources();
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        Log.d(TAG,
-              "onCreate [center : " + getMapSettings().getCenter() + ", zoom : " + getMapSettings().getZoom() + "]");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onCreate [center: " + getMapSettings().getCenter() + ", zoom: " + getMapSettings().getZoom() + "]");
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -127,13 +127,9 @@ public abstract class AbstractWebViewFragment
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-
-        Log.d(TAG,
-              "onCreateView");
-
-        View view = inflater.inflate(R.layout.fragment_webview,
-                                     container,
-                                     false);
+        final View view = inflater.inflate(R.layout.fragment_webview,
+                                           container,
+                                           false);
         mLayout = (FrameLayout) view.findViewById(R.id.frameLayout);
         mLeftToolbarLayout = (LinearLayout) view.findViewById(R.id.leftToolbarLayout);
         mRightToolbarLayout = (LinearLayout) view.findViewById(R.id.rightToolbarLayout);
@@ -178,11 +174,7 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public void onResume() {
-
         super.onResume();
-
-        Log.d(TAG,
-              "onResume");
 
         if (DebugUtils.isDebuggable(getActivity())) {
             mMockLocationProvider = new MockLocationProvider(getActivity());
@@ -204,10 +196,6 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public void onPause() {
-
-        Log.d(TAG,
-              "onPause");
-
         mIsMapInitialized.set(false);
 
         if (DebugUtils.isDebuggable(getActivity()) && (mMockLocationProvider != null)) {
@@ -230,11 +218,40 @@ public abstract class AbstractWebViewFragment
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION:
+                if (PermissionUtils.checkPermissions(grantResults)) {
+                    Toast.makeText(getActivity(),
+                                   R.string.message_permission_location_available,
+                                   Toast.LENGTH_LONG)
+                         .show();
+
+                    for (IControl control : this.mControls.values()) {
+                        if (control instanceof LocationListener) {
+                            requestLocationUpdates((LocationListener) control);
+                        }
+                    }
+                }
+                else {
+                    Toast.makeText(getActivity(),
+                                   R.string.message_permissions_not_granted,
+                                   Toast.LENGTH_LONG)
+                         .show();
+                }
+
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode,
+                                                 permissions,
+                                                 grantResults);
+        }
+    }
+
+    @Override
     public void onDestroyView() {
-
-        Log.d(TAG,
-              "onDestroyView");
-
         if (mLayout != null) {
             mLayout.removeAllViews();
         }
@@ -250,7 +267,6 @@ public abstract class AbstractWebViewFragment
     @Override
     public void onCreateOptionsMenu(Menu menu,
                                     MenuInflater inflater) {
-
         for (IControl control : this.mControls.values()) {
             if (control.hasOptionsMenu()) {
                 control.onCreateOptionsMenu(menu,
@@ -261,7 +277,6 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-
         super.onPrepareOptionsMenu(menu);
 
         for (IControl control : this.mControls.values()) {
@@ -273,7 +288,6 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         for (IControl control : this.mControls.values()) {
             if (control.hasOptionsMenu() && control.onOptionsItemSelected(item)) {
                 invalidateMenu();
@@ -286,7 +300,6 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-
         outState.putAll(mSavedState);
 
         super.onSaveInstanceState(outState);
@@ -294,42 +307,33 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
-
         super.setUserVisibleHint(isVisibleToUser);
-
-        Log.d(TAG,
-              "setUserVisibleHint : isVisible = " + this.isVisible() + ", isVisibleToUser = " + isVisibleToUser);
 
         this.mIsMapVisibleToUser.set(isVisibleToUser);
     }
 
     @Override
     public boolean isMapVisibleToUser() {
-
         return this.mIsMapVisibleToUser.get();
     }
 
     @Override
     public Context getContext() {
-
         return getActivity();
     }
 
     @Override
     public ActionBar getActionBar() {
-
         return (getActivity() == null) ? null : ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
     @Override
     public Bundle getSavedInstanceState() {
-
         return this.mSavedState;
     }
 
     @Override
     public MapSettings getMapSettings() {
-
         MapSettings settings = null;
 
         if (mSavedState.containsKey(KEY_MAP_SETTINGS)) {
@@ -341,7 +345,6 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public void setMapSettings(MapSettings mapSettings) {
-
         if (mapSettings != null) {
             mSavedState.putParcelable(KEY_MAP_SETTINGS,
                                       mapSettings);
@@ -350,32 +353,27 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public List<String> getTilesLayersDataSources() {
-
         return new ArrayList<>(this.mTilesLayersDataSources.keySet());
     }
 
     @Override
     public ITilesLayerDataSource getTilesLayersDataSource(String name) {
-
         return this.mTilesLayersDataSources.get(name);
     }
 
     @Override
     public LayerSettings getSelectedLayer() {
-
         return this.mSavedState.getParcelable(KEY_SELECTED_LAYER);
     }
 
     @Override
     public void setSelectedLayer(LayerSettings layerSettings) {
-
         this.mSavedState.putParcelable(KEY_SELECTED_LAYER,
                                        layerSettings);
     }
 
     @Override
     public void loadUrl(String url) {
-
         if (this.mIsMapInitialized.get() && (this.mWebView != null) && (url != null)) {
             this.mWebView.loadUrl(url);
         }
@@ -387,9 +385,10 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public void reload() {
-
-        Log.d(TAG,
-              "reload");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "reload");
+        }
 
         if (!this.mIsMapInitialized.getAndSet(true)) {
             mWebView.loadUrl("file:///android_asset/www/map.html");
@@ -403,13 +402,11 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public Location getCurrentLocation() {
-
         return (Location) mSavedState.get(KEY_LOCATION);
     }
 
     @Override
     public void setCurrentLocation(Location location) {
-
         if (location == null) {
             mSavedState.remove(KEY_LOCATION);
         }
@@ -426,9 +423,10 @@ public abstract class AbstractWebViewFragment
     @Override
     public void addControl(IControl control,
                            ViewGroup parent) {
-
-        Log.d(TAG,
-              "addControl " + control.getName());
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "addControl " + control.getName());
+        }
 
         if (this.mControls.containsKey(control.getName())) {
             Log.w(TAG,
@@ -460,9 +458,10 @@ public abstract class AbstractWebViewFragment
     @Override
     @SuppressLint("NewApi")
     public void removeControl(IControl control) {
-
-        Log.d(TAG,
-              "removeControl " + control.getName());
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "removeControl " + control.getName());
+        }
 
         if (control instanceof LocationListener) {
             // noinspection MissingPermission
@@ -480,19 +479,16 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public List<String> getControls() {
-
         return new ArrayList<>(this.mControls.keySet());
     }
 
     @Override
     public IControl getControl(String name) {
-
         return this.mControls.get(name);
     }
 
     @Override
     public boolean hasControl(String name) {
-
         return this.mControls.containsKey(name);
     }
 
@@ -550,9 +546,10 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public boolean deleteEditableFeature(String featureId) {
-
-        Log.d(TAG,
-              "deleteEditableFeature '" + featureId + "'");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "deleteEditableFeature '" + featureId + "'");
+        }
 
         FeatureCollection featureCollection = this.mSavedState.getParcelable(KEY_EDITABLE_FEATURES);
 
@@ -569,28 +566,37 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public void requestLocationUpdates(LocationListener listener) {
-        // noinspection MissingPermission
-        mLocationManager.removeUpdates(listener);
-
-        if (DebugUtils.isDebuggable(getActivity())) {
-            if (mLocationManager.getProvider(MockLocationProvider.MOCK_LOCATION_PROVIDER) == null) {
-                mMockLocationProvider = new MockLocationProvider(getActivity());
-            }
-
-            if (mMockLocationProvider.isProviderEnabled()) {
-                // noinspection MissingPermission
-                mLocationManager.requestLocationUpdates(MockLocationProvider.MOCK_LOCATION_PROVIDER,
-                                                        0,
-                                                        0,
-                                                        listener);
-            }
+        if (ActivityCompat.checkSelfPermission(getContext(),
+                                               Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getContext(),
+                                                                                                                                                                      Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                                              new String[] {
+                                                      Manifest.permission.ACCESS_COARSE_LOCATION,
+                                                      Manifest.permission.ACCESS_FINE_LOCATION
+                                              },
+                                              REQUEST_LOCATION);
         }
         else {
-            // noinspection MissingPermission
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                                                    0,
-                                                    0,
-                                                    listener);
+            mLocationManager.removeUpdates(listener);
+
+            if (DebugUtils.isDebuggable(getActivity())) {
+                if (mLocationManager.getProvider(MockLocationProvider.MOCK_LOCATION_PROVIDER) == null) {
+                    mMockLocationProvider = new MockLocationProvider(getActivity());
+                }
+
+                if (mMockLocationProvider.isProviderEnabled()) {
+                    mLocationManager.requestLocationUpdates(MockLocationProvider.MOCK_LOCATION_PROVIDER,
+                                                            30000,
+                                                            0.5f,
+                                                            listener);
+                }
+            }
+            else {
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                                                        30000,
+                                                        0.5f,
+                                                        listener);
+            }
         }
     }
 
@@ -640,7 +646,7 @@ public abstract class AbstractWebViewFragment
             }
         }
         catch (IOException ioe) {
-            Log.e(TAG,
+            Log.w(TAG,
                   ioe.getMessage());
         }
 
@@ -690,24 +696,22 @@ public abstract class AbstractWebViewFragment
 
         @Override
         public boolean onConsoleMessage(@NonNull ConsoleMessage consoleMessage) {
-            String message = consoleMessage.sourceId() + " (line " + consoleMessage.lineNumber() + ") : " + consoleMessage.message();
+            final String message = consoleMessage.sourceId() + " (line " + consoleMessage.lineNumber() + "): " + consoleMessage.message();
 
             switch (consoleMessage.messageLevel()) {
-                case DEBUG:
-                    Log.d(getClass().getName(),
-                          message);
-                    break;
                 case ERROR:
-                    Log.e(getClass().getName(),
+                    Log.e(TAG,
                           message);
                     break;
                 case WARNING:
-                    Log.w(getClass().getName(),
+                    Log.w(TAG,
                           message);
                     break;
                 default:
-                    Log.i(getClass().getName(),
-                          message);
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              message);
+                    }
                     break;
             }
 

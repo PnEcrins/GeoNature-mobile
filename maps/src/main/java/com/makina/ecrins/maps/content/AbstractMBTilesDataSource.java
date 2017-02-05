@@ -22,7 +22,7 @@ import java.io.IOException;
 abstract class AbstractMBTilesDataSource
         implements ITilesLayerDataSource {
 
-    private static final String TAG = AbstractMBTilesDataSource.class.getSimpleName();
+    private static final String TAG = AbstractMBTilesDataSource.class.getName();
 
     final LayerSettings mLayerSettings;
 

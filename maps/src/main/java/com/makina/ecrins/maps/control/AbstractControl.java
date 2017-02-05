@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.webkit.JavascriptInterface;
 
+import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.IWebViewFragment;
 
 import java.util.concurrent.BlockingDeque;
@@ -23,6 +24,8 @@ import java.util.concurrent.LinkedBlockingDeque;
  */
 public abstract class AbstractControl
         implements IControl {
+
+    private static final String TAG = AbstractControl.class.getName();
 
     private static final Handler sHandler = new Handler();
     private static final String MAP_JS_VARIABLE = "lMap";
@@ -48,8 +51,10 @@ public abstract class AbstractControl
 
     @Override
     public void refresh() {
-        Log.d(getClass().getName(),
-              "refresh");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "refresh");
+        }
     }
 
     @Override
@@ -80,7 +85,7 @@ public abstract class AbstractControl
 
     @Override
     public void remove(IWebViewFragment webViewFragment) {
-        //this.mWebViewFragment.loadUrl("javascript:" + MAP_JS_VARIABLE + ".removeControl(\"" + getName() + "\")");
+        // this.mWebViewFragment.loadUrl("javascript:" + MAP_JS_VARIABLE + ".removeControl(\"" + getName() + "\")");
 
         this.mControlInitialized = false;
     }
@@ -95,14 +100,7 @@ public abstract class AbstractControl
 
     public void addControlListener(OnIControlListener pControlListener) {
         if (pControlListener != null) {
-            if (mControlListeners.offerLast(pControlListener)) {
-                Log.d(getClass().getName(),
-                      "addControlListener ok");
-            }
-            else {
-                Log.d(getClass().getName(),
-                      "addControlListener ko");
-            }
+            mControlListeners.offerLast(pControlListener);
         }
     }
 
@@ -121,8 +119,10 @@ public abstract class AbstractControl
         getHandler().post(new Runnable() {
             @Override
             public void run() {
-                Log.d(AbstractControl.class.getName(),
-                      "setControlInitialized");
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "setControlInitialized");
+                }
 
                 mControlInitialized = true;
 
@@ -142,7 +142,7 @@ public abstract class AbstractControl
                         }
                     }
                     catch (InterruptedException ie) {
-                        Log.w(AbstractControl.class.getName(),
+                        Log.w(TAG,
                               ie.getMessage());
                     }
                 }

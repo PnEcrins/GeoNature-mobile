@@ -25,6 +25,8 @@ public class SwitchLayersControl
         extends AbstractControl
         implements ActionBar.OnNavigationListener {
 
+    private static final String TAG = SwitchLayersControl.class.getName();
+
     private ArrayAdapter<LayerSettings> mLayersAdapter = null;
 
     /**
@@ -36,6 +38,11 @@ public class SwitchLayersControl
         setControlListener(new OnIControlListener() {
             @Override
             public void onControlInitialized() {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "onControlInitialized");
+                }
+
                 updateNavigationList();
             }
         });
@@ -79,7 +86,7 @@ public class SwitchLayersControl
     @JavascriptInterface
     public void setZoom(final int zoom) {
         if (BuildConfig.DEBUG) {
-            Log.d(SwitchLayersControl.class.getName(),
+            Log.d(TAG,
                   "setZoom " + zoom);
         }
 
@@ -93,7 +100,7 @@ public class SwitchLayersControl
 
     private void updateNavigationList() {
         if (BuildConfig.DEBUG) {
-            Log.d(SwitchLayersControl.class.getName(),
+            Log.d(TAG,
                   "updateNavigationList");
         }
 
@@ -128,7 +135,7 @@ public class SwitchLayersControl
             }
             else {
                 if (BuildConfig.DEBUG) {
-                    Log.d(SwitchLayersControl.class.getName(),
+                    Log.d(TAG,
                           "updateNavigationList, not ready");
                 }
             }

@@ -9,6 +9,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.settings.LayerSettings;
 import com.makina.ecrins.maps.util.FileUtils;
 
@@ -29,7 +30,7 @@ import java.util.TreeSet;
 public class MBTilesSplitDataSource
         extends AbstractMBTilesDataSource {
 
-    private static final String TAG = MBTilesSplitDataSource.class.getSimpleName();
+    private static final String TAG = MBTilesSplitDataSource.class.getName();
 
     private File mbTilesDirectory = null;
     private Metadata mMetadata;
@@ -48,12 +49,13 @@ public class MBTilesSplitDataSource
         mbTilesDirectory = FileUtils.getFile(sourcePath,
                                              pLayerSettings.getName());
 
-        if (mbTilesDirectory.exists() && mbTilesDirectory.isDirectory()) {
+        if (!mbTilesDirectory.exists() || !mbTilesDirectory.isDirectory()) {
+            throw new FileNotFoundException("unable to load MBTiles '" + pLayerSettings.getName() + "' from path '" + mbTilesDirectory + "'");
+        }
+
+        if (BuildConfig.DEBUG) {
             Log.d(TAG,
                   "loading MBTiles from path '" + pLayerSettings.getName() + "'");
-        }
-        else {
-            throw new FileNotFoundException("unable to load MBTiles '" + pLayerSettings.getName() + "' from path '" + mbTilesDirectory + "'");
         }
 
         mDefaultMbTilesPath = getMBTilesPath(0);
@@ -95,7 +97,7 @@ public class MBTilesSplitDataSource
             }
             else {
                 Log.w(getClass().getName(),
-                      "getMinZoom() : db is null !");
+                      "getMinZoom(): db is null !");
             }
         }
 
@@ -165,8 +167,10 @@ public class MBTilesSplitDataSource
                 }
             }
 
-            Log.d(TAG,
-                  mLayerSettings.getName() + " getZooms : " + mZooms.toString());
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      mLayerSettings.getName() + " getZooms: " + mZooms.toString());
+            }
         }
 
         return new ArrayList<>(mZooms);
@@ -219,7 +223,7 @@ public class MBTilesSplitDataSource
             }
             else {
                 Log.w(TAG,
-                      "getTile(): db is null!");
+                      "getTile(): db is null !");
             }
         }
 

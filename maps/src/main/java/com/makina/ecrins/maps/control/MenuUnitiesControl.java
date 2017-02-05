@@ -3,12 +3,14 @@ package com.makina.ecrins.maps.control;
 import android.content.Context;
 import android.location.Location;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 
+import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.IWebViewFragment;
 import com.makina.ecrins.maps.R;
 import com.makina.ecrins.maps.content.ITilesLayerDataSource;
@@ -38,6 +40,8 @@ import java.util.List;
 public final class MenuUnitiesControl
         extends AbstractControl {
 
+    private static final String TAG = MenuUnitiesControl.class.getName();
+
     private static final String KEY_SHOW_UNITIES_LAYER = "display_unities_layer";
     private static final String KEY_SELECTED_UNITY = "selected_unity";
     private static final String KEY_POINTING_LOCATION = "pointing_location";
@@ -56,6 +60,11 @@ public final class MenuUnitiesControl
         setControlListener(new OnIControlListener() {
             @Override
             public void onControlInitialized() {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "onControlInitialized");
+                }
+
                 mIsActionMarkerSelected = false;
                 mWebViewFragment.invalidateMenu();
             }

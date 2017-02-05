@@ -9,15 +9,14 @@ import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 
+import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.IWebViewFragment;
 import com.makina.ecrins.maps.R;
 import com.makina.ecrins.maps.content.ITilesLayerDataSource;
 import com.makina.ecrins.maps.jts.geojson.GeoPoint;
-import com.makina.ecrins.maps.location.Geolocation;
 import com.makina.ecrins.maps.settings.CRSSettings;
 import com.makina.ecrins.maps.settings.LayerSettings;
 import com.makina.ecrins.maps.settings.MapSettings;
-import com.makina.ecrins.maps.util.DebugUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,7 +35,7 @@ public class MainControl
         extends AbstractControl
         implements LocationListener {
 
-    private static JSONObject jsonObject = new JSONObject();
+    private static final String TAG = MainControl.class.getName();
 
     private boolean mDisplayWarningAboutLocationOutsideMapBoundaries = true;
 
@@ -46,17 +45,21 @@ public class MainControl
         setControlListener(new OnIControlListener() {
             @Override
             public void onControlInitialized() {
-                Log.d(getClass().getName(),
-                      "onControlInitialized");
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "onControlInitialized");
+                }
 
                 mWebViewFragment.requestLocationUpdates(MainControl.this);
 
+                /*
                 if (DebugUtils.isDebuggable(mWebViewFragment.getContext())) {
                     mWebViewFragment.getMockLocationProvider()
                                     .pushLocation(new Geolocation(6.027559215973642,
                                                                   44.772039260501735,
                                                                   10));
                 }
+                */
 
                 // register all additional controls
                 for (String controlName : mWebViewFragment.getControls()) {
@@ -85,8 +88,10 @@ public class MainControl
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d(MainControl.class.getName(),
-              "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
+        }
 
         // checks if this location is inside the map or not
         if ((this.mWebViewFragment.getMapSettings()
@@ -104,8 +109,8 @@ public class MainControl
             this.mWebViewFragment.setCurrentLocation(null);
 
             // displays Toast to notify user that he can't use this feature
-            Log.w(MainControl.class.getName(),
-                  "onLocationChanged : outside map boundaries !");
+            Log.w(TAG,
+                  "onLocationChanged: outside map boundaries !");
 
             if (mDisplayWarningAboutLocationOutsideMapBoundaries) {
                 Toast.makeText(this.mWebViewFragment.getContext(),
@@ -119,24 +124,30 @@ public class MainControl
 
     @Override
     public void onProviderDisabled(String provider) {
-        Log.d(MainControl.class.getName(),
-              "onProviderDisabled " + provider);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onProviderDisabled " + provider);
+        }
 
         this.mWebViewFragment.loadUrl(getJSUrlPrefix() + ".hideCurrentLocation()");
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-        Log.d(MainControl.class.getName(),
-              "onProviderEnabled " + provider);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onProviderEnabled " + provider);
+        }
     }
 
     @Override
     public void onStatusChanged(String provider,
                                 int status,
                                 Bundle extras) {
-        Log.d(MainControl.class.getName(),
-              "onStatusChanged " + provider + " : " + status);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onStatusChanged " + provider + ": " + status);
+        }
     }
 
     @JavascriptInterface
@@ -144,8 +155,10 @@ public class MainControl
         getHandler().post(new Runnable() {
             @Override
             public void run() {
-                Log.d(MainControl.class.getName(),
-                      "setMapInitialized");
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "setMapInitialized");
+                }
 
                 mWebViewFragment.setMapSettings(mWebViewFragment.getMapSettings());
 
@@ -174,7 +187,7 @@ public class MainControl
                               .toString();
         }
         catch (JSONException je) {
-            Log.w(MainControl.class.getName(),
+            Log.w(TAG,
                   je.getMessage(),
                   je);
 
@@ -214,8 +227,10 @@ public class MainControl
     @JavascriptInterface
     public void setCenter(final double latitude,
                           final double longitude) {
-        Log.d(MainControl.class.getName(),
-              "setCenter [latitude : " + latitude + ", longitude : " + longitude + "]");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "setCenter [latitude: " + latitude + ", longitude: " + longitude + "]");
+        }
 
         getHandler().post(new Runnable() {
             @Override
@@ -251,8 +266,10 @@ public class MainControl
             public void run() {
                 if (mWebViewFragment.getMapSettings()
                                     .getZoom() != zoom) {
-                    Log.d(MainControl.class.getName(),
-                          "setZoom " + zoom);
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "setZoom " + zoom);
+                    }
 
                     final MapSettings mapSettings = mWebViewFragment.getMapSettings();
                     mapSettings.setZoom(zoom);
@@ -396,8 +413,10 @@ public class MainControl
                 if (this.mWebViewFragment.getTilesLayersDataSource(layerSettings.getName())
                                          .getZooms()
                                          .contains(zoomLevel)) {
-                    Log.d(MainControl.class.getName(),
-                          "getTile : switch to layer " + layerSettings.getName());
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "getTile: switch to layer " + layerSettings.getName());
+                    }
 
                     // switch to this layer source
                     this.mWebViewFragment.setSelectedLayer(layerSettings);
@@ -410,8 +429,8 @@ public class MainControl
             }
         }
 
-        Log.w(MainControl.class.getName(),
-              "getTile : no layer source found for the given zoom level !");
+        Log.w(TAG,
+              "getTile: no layer source found for the given zoom level !");
 
         return "";
     }

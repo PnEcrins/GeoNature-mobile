@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 
+import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.IWebViewFragment;
 import com.makina.ecrins.maps.jts.geojson.Feature;
 import com.makina.ecrins.maps.jts.geojson.FeatureCollection;
@@ -25,6 +26,8 @@ import java.util.List;
  */
 public class FeaturesControl
         extends AbstractControl {
+
+    private static final String TAG = FeaturesControl.class.getName();
 
     private boolean mFeaturesClickable = false;
     private FeatureStyle mFeatureDefaultStyle;
@@ -111,9 +114,11 @@ public class FeaturesControl
                     final FeatureCollection featureCollection = new FeatureCollection();
                     featureCollection.addAllFeatures(features);
 
-                    Log.d(getClass().getName(),
-                          "addFeatures size: " + featureCollection.getFeatures()
-                                                                  .size());
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "addFeatures size: " + featureCollection.getFeatures()
+                                                                      .size());
+                    }
 
                     mWebViewFragment.loadUrl(getJSUrlPrefix() +
                                                      ".addFeatures('" +
@@ -125,8 +130,8 @@ public class FeaturesControl
                                                      ")");
                 }
                 else {
-                    Log.w(FeaturesControl.class.getName(),
-                          "addFeatures: Control '" + getName() + "' is not initialized!");
+                    Log.w(TAG,
+                          "addFeatures: Control '" + getName() + "' is not initialized !");
                 }
             }
         });
@@ -140,15 +145,17 @@ public class FeaturesControl
             @Override
             public void run() {
                 if (isControlInitialized()) {
-                    Log.d(getClass().getName(),
-                          "clearFeatures");
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "clearFeatures");
+                    }
 
                     mWebViewFragment.getFeatures()
                                     .clear();
                     mWebViewFragment.loadUrl(getJSUrlPrefix() + ".clearFeatures()");
                 }
                 else {
-                    Log.w(FeaturesControl.class.getName(),
+                    Log.w(TAG,
                           "clearFeatures: Control '" + getName() + "' is not initialized !");
                 }
             }
@@ -164,8 +171,10 @@ public class FeaturesControl
                 final GeoPoint location = new GeoPoint(latitude,
                                                        longitude);
 
-                Log.d(FeaturesControl.class.getName(),
-                      "findFeature on location " + location.toString());
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "findFeature on location " + location.toString());
+                }
 
                 Feature featureFound = null;
                 final Iterator<Feature> iterator = mWebViewFragment.getFeatures()
@@ -181,8 +190,10 @@ public class FeaturesControl
                 }
 
                 if (featureFound == null) {
-                    Log.d(FeaturesControl.class.getName(),
-                          "findFeature : no feature found at location " + location.toString() + ", try to find the closest feature ...");
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "findFeature: no feature found at location " + location.toString() + ", try to find the closest feature ...");
+                    }
 
                     final List<Feature> filteredFeatures = NearestFeaturesFilter.getFilteredFeatures(location,
                                                                                                      100d,
@@ -194,12 +205,16 @@ public class FeaturesControl
                 }
 
                 if (featureFound == null) {
-                    Log.d(FeaturesControl.class.getName(),
-                          "no feature found");
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "no feature found");
+                    }
                 }
                 else {
-                    Log.d(FeaturesControl.class.getName(),
-                          "nearest feature found '" + featureFound.getId() + "'");
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "nearest feature found '" + featureFound.getId() + "'");
+                    }
 
                     mWebViewFragment.setSelectedFeature(new Geolocation(longitude,
                                                                         latitude,

@@ -7,6 +7,8 @@
     <string name="message_mbtiles_not_found">Unable to load MBTiles \'%1$s\'</string>
     <string name="message_current_location">Your current position</string>
     <string name="message_feature_invalid">This feature is not valid</string>
+    <string name="message_permissions_not_granted">Permissions were not granted</string>
+    <string name="message_permission_location_available">Location permissions have been granted</string>
 
     <string name="action_layer_add_remove">Add or remove layer</string>
     <string name="action_marker">Add a marker</string>

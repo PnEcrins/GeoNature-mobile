@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  */
 public class WKTReader {
 
-    private static final String TAG = WKTReader.class.getSimpleName();
+    private static final String TAG = WKTReader.class.getName();
 
     private final Pattern wktLinePattern = Pattern.compile("^([0-9]+),([A-Z]+\\(.+\\))$");
     private final com.vividsolutions.jts.io.WKTReader wktReader;

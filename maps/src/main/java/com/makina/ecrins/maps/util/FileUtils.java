@@ -16,7 +16,7 @@ import java.io.InputStream;
  */
 public class FileUtils {
 
-    private static final String TAG = FileUtils.class.getSimpleName();
+    private static final String TAG = FileUtils.class.getName();
 
     /**
      * Construct a file from the set of name elements.

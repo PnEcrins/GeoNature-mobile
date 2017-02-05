@@ -16,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.webkit.JavascriptInterface;
 import android.widget.ImageButton;
 
+import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.IWebViewFragment;
 import com.makina.ecrins.maps.R;
 import com.makina.ecrins.maps.jts.geojson.Feature;
@@ -48,6 +49,8 @@ public class DrawControl
         extends AbstractControl
         implements OnClickListener,
                    LocationListener {
+
+    private static final String TAG = DrawControl.class.getName();
 
     private static final String KEY_ADD_OR_UPDATE_FEATURE = "add_or_update_feature";
 
@@ -94,8 +97,10 @@ public class DrawControl
         setControlListener(new OnIControlListener() {
             @Override
             public void onControlInitialized() {
-                Log.d(getClass().getName(),
-                      "onControlInitialized");
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "onControlInitialized");
+                }
 
                 mWebViewFragment.requestLocationUpdates(DrawControl.this);
 
@@ -318,8 +323,10 @@ public class DrawControl
 
             // checks if this location is inside the map or not
             if (mIsActionMarkerFromLocationSelected && checkIfLocationInsideMapBounds) {
-                Log.d(DrawControl.class.getName(),
-                      "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "onLocationChanged [provider: " + location.getProvider() + ", lat: " + location.getLatitude() + ", lon: " + location.getLongitude() + ", acc: " + location.getAccuracy() + ", bearing: " + location.getBearing());
+                }
 
                 mIsActionMarkerFromLocationSelected = false;
                 mWebViewFragment.invalidateMenu();
@@ -422,8 +429,10 @@ public class DrawControl
             @Override
             public void run() {
                 if (isControlInitialized()) {
-                    Log.d(getClass().getName(),
-                          "setFeatures, size: " + features.size());
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "setFeatures, size: " + features.size());
+                    }
 
                     mWebViewFragment.getEditableFeatures()
                                     .clearAllFeatures();
@@ -433,7 +442,7 @@ public class DrawControl
                     updateButtons();
                 }
                 else {
-                    Log.w(DrawControl.class.getName(),
+                    Log.w(TAG,
                           "setFeatures: Control '" + getName() + "' is not initialized !");
                 }
             }
@@ -448,8 +457,10 @@ public class DrawControl
             @Override
             public void run() {
                 if (isControlInitialized()) {
-                    Log.d(getClass().getName(),
-                          "clearFeatures");
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "clearFeatures");
+                    }
 
                     mWebViewFragment.getEditableFeatures()
                                     .clearAllFeatures();
@@ -457,7 +468,7 @@ public class DrawControl
                     updateButtons();
                 }
                 else {
-                    Log.w(DrawControl.class.getName(),
+                    Log.w(TAG,
                           "clearFeatures: Control '" + getName() + "' is not initialized !");
                 }
             }
@@ -471,12 +482,14 @@ public class DrawControl
      */
     @JavascriptInterface
     public void setZoom(final int zoom) {
-        Log.d(DrawControl.class.getName(),
-              "setZoom " + zoom);
-
         getHandler().post(new Runnable() {
             @Override
             public void run() {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "setZoom " + zoom);
+                }
+
                 mZoom = zoom;
                 mWebViewFragment.invalidateMenu();
                 updateButtons();
@@ -537,8 +550,10 @@ public class DrawControl
                 final GeoPoint location = new GeoPoint(latitude,
                                                        longitude);
 
-                Log.d(DrawControl.class.getName(),
-                      "findFeature on location: " + location.toString());
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "findFeature on location: " + location.toString());
+                }
 
                 Feature featureFound = null;
                 final Iterator<Feature> iterator = mWebViewFragment.getEditableFeatures()
@@ -555,8 +570,10 @@ public class DrawControl
                 }
 
                 if (featureFound == null) {
-                    Log.d(DrawControl.class.getName(),
-                          "findFeature: no feature found at location " + location.toString() + ", try to find the closest feature ...");
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "findFeature: no feature found at location " + location.toString() + ", try to find the closest feature ...");
+                    }
 
                     final List<Feature> filteredFeatures = NearestFeaturesFilter.getFilteredFeatures(location,
                                                                                                      100d,
@@ -568,12 +585,16 @@ public class DrawControl
                 }
 
                 if (featureFound == null) {
-                    Log.d(DrawControl.class.getName(),
-                          "no feature found");
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "no feature found");
+                    }
                 }
                 else {
-                    Log.d(DrawControl.class.getName(),
-                          "nearest feature found '" + featureFound.getId() + "'");
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG,
+                              "nearest feature found '" + featureFound.getId() + "'");
+                    }
 
                     if (mode.equals("edit")) {
                         mWebViewFragment.loadUrl(getJSUrlPrefix() +
@@ -597,8 +618,10 @@ public class DrawControl
 
     @JavascriptInterface
     public void addOrUpdateFeature(final String featureAsString) {
-        Log.d(DrawControl.class.getName(),
-              "addOrUpdateFeature: " + featureAsString);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "addOrUpdateFeature: " + featureAsString);
+        }
 
         getHandler().post(new Runnable() {
             @Override
@@ -609,7 +632,7 @@ public class DrawControl
                     final String id = featureAsJson.getString("key");
 
                     if (TextUtils.isEmpty(id)) {
-                        Log.w(DrawControl.class.getName(),
+                        Log.w(TAG,
                               "addOrUpdateFeature, No ID defined for Feature: " + featureAsString);
 
                         return;
@@ -618,7 +641,7 @@ public class DrawControl
                     final String type = featureAsJson.getString("type");
 
                     if (TextUtils.isEmpty(type)) {
-                        Log.w(DrawControl.class.getName(),
+                        Log.w(TAG,
                               "addOrUpdateFeature, No type defined for Feature: " + featureAsString);
 
                         return;
@@ -669,7 +692,7 @@ public class DrawControl
                     }
 
                     if (geometry == null) {
-                        Log.w(DrawControl.class.getName(),
+                        Log.w(TAG,
                               "addOrUpdateFeature, No geometry found or valid for Feature: " + featureAsString);
 
                         return;
@@ -679,7 +702,7 @@ public class DrawControl
                                                                            geometry));
                 }
                 catch (JSONException je) {
-                    Log.w(DrawControl.class.getName(),
+                    Log.w(TAG,
                           je);
                 }
             }
@@ -691,8 +714,10 @@ public class DrawControl
         getHandler().post(new Runnable() {
             @Override
             public void run() {
-                Log.d(DrawControl.class.getName(),
-                      "deleteFeature : " + featureId);
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "deleteFeature: " + featureId);
+                }
 
                 // refreshes all features
                 if (mWebViewFragment.deleteEditableFeature(featureId)) {
@@ -841,7 +866,7 @@ public class DrawControl
         final Feature feature = mWebViewFragment.getCurrentEditableFeature();
 
         if (feature == null) {
-            Log.w(DrawControl.class.getName(),
+            Log.w(TAG,
                   "addOrUpdateSelectedFeature: nothing to add or update");
 
             updateButtons();

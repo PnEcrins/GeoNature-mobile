@@ -5,6 +5,8 @@
     <string name="message_mbtiles_not_found">Erreur lors du chargement des données MBTiles \'%1$s\'</string>
     <string name="message_current_location">Votre position actuelle</string>
     <string name="message_feature_invalid">Cette géometrie n\'est pas valide</string>
+    <string name="message_permissions_not_granted">Les permissions n\'ont pas été accordées</string>
+    <string name="message_permission_location_available">L\'accès aux données de position a été accordé</string>
 
     <string name="action_layer_add_remove">Ajouter ou supprimer une couche</string>
     <string name="action_marker">Ajouter un marqueur</string>

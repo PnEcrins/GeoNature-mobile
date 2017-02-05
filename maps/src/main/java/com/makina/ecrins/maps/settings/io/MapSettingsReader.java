@@ -20,8 +20,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.content.ContentValues.TAG;
-
 /**
  * Default {@code JsonReader} about reading a {@code JSON} stream and build the corresponding
  * {@link MapSettings}.
@@ -30,6 +28,8 @@ import static android.content.ContentValues.TAG;
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class MapSettingsReader {
+
+    private static final String TAG = MapSettingsReader.class.getName();
 
     /**
      * parse a {@code JSON} string to convert as {@link MapSettings}.

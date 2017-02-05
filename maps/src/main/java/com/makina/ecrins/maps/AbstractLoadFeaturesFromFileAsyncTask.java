@@ -21,7 +21,7 @@ import java.util.List;
 public abstract class AbstractLoadFeaturesFromFileAsyncTask
         extends AsyncTask<File, Integer, List<Feature>> {
 
-    private static final String TAG = AbstractLoadFeaturesFromFileAsyncTask.class.getSimpleName();
+    private static final String TAG = AbstractLoadFeaturesFromFileAsyncTask.class.getName();
 
     private String mFilename;
 

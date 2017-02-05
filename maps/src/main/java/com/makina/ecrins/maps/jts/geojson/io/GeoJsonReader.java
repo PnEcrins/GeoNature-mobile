@@ -42,7 +42,7 @@ import java.util.List;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class GeoJsonReader {
 
-    private static final String TAG = GeoJsonReader.class.getSimpleName();
+    private static final String TAG = GeoJsonReader.class.getName();
 
     private final GeometryFactory gf;
 

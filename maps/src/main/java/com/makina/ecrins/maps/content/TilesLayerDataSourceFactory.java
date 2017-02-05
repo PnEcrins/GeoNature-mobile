@@ -47,9 +47,9 @@ public class TilesLayerDataSourceFactory {
                 return new FileDataSource(mTilesSourcePath,
                                           pLayerSettings);
             case LayerSettings.SOURCE_HTTP:
-                throw new UnsupportedOperationException("no implementation found for '" + pLayerSettings.getName() + "' (source : " + pLayerSettings.getSource() + ")");
+                throw new UnsupportedOperationException("no implementation found for '" + pLayerSettings.getName() + "' (source: " + pLayerSettings.getSource() + ")");
             default:
-                throw new UnsupportedOperationException("no implementation found for '" + pLayerSettings.getName() + "' (source : " + pLayerSettings.getSource() + ")");
+                throw new UnsupportedOperationException("no implementation found for '" + pLayerSettings.getName() + "' (source: " + pLayerSettings.getSource() + ")");
         }
     }
 }

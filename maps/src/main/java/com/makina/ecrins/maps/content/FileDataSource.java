@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.util.JsonReader;
 import android.util.Log;
 
+import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.settings.LayerSettings;
 import com.makina.ecrins.maps.util.FileUtils;
 
@@ -24,7 +25,7 @@ import java.util.List;
 public class FileDataSource
         implements ITilesLayerDataSource {
 
-    private static final String TAG = FileDataSource.class.getSimpleName();
+    private static final String TAG = FileDataSource.class.getName();
 
     private File mapDirectory = null;
     private final LayerSettings mLayerSettings;
@@ -98,8 +99,10 @@ public class FileDataSource
 
             Arrays.sort(mZooms.toArray(new Integer[mZooms.size()]));
 
-            Log.d(TAG,
-                  mLayerSettings.getName() + " getZooms: " + mZooms.toString());
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      mLayerSettings.getName() + " getZooms: " + mZooms.toString());
+            }
         }
 
         return mZooms;

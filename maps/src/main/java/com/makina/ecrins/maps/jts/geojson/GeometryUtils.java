@@ -17,7 +17,7 @@ import static com.makina.ecrins.maps.jts.geojson.IMathConstants.DEG2RAD;
  */
 public class GeometryUtils {
 
-    private static final String TAG = GeometryUtils.class.getSimpleName();
+    private static final String TAG = GeometryUtils.class.getName();
 
     /**
      * Returns the minimum distance between two {@code Geometry} instances.

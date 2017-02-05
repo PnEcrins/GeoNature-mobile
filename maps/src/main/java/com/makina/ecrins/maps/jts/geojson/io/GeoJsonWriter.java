@@ -36,7 +36,7 @@ import java.io.Writer;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class GeoJsonWriter {
 
-    private static final String TAG = GeoJsonWriter.class.getSimpleName();
+    private static final String TAG = GeoJsonWriter.class.getName();
 
     /**
      * Convert the given {@link Feature} as {@code JSON} string.
