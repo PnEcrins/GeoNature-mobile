@@ -2,6 +2,7 @@
 Récupération et tuilage des fonds raster
 ========================================
 
+EDIT 2017 : Cette documentation était initialement prévue pour pouvoir générer les mbtiles en utilisant des fonds rasters en Lambert 93 (2154). Cela n'est plus obligatoire depuis la version 1.1.0 et on peut désormais générer des fonds avec une procédure bien simple et classique en projection 3857. Voir la nouvelle documentation : https://github.com/PnEcrins/GeoNature-mobile/blob/master/docs/tuilage_raster_mbtiles-2017-01.pdf
 
 Installation
 ============
@@ -19,6 +20,7 @@ Installation
 Extraire le contenu de l'archive ``tilecache_filter`` :
 
 ::
+
     unzip tilecache_filter.zip
     mv tilecache_filter.py env/bin/
     mv mbtilesplit.py env/bin/
