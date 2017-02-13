@@ -31,10 +31,10 @@ Il vous faut ensuite compléter les fichiers JSON de configuration comme indiqu�
 
 Il vous faut aussi intégrer les fichiers SIG (fonds carto au format MBTiles et limites des unités géographiques) sur la carte SD du mobile (https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/install/v1.0.0/external%20card).
 
-La génération des tuiles MBTiles est détaillée dans la documentation (https://github.com/PnEcrins/GeoNature-mobile/blob/master/docs/tuilage_mbtiles.rst)
+L'ensemble de la DOCUMENTATION est listée ici (reste du ménage à faire...) : https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs
 
 ![GeoNature-mobile illustrations](https://raw.githubusercontent.com/PnEcrins/GeoNature-mobile/master/docs/images/illustration-geonature-mobile.jpg)
 
 ## License
 
-&copy; Makina Corpus / Parc national des Ecrins 2012 - 2016
+&copy; Makina Corpus / Parc national des Ecrins 2012 - 2017
