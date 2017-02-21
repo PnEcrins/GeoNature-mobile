@@ -49,6 +49,7 @@ public class HomeFragment
     private OnHomeFragmentListener mOnHomeFragmentListener;
 
     private AbstractAppSettings mAppSettings;
+    private boolean mRequestPermissionsResult;
 
     private static final int REQUEST_EXTERNAL_STORAGE = 0;
 
@@ -171,6 +172,8 @@ public class HomeFragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mRequestPermissionsResult = true;
+
         mInputHelper = new InputHelper(getContext(),
                                        mOnInputHelperListener);
 
@@ -252,25 +255,30 @@ public class HomeFragment
                              .registerReceiver(mBroadcastReceiver,
                                                new IntentFilter(getBroadcastActionReadAppSettings()));
 
-        PermissionUtils.checkSelfPermissions(getContext(),
-                                             new PermissionUtils.OnCheckSelfPermissionListener() {
-                                                 @Override
-                                                 public void onPermissionsGranted() {
-                                                     loadAppSettings();
-                                                 }
-
-                                                 @Override
-                                                 public void onRequestPermissions(@NonNull String... permissions) {
-                                                     PermissionUtils.requestPermissions(getActivity(),
-                                                                                        mLayout,
-                                                                                        R.string.snackbar_permission_external_storage_rationale,
-                                                                                        REQUEST_EXTERNAL_STORAGE,
-                                                                                        permissions);
-                                                 }
-                                             },
-                                             Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
         mInputHelper.resume();
+
+        if (mRequestPermissionsResult) {
+            PermissionUtils.checkSelfPermissions(getContext(),
+                                                 new PermissionUtils.OnCheckSelfPermissionListener() {
+                                                     @Override
+                                                     public void onPermissionsGranted() {
+                                                         loadAppSettings();
+                                                     }
+
+                                                     @Override
+                                                     public void onRequestPermissions(@NonNull String... permissions) {
+                                                         PermissionUtils.requestPermissions(HomeFragment.this,
+                                                                                            mLayout,
+                                                                                            R.string.snackbar_permission_external_storage_rationale,
+                                                                                            REQUEST_EXTERNAL_STORAGE,
+                                                                                            permissions);
+                                                     }
+                                                 },
+                                                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        else {
+            mRequestPermissionsResult = true;
+        }
     }
 
     @Override
@@ -300,13 +308,13 @@ public class HomeFragment
                                            @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_EXTERNAL_STORAGE:
-                if (PermissionUtils.checkPermissions(grantResults)) {
+                mRequestPermissionsResult = PermissionUtils.checkPermissions(grantResults);
+
+                if (mRequestPermissionsResult) {
                     Snackbar.make(mLayout,
                                   R.string.snackbar_permission_external_storage_available,
                                   Snackbar.LENGTH_SHORT)
                             .show();
-
-                    loadAppSettings();
                 }
                 else {
                     Snackbar.make(mLayout,

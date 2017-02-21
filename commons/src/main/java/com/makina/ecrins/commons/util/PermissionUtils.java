@@ -6,9 +6,8 @@ import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.view.View;
-
-import com.makina.ecrins.commons.R;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -46,7 +45,8 @@ public class PermissionUtils {
      * Determines whether the user have been granted a set of permissions.
      *
      * @param context                       the current {@code Context}.
-     * @param onCheckSelfPermissionListener the callback to use to notify if these permissions was granted or not
+     * @param onCheckSelfPermissionListener the callback to use to notify if these permissions was
+     *                                      granted or not
      * @param permissions                   a set of permissions being checked
      */
     public static void checkSelfPermissions(@NonNull final Context context,
@@ -70,20 +70,20 @@ public class PermissionUtils {
     }
 
     /**
-     * Requests a set of permissions.
+     * Requests a set of permissions from a {@code Fragment}.
      * <p>
      * If a permission has been denied previously, a {@code Snackbar} will prompt the user to grant
      * the permission, otherwise it is requested directly.
      * </p>
      *
-     * @param activity                  the current {@code Activity}
-     * @param snackbarParentView        the parent view on which to display the {@code Snackbar}
-     * @param snackbarMessageResourceId the message resource ID to display
-     * @param requestCode               application specific request code to match with a result
-     *                                  reported to {@code ActivityCompat.OnRequestPermissionsResultCallback#onRequestPermissionsResult(int, String[], int[])}.
-     * @param permissions               a set of permissions to request
+     * @param fragment                     the current {@code Fragment}
+     * @param snackbarParentView           the parent view on which to display the {@code Snackbar}
+     * @param snackbarMessageResourceId    the message resource ID to display
+     * @param requestCode                  application specific request code to match with a result
+     *                                     reported to {@code ActivityCompat.OnRequestPermissionsResultCallback#onRequestPermissionsResult(int, String[], int[])}.
+     * @param permissions                  a set of permissions to request
      */
-    public static void requestPermissions(@NonNull final Activity activity,
+    public static void requestPermissions(@NonNull final Fragment fragment,
                                           @NonNull final View snackbarParentView,
                                           final int snackbarMessageResourceId,
                                           final int requestCode,
@@ -93,29 +93,26 @@ public class PermissionUtils {
                                                 .iterator();
 
         while (iterator.hasNext() && !shouldShowRequestPermissions) {
-            shouldShowRequestPermissions = ActivityCompat.shouldShowRequestPermissionRationale(activity,
-                                                                                               iterator.next());
+            shouldShowRequestPermissions = fragment.shouldShowRequestPermissionRationale(iterator.next());
         }
 
         if (shouldShowRequestPermissions) {
             Snackbar.make(snackbarParentView,
                           snackbarMessageResourceId,
                           Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.action_ok,
+                    .setAction(android.R.string.ok,
                                new View.OnClickListener() {
                                    @Override
                                    public void onClick(View view) {
-                                       ActivityCompat.requestPermissions(activity,
-                                                                         permissions,
-                                                                         requestCode);
+                                       fragment.requestPermissions(permissions,
+                                                                   requestCode);
                                    }
                                })
                     .show();
         }
         else {
-            ActivityCompat.requestPermissions(activity,
-                                              permissions,
-                                              requestCode);
+            fragment.requestPermissions(permissions,
+                                        requestCode);
         }
     }
 
