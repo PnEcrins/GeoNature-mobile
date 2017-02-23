@@ -1,6 +1,5 @@
 package com.makina.ecrins.flora.ui.input.physiognomy;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -75,6 +74,7 @@ public class PhysiognomyFragment
     private boolean mListShown;
     private boolean mIsVisibleToUser = false;
     private AtomicBoolean mBackButtonEvent = new AtomicBoolean();
+    private AtomicBoolean mRefreshActionMode = new AtomicBoolean();
 
     private ActionMode mMode;
     private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
@@ -89,6 +89,10 @@ public class PhysiognomyFragment
             mMode = null;
 
             if ((mInput == null) || !mIsVisibleToUser) {
+                return;
+            }
+
+            if (mRefreshActionMode.getAndSet(false)) {
                 return;
             }
 
@@ -368,15 +372,6 @@ public class PhysiognomyFragment
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof AbstractBaseActivity) {
-            ((AbstractBaseActivity) context).setOnDispatchKeyEventListener(mOnDispatchKeyEventListener);
-        }
-    }
-
-    @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
@@ -409,6 +404,13 @@ public class PhysiognomyFragment
     @Override
     public void refreshView() {
         final Bundle args = new Bundle();
+
+        ((AbstractBaseActivity) getActivity()).setOnDispatchKeyEventListener(mOnDispatchKeyEventListener);
+
+        if (mMode != null) {
+            mRefreshActionMode.set(true);
+            mMode.finish();
+        }
 
         if (mInput != null) {
             final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();

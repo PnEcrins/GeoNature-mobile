@@ -156,6 +156,7 @@ public class PagerFragmentActivity
                     if (pageFragment instanceof IInputFragment) {
                         ((IInputFragment) pageFragment).setInput(input);
                         pageFragment.refreshView();
+                        validateCurrentPage();
                     }
 
                     break;
