@@ -1,6 +1,7 @@
 package com.makina.ecrins.flora.ui.input.map;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -153,6 +154,27 @@ public class MapPAFragment
         if (!show) {
             displayAPs(false);
         }
+    }
+
+    @Override
+    public void setCurrentEditableFeature(@Nullable final Feature selectedFeature) {
+        super.setCurrentEditableFeature(selectedFeature);
+
+        if (selectedFeature == null) {
+            return;
+        }
+
+        if (mInput == null) {
+            return;
+        }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+        if (currentSelectedTaxon == null) {
+            return;
+        }
+
+        currentSelectedTaxon.setProspectingArea(selectedFeature);
     }
 
     @Override

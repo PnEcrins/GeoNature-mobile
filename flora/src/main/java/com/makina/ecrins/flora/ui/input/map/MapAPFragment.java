@@ -1,6 +1,7 @@
 package com.makina.ecrins.flora.ui.input.map;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -136,6 +137,38 @@ public class MapAPFragment
     @Override
     protected void onShowCollectionPAs(boolean show) {
         // nothing to do ...
+    }
+
+    @Override
+    public void setCurrentEditableFeature(@Nullable final Feature selectedFeature) {
+        super.setCurrentEditableFeature(selectedFeature);
+
+        if (selectedFeature == null) {
+            return;
+        }
+
+        if (mInput == null) {
+            return;
+        }
+
+        final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
+
+        if (currentSelectedTaxon == null) {
+            return;
+        }
+
+        // delete a previously added area if needed
+        if ((!TextUtils.isEmpty(currentSelectedTaxon.getCurrentSelectedAreaId()) && (!currentSelectedTaxon.getCurrentSelectedAreaId()
+                                                                                                          .equals(selectedFeature.getId())))) {
+            currentSelectedTaxon.getAreas()
+                                .remove(currentSelectedTaxon.getCurrentSelectedAreaId());
+        }
+
+        // add or update the current area
+        currentSelectedTaxon.getAreas()
+                            .put(selectedFeature.getId(),
+                                 new Area(selectedFeature));
+        currentSelectedTaxon.setCurrentSelectedAreaId(selectedFeature.getId());
     }
 
     @Override
