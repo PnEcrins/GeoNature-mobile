@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -510,7 +511,7 @@ public abstract class AbstractWebViewFragment
         return this.mSavedState.getParcelable(KEY_SELECTED_EDITABLE_FEATURE);
     }
 
-    public void setCurrentEditableFeature(Feature selectedFeature) {
+    public void setCurrentEditableFeature(@Nullable final Feature selectedFeature) {
         if (selectedFeature == null) {
             this.mSavedState.remove(KEY_SELECTED_EDITABLE_FEATURE);
         }
