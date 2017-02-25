@@ -15,11 +15,6 @@ import com.makina.ecrins.flora.settings.AppSettings;
 public class MainApplication
         extends Application {
 
-    public static final int HANDLER_SETTINGS_LOADING_START = 10;
-    public static final int HANDLER_SETTINGS_LOADING = 11;
-    public static final int HANDLER_SETTINGS_LOADED = 12;
-    public static final int HANDLER_SETTINGS_LOADED_FAILED = 13;
-
     private static MainApplication sInstance;
 
     private boolean mCloseApplication;
@@ -50,7 +45,7 @@ public class MainApplication
         Log.i(getClass().getName(),
               "internal storage: " + MountPointUtils.getInternalStorage());
         Log.i(getClass().getName(),
-              "external storage: " + MountPointUtils.getExternalStorage());
+              "external storage: " + MountPointUtils.getExternalStorage(this));
     }
 
     public boolean isCloseApplication() {
