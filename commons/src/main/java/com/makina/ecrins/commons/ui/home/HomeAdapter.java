@@ -121,10 +121,6 @@ class HomeAdapter
                                                               mAppSettings.getDbSettings()
                                                                           .getName());
 
-                        if (dbFile == null) {
-                            return null;
-                        }
-
                         if (dbFile.lastModified() == 0) {
                             return null;
                         }
