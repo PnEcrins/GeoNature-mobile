@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.makina.ecrins.commons.settings.ProtocolSettings;
+
 import java.util.Calendar;
 
 /**
@@ -80,19 +82,38 @@ public class InputHelper {
         }
     };
 
+    private Protocol mProtocol;
     private AbstractInput mInput;
 
     public InputHelper(@NonNull final Context context,
                        @NonNull final OnInputHelperListener onInputHelperListener) {
         this(context,
+             null,
              DEFAULT_DATE_FORMAT,
              onInputHelperListener);
     }
 
     public InputHelper(@NonNull final Context context,
+                       @Nullable final ProtocolSettings protocolSettings,
+                       @NonNull final OnInputHelperListener onInputHelperListener) {
+        this(context,
+             protocolSettings,
+             DEFAULT_DATE_FORMAT,
+             onInputHelperListener);
+    }
+
+    public InputHelper(@NonNull final Context context,
+                       @Nullable final ProtocolSettings protocolSettings,
                        @NonNull final String dateFormat,
                        @NonNull final OnInputHelperListener onInputHelperListener) {
         this.mContext = context;
+
+        if (protocolSettings != null) {
+            this.mProtocol = new Protocol(protocolSettings.getOrganism(),
+                                          protocolSettings.getProtocol(),
+                                          protocolSettings.getLot());
+        }
+
         this.mDateFormat = dateFormat;
         this.mOnInputHelperListener = onInputHelperListener;
     }
@@ -153,6 +174,8 @@ public class InputHelper {
             Log.w(TAG,
                   "exportInput: no input to export");
         }
+
+        mInput.setProtocol(mProtocol);
 
         AbstractInputIntentService.exportInput(mContext,
                                                mOnInputHelperListener.getInputIntentServiceClass(),

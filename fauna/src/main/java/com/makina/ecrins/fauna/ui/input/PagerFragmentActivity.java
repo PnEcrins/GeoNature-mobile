@@ -61,10 +61,9 @@ public class PagerFragmentActivity
 
     private final ChooseActionDialogFragment.OnChooseActionDialogListener mOnChooseActionDialogListener = new ChooseActionDialogFragment.OnChooseActionDialogListener() {
         @Override
-        public void onItemClick(
-                DialogInterface dialog,
-                int position,
-                int actionResourceId) {
+        public void onItemClick(DialogInterface dialog,
+                                int position,
+                                int actionResourceId) {
 
             switch (actionResourceId) {
                 case R.string.alert_dialog_confirm_quit_go_home_message:
@@ -245,9 +244,8 @@ public class PagerFragmentActivity
         }
     }
 
-    protected void showAlertDialog(
-            int titleResourceId,
-            int messageResourceId) {
+    protected void showAlertDialog(int titleResourceId,
+                                   int messageResourceId) {
 
         final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(titleResourceId,
                                                                                         messageResourceId);
@@ -256,11 +254,10 @@ public class PagerFragmentActivity
                                  ALERT_CANCEL_DIALOG_FRAGMENT);
     }
 
-    protected void showProgressDialog(
-            int title,
-            int message,
-            int progressStyle,
-            int max) {
+    protected void showProgressDialog(int title,
+                                      int message,
+                                      int progressStyle,
+                                      int max) {
 
         ProgressDialogFragment progressDialogFragment = ProgressDialogFragment.newInstance(title,
                                                                                            message,
@@ -270,10 +267,9 @@ public class PagerFragmentActivity
                                     PROGRESS_DIALOG_FRAGMENT);
     }
 
-    protected void showChooseActionDialog(
-            int title,
-            @NonNull final String tag,
-            @NonNull final Integer... actions) {
+    protected void showChooseActionDialog(int title,
+                                          @NonNull final String tag,
+                                          @NonNull final Integer... actions) {
 
         final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(title,
                                                                                                              Arrays.asList(actions));
@@ -285,6 +281,8 @@ public class PagerFragmentActivity
     protected void saveCurrentInput() {
 
         (new SaveInputAsyncTask(this,
+                                ((MainApplication) getApplication()).getAppSettings()
+                                                                    .getProtocolSettings(),
                                 new PagerFragmentHandler(this))).execute(((MainApplication) getApplication()).getInput());
     }
 }

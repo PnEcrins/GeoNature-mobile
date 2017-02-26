@@ -105,6 +105,10 @@ public class InputJsonWriterTest {
              .put(taxon1.getId(),
                   taxon1);
 
+        input.setProtocol(new Protocol(2,
+                                       140,
+                                       4));
+
         // when write this input as JSON string
         final StringWriter writer = new StringWriter();
         inputJsonWriter.write(writer,
@@ -132,7 +136,11 @@ public class InputJsonWriterTest {
                                                              .append(DateFormat.format(inputJsonWriter.getDateFormat(),
                                                                                        input.getDate())
                                                                                .toString())
-                                                             .append("\",\"observers_id\":[")
+                                                             .append("\",\"protocol\":{")
+                                                             .append("\"organism\":2")
+                                                             .append(",\"protocol\":140")
+                                                             .append(",\"lot\":4}")
+                                                             .append(",\"observers_id\":[")
                                                              .append(observer1.getObserverId())
                                                              .append("],\"observers\":[{\"id\":")
                                                              .append(observer1.getObserverId())

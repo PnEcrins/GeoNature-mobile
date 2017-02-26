@@ -177,7 +177,6 @@ public class HomeFragment
         mInputHelper = new InputHelper(getContext(),
                                        mOnInputHelperListener);
 
-
         mHomeAdapter = new HomeAdapter(getContext(),
                                        mOnHomeAdapterListener);
     }

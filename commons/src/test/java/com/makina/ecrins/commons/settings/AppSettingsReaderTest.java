@@ -51,7 +51,7 @@ public class AppSettingsReaderTest {
         // given a JSON settings
         final String json = TestHelper.getFixture("app_settings_with_db.json");
 
-        // when read the JSON as MapSettings
+        // when read the JSON as DummyAppSettings
         final DummyAppSettings appSettings = (DummyAppSettings) appSettingsReader.read(json);
 
         verify(onAppSettingsReaderListener,
@@ -100,12 +100,48 @@ public class AppSettingsReaderTest {
     }
 
     @Test
+    public void testReadAppSettingsWithoutProtocolFromJsonString() throws
+                                                                   Exception {
+        // given a JSON settings
+        final String json = TestHelper.getFixture("app_settings.json");
+
+        // when read the JSON as DummyAppSettings
+        final DummyAppSettings appSettings = (DummyAppSettings) appSettingsReader.read(json);
+
+        // then
+        assertNotNull(appSettings);
+        assertNull(appSettings.getProtocolSettings());
+    }
+
+    @Test
+    public void testReadAppSettingsWithProtocolFromJsonString() throws
+                                                                Exception {
+        // given a JSON settings
+        final String json = TestHelper.getFixture("app_settings_with_protocol.json");
+
+        // when read the JSON as DummyAppSettings
+        final DummyAppSettings appSettings = (DummyAppSettings) appSettingsReader.read(json);
+
+        // then
+        assertNotNull(appSettings);
+
+        final ProtocolSettings protocolSettings = appSettings.getProtocolSettings();
+        assertNotNull(protocolSettings);
+        assertEquals(2,
+                     protocolSettings.getOrganism());
+        assertEquals(140,
+                     protocolSettings.getProtocol());
+        assertEquals(4,
+                     protocolSettings.getLot());
+    }
+
+    @Test
     public void testReadAppSettingsFromJsonString() throws
                                                     Exception {
         // given a JSON settings
         final String json = TestHelper.getFixture("app_settings.json");
 
-        // when read the JSON as MapSettings
+        // when read the JSON as DummyAppSettings
         final DummyAppSettings appSettings = (DummyAppSettings) appSettingsReader.read(json);
 
         verify(onAppSettingsReaderListener,
@@ -156,7 +192,7 @@ public class AppSettingsReaderTest {
     @Test
     public void testReadAppSettingsFromInvalidJsonString() throws
                                                            Exception {
-        // when read an invalid JSON as MapSettings
+        // when read an invalid JSON as DummyAppSettings
         final DummyAppSettings appSettings = (DummyAppSettings) appSettingsReader.read("");
 
         // then

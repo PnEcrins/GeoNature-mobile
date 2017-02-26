@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.makina.ecrins.commons.sync.SyncSettings;
 
@@ -19,11 +20,13 @@ import org.json.JSONObject;
 public abstract class AbstractAppSettings
         implements Parcelable {
 
-    public static final String KEY_DB = "db";
-    public static final String KEY_SYNC = "sync";
+    private static final String KEY_DB = "db";
+    private static final String KEY_SYNC = "sync";
+    private static final String KEY_PROTOCOL = "protocol";
 
-    protected DbSettings mDbSettings;
-    protected SyncSettings mSyncSettings;
+    DbSettings mDbSettings;
+    SyncSettings mSyncSettings;
+    ProtocolSettings mProtocolSettings;
 
     public AbstractAppSettings() {
         mDbSettings = DbSettings.DEFAULT;
@@ -39,10 +42,15 @@ public abstract class AbstractAppSettings
         }
 
         mSyncSettings = source.readParcelable(SyncSettings.class.getClassLoader());
+        mProtocolSettings = source.readParcelable(ProtocolSettings.class.getClassLoader());
     }
 
+    /**
+     * @deprecated use {@link AppSettingsReader} instead
+     */
     @Deprecated
-    public AbstractAppSettings(JSONObject json) throws JSONException {
+    public AbstractAppSettings(JSONObject json) throws
+                                                JSONException {
         this();
 
         if (json.has(KEY_DB)) {
@@ -50,6 +58,7 @@ public abstract class AbstractAppSettings
         }
 
         mSyncSettings = new SyncSettings(json.getJSONObject(KEY_SYNC));
+        mProtocolSettings = new ProtocolSettings(json.getJSONObject(KEY_PROTOCOL));
     }
 
     @NonNull
@@ -62,18 +71,24 @@ public abstract class AbstractAppSettings
         return mSyncSettings;
     }
 
+    @Nullable
+    public ProtocolSettings getProtocolSettings() {
+        return mProtocolSettings;
+    }
+
     @Override
     public int describeContents() {
         return 0;
     }
 
     @Override
-    public void writeToParcel(
-            Parcel dest,
-            int flags) {
+    public void writeToParcel(Parcel dest,
+                              int flags) {
         dest.writeParcelable(mDbSettings,
                              0);
         dest.writeParcelable(mSyncSettings,
+                             0);
+        dest.writeParcelable(mProtocolSettings,
                              0);
     }
 }
