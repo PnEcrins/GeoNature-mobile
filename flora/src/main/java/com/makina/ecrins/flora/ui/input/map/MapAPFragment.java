@@ -13,8 +13,11 @@ import com.makina.ecrins.flora.input.Taxon;
 import com.makina.ecrins.maps.control.DrawControl;
 import com.makina.ecrins.maps.control.FeaturesControl;
 import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.FeatureStyle;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Edit an area geometry on the map.
@@ -62,7 +65,9 @@ public class MapAPFragment
 
         validateCurrentPage();
 
-        // clear all editable features if no area was edited yet.
+        displayAPs(true);
+
+        // clear all editable features if no area was edited yet
         if (currentSelectedTaxon.getCurrentSelectedArea() == null) {
             clearEditableFeatures();
         }
@@ -116,7 +121,7 @@ public class MapAPFragment
 
     @Override
     protected void onFeatureControlInitialized(@NonNull FeaturesControl featuresControl) {
-        // nothing to do ...
+        displayAPs(true);
     }
 
     @Override
@@ -258,5 +263,38 @@ public class MapAPFragment
 
         return !currentSelectedTaxon.getAreas()
                                     .containsKey(featureId);
+    }
+
+    private void displayAPs(boolean fitBounds) {
+        if (mInput == null) {
+            return;
+        }
+
+        clearFeatures();
+
+        final List<Feature> featuresAreas = new ArrayList<>();
+
+        if ((mInput.getCurrentSelectedTaxon() != null) && (!((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                                                                      .isEmpty())) {
+            final Area currentArea = ((Taxon) mInput.getCurrentSelectedTaxon()).getCurrentSelectedArea();
+
+            for (Area area : ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                                       .values()) {
+                if (area.getFeature() == null) {
+                    continue;
+                }
+
+                if (currentArea == null || currentArea.getFeature() == null || !currentArea.getFeature().getId().equals(area.getFeature().getId())) {
+                    featuresAreas.add(area.getFeature());
+                }
+            }
+        }
+
+        showFeatures(featuresAreas,
+                     FeatureStyle.Builder.newInstance(getContext())
+                                         .setColorResourceId(R.color.feature_ap)
+                                         .setFillColorResourceId(R.color.feature_ap)
+                                         .build(),
+                     fitBounds);
     }
 }

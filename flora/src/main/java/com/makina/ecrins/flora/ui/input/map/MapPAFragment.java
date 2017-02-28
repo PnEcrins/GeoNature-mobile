@@ -69,6 +69,7 @@ public class MapPAFragment
 
         displayAPs(true);
 
+        // clear all editable features if no area was edited yet
         if (currentSelectedTaxon.getProspectingArea() == null) {
             clearEditableFeatures();
         }
