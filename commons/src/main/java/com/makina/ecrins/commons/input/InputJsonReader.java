@@ -128,6 +128,15 @@ public class InputJsonReader {
                               pe);
                     }
                     break;
+                case "protocol":
+                    if (reader.peek() != JsonToken.NULL) {
+                        input.setProtocol(readProtocol(reader));
+                    }
+                    else {
+                        reader.nextNull();
+                    }
+
+                    break;
                 case "observers_id":
                 case "observers":
                     if (reader.peek() != JsonToken.NULL) {
@@ -161,6 +170,42 @@ public class InputJsonReader {
         reader.endObject();
 
         return input;
+    }
+
+    @Nullable
+    private Protocol readProtocol(@NonNull final JsonReader reader) throws
+                                                                    IOException {
+        reader.beginObject();
+
+        int organism = 0;
+        int protocol = 0;
+        int lot = 0;
+
+        while (reader.hasNext()) {
+            final String keyName = reader.nextName();
+
+            switch (keyName) {
+                case "organism":
+                    organism = reader.nextInt();
+                    break;
+                case "protocol":
+                    protocol = reader.nextInt();
+                    break;
+                case "lot":
+                    lot = reader.nextInt();
+                    break;
+            }
+        }
+
+        reader.endObject();
+
+        if (organism == 0 || protocol == 0 || lot == 0) {
+            return null;
+        }
+
+        return new Protocol(organism,
+                            protocol,
+                            lot);
     }
 
     private void readObservers(@NonNull final JsonReader reader,
@@ -293,7 +338,7 @@ public class InputJsonReader {
      *
      * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
      */
-    public interface OnInputJsonReaderListener {
+    interface OnInputJsonReaderListener {
 
         /**
          * Returns a new instance of {@link AbstractInput}.

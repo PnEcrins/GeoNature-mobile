@@ -4,8 +4,10 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.makina.ecrins.commons.settings.ProtocolSettings;
 import com.makina.ecrins.commons.util.FileUtils;
 
 import org.json.JSONException;
@@ -29,13 +31,22 @@ public class SaveInputAsyncTask
     public static final int HANDLER_INPUT_SAVE_FAILED = 2;
 
     private Context mContext;
+    private Protocol mProtocol;
     private Handler mHandler;
 
     public SaveInputAsyncTask(Context pContext,
+                              @Nullable final ProtocolSettings protocolSettings,
                               Handler pHandler) {
 
         super();
         this.mContext = pContext;
+
+        if (protocolSettings != null) {
+            this.mProtocol = new Protocol(protocolSettings.getOrganism(),
+                                          protocolSettings.getProtocol(),
+                                          protocolSettings.getLot());
+        }
+
         this.mHandler = pHandler;
     }
 
@@ -52,23 +63,25 @@ public class SaveInputAsyncTask
 
         if ((params != null) && (params.length > 0) && (params[0] != null)) {
             try {
-                File inputDir = FileUtils.getInputsFolder(mContext);
+                final File inputDir = FileUtils.getInputsFolder(mContext);
+                final AbstractInput input = params[0];
+                input.setProtocol(mProtocol);
 
                 // noinspection ResultOfMethodCallIgnored
                 inputDir.mkdirs();
 
                 File inputFile = new File(inputDir,
-                                          "input_" + params[0].getInputId() + ".json");
+                                          "input_" + input.getInputId() + ".json");
 
                 FileWriter fileWriter = new FileWriter(inputFile);
-                fileWriter.write(params[0].getJSONObject()
-                                          .toString());
+                fileWriter.write(input.getJSONObject()
+                                      .toString());
                 fileWriter.flush();
                 fileWriter.close();
 
                 Log.d(getClass().getName(),
-                      "input : " + params[0].getJSONObject()
-                                            .toString());
+                      "input : " + input.getJSONObject()
+                                        .toString());
             }
             catch (IOException ioe) {
                 Log.e(getClass().getName(),

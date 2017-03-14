@@ -30,6 +30,7 @@ public abstract class AbstractInput
     private static final String KEY_TYPE = "input_type";
     private static final String KEY_ID = "id";
     private static final String KEY_INITIAL_INPUT = "initial_input";
+    private static final String KEY_PROTOCOL = "protocol";
     private static final String KEY_DATE_OBS = "dateobs";
     private static final String KEY_OBSERVERS_ID = "observers_id";
     private static final String KEY_TAXA = "taxons";
@@ -38,6 +39,7 @@ public abstract class AbstractInput
     long mInputId;
     private String mFeatureId;
     private Date mDate;
+    private Protocol mProtocol;
     private final Map<Long, Observer> mObservers;
     private final Map<Long, AbstractTaxon> mTaxa;
     private long mCurrentSelectedTaxonId;
@@ -47,6 +49,7 @@ public abstract class AbstractInput
         mInputId = generateId();
         mFeatureId = null;
         mDate = new Date();
+        mProtocol = null;
         mObservers = new TreeMap<>();
         mTaxa = new TreeMap<>();
         mCurrentSelectedTaxonId = -1;
@@ -61,6 +64,8 @@ public abstract class AbstractInput
         if (mDate == null) {
             mDate = new Date();
         }
+
+        mProtocol = source.readParcelable(Protocol.class.getClassLoader());
 
         final List<Observer> observers = new ArrayList<>();
         source.readTypedList(observers,
@@ -108,6 +113,15 @@ public abstract class AbstractInput
 
     public void setDate(@NonNull final Date pDate) {
         this.mDate = pDate;
+    }
+
+    @Nullable
+    public Protocol getProtocol() {
+        return mProtocol;
+    }
+
+    public void setProtocol(@Nullable final Protocol protocol) {
+        this.mProtocol = protocol;
     }
 
     /**
@@ -197,6 +211,11 @@ public abstract class AbstractInput
                  DateFormat.format(getDateFormat(),
                                    mDate));
 
+        if (mProtocol != null) {
+            json.put(KEY_PROTOCOL,
+                     mProtocol.getJSONObject());
+        }
+
         final JSONArray jsonObservers = new JSONArray();
 
         for (Observer observer : mObservers.values()) {
@@ -236,6 +255,8 @@ public abstract class AbstractInput
         dest.writeLong(mInputId);
         dest.writeString(mFeatureId);
         dest.writeSerializable(mDate);
+        dest.writeParcelable(mProtocol,
+                             0);
         dest.writeTypedList(new ArrayList<>(mObservers.values()));
         dest.writeTypedList(new ArrayList<>(mTaxa.values()));
     }
@@ -246,6 +267,8 @@ public abstract class AbstractInput
      * Generates a pseudo unique ID. The value is the number of seconds since Jan. 1, 2000, midnight.
      *
      * @return an unique ID
+     *
+     * @deprecated see {@link InputHelper#generateId()}
      */
     @Deprecated
     public static long generateId() {

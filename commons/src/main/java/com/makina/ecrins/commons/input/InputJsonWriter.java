@@ -107,6 +107,12 @@ public class InputJsonWriter {
                                        input.getDate())
                                .toString());
 
+        if (input.getProtocol() != null) {
+            writer.name("protocol");
+            writeProcotol(writer,
+                          input.getProtocol());
+        }
+
         onInputJsonWriterListener.writeAdditionalInputData(writer,
                                                            input);
 
@@ -147,6 +153,21 @@ public class InputJsonWriter {
         }
 
         writer.endArray();
+    }
+
+    private void writeProcotol(@NonNull final JsonWriter writer,
+                               @NonNull final Protocol protocol) throws
+                                                                 IOException {
+        writer.beginObject();
+
+        writer.name("organism")
+              .value(protocol.getOrganism());
+        writer.name("protocol")
+              .value(protocol.getProtocol());
+        writer.name("lot")
+              .value(protocol.getLot());
+
+        writer.endObject();
     }
 
     private void writeTaxa(@NonNull final JsonWriter writer,
@@ -195,7 +216,7 @@ public class InputJsonWriter {
      *
      * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
      */
-    public interface OnInputJsonWriterListener {
+    interface OnInputJsonWriterListener {
 
         /**
          * Adding some additional data to write from the current {@link AbstractInput}.

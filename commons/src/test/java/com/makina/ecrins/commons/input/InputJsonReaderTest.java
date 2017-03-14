@@ -2,6 +2,8 @@ package com.makina.ecrins.commons.input;
 
 import android.util.JsonReader;
 
+import com.makina.ecrins.commons.TestHelper;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +16,7 @@ import java.util.Calendar;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -50,20 +53,10 @@ public class InputJsonReaderTest {
     public void testReadEmptyInput() throws
                                      Exception {
         // given a JSON string
-        @SuppressWarnings("StringBufferReplaceableByString")
-        final String jsonString = new StringBuilder().append('{')
-                                                     .append("\"id\":")
-                                                     .append(2)
-                                                     .append(",\"input_type\":\"")
-                                                     .append("fauna")
-                                                     .append("\",\"initial_input\":\"nomade\",\"dateobs\":\"")
-                                                     .append("2015/11/19")
-                                                     .append("\",\"observers_id\":[],\"observers\":[],\"taxons\":[]")
-                                                     .append("}")
-                                                     .toString();
+        final String json = TestHelper.getFixture("input_empty.json");
 
         // when read this JSON string
-        final StringReader reader = new StringReader(jsonString);
+        final StringReader reader = new StringReader(json);
         final DummyInput input = (DummyInput) inputJsonReader.read(reader);
 
         verify(onInputJsonReaderListener,
@@ -94,6 +87,7 @@ public class InputJsonReaderTest {
         assertEquals(calendar.getTime(),
                      input.getDate());
 
+        assertNull(input.getProtocol());
         assertEquals(0,
                      input.getObservers()
                           .size());
@@ -108,29 +102,10 @@ public class InputJsonReaderTest {
     public void testRead() throws
                            Exception {
         // given a JSON string
-        @SuppressWarnings("StringBufferReplaceableByString")
-        final String jsonString = new StringBuilder().append('{')
-                                                     .append("\"id\":")
-                                                     .append(2)
-                                                     .append(",\"input_type\":\"")
-                                                     .append("fauna")
-                                                     .append("\",\"initial_input\":\"nomade\",\"dateobs\":\"")
-                                                     .append("2015/11/19")
-                                                     .append("\",\"observers_id\":[1],\"taxons\":[{\"id\":")
-                                                     .append(3)
-                                                     .append(",\"id_taxon\":")
-                                                     .append(4)
-                                                     .append(",\"name_entered\":\"")
-                                                     .append("name")
-                                                     .append("\",\"observation\":{\"criterion\":")
-                                                     .append(5)
-                                                     .append("},\"comment\":\"")
-                                                     .append("comment")
-                                                     .append("\"}]}")
-                                                     .toString();
+        final String json = TestHelper.getFixture("input.json");
 
         // when read this JSON string
-        final StringReader reader = new StringReader(jsonString);
+        final StringReader reader = new StringReader(json);
         final DummyInput input = (DummyInput) inputJsonReader.read(reader);
 
         verify(onInputJsonReaderListener,
@@ -160,6 +135,15 @@ public class InputJsonReaderTest {
                      19);
         assertEquals(calendar.getTime(),
                      input.getDate());
+
+        final Protocol protocol = input.getProtocol();
+        assertNotNull(protocol);
+        assertEquals(2,
+                     protocol.getOrganism());
+        assertEquals(140,
+                     protocol.getProtocol());
+        assertEquals(4,
+                     protocol.getLot());
 
         assertEquals(1,
                      input.getObservers()

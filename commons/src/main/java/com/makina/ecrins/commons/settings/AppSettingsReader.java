@@ -21,14 +21,14 @@ import java.io.StringReader;
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class AppSettingsReader {
+class AppSettingsReader {
 
     private static final String TAG = AppSettingsReader.class.getName();
 
     private SyncSettingsReader mSyncSettingsReader;
     private final AppSettingsReader.OnAppSettingsReaderListener mOnAppSettingsReaderListener;
 
-    public AppSettingsReader(@NonNull final OnAppSettingsReaderListener onAppSettingsReaderListener) {
+    AppSettingsReader(@NonNull final OnAppSettingsReaderListener onAppSettingsReaderListener) {
         this.mSyncSettingsReader = new SyncSettingsReader();
         this.mOnAppSettingsReaderListener = onAppSettingsReaderListener;
     }
@@ -101,6 +101,8 @@ public class AppSettingsReader {
                 case "sync":
                     appSettings.mSyncSettings = mSyncSettingsReader.readSyncSettings(reader);
                     break;
+                case "protocol":
+                    appSettings.mProtocolSettings = readProtocolSettings(reader);
                 default:
                     mOnAppSettingsReaderListener.readAdditionalSettings(reader,
                                                                         keyName,
@@ -144,12 +146,48 @@ public class AppSettingsReader {
                               version);
     }
 
+    @Nullable
+    private ProtocolSettings readProtocolSettings(@NonNull final JsonReader reader) throws
+                                                                                    IOException {
+        reader.beginObject();
+
+        int organism = 0;
+        int protocol = 0;
+        int lot = 0;
+
+        while (reader.hasNext()) {
+            final String keyName = reader.nextName();
+
+            switch (keyName) {
+                case "organism":
+                    organism = reader.nextInt();
+                    break;
+                case "protocol":
+                    protocol = reader.nextInt();
+                    break;
+                case "lot":
+                    lot = reader.nextInt();
+                    break;
+            }
+        }
+
+        reader.endObject();
+
+        if (organism == 0 || protocol == 0 || lot == 0) {
+            return null;
+        }
+
+        return new ProtocolSettings(organism,
+                                    protocol,
+                                    lot);
+    }
+
     /**
      * Callback used by {@link AppSettingsReader}.
      *
      * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
      */
-    public interface OnAppSettingsReaderListener {
+    interface OnAppSettingsReaderListener {
 
         /**
          * Returns a new instance of {@link AbstractAppSettings}.
