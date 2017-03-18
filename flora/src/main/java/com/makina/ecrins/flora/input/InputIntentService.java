@@ -432,6 +432,8 @@ public class InputIntentService
               .value(counting.getPlots());
         writer.name("fertile")
               .value(counting.getCountFertile());
+        writer.name("total_fertile")
+              .value(counting.getTotalFertile());
         writer.name("sterile")
               .value(counting.getCountSterile());
         writer.name("total_sterile")
