@@ -128,9 +128,9 @@ public class InputJsonReader {
                               pe);
                     }
                     break;
-                case "protocol":
+                case "qualification":
                     if (reader.peek() != JsonToken.NULL) {
-                        input.setProtocol(readProtocol(reader));
+                        input.setQualification(readQualification(reader));
                     }
                     else {
                         reader.nextNull();
@@ -173,8 +173,8 @@ public class InputJsonReader {
     }
 
     @Nullable
-    private Protocol readProtocol(@NonNull final JsonReader reader) throws
-                                                                    IOException {
+    private Qualification readQualification(@NonNull final JsonReader reader) throws
+                                                                              IOException {
         reader.beginObject();
 
         int organism = 0;
@@ -203,9 +203,9 @@ public class InputJsonReader {
             return null;
         }
 
-        return new Protocol(organism,
-                            protocol,
-                            lot);
+        return new Qualification(organism,
+                                 protocol,
+                                 lot);
     }
 
     private void readObservers(@NonNull final JsonReader reader,
@@ -363,7 +363,7 @@ public class InputJsonReader {
          * @param keyName the JSON key read
          * @param input   the current {@link AbstractInput} to use
          *
-         * @throws IOException
+         * @throws IOException if something goes wrong
          */
         void readAdditionalInputData(@NonNull final JsonReader reader,
                                      @NonNull final String keyName,
@@ -377,7 +377,7 @@ public class InputJsonReader {
          * @param keyName the JSON key read
          * @param taxon   the current {@link AbstractTaxon} to use
          *
-         * @throws IOException
+         * @throws IOException if something goes wrong
          */
         void readAdditionalTaxonData(@NonNull final JsonReader reader,
                                      @NonNull final String keyName,

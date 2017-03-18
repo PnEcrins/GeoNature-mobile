@@ -26,7 +26,7 @@ public abstract class AbstractAppSettings
 
     DbSettings mDbSettings;
     SyncSettings mSyncSettings;
-    ProtocolSettings mProtocolSettings;
+    QualificationSettings mQualificationSettings;
 
     public AbstractAppSettings() {
         mDbSettings = DbSettings.DEFAULT;
@@ -42,7 +42,7 @@ public abstract class AbstractAppSettings
         }
 
         mSyncSettings = source.readParcelable(SyncSettings.class.getClassLoader());
-        mProtocolSettings = source.readParcelable(ProtocolSettings.class.getClassLoader());
+        mQualificationSettings = source.readParcelable(QualificationSettings.class.getClassLoader());
     }
 
     /**
@@ -58,7 +58,7 @@ public abstract class AbstractAppSettings
         }
 
         mSyncSettings = new SyncSettings(json.getJSONObject(KEY_SYNC));
-        mProtocolSettings = new ProtocolSettings(json.getJSONObject(KEY_PROTOCOL));
+        mQualificationSettings = new QualificationSettings(json.getJSONObject(KEY_PROTOCOL));
     }
 
     @NonNull
@@ -72,8 +72,8 @@ public abstract class AbstractAppSettings
     }
 
     @Nullable
-    public ProtocolSettings getProtocolSettings() {
-        return mProtocolSettings;
+    public QualificationSettings getQualificationSettings() {
+        return mQualificationSettings;
     }
 
     @Override
@@ -88,7 +88,7 @@ public abstract class AbstractAppSettings
                              0);
         dest.writeParcelable(mSyncSettings,
                              0);
-        dest.writeParcelable(mProtocolSettings,
+        dest.writeParcelable(mQualificationSettings,
                              0);
     }
 }

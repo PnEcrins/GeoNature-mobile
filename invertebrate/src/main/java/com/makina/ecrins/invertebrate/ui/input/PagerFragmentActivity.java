@@ -285,7 +285,7 @@ public class PagerFragmentActivity
 
         (new SaveInputAsyncTask(this,
                                 ((MainApplication) getApplication()).getAppSettings()
-                                                                    .getProtocolSettings(),
+                                                                    .getQualificationSettings(),
                                 new PagerFragmentHandler(this))).execute(((MainApplication) getApplication()).getInput());
     }
 }

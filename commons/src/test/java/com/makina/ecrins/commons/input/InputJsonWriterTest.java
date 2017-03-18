@@ -105,9 +105,9 @@ public class InputJsonWriterTest {
              .put(taxon1.getId(),
                   taxon1);
 
-        input.setProtocol(new Protocol(2,
-                                       140,
-                                       4));
+        input.setQualification(new Qualification(2,
+                                                 140,
+                                                 4));
 
         // when write this input as JSON string
         final StringWriter writer = new StringWriter();
@@ -136,7 +136,7 @@ public class InputJsonWriterTest {
                                                              .append(DateFormat.format(inputJsonWriter.getDateFormat(),
                                                                                        input.getDate())
                                                                                .toString())
-                                                             .append("\",\"protocol\":{")
+                                                             .append("\",\"qualification\":{")
                                                              .append("\"organism\":2")
                                                              .append(",\"protocol\":140")
                                                              .append(",\"lot\":4}")

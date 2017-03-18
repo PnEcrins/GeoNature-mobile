@@ -242,7 +242,7 @@ public class PagerFragmentActivity
 
         mInputHelper = new InputHelper(this,
                                        ((MainApplication) getApplication()).getAppSettings()
-                                                                           .getProtocolSettings(),
+                                                                           .getQualificationSettings(),
                                        mOnInputHelperListener);
 
         if (getIntent().getBooleanExtra(EXTRA_NEW_INPUT,

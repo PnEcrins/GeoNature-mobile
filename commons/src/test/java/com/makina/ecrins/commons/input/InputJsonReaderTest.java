@@ -87,7 +87,7 @@ public class InputJsonReaderTest {
         assertEquals(calendar.getTime(),
                      input.getDate());
 
-        assertNull(input.getProtocol());
+        assertNull(input.getQualification());
         assertEquals(0,
                      input.getObservers()
                           .size());
@@ -136,14 +136,14 @@ public class InputJsonReaderTest {
         assertEquals(calendar.getTime(),
                      input.getDate());
 
-        final Protocol protocol = input.getProtocol();
-        assertNotNull(protocol);
+        final Qualification qualification = input.getQualification();
+        assertNotNull(qualification);
         assertEquals(2,
-                     protocol.getOrganism());
+                     qualification.getOrganism());
         assertEquals(140,
-                     protocol.getProtocol());
+                     qualification.getProtocol());
         assertEquals(4,
-                     protocol.getLot());
+                     qualification.getLot());
 
         assertEquals(1,
                      input.getObservers()

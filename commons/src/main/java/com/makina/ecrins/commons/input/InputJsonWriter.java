@@ -107,10 +107,10 @@ public class InputJsonWriter {
                                        input.getDate())
                                .toString());
 
-        if (input.getProtocol() != null) {
-            writer.name("protocol");
-            writeProcotol(writer,
-                          input.getProtocol());
+        if (input.getQualification() != null) {
+            writer.name("qualification");
+            writeQualification(writer,
+                               input.getQualification());
         }
 
         onInputJsonWriterListener.writeAdditionalInputData(writer,
@@ -155,17 +155,17 @@ public class InputJsonWriter {
         writer.endArray();
     }
 
-    private void writeProcotol(@NonNull final JsonWriter writer,
-                               @NonNull final Protocol protocol) throws
-                                                                 IOException {
+    private void writeQualification(@NonNull final JsonWriter writer,
+                                    @NonNull final Qualification qualification) throws
+                                                                                IOException {
         writer.beginObject();
 
         writer.name("organism")
-              .value(protocol.getOrganism());
+              .value(qualification.getOrganism());
         writer.name("protocol")
-              .value(protocol.getProtocol());
+              .value(qualification.getProtocol());
         writer.name("lot")
-              .value(protocol.getLot());
+              .value(qualification.getLot());
 
         writer.endObject();
     }
@@ -224,7 +224,7 @@ public class InputJsonWriter {
          * @param writer the current @code JsonWriter} to use
          * @param input  the current {@link AbstractInput} to read
          *
-         * @throws IOException
+         * @throws IOException if something goes wrong
          */
         void writeAdditionalInputData(@NonNull final JsonWriter writer,
                                       @NonNull final AbstractInput input) throws
@@ -236,7 +236,7 @@ public class InputJsonWriter {
          * @param writer the current @code JsonWriter} to use
          * @param taxon  the current {@link AbstractTaxon} to read
          *
-         * @throws IOException
+         * @throws IOException if something goes wrong
          */
         void writeAdditionalTaxonData(@NonNull final JsonWriter writer,
                                       @NonNull final AbstractTaxon taxon) throws

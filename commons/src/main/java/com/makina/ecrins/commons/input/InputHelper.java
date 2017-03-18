@@ -9,7 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.makina.ecrins.commons.settings.ProtocolSettings;
+import com.makina.ecrins.commons.settings.QualificationSettings;
 
 import java.util.Calendar;
 
@@ -82,7 +82,7 @@ public class InputHelper {
         }
     };
 
-    private Protocol mProtocol;
+    private Qualification mQualification;
     private AbstractInput mInput;
 
     public InputHelper(@NonNull final Context context,
@@ -94,24 +94,24 @@ public class InputHelper {
     }
 
     public InputHelper(@NonNull final Context context,
-                       @Nullable final ProtocolSettings protocolSettings,
+                       @Nullable final QualificationSettings qualificationSettings,
                        @NonNull final OnInputHelperListener onInputHelperListener) {
         this(context,
-             protocolSettings,
+             qualificationSettings,
              DEFAULT_DATE_FORMAT,
              onInputHelperListener);
     }
 
     public InputHelper(@NonNull final Context context,
-                       @Nullable final ProtocolSettings protocolSettings,
+                       @Nullable final QualificationSettings qualificationSettings,
                        @NonNull final String dateFormat,
                        @NonNull final OnInputHelperListener onInputHelperListener) {
         this.mContext = context;
 
-        if (protocolSettings != null) {
-            this.mProtocol = new Protocol(protocolSettings.getOrganism(),
-                                          protocolSettings.getProtocol(),
-                                          protocolSettings.getLot());
+        if (qualificationSettings != null) {
+            this.mQualification = new Qualification(qualificationSettings.getOrganism(),
+                                                    qualificationSettings.getProtocol(),
+                                                    qualificationSettings.getLot());
         }
 
         this.mDateFormat = dateFormat;
@@ -175,7 +175,7 @@ public class InputHelper {
                   "exportInput: no input to export");
         }
 
-        mInput.setProtocol(mProtocol);
+        mInput.setQualification(mQualification);
 
         AbstractInputIntentService.exportInput(mContext,
                                                mOnInputHelperListener.getInputIntentServiceClass(),

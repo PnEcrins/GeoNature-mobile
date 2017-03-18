@@ -101,8 +101,8 @@ class AppSettingsReader {
                 case "sync":
                     appSettings.mSyncSettings = mSyncSettingsReader.readSyncSettings(reader);
                     break;
-                case "protocol":
-                    appSettings.mProtocolSettings = readProtocolSettings(reader);
+                case "qualification":
+                    appSettings.mQualificationSettings = readQualificationSettings(reader);
                 default:
                     mOnAppSettingsReaderListener.readAdditionalSettings(reader,
                                                                         keyName,
@@ -147,8 +147,8 @@ class AppSettingsReader {
     }
 
     @Nullable
-    private ProtocolSettings readProtocolSettings(@NonNull final JsonReader reader) throws
-                                                                                    IOException {
+    private QualificationSettings readQualificationSettings(@NonNull final JsonReader reader) throws
+                                                                                              IOException {
         reader.beginObject();
 
         int organism = 0;
@@ -177,9 +177,9 @@ class AppSettingsReader {
             return null;
         }
 
-        return new ProtocolSettings(organism,
-                                    protocol,
-                                    lot);
+        return new QualificationSettings(organism,
+                                         protocol,
+                                         lot);
     }
 
     /**
@@ -204,7 +204,7 @@ class AppSettingsReader {
          * @param keyName     the JSON key read
          * @param appSettings the current {@link AbstractAppSettings} to use
          *
-         * @throws IOException
+         * @throws IOException if something goes wrong
          */
         void readAdditionalSettings(@NonNull final JsonReader reader,
                                     @NonNull final String keyName,

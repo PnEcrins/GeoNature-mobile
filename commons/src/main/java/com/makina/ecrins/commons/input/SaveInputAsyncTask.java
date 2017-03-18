@@ -7,7 +7,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.makina.ecrins.commons.settings.ProtocolSettings;
+import com.makina.ecrins.commons.settings.QualificationSettings;
 import com.makina.ecrins.commons.util.FileUtils;
 
 import org.json.JSONException;
@@ -31,20 +31,20 @@ public class SaveInputAsyncTask
     public static final int HANDLER_INPUT_SAVE_FAILED = 2;
 
     private Context mContext;
-    private Protocol mProtocol;
+    private Qualification mQualification;
     private Handler mHandler;
 
     public SaveInputAsyncTask(Context pContext,
-                              @Nullable final ProtocolSettings protocolSettings,
+                              @Nullable final QualificationSettings qualificationSettings,
                               Handler pHandler) {
 
         super();
         this.mContext = pContext;
 
-        if (protocolSettings != null) {
-            this.mProtocol = new Protocol(protocolSettings.getOrganism(),
-                                          protocolSettings.getProtocol(),
-                                          protocolSettings.getLot());
+        if (qualificationSettings != null) {
+            this.mQualification = new Qualification(qualificationSettings.getOrganism(),
+                                                    qualificationSettings.getProtocol(),
+                                                    qualificationSettings.getLot());
         }
 
         this.mHandler = pHandler;
@@ -65,7 +65,7 @@ public class SaveInputAsyncTask
             try {
                 final File inputDir = FileUtils.getInputsFolder(mContext);
                 final AbstractInput input = params[0];
-                input.setProtocol(mProtocol);
+                input.setQualification(mQualification);
 
                 // noinspection ResultOfMethodCallIgnored
                 inputDir.mkdirs();

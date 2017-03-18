@@ -8,41 +8,41 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Protocol settings.
+ * Qualification metadata settings.
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
-public class ProtocolSettings
+public class QualificationSettings
         implements Parcelable {
 
-    private static final String KEY_PROTOCOL_ORGANISM = "organism";
-    private static final String KEY_PROTOCOL_PROTOCOL = "protocol";
-    private static final String KEY_PROTOCOL_LOT = "lot";
+    private static final String KEY_ORGANISM = "organism";
+    private static final String KEY_PROTOCOL = "protocol";
+    private static final String KEY_LOT = "lot";
 
     private int mOrganism;
     private int mProtocol;
     private int mLot;
 
-    private ProtocolSettings(@NonNull final Parcel source) {
+    private QualificationSettings(@NonNull final Parcel source) {
         this.mOrganism = source.readInt();
         this.mProtocol = source.readInt();
         this.mLot = source.readInt();
     }
 
-    ProtocolSettings(int organism,
-                     int protocol,
-                     int lot) {
+    QualificationSettings(int organism,
+                          int protocol,
+                          int lot) {
         this.mOrganism = organism;
         this.mProtocol = protocol;
         this.mLot = lot;
     }
 
     @Deprecated
-    ProtocolSettings(JSONObject json) throws
+    QualificationSettings(JSONObject json) throws
                                       JSONException {
-        this.mOrganism = json.getInt(KEY_PROTOCOL_ORGANISM);
-        this.mProtocol = json.getInt(KEY_PROTOCOL_PROTOCOL);
-        this.mLot = json.getInt(KEY_PROTOCOL_LOT);
+        this.mOrganism = json.getInt(KEY_ORGANISM);
+        this.mProtocol = json.getInt(KEY_PROTOCOL);
+        this.mLot = json.getInt(KEY_LOT);
     }
 
     public int getOrganism() {
@@ -70,17 +70,17 @@ public class ProtocolSettings
         dest.writeInt(mLot);
     }
 
-    public static final Creator<ProtocolSettings> CREATOR = new Creator<ProtocolSettings>() {
+    public static final Creator<QualificationSettings> CREATOR = new Creator<QualificationSettings>() {
         @Override
-        public ProtocolSettings createFromParcel(Parcel source) {
+        public QualificationSettings createFromParcel(Parcel source) {
 
-            return new ProtocolSettings(source);
+            return new QualificationSettings(source);
         }
 
         @Override
-        public ProtocolSettings[] newArray(int size) {
+        public QualificationSettings[] newArray(int size) {
 
-            return new ProtocolSettings[size];
+            return new QualificationSettings[size];
         }
     };
 }

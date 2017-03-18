@@ -8,11 +8,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * The protocol to use for each {@link AbstractInput}.
+ * The qualification metadata to use for each {@link AbstractInput}.
  *
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
-public class Protocol
+public class Qualification
         implements Parcelable {
 
     private static final String KEY_PROTOCOL_ORGANISM = "organism";
@@ -23,15 +23,15 @@ public class Protocol
     private int mProtocol;
     private int mLot;
 
-    private Protocol(@NonNull final Parcel source) {
+    private Qualification(@NonNull final Parcel source) {
         this.mOrganism = source.readInt();
         this.mProtocol = source.readInt();
         this.mLot = source.readInt();
     }
 
-    public Protocol(int organism,
-                    int protocol,
-                    int lot) {
+    public Qualification(int organism,
+                         int protocol,
+                         int lot) {
         this.mOrganism = organism;
         this.mProtocol = protocol;
         this.mLot = lot;
@@ -79,17 +79,17 @@ public class Protocol
         dest.writeInt(mLot);
     }
 
-    public static final Creator<Protocol> CREATOR = new Creator<Protocol>() {
+    public static final Creator<Qualification> CREATOR = new Creator<Qualification>() {
         @Override
-        public Protocol createFromParcel(Parcel source) {
+        public Qualification createFromParcel(Parcel source) {
 
-            return new Protocol(source);
+            return new Qualification(source);
         }
 
         @Override
-        public Protocol[] newArray(int size) {
+        public Qualification[] newArray(int size) {
 
-            return new Protocol[size];
+            return new Qualification[size];
         }
     };
 }

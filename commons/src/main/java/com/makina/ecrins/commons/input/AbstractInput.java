@@ -30,7 +30,7 @@ public abstract class AbstractInput
     private static final String KEY_TYPE = "input_type";
     private static final String KEY_ID = "id";
     private static final String KEY_INITIAL_INPUT = "initial_input";
-    private static final String KEY_PROTOCOL = "protocol";
+    private static final String KEY_QUALIFICATION = "qualification";
     private static final String KEY_DATE_OBS = "dateobs";
     private static final String KEY_OBSERVERS_ID = "observers_id";
     private static final String KEY_TAXA = "taxons";
@@ -39,7 +39,7 @@ public abstract class AbstractInput
     long mInputId;
     private String mFeatureId;
     private Date mDate;
-    private Protocol mProtocol;
+    private Qualification mQualification;
     private final Map<Long, Observer> mObservers;
     private final Map<Long, AbstractTaxon> mTaxa;
     private long mCurrentSelectedTaxonId;
@@ -49,7 +49,7 @@ public abstract class AbstractInput
         mInputId = generateId();
         mFeatureId = null;
         mDate = new Date();
-        mProtocol = null;
+        mQualification = null;
         mObservers = new TreeMap<>();
         mTaxa = new TreeMap<>();
         mCurrentSelectedTaxonId = -1;
@@ -65,7 +65,7 @@ public abstract class AbstractInput
             mDate = new Date();
         }
 
-        mProtocol = source.readParcelable(Protocol.class.getClassLoader());
+        mQualification = source.readParcelable(Qualification.class.getClassLoader());
 
         final List<Observer> observers = new ArrayList<>();
         source.readTypedList(observers,
@@ -116,12 +116,12 @@ public abstract class AbstractInput
     }
 
     @Nullable
-    public Protocol getProtocol() {
-        return mProtocol;
+    public Qualification getQualification() {
+        return mQualification;
     }
 
-    public void setProtocol(@Nullable final Protocol protocol) {
-        this.mProtocol = protocol;
+    public void setQualification(@Nullable final Qualification qualification) {
+        this.mQualification = qualification;
     }
 
     /**
@@ -211,9 +211,9 @@ public abstract class AbstractInput
                  DateFormat.format(getDateFormat(),
                                    mDate));
 
-        if (mProtocol != null) {
-            json.put(KEY_PROTOCOL,
-                     mProtocol.getJSONObject());
+        if (mQualification != null) {
+            json.put(KEY_QUALIFICATION,
+                     mQualification.getJSONObject());
         }
 
         final JSONArray jsonObservers = new JSONArray();
@@ -255,7 +255,7 @@ public abstract class AbstractInput
         dest.writeLong(mInputId);
         dest.writeString(mFeatureId);
         dest.writeSerializable(mDate);
-        dest.writeParcelable(mProtocol,
+        dest.writeParcelable(mQualification,
                              0);
         dest.writeTypedList(new ArrayList<>(mObservers.values()));
         dest.writeTypedList(new ArrayList<>(mTaxa.values()));

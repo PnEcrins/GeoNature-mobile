@@ -100,8 +100,8 @@ public class AppSettingsReaderTest {
     }
 
     @Test
-    public void testReadAppSettingsWithoutProtocolFromJsonString() throws
-                                                                   Exception {
+    public void testReadAppSettingsWithoutQualificationFromJsonString() throws
+                                                                        Exception {
         // given a JSON settings
         final String json = TestHelper.getFixture("app_settings.json");
 
@@ -110,14 +110,14 @@ public class AppSettingsReaderTest {
 
         // then
         assertNotNull(appSettings);
-        assertNull(appSettings.getProtocolSettings());
+        assertNull(appSettings.getQualificationSettings());
     }
 
     @Test
-    public void testReadAppSettingsWithProtocolFromJsonString() throws
-                                                                Exception {
+    public void testReadAppSettingsWithQualificationFromJsonString() throws
+                                                                     Exception {
         // given a JSON settings
-        final String json = TestHelper.getFixture("app_settings_with_protocol.json");
+        final String json = TestHelper.getFixture("app_settings_with_qualification.json");
 
         // when read the JSON as DummyAppSettings
         final DummyAppSettings appSettings = (DummyAppSettings) appSettingsReader.read(json);
@@ -125,14 +125,14 @@ public class AppSettingsReaderTest {
         // then
         assertNotNull(appSettings);
 
-        final ProtocolSettings protocolSettings = appSettings.getProtocolSettings();
-        assertNotNull(protocolSettings);
+        final QualificationSettings qualificationSettings = appSettings.getQualificationSettings();
+        assertNotNull(qualificationSettings);
         assertEquals(2,
-                     protocolSettings.getOrganism());
+                     qualificationSettings.getOrganism());
         assertEquals(140,
-                     protocolSettings.getProtocol());
+                     qualificationSettings.getProtocol());
         assertEquals(4,
-                     protocolSettings.getLot());
+                     qualificationSettings.getLot());
     }
 
     @Test
