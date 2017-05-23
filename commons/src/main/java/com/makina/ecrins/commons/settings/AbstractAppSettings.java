@@ -22,7 +22,7 @@ public abstract class AbstractAppSettings
 
     private static final String KEY_DB = "db";
     private static final String KEY_SYNC = "sync";
-    private static final String KEY_PROTOCOL = "protocol";
+    private static final String KEY_QUALIFICATION = "qualification";
 
     DbSettings mDbSettings;
     SyncSettings mSyncSettings;
@@ -58,7 +58,12 @@ public abstract class AbstractAppSettings
         }
 
         mSyncSettings = new SyncSettings(json.getJSONObject(KEY_SYNC));
-        mQualificationSettings = new QualificationSettings(json.getJSONObject(KEY_PROTOCOL));
+
+        final JSONObject jsonQualification = json.optJSONObject(KEY_QUALIFICATION);
+
+        if (jsonQualification != null) {
+            mQualificationSettings = new QualificationSettings(jsonQualification);
+        }
     }
 
     @NonNull
