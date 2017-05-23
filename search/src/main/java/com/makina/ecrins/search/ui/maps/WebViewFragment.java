@@ -6,9 +6,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -73,15 +73,14 @@ public class WebViewFragment
                       "onControlInitialized");
             }
 
-            if (mOnFeaturesFoundListener.getSelectedFeature() != null) {
+            final Feature selectedFeature = mOnFeaturesFoundListener.getSelectedFeature();
+
+            if (selectedFeature != null) {
                 final Feature previousFeature = getSavedInstanceState().getParcelable(KEY_SELECTED_FEATURE);
 
-                if ((previousFeature != null) &&
-                        previousFeature.getId()
-                                       .equals(mOnFeaturesFoundListener.getSelectedFeature()
-                                                                       .getId()) &&
-                        !getSavedInstanceState().getParcelableArrayList(KEY_FEATURES)
-                                                .isEmpty()) {
+                if ((previousFeature != null) && previousFeature.getId()
+                                                                .equals(selectedFeature.getId()) && !getSavedInstanceState().getParcelableArrayList(KEY_FEATURES)
+                                                                                                                            .isEmpty()) {
 
                     final ArrayList<Feature> features = getSavedInstanceState().getParcelableArrayList(KEY_FEATURES);
                     addFeaturesToFeaturesControl(features);
@@ -91,11 +90,10 @@ public class WebViewFragment
                 }
                 else {
                     getSavedInstanceState().putParcelable(KEY_SELECTED_FEATURE,
-                                                          mOnFeaturesFoundListener.getSelectedFeature());
+                                                          selectedFeature);
                     getSavedInstanceState().putString(KEY_TAXON,
-                                                      mOnFeaturesFoundListener.getSelectedFeature()
-                                                                              .getProperties()
-                                                                              .getString(MainDatabaseHelper.SearchColumns.TAXON));
+                                                      selectedFeature.getProperties()
+                                                                     .getString(MainDatabaseHelper.SearchColumns.TAXON));
                     getLoaderManager().restartLoader(LOADER_TAXA,
                                                      getSavedInstanceState(),
                                                      WebViewFragment.this);
@@ -119,9 +117,7 @@ public class WebViewFragment
 
             clearFeaturesToFeaturesControl();
 
-            if (getSavedInstanceState().containsKey(KEY_SEARCH_LOCATION) &&
-                    getSavedInstanceState().containsKey(KEY_RADIUS) &&
-                    getSavedInstanceState().containsKey(KEY_FEATURES_FOUND)) {
+            if (getSavedInstanceState().containsKey(KEY_SEARCH_LOCATION) && getSavedInstanceState().containsKey(KEY_RADIUS) && getSavedInstanceState().containsKey(KEY_FEATURES_FOUND)) {
                 if (BuildConfig.DEBUG) {
                     Log.d(getClass().getName(),
                           "onSearchCriteria, previous location " + getSavedInstanceState().getParcelable(KEY_SEARCH_LOCATION)
@@ -138,18 +134,14 @@ public class WebViewFragment
                 }
             }
 
-            if (getSavedInstanceState().containsKey(KEY_SEARCH_LOCATION) &&
-                    getSavedInstanceState().containsKey(KEY_RADIUS) &&
-                    getSavedInstanceState().containsKey(KEY_FEATURES_FOUND) &&
-                    getSavedInstanceState().getParcelable(KEY_SEARCH_LOCATION)
-                                           .equals(location) &&
-                    (Double.valueOf(getSavedInstanceState().getDouble(KEY_RADIUS))
-                           .intValue() == radius)) {
+            if (getSavedInstanceState().containsKey(KEY_SEARCH_LOCATION) && getSavedInstanceState().containsKey(KEY_RADIUS) && getSavedInstanceState().containsKey(KEY_FEATURES_FOUND) && getSavedInstanceState().getParcelable(KEY_SEARCH_LOCATION)
+                                                                                                                                                                                                                 .equals(location) && (Double.valueOf(getSavedInstanceState().getDouble(KEY_RADIUS))
+                                                                                                                                                                                                                                             .intValue() == radius)) {
                 final ArrayList<Feature> features = getSavedInstanceState().getParcelableArrayList(KEY_FEATURES_FOUND);
                 mOnFeaturesFoundListener.onFeaturesFound(features);
             }
             else {
-                ((AppCompatActivity) getActivity()).setSupportProgressBarIndeterminateVisibility(true);
+                mOnFeaturesFoundListener.onFindFeatures(true);
 
                 getSavedInstanceState().putParcelable(KEY_SEARCH_LOCATION,
                                                       location);
@@ -352,7 +344,7 @@ public class WebViewFragment
             case LOADER_TAXA_GROUPBY:
                 getSavedInstanceState().putParcelableArrayList(KEY_FEATURES_FOUND,
                                                                new ArrayList<>(data));
-                ((AppCompatActivity) getActivity()).setSupportProgressBarIndeterminateVisibility(false);
+                mOnFeaturesFoundListener.onFindFeatures(false);
                 invalidateMenu();
 
                 clearFeaturesToFeaturesControl();
@@ -396,8 +388,7 @@ public class WebViewFragment
 
     @Override
     public void onLoaderReset(Loader<List<Feature>> loader) {
-
-        ((AppCompatActivity) getActivity()).setSupportProgressBarIndeterminateVisibility(false);
+        mOnFeaturesFoundListener.onFindFeatures(false);
 
         clearFeaturesToFeaturesControl();
     }
@@ -444,8 +435,11 @@ public class WebViewFragment
 
     public interface OnFeaturesFoundListener {
 
+        void onFindFeatures(boolean start);
+
         void onFeaturesFound(List<Feature> features);
 
+        @Nullable
         Feature getSelectedFeature();
 
         void onFeatureSelected(GeoPoint geoPoint,

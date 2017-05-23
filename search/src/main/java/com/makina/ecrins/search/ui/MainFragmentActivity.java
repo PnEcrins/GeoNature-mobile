@@ -5,12 +5,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
@@ -54,6 +57,7 @@ public class MainFragmentActivity
     private static final String LOAD_SETTINGS_DIALOG = "LOAD_SETTINGS_DIALOG";
     private static final String SHOW_FEATURE_DIALOG = "SHOW_FEATURE_DIALOG";
 
+    private ProgressBar mProgressBar;
     private Bundle mSavedState;
 
     private AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
@@ -113,12 +117,16 @@ public class MainFragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
-        supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
         setContentView(R.layout.activity_maps);
+
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            mProgressBar = (ProgressBar) toolbar.findViewById(R.id.progressBar);
+        }
 
         if (savedInstanceState == null) {
             if (BuildConfig.DEBUG) {
@@ -254,6 +262,15 @@ public class MainFragmentActivity
     }
 
     @Override
+    public void onFindFeatures(boolean start) {
+        if (mProgressBar == null) {
+            return;
+        }
+
+        mProgressBar.setVisibility(start ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
     public void onFeaturesFound(List<Feature> features) {
 
         final Intent intent = new Intent();
@@ -266,9 +283,9 @@ public class MainFragmentActivity
                                0);
     }
 
+    @Nullable
     @Override
     public Feature getSelectedFeature() {
-
         if (mSavedState.containsKey(KEY_SELECTED_FEATURE)) {
             return mSavedState.getParcelable(KEY_SELECTED_FEATURE);
         }
@@ -343,10 +360,10 @@ public class MainFragmentActivity
 
                         final FragmentManager fm = getSupportFragmentManager();
 
-                        if (fm.findFragmentById(android.R.id.content) == null) {
+                        if (fm.findFragmentById(R.id.fragment_content) == null) {
                             final WebViewFragment mapsFragment = new WebViewFragment();
                             fm.beginTransaction()
-                              .add(android.R.id.content,
+                              .add(R.id.fragment_content,
                                    mapsFragment)
                               .commit();
                         }
