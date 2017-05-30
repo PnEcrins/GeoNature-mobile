@@ -2,6 +2,7 @@ package com.makina.ecrins.commons.ui.observers;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,6 +40,7 @@ import com.makina.ecrins.commons.content.AbstractMainContentProvider;
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.input.Observer;
 import com.makina.ecrins.commons.ui.widget.AlphabetSectionIndexerCursorAdapter;
+import com.makina.ecrins.commons.util.ThemeUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -545,11 +547,11 @@ public abstract class AbstractObserversFragmentActivity
                         if (getItemViewType(position) == TYPE_NORMAL) {
                             if (((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
                                                                                    .containsKey(getItemId(position))) {
-                                view.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
+                                view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                                 ((CheckBox) view.findViewById(android.R.id.checkbox)).setChecked(true);
                             }
                             else {
-                                view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                                view.setBackgroundColor(Color.TRANSPARENT);
                                 ((CheckBox) view.findViewById(android.R.id.checkbox)).setChecked(false);
                             }
                         }
@@ -564,7 +566,7 @@ public abstract class AbstractObserversFragmentActivity
                                                 Cursor cursor,
                                                 int columnIndex) {
                         String filter = mSavedState.getString(KEY_FILTER);
-                        String selectedColor = Integer.toHexString(getResources().getColor(R.color.holo_blue_light))
+                        String selectedColor = Integer.toHexString(ThemeUtils.getAccentColor(getContext()))
                                                       .substring(2);
 
                         switch (view.getId()) {

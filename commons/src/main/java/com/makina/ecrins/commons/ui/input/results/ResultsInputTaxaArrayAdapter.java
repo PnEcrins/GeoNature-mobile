@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.makina.ecrins.commons.R;
 import com.makina.ecrins.commons.input.AbstractTaxon;
+import com.makina.ecrins.commons.util.ThemeUtils;
 
 /**
  * Custom {@code ArrayAdapter} used for {@link com.makina.ecrins.commons.ui.input.results.AbstractResultsInputFragment}.
@@ -69,7 +70,7 @@ public class ResultsInputTaxaArrayAdapter extends ArrayAdapter<AbstractTaxon> {
 
         // sets the background color for the current selected taxon
         if (getSelectedTaxonId() == getItem(position).getId()) {
-            view.setBackgroundColor(getContext().getResources().getColor(R.color.holo_blue_light));
+            view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
         }
         else {
             view.setBackgroundColor(getContext().getResources().getColor(android.R.color.transparent));

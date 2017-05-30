@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <declare-styleable name="CommonsBaseTheme">
+        <attr name="colorControlInverseStyle" format="reference"/>
+    </declare-styleable>
+
     <declare-styleable name="ViewPagerIndicator">
         <!-- style of the circle indicator -->
         <attr name="underlinePageIndicatorStyle" format="reference"/>

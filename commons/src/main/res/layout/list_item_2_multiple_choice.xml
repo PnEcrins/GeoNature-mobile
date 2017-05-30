@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
+              android:background="@drawable/list_item_background"
               android:gravity="center_vertical"
+              android:minHeight="?android:attr/listPreferredItemHeight"
               android:orientation="horizontal"
               android:paddingLeft="16dip"
-              android:paddingRight="12dip"
-              tools:ignore="RtlHardcoded">
+              android:paddingRight="12dip">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -21,32 +21,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
-            android:gravity="center_vertical|left"
-            android:singleLine="true"
+            android:gravity="center_vertical|start"
+            android:maxLines="1"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textIsSelectable="false"
-            tools:ignore="RtlHardcoded"/>
+            android:textIsSelectable="false"/>
 
         <TextView
             android:id="@android:id/text2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
-            android:gravity="center_vertical|left"
-            android:singleLine="true"
+            android:gravity="center_vertical|start"
+            android:maxLines="1"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textIsSelectable="false"
-            tools:ignore="RtlHardcoded"/>
+            android:textIsSelectable="false"/>
 
     </LinearLayout>
 
     <CheckBox
         android:id="@android:id/checkbox"
-        android:layout_width="35dip"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="false"
         android:focusable="false"
         android:gravity="center_vertical"
-        android:text=""/>
+        android:text=""
+        android:theme="?attr/colorControlInverseStyle"/>
 
 </LinearLayout>

@@ -13,3 +13,13 @@
 * padding: 0
 * color: black, opacity: 80%
 * color disabled: black, opacity: 50%
+
+## Material palette colors
+
+From http://mcg.mbitson.com, set your base primary color (500)
+
+### Dark theme
+
+* **Primary color**: 800
+* **Primary dark color**: 900
+* **Accent color**: 300

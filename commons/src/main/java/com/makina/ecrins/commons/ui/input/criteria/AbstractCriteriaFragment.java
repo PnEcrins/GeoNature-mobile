@@ -18,6 +18,7 @@ import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.input.AbstractTaxon;
 import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
+import com.makina.ecrins.commons.util.ThemeUtils;
 
 /**
  * Lists all criteria.
@@ -51,7 +52,7 @@ public abstract class AbstractCriteriaFragment extends ListFragment
 
                 if (getInput().getTaxa().get(getInput().getCurrentSelectedTaxonId()).getCriterionId() == getItemId(position)) {
                     getListView().setSelection(position);
-                    view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
+                    view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                 }
                 else {
                     view.setBackgroundColor(getResources().getColor(android.R.color.transparent));

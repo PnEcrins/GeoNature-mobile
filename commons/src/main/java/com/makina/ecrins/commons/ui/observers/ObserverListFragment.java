@@ -2,6 +2,7 @@ package com.makina.ecrins.commons.ui.observers;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -40,6 +41,7 @@ import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.input.Observer;
 import com.makina.ecrins.commons.ui.widget.AlphabetSectionIndexerCursorAdapter;
 import com.makina.ecrins.commons.ui.widget.PinnedSectionListView;
+import com.makina.ecrins.commons.util.ThemeUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -579,11 +581,11 @@ public class ObserverListFragment
 
                     if (getItemViewType(position) == TYPE_NORMAL) {
                         if (mSelectedObservers.containsKey(getItemId(position))) {
-                            view.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
+                            view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                             ((CheckBox) view.findViewById(android.R.id.checkbox)).setChecked(true);
                         }
                         else {
-                            view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                            view.setBackgroundColor(Color.TRANSPARENT);
                             ((CheckBox) view.findViewById(android.R.id.checkbox)).setChecked(false);
                         }
                     }
@@ -598,7 +600,7 @@ public class ObserverListFragment
                 public boolean setViewValue(View view,
                                             Cursor cursor,
                                             int columnIndex) {
-                    String selectedColor = Integer.toHexString(getResources().getColor(R.color.holo_blue_light))
+                    String selectedColor = Integer.toHexString(ThemeUtils.getAccentColor(getContext()))
                                                   .substring(2);
 
                     switch (view.getId()) {
@@ -679,7 +681,7 @@ public class ObserverListFragment
      *
      * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
      */
-    public interface OnObserverListFragmentListener {
+    interface OnObserverListFragmentListener {
 
         /**
          * Gets the loader URI to use by the loader.

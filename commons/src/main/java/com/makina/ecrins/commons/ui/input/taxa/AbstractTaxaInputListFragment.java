@@ -21,8 +21,6 @@ import android.text.SpannedString;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,7 +33,6 @@ import android.widget.FilterQueryProvider;
 import android.widget.ListView;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
-import android.widget.ViewSwitcher;
 
 import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
@@ -47,6 +44,7 @@ import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.ui.widget.AlphabetSectionIndexerCursorAdapter;
 import com.makina.ecrins.commons.ui.widget.PinnedSectionListView;
+import com.makina.ecrins.commons.util.ThemeUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -543,7 +541,7 @@ public abstract class AbstractTaxaInputListFragment
 
                     if (getItemViewType(position) == TYPE_NORMAL) {
                         if ((mSavedState.getParcelable(KEY_SELECTED_TAXON) != null) && ((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getTaxonId() == getItemId(position)) {
-                            view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
+                            view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
 
                             Cursor cursor = (Cursor) getItem(position);
                             AbstractTaxon selectedTaxon = mSavedState.getParcelable(KEY_SELECTED_TAXON);
@@ -566,7 +564,7 @@ public abstract class AbstractTaxaInputListFragment
                                                       selectedTaxon);
                         }
                         else {
-                            view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                            view.setBackgroundColor(Color.TRANSPARENT);
                         }
                     }
 
@@ -582,29 +580,14 @@ public abstract class AbstractTaxaInputListFragment
                                             int columnIndex) {
                     if (view.getId() == R.id.textSwitcher) {
                         TextSwitcher textSwitcher = (TextSwitcher) view;
+                        textSwitcher.setInAnimation(AnimationUtils.loadAnimation(getActivity(),
+                                                                                 android.R.anim.fade_in));
+                        textSwitcher.setOutAnimation(AnimationUtils.loadAnimation(getActivity(),
+                                                                                  android.R.anim.fade_out));
+
                         String filter = mSavedState.getString(KEY_FILTER);
-                        String selectedColor = Integer.toHexString(getResources().getColor(R.color.holo_blue_light))
+                        String selectedColor = Integer.toHexString(ThemeUtils.getAccentColor(getContext()))
                                                       .substring(2);
-
-                        if (textSwitcher.getChildCount() != 2) {
-                            textSwitcher.setFactory(new ViewSwitcher.ViewFactory() {
-                                @Override
-                                public View makeView() {
-                                    TextView textView = new TextView(getActivity());
-                                    textView.setSingleLine();
-                                    textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-                                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP,
-                                                         22);
-                                    textView.setTextColor(getResources().getColor(android.R.color.primary_text_dark));
-
-                                    return textView;
-                                }
-                            });
-                            textSwitcher.setInAnimation(AnimationUtils.loadAnimation(getActivity(),
-                                                                                     android.R.anim.fade_in));
-                            textSwitcher.setOutAnimation(AnimationUtils.loadAnimation(getActivity(),
-                                                                                      android.R.anim.fade_out));
-                        }
 
                         String taxonDisplayName;
 
