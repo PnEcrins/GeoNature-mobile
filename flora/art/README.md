@@ -21,3 +21,17 @@
 * Reset the opacity to 100 and use Colorize tool from menu Tools > Color Tools -> Colorize
 * Apply the following settings : Hue : 200, Saturation : 100, Lightness : -40
 * Export the image as PNG and add "_selected" as suffix for the name
+
+## Launcher icon
+
+From https://romannurik.github.io/AndroidAssetStudio/icons-launcher.html
+
+* **Foreground**: Image `ic_launcher_flora.svg`
+* **Trim whitespace**: Trim
+* **Padding**: 25%
+* **Color**: white
+* **Background color**: use `colorPrimary` from styles
+* **Scaling**: Center
+* **Shape**: Square
+* **Effect**: Cast shadow
+* **Name**: `ic_launcher`

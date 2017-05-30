@@ -1,6 +1,7 @@
 package com.makina.ecrins.flora.ui.input.phenology;
 
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
@@ -17,6 +18,7 @@ import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
+import com.makina.ecrins.commons.util.ThemeUtils;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.content.MainContentProvider;
 import com.makina.ecrins.flora.input.Input;
@@ -75,10 +77,10 @@ public class PhenologyListFragment
                         (currentSelectedTaxon.getCurrentSelectedArea()
                                              .getPhenologyId() == cursor.getInt(cursor.getColumnIndex(MainDatabaseHelper.PhenologyColumns.CODE)))) {
                     getListView().setSelection(position);
-                    view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
+                    view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                 }
                 else {
-                    view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                    view.setBackgroundColor(Color.TRANSPARENT);
                 }
 
                 return view;

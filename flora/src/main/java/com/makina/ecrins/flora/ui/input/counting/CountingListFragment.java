@@ -3,6 +3,7 @@ package com.makina.ecrins.flora.ui.input.counting;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.ui.input.IInputFragment;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
+import com.makina.ecrins.commons.util.ThemeUtils;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.input.Counting;
 import com.makina.ecrins.flora.input.Counting.CountingType;
@@ -248,12 +250,12 @@ public class CountingListFragment
                     }
 
                     ((RadioButton) view.findViewById(R.id.radioButton)).setChecked(true);
-                    view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
+                    view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                 }
                 else {
                     ((TextView) view.findViewById(R.id.textViewCountingValue)).setText("");
                     ((RadioButton) view.findViewById(R.id.radioButton)).setChecked(false);
-                    view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                    view.setBackgroundColor(Color.TRANSPARENT);
                 }
             }
 
