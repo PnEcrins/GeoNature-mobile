@@ -46,11 +46,16 @@ android {
             zipAlignEnabled true
 
             applicationVariants.all { variant ->
-                variant.outputs.each  { output ->
+                variant.outputs.each { output ->
                     // noinspection GroovyAssignabilityCheck
                     output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace(".apk", "-" + defaultConfig.versionName + ".apk"))
                 }
             }
+        }
+    }
+
+    productFlavors {
+        pne {
         }
     }
 }

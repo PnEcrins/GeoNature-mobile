@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- main theme colors -->
-    <color name="colorPrimary">#64054e</color>
-    <color name="colorPrimaryDark">#370026</color>
-    <color name="colorAccent">#b358a5</color>
-
     <color name="feature">#f30</color>
     <color name="feature_add">#03f</color>
     <color name="feature_edit">#03f</color>
