@@ -40,6 +40,7 @@ import com.makina.ecrins.commons.input.AbstractTaxon;
 import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.ui.widget.AlphabetSectionIndexerCursorAdapter;
+import com.makina.ecrins.commons.ui.widget.PinnedSectionListView;
 import com.makina.ecrins.commons.util.ThemeUtils;
 
 import java.text.ParseException;
@@ -147,6 +148,10 @@ public abstract class AbstractTaxaFragment
 
         // give some text to display if there is no data
         getListView().setEmptyView(view.findViewById(R.id.internalEmpty));
+
+        if (getListView() instanceof PinnedSectionListView) {
+            ((PinnedSectionListView) getListView()).setShadowVisible(false);
+        }
     }
 
     @Override

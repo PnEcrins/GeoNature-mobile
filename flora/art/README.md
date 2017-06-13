@@ -28,9 +28,9 @@ From https://romannurik.github.io/AndroidAssetStudio/icons-launcher.html
 
 * **Foreground**: Image `ic_launcher_flora.svg`
 * **Trim whitespace**: Trim
-* **Padding**: 25%
+* **Padding**: 20%
 * **Color**: white
-* **Background color**: use `colorPrimary` from styles
+* **Background color**: use `baseColor` from styles
 * **Scaling**: Center
 * **Shape**: Square
 * **Effect**: Cast shadow

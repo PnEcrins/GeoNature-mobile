@@ -18,6 +18,12 @@
 
 From http://mcg.mbitson.com, set your base primary color (500)
 
+### Light theme
+
+* **Primary color**: 500
+* **Primary dark color**: 800
+* **Accent color**: 300 (or another different light color)
+
 ### Dark theme
 
 * **Primary color**: 800

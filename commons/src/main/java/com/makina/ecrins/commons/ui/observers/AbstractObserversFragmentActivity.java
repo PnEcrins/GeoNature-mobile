@@ -2,7 +2,6 @@ package com.makina.ecrins.commons.ui.observers;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -547,11 +546,9 @@ public abstract class AbstractObserversFragmentActivity
                         if (getItemViewType(position) == TYPE_NORMAL) {
                             if (((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
                                                                                    .containsKey(getItemId(position))) {
-                                view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                                 ((CheckBox) view.findViewById(android.R.id.checkbox)).setChecked(true);
                             }
                             else {
-                                view.setBackgroundColor(Color.TRANSPARENT);
                                 ((CheckBox) view.findViewById(android.R.id.checkbox)).setChecked(false);
                             }
                         }
