@@ -230,6 +230,10 @@ public class AlphabetSectionIndexerCursorAdapter
         int i = 0;
         int maxLength = usedSectionNumbers.length;
 
+        if (maxLength == 0) {
+            return 0;
+        }
+
         // linear scan over the used alphabetical sections' positions to find where the given section fits in
         while (i < maxLength && position >= sectionToPosition.get(usedSectionNumbers[i])) {
             i++;
