@@ -112,7 +112,7 @@
     <string name="action_search">Recherche</string>
     <string name="action_unselect_all">Annuler la sélection</string>
     <string name="action_title_item_selected">%1$d sélectionné(s)</string>
-    <string name="action_switch_label_latin">Non scientifique</string>
+    <string name="action_switch_label_latin">Nom scientifique</string>
     <string name="action_switch_label_french">Nom commun</string>
     <string name="action_delete_taxon">Supprimer un taxon</string>
     <string name="action_comment_add">Ajouter un commentaire</string>
