@@ -2,7 +2,7 @@
 <manifest package="com.makina.ecrins.search"
           xmlns:android="http://schemas.android.com/apk/res/android"
           android:sharedUserId="com.makina.ecrins"
-          android:versionCode="280">
+          android:versionCode="289">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -50,7 +50,7 @@
             android:exported="false"/>
 
         <service
-            android:name="com.makina.ecrins.commons.service.RequestHandlerService"
+            android:name="com.makina.ecrins.search.settings.AppSettingsIntentService"
             android:exported="false"/>
         <service
             android:name="com.makina.ecrins.commons.sync.CheckServerService"

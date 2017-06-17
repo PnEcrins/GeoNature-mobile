@@ -76,12 +76,12 @@ public class PermissionUtils {
      * the permission, otherwise it is requested directly.
      * </p>
      *
-     * @param fragment                     the current {@code Fragment}
-     * @param snackbarParentView           the parent view on which to display the {@code Snackbar}
-     * @param snackbarMessageResourceId    the message resource ID to display
-     * @param requestCode                  application specific request code to match with a result
-     *                                     reported to {@code ActivityCompat.OnRequestPermissionsResultCallback#onRequestPermissionsResult(int, String[], int[])}.
-     * @param permissions                  a set of permissions to request
+     * @param fragment                  the current {@code Fragment}
+     * @param snackbarParentView        the parent view on which to display the {@code Snackbar}
+     * @param snackbarMessageResourceId the message resource ID to display
+     * @param requestCode               application specific request code to match with a result
+     *                                  reported to {@code ActivityCompat.OnRequestPermissionsResultCallback#onRequestPermissionsResult(int, String[], int[])}.
+     * @param permissions               a set of permissions to request
      */
     public static void requestPermissions(@NonNull final Fragment fragment,
                                           @NonNull final View snackbarParentView,
@@ -113,6 +113,56 @@ public class PermissionUtils {
         else {
             fragment.requestPermissions(permissions,
                                         requestCode);
+        }
+    }
+
+    /**
+     * Requests a set of permissions from a {@code Fragment}.
+     * <p>
+     * If a permission has been denied previously, a {@code Snackbar} will prompt the user to grant
+     * the permission, otherwise it is requested directly.
+     * </p>
+     *
+     * @param activity                  the current {@code Activity}
+     * @param snackbarParentView        the parent view on which to display the {@code Snackbar}
+     * @param snackbarMessageResourceId the message resource ID to display
+     * @param requestCode               application specific request code to match with a result
+     *                                  reported to {@code ActivityCompat.OnRequestPermissionsResultCallback#onRequestPermissionsResult(int, String[], int[])}.
+     * @param permissions               a set of permissions to request
+     */
+    public static void requestPermissions(@NonNull final Activity activity,
+                                          @NonNull final View snackbarParentView,
+                                          final int snackbarMessageResourceId,
+                                          final int requestCode,
+                                          @NonNull final String... permissions) {
+        boolean shouldShowRequestPermissions = false;
+        final Iterator<String> iterator = Arrays.asList(permissions)
+                                                .iterator();
+
+        while (iterator.hasNext() && !shouldShowRequestPermissions) {
+            shouldShowRequestPermissions = ActivityCompat.shouldShowRequestPermissionRationale(activity,
+                                                                                               iterator.next());
+        }
+
+        if (shouldShowRequestPermissions) {
+            Snackbar.make(snackbarParentView,
+                          snackbarMessageResourceId,
+                          Snackbar.LENGTH_INDEFINITE)
+                    .setAction(android.R.string.ok,
+                               new View.OnClickListener() {
+                                   @Override
+                                   public void onClick(View view) {
+                                       ActivityCompat.requestPermissions(activity,
+                                                                         permissions,
+                                                                         requestCode);
+                                   }
+                               })
+                    .show();
+        }
+        else {
+            ActivityCompat.requestPermissions(activity,
+                                              permissions,
+                                              requestCode);
         }
     }
 

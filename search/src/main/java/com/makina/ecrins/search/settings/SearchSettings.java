@@ -3,9 +3,6 @@ package com.makina.ecrins.search.settings;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
  * 'Search' settings.
  *
@@ -14,38 +11,20 @@ import org.json.JSONObject;
 public class SearchSettings
         implements Parcelable {
 
-    private static final String KEY_MAX_RADIUS = "max_radius";
-    private static final String KEY_DEFAULT_RADIUS = "default_radius";
-    private static final String KEY_MAX_FEATURES_FOUND = "max_features_found";
+    int mMaxRadius;
+    int mDefaultRadius;
+    int mMaxFeaturesFound;
 
-    private int mMaxRadius;
-    private int mDefaultRadius;
-    private int mMaxFeaturesFound;
-
-    public SearchSettings() {
+    SearchSettings() {
         mMaxRadius = 2000;
         mDefaultRadius = 1000;
         mMaxFeaturesFound = 100;
     }
 
-    public SearchSettings(Parcel source) {
+    private SearchSettings(Parcel source) {
         mMaxRadius = source.readInt();
         mDefaultRadius = source.readInt();
         mMaxFeaturesFound = source.readInt();
-    }
-
-    public SearchSettings(JSONObject json) throws JSONException {
-        if (json.has(KEY_MAX_RADIUS)) {
-            this.mMaxRadius = json.getInt(KEY_MAX_RADIUS);
-        }
-
-        if (json.has(KEY_DEFAULT_RADIUS)) {
-            this.mDefaultRadius = json.getInt(KEY_DEFAULT_RADIUS);
-        }
-
-        if (json.has(KEY_MAX_FEATURES_FOUND)) {
-            this.mMaxFeaturesFound = json.getInt(KEY_MAX_FEATURES_FOUND);
-        }
     }
 
     public int getMaxRadius() {

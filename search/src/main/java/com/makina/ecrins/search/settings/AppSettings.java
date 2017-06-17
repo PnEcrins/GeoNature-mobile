@@ -6,9 +6,6 @@ import android.os.Parcelable;
 import com.makina.ecrins.commons.settings.AbstractAppSettings;
 import com.makina.ecrins.maps.settings.MapSettings;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
  * Global internal settings for this application.
  *
@@ -17,30 +14,19 @@ import org.json.JSONObject;
 public class AppSettings
         extends AbstractAppSettings {
 
-    private static final String KEY_MAP = "map";
-    private static final String KEY_SEARCH = "search";
+    MapSettings mMapSettings;
+    SearchSettings mSearchSettings;
 
-    private MapSettings mMapSettings;
-    private SearchSettings mSearchSettings;
+    AppSettings() {
+        mMapSettings = MapSettings.Builder.newInstance()
+                                          .build();
+    }
 
-    public AppSettings(Parcel source) {
+    private AppSettings(Parcel source) {
         super(source);
 
         mMapSettings = source.readParcelable(MapSettings.class.getClassLoader());
         mSearchSettings = source.readParcelable(SearchSettings.class.getClassLoader());
-    }
-
-    public AppSettings(JSONObject json) throws JSONException {
-        super(json);
-
-        mMapSettings = new MapSettings(json.getJSONObject(KEY_MAP));
-
-        if (json.has(KEY_SEARCH)) {
-            mSearchSettings = new SearchSettings(json.getJSONObject(KEY_SEARCH));
-        }
-        else {
-            mSearchSettings = new SearchSettings();
-        }
     }
 
     public MapSettings getMapSettings() {
@@ -57,13 +43,12 @@ public class AppSettings
     }
 
     @Override
-    public void writeToParcel(
-            Parcel dest,
-            int flags) {
-        dest.writeParcelable(
-                mMapSettings,
-                0
-        );
+    public void writeToParcel(Parcel dest,
+                              int flags) {
+        dest.writeParcelable(mMapSettings,
+                             0);
+        dest.writeParcelable(mSearchSettings,
+                             0);
     }
 
     public static final Parcelable.Creator<AppSettings> CREATOR = new Parcelable.Creator<AppSettings>() {

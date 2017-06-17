@@ -123,6 +123,7 @@
     <string name="action_ok">ok</string>
 
     <string name="snackbar_permissions_not_granted">Permissions were not granted</string>
+    <string name="snackbar_permissions_granted">Permissions were been granted</string>
     <string name="snackbar_permission_external_storage_rationale">External storage permission is needed</string>
     <string name="snackbar_permission_external_storage_available">External storage Permissions have been granted</string>
 

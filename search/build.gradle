@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-version = "1.1.1"
+version = "1.2.0"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -51,6 +51,11 @@ android {
                     output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace(".apk", "-" + defaultConfig.versionName + ".apk"))
                 }
             }
+        }
+    }
+
+    productFlavors {
+        pne {
         }
     }
 }
