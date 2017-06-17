@@ -2,6 +2,7 @@ package com.makina.ecrins.commons.ui.observers;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -306,6 +307,8 @@ public class ObserverListFragment
         if (checkBox != null) {
             boolean isSelected = !checkBox.isChecked();
             checkBox.setChecked(isSelected);
+            v.setBackgroundColor(checkBox.isChecked() ? ThemeUtils.getAccentColor(getContext()) : Color.TRANSPARENT);
+
 
             if (isSelected) {
                 mSelectedObserverId = selectedObserverId;
@@ -579,12 +582,10 @@ public class ObserverListFragment
                                               parent);
 
                     if (getItemViewType(position) == TYPE_NORMAL) {
-                        if (mSelectedObservers.containsKey(getItemId(position))) {
-                            ((CheckBox) view.findViewById(android.R.id.checkbox)).setChecked(true);
-                        }
-                        else {
-                            ((CheckBox) view.findViewById(android.R.id.checkbox)).setChecked(false);
-                        }
+                        final CheckBox checkBox = (CheckBox) view.findViewById(android.R.id.checkbox);
+                        checkBox.setChecked(mSelectedObservers.containsKey(getItemId(position)));
+
+                        view.setBackgroundColor(checkBox.isChecked() ? ThemeUtils.getAccentColor(getContext()) : Color.TRANSPARENT);
                     }
 
                     return view;
