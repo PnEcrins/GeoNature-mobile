@@ -15,14 +15,13 @@
 
 * [Leaflet](http://leafletjs.com)
 * [Android Support Library](http://developer.android.com/tools/support-library/index.html)
-* [ViewPagerIndicator](http://viewpagerindicator.com)
 
 ## Full Build
 
 A full build can be executed with the following command:
 
 ```
-./gradlew clean assembleDebug
+./gradlew clean assemblePneDebug
 ```
 
 ## Release Build
@@ -44,7 +43,7 @@ KEY_PASSWORD=keypassword
 After this preparation, the release build can be invoked with the following command:
 
 ```
-./gradlew clean assembleRelease
+./gradlew clean assemblePneRelease
 ```
 
 which will in turn sign and zipalign all apks.
@@ -55,13 +54,13 @@ Ensure that you have a connected device with Android 2.3.x or higher running and
 execute the following command after build:
 
 ```
-./gradlew installDebug
+./gradlew installPneDebug
 ```
 
 You can combine a full build and deploy the application in a same command:
 
 ```
-./gradlew clean installDebug
+./gradlew clean installPneDebug
 ```
 
 # Project information
