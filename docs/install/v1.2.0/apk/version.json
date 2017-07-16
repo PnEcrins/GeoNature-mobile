@@ -1,0 +1,40 @@
+{
+    "apps":
+    [
+        {
+            "package": "com.makina.ecrins.fauna",
+            "sharedUserId": "com.makina.ecrins",
+            "apkName": "fauna-pne-release-1.2.0.apk",
+            "versionCode": 231,
+            "versionName": "1.2.0"
+        },
+        {
+            "package": "com.makina.ecrins.flora",
+            "sharedUserId": "com.makina.ecrins",
+            "apkName": "flora-pne-release-1.2.0.apk",
+            "versionCode": 1214,
+            "versionName": "1.2.0"
+        },
+        {
+            "package": "com.makina.ecrins.invertebrate",
+            "sharedUserId": "com.makina.ecrins",
+            "apkName": "invertebrate-pne-release-1.2.0.apk",
+            "versionCode": 152,
+            "versionName": "1.2.0"
+        },
+        {
+            "package": "com.makina.ecrins.mortality",
+            "sharedUserId": "com.makina.ecrins",
+            "apkName": "mortality-pne-release-1.2.0.apk",
+            "versionCode": 134,
+            "versionName": "1.2.0"
+        },
+        {
+            "package": "com.makina.ecrins.search",
+            "sharedUserId": "com.makina.ecrins",
+            "apkName": "search-pne-release-1.2.0.apk",
+            "versionCode": 289,
+            "versionName": "1.2.0"
+        }
+    ]
+}
