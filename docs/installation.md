@@ -10,8 +10,6 @@ TODO : détailler les étapes de préparation et d'installation concernant les a
 
 **Installation et configuration des application Android**
 
-https://github.com/PnEcrins/GeoNature-mobile/blob/master/docs/installation.rst
-
 * production des fonds cartographiques
 * production d'un fichier unities.wkt pour les applications ``contact faune`` et ``contact invertébrés``
 * configuration des fichiers de settings des applications (url de synchronisation, paramètres carto, déclaration des fonds cartographiques)
