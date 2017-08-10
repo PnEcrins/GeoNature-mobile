@@ -35,19 +35,21 @@ La production de données d'observation avec GeoNature-mobile repose sur 4 briqu
 
 * GeoNature et sa base de données (stockage + consultation et saisie web)
 * GeoNature-mobiles (saisie Android)
-* Geonature-mobile-webapi (Lien entre la base de données GeoNature et les applications Android)
-* GeoNature-mobile-sync (Lien entre le terminal Android et la webapi : synchronisation des données + mise à jour applicative)
+* Geonature-mobile-webapi (lien entre la base de données GeoNature et les applications Android)
+* GeoNature-mobile-sync (lien entre le terminal Android et la webapi : synchronisation des données + mise à jour applicative)
 
 
 Pour pouvoir importer les données saisies avec Geonature-mobile dans la BDD PostgreSQL de GeoNature, une web-API doit être installée sur un serveur : https://github.com/PnEcrins/GeoNature-mobile-webapi
-Cette webapi permet à la fois d'importer les données saisies mais aussi d''exporter vers les applications mobile les données nécessaires au fonctionnement des applications (listes des observateurs, listes des taxons, contenu des listes déroulantes)
+Cette webapi permet à la fois d'importer les données saisies mais aussi d''exporter vers les applications mobiles les données nécessaires au fonctionnement des applications (listes des observateurs, listes des taxons, contenu des listes déroulantes)
 
 La synchronisation de ces données peut être faite par le réseau (wifi ou 3G). Dans ce cas GeoNature-mobile-sync n'est pas indispensable.
-Il est également possible de connecter le terminal mobile en USB à un PC connecté à Internet. Dans ce cas, une [application de synchronisation des données](https://github.com/PnEcrins/GeoNature-mobile-sync) doit être installée sur le PC. Cette application enrichi les fonctionnalités de la synchronisation : 
-	* unification de la synchronisation des 5 applications Android en un seul clik
-	* mise à jour applicative (si une nouvelle version des applications ou une nouvelle configuration doit être déployée sur une flotte de terminaux Android)
-	* backup des saisies
-	* log des erreurs
+
+Il est également possible de connecter le terminal mobile en USB à un PC connecté à Internet. Dans ce cas, une [GeoNature-mobile-sync](https://github.com/PnEcrins/GeoNature-mobile-sync) doit être installée sur le PC. Cette application enrichi les fonctionnalités de la synchronisation : 
+* unification de la synchronisation des 5 applications Android en un seul clik
+
+* mise à jour applicative (si une nouvelle version des applications ou une nouvelle configuration doit être déployée sur une flotte de terminaux Android)
+* backup des saisies
+* log des erreurs
 l'usage de cette application est fortement recommandée dans le cadre d'une flotte importante de terminaux et/ou d'utilisateurs peu à l'aise avec les outils informatiques.
 
 ![GeoNature schema general](https://github.com/PnEcrins/GeoNature/raw/master/docs/images/schema-geonature-environnement.jpg)
@@ -55,11 +57,42 @@ l'usage de cette application est fortement recommandée dans le cadre d'une flot
 Mise en place
 =============
 
-Il est possible de déployer les applications Android en utilisant les APK disponibles dans https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/install
+L'usage de GeoNature-mobile nécessite la mise en place d'une chaine de travail complète. Il serait illusoire de produire des données avec un terminal Android sans pouvoir les exporter ou les consulter en dehors de ce terminal. 
+Il est également important de savoir que GeoNature-mobile est concu pour un usage hors ligne. Il faut donc embarquer les fonds cartographique nécessaire à la localisation des observations ainsi que les limites des unités géographiques. Ces fonds doivent être produits au format MBTiles puis copiés sur la carte SD du terminal. Ces fonds peuvent être lourds et nécessiter un espace de stockage importants (plusiseurs giga-octets).
+La chaine de travail est complexe et nécessite une bonne compréhension du rôle et de la configuration de chacune des briques qui la composent.
 
-Il vous faut ensuite compléter les fichiers JSON de configuration comme indiqué dans la documentation (https://github.com/PnEcrins/GeoNature-mobile/blob/master/docs/configuration_development.md)
+La mise en place de la chaine de travail passe par les étapes suivantes
+-----------------------------------------------------------------------
 
-GeoNature-mobile est concu pour un usage hors ligne. Il faut donc embarquer les fonds cartographique nécessaire à la localisation des observations ainsi que les limites des unités géographiques. Ces fonds doivent être produits au format MBTiles et et copiés sur la carte SD du terminal (https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/install/v1.2.0/external%20card).
+** Installation et configuration de GeoNature et de sa base de données**
+
+https://github.com/PnX-SI/GeoNature/tree/master/docs
+
+** Installation et configuration des application Android**
+
+https://github.com/PnEcrins/GeoNature-mobile/blob/master/docs/installation.rst
+
+* production des fonds cartographiques
+* configuration des fichiers de settings des applications (url de synchronisation, paramètres carto, déclaration des fonds cartographiques)
+* installation des apk, des fonds et des settings sur les terminaux Android
+
+**Installation et configuration de la webapi**  sur un serveur ayant une connexion à la base de données GeoNature
+
+* configuration de l'accès à la base de données
+* configuration générale (token, chemin d'accès aux fichiers apk des applications, chemin d'accès aux fichiers de settings des applications)
+* copie des apk des applications Android et d'un fichier version.json dans le répertoire ``apk`` de l'api (uniquement si usage de GeoNature-mobile-sync)
+* copie des fichiers json de settings des applications Android dans le répertoire ``datas`` de l'api (uniquement si usage de GeoNature-mobile-sync)
+* installation de l'application
+* configuration apache
+
+**Installation et configuration de GeoNature-mobile-sync** (facultatif mais recommandé)
+
+* installation (.exe pour windows ou .deb pour linux Debian ou Ubuntu)
+* configuration du fichier server.json (url de la webapi, token et organisme dans le cas d'un usage multi-organisme)
+
+
+
+ (https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/install/v1.2.0/external%20card).
 
 La génération des tuiles MBTiles est détaillée dans la documentation (https://github.com/PnEcrins/GeoNature-mobile/blob/master/docs/tuilage_mbtiles.rst)
 
