@@ -1,4 +1,4 @@
-#INSTALLATION
+# INSTALLATION
 
 
 Comprendre le workflow complet de la chaine de travail
@@ -15,7 +15,7 @@ TODO : détailler les étapes de préparation et d'installation concernant les a
 * configuration des fichiers de settings des applications (url de synchronisation, paramètres carto, déclaration des fonds cartographiques)
 * installation des apk, des fonds et des settings sur les terminaux Android
 
-##OLD DOC pour mémoire
+## OLD DOC pour mémoire
 Il est possible de déployer les applications Android en utilisant les APK disponibles dans https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/install
 
 Il vous faut ensuite compléter les fichiers JSON de configuration comme indiqué dans la documentation (https://github.com/PnEcrins/GeoNature-mobile/blob/master/docs/configuration_development.md)
