@@ -58,25 +58,28 @@ Mise en place
 =============
 
 L'usage de GeoNature-mobile nécessite la mise en place d'une chaine de travail complète. Il serait illusoire de produire des données avec un terminal Android sans pouvoir les exporter ou les consulter en dehors de ce terminal. 
-Il est également important de savoir que GeoNature-mobile est concu pour un usage hors ligne. Il faut donc embarquer les fonds cartographique nécessaire à la localisation des observations ainsi que les limites des unités géographiques. Ces fonds doivent être produits au format MBTiles puis copiés sur la carte SD du terminal. Ces fonds peuvent être lourds et nécessiter un espace de stockage importants (plusiseurs giga-octets).
+Il est également important de savoir que GeoNature-mobile est concu pour un usage hors ligne. Il faut donc embarquer les fonds cartographique nécessaire à la localisation des observations ainsi que les limites des unités géographiques. Ces fonds doivent être produits au format MBTiles puis copiés sur la carte SD du terminal. Ces fonds peuvent être lourds et nécessiter un espace de stockage importants (plusieurs giga-octets).
 La chaine de travail est complexe et nécessite une bonne compréhension du rôle et de la configuration de chacune des briques qui la composent.
 
 La mise en place de la chaine de travail passe par les étapes suivantes
 -----------------------------------------------------------------------
 
-** Installation et configuration de GeoNature et de sa base de données**
+**Installation et configuration de GeoNature et de sa base de données**
 
 https://github.com/PnX-SI/GeoNature/tree/master/docs
 
-** Installation et configuration des application Android**
+**Installation et configuration des application Android**
 
 https://github.com/PnEcrins/GeoNature-mobile/blob/master/docs/installation.rst
 
 * production des fonds cartographiques
+* production d'un fichier unities.wkt pour les applications ``contact faune`` et ``contact invertébrés``
 * configuration des fichiers de settings des applications (url de synchronisation, paramètres carto, déclaration des fonds cartographiques)
 * installation des apk, des fonds et des settings sur les terminaux Android
 
 **Installation et configuration de la webapi**  sur un serveur ayant une connexion à la base de données GeoNature
+
+https://github.com/PnEcrins/GeoNature-mobile-webapi/blob/master/docs/installation.md
 
 * configuration de l'accès à la base de données
 * configuration générale (token, chemin d'accès aux fichiers apk des applications, chemin d'accès aux fichiers de settings des applications)
@@ -85,16 +88,14 @@ https://github.com/PnEcrins/GeoNature-mobile/blob/master/docs/installation.rst
 * installation de l'application
 * configuration apache
 
+**Synchronisation**
+
+Pour un premier usage des applications mobiles, une synchronisation avec la base de données est nécessaire pour produire le fichier data.db. Ce fichier contient les données nécessaires au fonctionnement des applications. Il est produit par la webapi à partir des informations contenues dans la base de données de Geonature.
+
 **Installation et configuration de GeoNature-mobile-sync** (facultatif mais recommandé)
 
 * installation (.exe pour windows ou .deb pour linux Debian ou Ubuntu)
 * configuration du fichier server.json (url de la webapi, token et organisme dans le cas d'un usage multi-organisme)
-
-
-
- (https://github.com/PnEcrins/GeoNature-mobile/tree/master/docs/install/v1.2.0/external%20card).
-
-La génération des tuiles MBTiles est détaillée dans la documentation (https://github.com/PnEcrins/GeoNature-mobile/blob/master/docs/tuilage_mbtiles.rst)
 
 
 License
