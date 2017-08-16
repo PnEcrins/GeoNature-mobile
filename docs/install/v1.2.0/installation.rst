@@ -34,10 +34,8 @@ Cette mémoire est destinée à recevoir tous les fichiers cartographiques, pote
 
 * Placez les fichiers mbtiles des fonds cartographiques dans le répertoire ``Android/data/com.makina.ecrins/databases``.
 
-* Si vous utilisez les applications ``fauna`` et ``invertebrate`` (= contact faune et contact invertébré), vous devez placer :
-	
+* Si vous utilisez les applications ``fauna`` et ``invertebrate`` (= contact faune et contact invertébré), vous devez placer
 	* le fichier ``unities.wkt`` dans le répertoire ``Android/data/com.makina.ecrins``. Ce fichier vecteur permet aux applications de déterminer dans quelle unité géographique se trouve l'observation lors du pointage sur la carte. Vous devez produire ce fichier ``unities.wkt`` manuellement (par exemple avec qgis ou PostreSQL/Postgis) à partir du contenu de la table ``layers.l_unites_geo`` de la base de données PostgreSQ de GeoNature. Un fichier exemple des unités géographiques du Parc national des Ecrins est proposé.
-
 	* le fichier ``unities.mbtiles`` dans le répertoire ``Android/data/com.makina.ecrins/databases``. Ce fichier permet de visualiser le contour des unités géographiques lors de la navigation cartographique. Pour produire ce fichier, vous pouvez utiliser le service wms de GeoNature : https://github.com/PnX-SI/GeoNature/blob/master/wms/wms.map.sample#L72-L89 . L'url du service wms de GeoNature devrait ressembler à ceci : http://localhost/wmsgeonature
 
 
