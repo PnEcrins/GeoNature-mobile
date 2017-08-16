@@ -60,10 +60,11 @@ La mémoire interne recevra également les fichiers de saisie dans le répertoir
 	* ``max_bounds`` et ``center`` permettent de définir les limites de l'emprise cartographique à afficher ainsi que les coordonnées sur lesquelles la carte doit se centrer. Un exemple est fourni pour le territoire du Parc national des Ecrins. Vous devez adapter ces valeurs à votre territoire. Les valeurs doivent correspondre à l'emprise du tuilage réalisé dans les fichiers mbtiles que vous avez copiez sur la mémoire externe (voir ci-dessus la partie ``Mémoire externe du terminal``).
 	* ``start_zoom`` défini le niveau de zoom initial ou minimal que l'application peut afficher
 	* ``min_zoom_pointing`` il s'agit du niveau de zoom minimal à partir duquel il est possible de pointer une observation. Lors de la navigation cartographique, les boutons permettant de positionner l'observation sont désactivés tant que ce niveau de zoom n'est pas atteint. Ceci permet d'éviter de positionner des observations de manière trop imprécise. Par défaut la valeur 15 correspond au premier niveau de zoom du scan25.
-	* la sous-partie ``layers`` permet de déclarer les fonds disponibles pour la navigation cartographique. 
-		*``name`` correspond au nom du fichier placé dans ``Android/data/com.makina.ecrins/databases``. 
-		* ``label`` est le nom du fond qui sera utilisé par l'application pour nommer la couche en question. 
+	* la sous-partie ``layers`` permet de déclarer les fonds disponibles pour la navigation cartographique.
+		* ``name`` correspond au nom du fichier placé dans ``Android/data/com.makina.ecrins/databases``.
+		* ``label`` est le nom du fond qui sera utilisé par l'application pour nommer la couche en question.
 		* ``source`` est un paramètre qui doit être laissé avec la valeur par défault ``mbtiles``. Historiquement il était nécessaire de spliter les tuilages trop lourds en plusieurs fichiers. Ce paramètre permettait de définir le type de source de tuilage.
+
 	* la sous-partie ``unity_layer`` permet de déclarer le fichier mbtiles contenant la couche des unités geographiques sur le même principe que la sous-partie ``layers``.
 
 * Partie ``qualification`` = configuration des métadonnées à attacher aux observations produites par les applications.
