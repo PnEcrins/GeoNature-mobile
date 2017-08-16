@@ -26,8 +26,8 @@
             44.795154,
             6.228655
         ],
-        "start_zoom": 2,
-        "min_zoom_pointing": 7,
+        "start_zoom": 9,
+        "min_zoom_pointing": 15,
         "layers": [
             {
                 "name": "scan.mbtiles",
@@ -35,15 +35,15 @@
                 "source": "mbtiles"
             },
             {
-                "name": "ortho",
+                "name": "ortho.mbtiles",
                 "label": "Ortho",
-                "source": "mbtiles_split"
+                "source": "mbtiles"
             }
-        ],
-        "unity_layer": {
-            "name": "unities.mbtiles",
-            "label": "Unités",
-            "source": "mbtiles"
-        }
+        ]
+    },
+    "search": {
+        "max_radius": 2000,
+        "default_radius": 1000,
+        "max_features_found": 500
     }
 }
