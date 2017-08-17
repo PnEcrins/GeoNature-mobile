@@ -71,12 +71,11 @@ https://github.com/PnX-SI/GeoNature/tree/master/docs
 
 **Installation et configuration des application Android**
 
-https://github.com/PnEcrins/GeoNature-mobile/blob/master/docs/install/v1.2.0/installation.rst
+
 
 * production des fonds cartographiques
 * production d'un fichier unities.wkt pour les applications ``fauna`` et ``invertebrate`` = contact faune et contact invertébrés
-* configuration des fichiers de settings des applications (url de synchronisation, paramètres carto, déclaration des fonds cartographiques)
-* installation des apk, des fonds et des settings sur les terminaux Android
+* installation des apk, des fonds et des settings sur les terminaux Android + configuration des fichiers de settings des applications (url de synchronisation, paramètres carto, déclaration des fonds cartographiques) ; [Voir la documentation](/docs/install/v1.2.0/installation.rst)
 
 **Installation et configuration de la webapi**  sur un serveur ayant une connexion à la base de données GeoNature
 
@@ -103,7 +102,7 @@ Il est possible de synchroniser directement depuis la page d'accueil des applica
 Développement
 =============
 
-https://github.com/PnX-SI/GeoNature/tree/master/docs/developpement/
+[Voir la documentation](/docs/developpement/)
 
 
 License
