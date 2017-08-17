@@ -49,12 +49,17 @@ La mémoire interne recevra également les fichiers de saisie dans le répertoir
 **Adapter le contenu des fichiers de configuration settings_xxxxx.json** de chacune des applications installées.
 
 * partie ``sync`` = paramètres pour la synchronisation de l'application via la webapi.
-	* Le paramètre ``url`` contient l'adresse de la webapi.
-	* le paramètre ``token`` doit correspondre au token attendu par la webapi. Voir la configuration du fichier setting_local.py de la webapi.
-	* le paramètre ``status_url`` et ``import_url`` doivent être laissé à la valeur par défaut.
-	* le paramètre ``exports`` contient un tableau des url complémentaires à l'url de base de la webapi. 
+	* ``url`` contient l'adresse de la webapi.
+	* ``token`` doit correspondre au token attendu par la webapi. Voir la configuration du fichier setting_local.py de la webapi.
+	* ``status_url`` URL à utiliser pour vérifier le statut du serveur de synchronisation (laisser à la valeur par défaut).
+	* ``import_url`` URL de l'import à utiliser pour synchroniser les données de saisies des applications mobiles (laisser à la valeur par défaut).
+	* ``exports`` contient un tableau des url complémentaires à l'url de base de la webapi. 
 		* ``export/sqlite/`` permet de produire et de copier sur le terminal Android la base de données de l'application data.db. Les valeurs proposées ne doivent pas être modifiées.
 
+* Partie ``qualification`` = configuration des métadonnées à attacher aux observations produites par les applications.
+	* ``organism`` correspond à l'organisme producteur de la données. La valeur  de type integer doit être présente dans le champ ``id_organisme`` de la table ``utilisateurs.bib_organismes`` de la base de données PostgreSQL de GeoNature.
+	* ``protocol`` est le protocole correspondant au données produites par l'application. Par exemple ``contact faune`` pour l'application ``fauna``. La valeur  de type integer doit être présente dans le champ ``id_protocole`` de la table ``meta.t_protocoles`` de la base de données PostgreSQL de GeoNature.
+	* ``lot`` est le lot de données correspondant au données produites par l'application. Par exemple ``contact invertébrés`` pour l'application ``invertebrate``. La valeur de type integer doit être présente dans le champ ``id_lot`` de la table ``meta.bib_lots`` de la base de données PostgreSQL de GeoNature.
 
 * Partie ``map`` = configuration du comportement cartographique de l'application.
 	* ``max_bounds`` et ``center`` permettent de définir les limites de l'emprise cartographique à afficher ainsi que les coordonnées sur lesquelles la carte doit se centrer. Un exemple est fourni pour le territoire du Parc national des Ecrins. Vous devez adapter ces valeurs à votre territoire. Les valeurs doivent correspondre à l'emprise du tuilage réalisé dans les fichiers mbtiles que vous avez copiez sur la mémoire externe (voir ci-dessus la partie ``Mémoire externe du terminal``).
@@ -67,7 +72,7 @@ La mémoire interne recevra également les fichiers de saisie dans le répertoir
 
 	* la sous-partie ``unity_layer`` permet de déclarer le fichier mbtiles contenant la couche des unités geographiques sur le même principe que la sous-partie ``layers``.
 
-* Partie ``qualification`` = configuration des métadonnées à attacher aux observations produites par les applications.
-	* ``organism`` correspond à l'organisme producteur de la données. La valeur  de type integer doit être présente dans le champ ``id_organisme`` de la table ``utilisateurs.bib_organismes`` de la base de données PostgreSQL de GeoNature.
-	* ``protocol`` est le protocole correspondant au données produites par l'application. Par exemple ``contact faune`` pour l'application ``fauna``. La valeur  de type integer doit être présente dans le champ ``id_protocole`` de la table ``meta.t_protocoles`` de la base de données PostgreSQL de GeoNature.
-	* ``lot`` est le lot de données correspondant au données produites par l'application. Par exemple ``contact invertébrés`` pour l'application ``invertebrate``. La valeur de type integer doit être présente dans le champ ``id_lot`` de la table ``meta.bib_lots`` de la base de données PostgreSQL de GeoNature.
+* Partie ``search`` pour l'application ``recherche flore`` uniquement.
+	* max_radius défini le rayon de recherche maximal en mètre autour de la position donnée
+	* default_radius défini le rayon de recherche par défaut en mètre autour de la position donnée
+	* max_features_found défini le nombre maximal d'éléments à afficher lors d'une recherche autour de la position donnée (gestion des performances)
