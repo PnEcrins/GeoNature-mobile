@@ -73,7 +73,7 @@ https://github.com/PnX-SI/GeoNature/tree/master/docs
 
 
 
-* production des fonds cartographiques
+* production des fonds cartographiques [Voir la documentation](/docs/install/v1.2.0/make_mbtiles.rst)
 * production d'un fichier unities.wkt pour les applications ``fauna`` et ``invertebrate`` = contact faune et contact invertébrés ; [Voir la documentation](/docs/install/v1.2.0/make_wkt.rst)
 * installation des apk, des fonds et des settings sur les terminaux Android + configuration des fichiers de settings des applications (url de synchronisation, paramètres carto, déclaration des fonds cartographiques) ; [Voir la documentation](/docs/install/v1.2.0/installation.rst)
 
