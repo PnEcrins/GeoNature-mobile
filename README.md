@@ -54,6 +54,7 @@ L'usage de cette application est fortement recommandée dans le cadre d'une flot
 
 ![GeoNature schema general](https://github.com/PnEcrins/GeoNature/raw/master/docs/images/schema-geonature-environnement.jpg)
 
+
 Mise en place
 =============
 
@@ -79,7 +80,7 @@ https://github.com/PnEcrins/GeoNature-mobile/blob/master/docs/install/installati
 
 **Installation et configuration de la webapi**  sur un serveur ayant une connexion à la base de données GeoNature
 
-https://github.com/PnEcrins/GeoNature-mobile-webapi/blob/master/docs/installation.md
+https://github.com/PnEcrins/GeoNature-mobile-webapi/blob/master/docs/v1.2.0/installation.rst
 
 * configuration de l'accès à la base de données
 * configuration générale (token, chemin d'accès aux fichiers apk des applications, chemin d'accès aux fichiers de settings des applications)
@@ -97,6 +98,12 @@ Il est possible de synchroniser directement depuis la page d'accueil des applica
 
 * installation (.exe pour windows ou .deb pour linux Debian ou Ubuntu)
 * configuration du fichier server.json (url de la webapi, token et organisme dans le cas d'un usage multi-organisme)
+
+
+Développement
+=============
+
+https://github.com/PnX-SI/GeoNature/tree/master/docs/developpement/
 
 
 License
