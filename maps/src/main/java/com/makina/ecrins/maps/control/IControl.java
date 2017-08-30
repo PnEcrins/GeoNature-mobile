@@ -1,5 +1,6 @@
 package com.makina.ecrins.maps.control;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,6 +27,7 @@ public interface IControl {
      *
      * @see {@link WebView#addJavascriptInterface(Object, String)}
      */
+    @NonNull
     String getName();
 
     /**

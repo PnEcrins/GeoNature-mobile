@@ -2,11 +2,11 @@
 <resources>
 
     <!-- main theme colors -->
-    <color name="colorAccent">@color/holo_blue_light</color>
+    <color name="colorAccent">#03A9F4</color>
 
+    <color name="header_background">#212121</color>
     <color name="darker_gray_translucent">#80aaaaaa</color>
     <color name="darker_gray">#aaa</color>
-    <color name="holo_blue_light">#ff33b5e5</color>
 
     <color name="status_ok">#0f0</color>
     <color name="status_ko">#f00</color>

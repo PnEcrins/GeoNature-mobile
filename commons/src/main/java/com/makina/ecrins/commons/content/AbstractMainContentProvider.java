@@ -90,7 +90,7 @@ public abstract class AbstractMainContentProvider
 
         if (BuildConfig.DEBUG) {
             Log.d(TAG,
-                  "query : " + uri);
+                  "query: " + uri);
         }
 
         final StringBuilder groupBy = new StringBuilder();
@@ -261,9 +261,9 @@ public abstract class AbstractMainContentProvider
         if (mDatabase == null) {
             mDatabase = new MainDatabaseHelper(getContext(),
                                                getAppSettings().getDbSettings()
-                                                               .getDbName(),
+                                                               .getName(),
                                                getAppSettings().getDbSettings()
-                                                               .getDbVersion());
+                                                               .getVersion());
         }
 
         return mDatabase;

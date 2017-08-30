@@ -12,9 +12,6 @@
     <string name="preference_category_observers_default_observer">Observateur par défaut</string>
     <string name="preference_category_pointing">Pointage</string>
     <string name="preference_category_pointing_display_scale">Afficher l\'échelle</string>
-    <string name="preference_category_density">Qualité</string>
-    <string name="preference_category_density_title">Qualité du rendu de la carte</string>
-    <string name="preference_category_density_dialog">Choix du rendu</string>
     
     <string name="pager_fragment_webview_title">Pointage</string>
     <string name="pager_fragment_counting_title">Sexe &#38; age</string>

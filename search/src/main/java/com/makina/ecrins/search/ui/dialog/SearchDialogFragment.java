@@ -14,7 +14,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-import com.makina.ecrins.maps.geojson.geometry.GeoPoint;
+import com.makina.ecrins.maps.jts.geojson.GeoPoint;
 import com.makina.ecrins.search.BuildConfig;
 import com.makina.ecrins.search.R;
 
@@ -33,10 +33,9 @@ public class SearchDialogFragment
 
     private OnSearchDialogValidateListener mOnSearchDialogValidateListener;
 
-    public static SearchDialogFragment newInstance(
-            int maxRadius,
-            int radius,
-            GeoPoint location) {
+    public static SearchDialogFragment newInstance(int maxRadius,
+                                                   int radius,
+                                                   GeoPoint location) {
 
         if (BuildConfig.DEBUG) {
             Log.d(SearchDialogFragment.class.getName(),
@@ -83,9 +82,8 @@ public class SearchDialogFragment
                                                                                            .setPositiveButton(R.string.alert_dialog_ok,
                                                                                                               new OnClickListener() {
                                                                                                                   @Override
-                                                                                                                  public void onClick(
-                                                                                                                          DialogInterface dialog,
-                                                                                                                          int which) {
+                                                                                                                  public void onClick(DialogInterface dialog,
+                                                                                                                                      int which) {
 
                                                                                                                       mOnSearchDialogValidateListener.onSearchCriteria(dialog,
                                                                                                                                                                        seekBarSearchRadius.getProgress(),
@@ -116,10 +114,9 @@ public class SearchDialogFragment
             }
 
             @Override
-            public void onProgressChanged(
-                    SeekBar seekBar,
-                    int progress,
-                    boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar,
+                                          int progress,
+                                          boolean fromUser) {
 
                 textViewSearchRadius.setText(String.format(getString(R.string.alert_dialog_search_radius),
                                                            progress));
@@ -159,9 +156,8 @@ public class SearchDialogFragment
          * @param radius   the selected radius (meters)
          * @param location the current location
          */
-        void onSearchCriteria(
-                DialogInterface dialog,
-                int radius,
-                GeoPoint location);
+        void onSearchCriteria(DialogInterface dialog,
+                              int radius,
+                              GeoPoint location);
     }
 }

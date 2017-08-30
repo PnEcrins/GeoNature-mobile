@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.format.DateFormat;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,6 +13,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,27 +27,55 @@ import java.util.TreeMap;
 public abstract class AbstractInput
         implements Parcelable {
 
-    public static final String KEY_ID = "id";
-    public static final String KEY_INITIAL_INPUT = "initial_input";
-    public static final String KEY_TAXA = "taxons";
+    private static final String KEY_TYPE = "input_type";
+    private static final String KEY_ID = "id";
+    private static final String KEY_INITIAL_INPUT = "initial_input";
+    private static final String KEY_QUALIFICATION = "qualification";
+    private static final String KEY_DATE_OBS = "dateobs";
+    private static final String KEY_OBSERVERS_ID = "observers_id";
+    private static final String KEY_TAXA = "taxons";
 
-    private long mInputId;
+    InputType mType;
+    long mInputId;
     private String mFeatureId;
+    private Date mDate;
+    private Qualification mQualification;
+    private final Map<Long, Observer> mObservers;
     private final Map<Long, AbstractTaxon> mTaxa;
     private long mCurrentSelectedTaxonId;
 
-    public AbstractInput() {
-
+    public AbstractInput(@NonNull final InputType type) {
+        mType = type;
         mInputId = generateId();
         mFeatureId = null;
+        mDate = new Date();
+        mQualification = null;
+        mObservers = new TreeMap<>();
         mTaxa = new TreeMap<>();
         mCurrentSelectedTaxonId = -1;
     }
 
     public AbstractInput(Parcel source) {
-
+        mType = (InputType) source.readSerializable();
         mInputId = source.readLong();
         mFeatureId = source.readString();
+        mDate = (Date) source.readSerializable();
+
+        if (mDate == null) {
+            mDate = new Date();
+        }
+
+        mQualification = source.readParcelable(Qualification.class.getClassLoader());
+
+        final List<Observer> observers = new ArrayList<>();
+        source.readTypedList(observers,
+                             Observer.CREATOR);
+        mObservers = new TreeMap<>();
+
+        for (Observer observer : observers) {
+            mObservers.put(observer.getObserverId(),
+                           observer);
+        }
 
         final List<AbstractTaxon> taxa = getTaxaFromParcel(source);
         mTaxa = new TreeMap<>();
@@ -57,32 +88,59 @@ public abstract class AbstractInput
         mCurrentSelectedTaxonId = -1;
     }
 
-    public long getInputId() {
+    @NonNull
+    public InputType getType() {
+        return mType;
+    }
 
+    public long getInputId() {
         return mInputId;
     }
 
+    @Nullable
     public String getFeatureId() {
-
         return mFeatureId;
     }
 
     public void setFeatureId(String pFeatureId) {
-
         this.mFeatureId = pFeatureId;
     }
 
+    @NonNull
+    public Date getDate() {
+        return mDate;
+    }
+
+    public void setDate(@NonNull final Date pDate) {
+        this.mDate = pDate;
+    }
+
+    @Nullable
+    public Qualification getQualification() {
+        return mQualification;
+    }
+
+    public void setQualification(@Nullable final Qualification qualification) {
+        this.mQualification = qualification;
+    }
+
     /**
-     * Gets a {@code Map} of all registered {@link AbstractTaxon} for this
-     * {@link com.makina.ecrins.commons.input.AbstractInput}.
+     * Gets a {@code Map} of all {@link Observer}s declared for this {@link AbstractInput}.
+     *
+     * @return a {@code Map} of all declared {@link Observer}
+     */
+    @NonNull
+    public Map<Long, Observer> getObservers() {
+        return mObservers;
+    }
+
+    /**
+     * Gets a {@code Map} of all registered {@link AbstractTaxon} for this {@link AbstractInput}.
      *
      * @return a {@code Map} of all registered {@link AbstractTaxon}
-     *
-     * @see AbstractTaxon#getId()
      */
     @NonNull
     public Map<Long, AbstractTaxon> getTaxa() {
-
         return mTaxa;
     }
 
@@ -94,7 +152,6 @@ public abstract class AbstractInput
      * @see AbstractTaxon#getId()
      */
     public long getCurrentSelectedTaxonId() {
-
         return mCurrentSelectedTaxonId;
     }
 
@@ -106,7 +163,6 @@ public abstract class AbstractInput
      * @see AbstractTaxon#getId()
      */
     public void setCurrentSelectedTaxonId(long pCurrentSelectedTaxonId) {
-
         this.mCurrentSelectedTaxonId = pCurrentSelectedTaxonId;
     }
 
@@ -118,7 +174,6 @@ public abstract class AbstractInput
      * @see AbstractTaxon#getId()
      */
     public long getLastInsertedTaxonId() {
-
         if (this.mTaxa.isEmpty()) {
             return -1;
         }
@@ -132,21 +187,45 @@ public abstract class AbstractInput
      *
      * @return the selected {@link AbstractTaxon} or {@code null} if none was selected.
      */
+    @Nullable
     public AbstractTaxon getCurrentSelectedTaxon() {
-
         return getTaxa().get(getCurrentSelectedTaxonId());
     }
 
-    public JSONObject getJSONObject() throws JSONException {
+    /**
+     * @deprecated use {@link InputJsonReader} instead
+     */
+    @Deprecated
+    public JSONObject getJSONObject() throws
+                                      JSONException {
+        final JSONObject json = new JSONObject();
 
-        JSONObject json = new JSONObject();
-
+        json.put(KEY_TYPE,
+                 getType().getValue());
         json.put(KEY_ID,
                  mInputId);
         json.put(KEY_INITIAL_INPUT,
                  "nomade");
 
-        JSONArray jsonTaxa = new JSONArray();
+        json.put(KEY_DATE_OBS,
+                 DateFormat.format(getDateFormat(),
+                                   mDate));
+
+        if (mQualification != null) {
+            json.put(KEY_QUALIFICATION,
+                     mQualification.getJSONObject());
+        }
+
+        final JSONArray jsonObservers = new JSONArray();
+
+        for (Observer observer : mObservers.values()) {
+            jsonObservers.put(observer.getObserverId());
+        }
+
+        json.put(KEY_OBSERVERS_ID,
+                 jsonObservers);
+
+        final JSONArray jsonTaxa = new JSONArray();
 
         for (AbstractTaxon taxon : mTaxa.values()) {
             jsonTaxa.put(taxon.getJSONObject());
@@ -158,19 +237,27 @@ public abstract class AbstractInput
         return json;
     }
 
+    @Deprecated
+    @NonNull
+    public String getDateFormat() {
+        return "yyyy/MM/dd";
+    }
+
     @Override
     public int describeContents() {
-
         return 0;
     }
 
     @Override
-    public void writeToParcel(
-            Parcel dest,
-            int flags) {
-
+    public void writeToParcel(Parcel dest,
+                              int flags) {
+        dest.writeSerializable(mType);
         dest.writeLong(mInputId);
         dest.writeString(mFeatureId);
+        dest.writeSerializable(mDate);
+        dest.writeParcelable(mQualification,
+                             0);
+        dest.writeTypedList(new ArrayList<>(mObservers.values()));
         dest.writeTypedList(new ArrayList<>(mTaxa.values()));
     }
 
@@ -180,22 +267,24 @@ public abstract class AbstractInput
      * Generates a pseudo unique ID. The value is the number of seconds since Jan. 1, 2000, midnight.
      *
      * @return an unique ID
+     *
+     * @deprecated see {@link InputHelper#generateId()}
      */
+    @Deprecated
     public static long generateId() {
-
         final Calendar now = Calendar.getInstance();
         now.set(Calendar.MILLISECOND,
-                     0);
+                0);
 
         final Calendar start = Calendar.getInstance();
         start.set(2000,
-                     Calendar.JANUARY,
-                     1,
-                     0,
-                     0,
-                     0);
+                  Calendar.JANUARY,
+                  1,
+                  0,
+                  0,
+                  0);
         start.set(Calendar.MILLISECOND,
-                     0);
+                  0);
 
         return (now.getTimeInMillis() - start.getTimeInMillis()) / 1000;
     }

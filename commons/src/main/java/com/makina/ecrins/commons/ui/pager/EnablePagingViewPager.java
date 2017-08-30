@@ -12,16 +12,16 @@ import android.view.MotionEvent;
  */
 public class EnablePagingViewPager extends ViewPager {
     private boolean mPagingEnabled;
-    private boolean mPagingLeftEnabled;
-    private boolean mPagingRightEnabled;
+    private boolean mPagingPreviousEnabled;
+    private boolean mPagingNextEnabled;
     private float mLastX = 0;
 
     public EnablePagingViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         this.mPagingEnabled = true;
-        this.mPagingLeftEnabled = true;
-        this.mPagingRightEnabled = true;
+        this.mPagingPreviousEnabled = true;
+        this.mPagingNextEnabled = true;
     }
 
     @Override
@@ -36,11 +36,11 @@ public class EnablePagingViewPager extends ViewPager {
                 mLastX = ev.getX();
                 break;
             case MotionEvent.ACTION_MOVE:
-                if ((mLastX > ev.getX()) && !this.mPagingLeftEnabled) {
+                if ((mLastX > ev.getX()) && !this.mPagingPreviousEnabled) {
                     return false;
                 }
 
-                if ((mLastX < ev.getX()) && !this.mPagingRightEnabled) {
+                if ((mLastX < ev.getX()) && !this.mPagingNextEnabled) {
                     return false;
                 }
 
@@ -55,16 +55,16 @@ public class EnablePagingViewPager extends ViewPager {
         this.mPagingEnabled = pPagingEnabled;
 
         if (this.mPagingEnabled) {
-            this.mPagingLeftEnabled = true;
-            this.mPagingRightEnabled = true;
+            this.mPagingPreviousEnabled = true;
+            this.mPagingNextEnabled = true;
         }
     }
 
-    public void setPagingLeftEnabled(boolean pPagingLeftEnabled) {
-        this.mPagingLeftEnabled = pPagingLeftEnabled;
+    public void setPagingPreviousEnabled(boolean pPagingPreviousEnabled) {
+        this.mPagingPreviousEnabled = pPagingPreviousEnabled;
     }
 
-    public void setPagingRightEnabled(boolean pPagingRightEnabled) {
-        this.mPagingLeftEnabled = pPagingRightEnabled;
+    public void setPagingNextEnabled(boolean pPagingNextEnabled) {
+        this.mPagingPreviousEnabled = pPagingNextEnabled;
     }
 }

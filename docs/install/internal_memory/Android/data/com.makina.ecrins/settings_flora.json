@@ -1,0 +1,49 @@
+{
+    "sync": {
+        "url": "http://mondomaine.fr/urlsynchro/",
+        "token": "mon!token#complexe",
+        "status_url": "status/",
+        "import_url": "import/",
+        "exports": [
+            {
+                "url": "export/sqlite/",
+                "file": "databases/data.db"
+            }
+        ]
+    },
+    "qualification": {
+        "organism": 2,
+        "protocol": 4,
+        "lot": 4
+    },
+    "map": {
+        "max_bounds": [
+            [
+                44.024060,
+                5.31056
+            ],
+            [
+                45.576247,
+                7.146750
+            ]
+        ],
+        "center": [
+            44.795154,
+            6.228655
+        ],
+        "start_zoom": 9,
+        "min_zoom_pointing": 15,
+        "layers": [
+            {
+                "name": "scan.mbtiles",
+                "label": "Scan",
+                "source": "mbtiles"
+            },
+            {
+                "name": "ortho.mbtiles",
+                "label": "Ortho",
+                "source": "mbtiles"
+            }
+        ]
+    }
+}

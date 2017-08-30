@@ -27,6 +27,14 @@ public class CRSSettings
     private final String mDef;
     private final List<Integer> mBbox = new ArrayList<>();
 
+    public CRSSettings(@NonNull final String code,
+                       @NonNull final String def,
+                       @NonNull final List<Integer> bbox) {
+        this.mCode = code;
+        this.mDef = def;
+        this.mBbox.addAll(bbox);
+    }
+
     public CRSSettings(Parcel source) {
         this.mCode = source.readString();
         this.mDef = source.readString();
@@ -34,6 +42,7 @@ public class CRSSettings
                         Integer.class.getClassLoader());
     }
 
+    @Deprecated
     public CRSSettings(JSONObject json) throws
                                         JSONException {
         this.mCode = json.getString(KEY_CODE);
@@ -61,11 +70,16 @@ public class CRSSettings
         return mBbox;
     }
 
-    public JSONObject getJSONObject() throws JSONException {
+    @Deprecated
+    public JSONObject getJSONObject() throws
+                                      JSONException {
         JSONObject json = new JSONObject();
-        json.put(KEY_CODE, mCode);
-        json.put(KEY_DEF, mDef);
-        json.put(KEY_BBOX, new JSONArray(mBbox));
+        json.put(KEY_CODE,
+                 mCode);
+        json.put(KEY_DEF,
+                 mDef);
+        json.put(KEY_BBOX,
+                 new JSONArray(mBbox));
 
         return json;
     }

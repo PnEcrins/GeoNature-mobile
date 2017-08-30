@@ -13,6 +13,7 @@ import android.widget.AlphabetIndexer;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
 
 import java.util.Collections;
@@ -25,9 +26,15 @@ import java.util.TreeMap;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter implements SectionIndexer {
-    public static final int TYPE_NORMAL = 0;
-    public static final int TYPE_HEADER = 1;
+public class AlphabetSectionIndexerCursorAdapter
+        extends SimpleCursorAdapter
+        implements SectionIndexer,
+                   PinnedSectionListView.PinnedSectionListAdapter {
+
+    private static final String TAG = AlphabetSectionIndexerCursorAdapter.class.getName();
+
+    protected static final int TYPE_NORMAL = 0;
+    private static final int TYPE_HEADER = 1;
 
     private static final String ALPHABET = " ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final int TYPE_COUNT = 2;
@@ -46,8 +53,20 @@ public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter imp
     private final SparseIntArray sectionToOffset;
     private final Map<Integer, Integer> sectionToPosition;
 
-    public AlphabetSectionIndexerCursorAdapter(Context context, int layout, int resourceLabelCount, Cursor c, String sortedColumnIndex, String[] from, int[] to, int flags) {
-        super(context, layout, c, from, to, flags);
+    public AlphabetSectionIndexerCursorAdapter(Context context,
+                                               int layout,
+                                               int resourceLabelCount,
+                                               Cursor c,
+                                               String sortedColumnIndex,
+                                               String[] from,
+                                               int[] to,
+                                               int flags) {
+        super(context,
+              layout,
+              c,
+              from,
+              to,
+              flags);
 
         this.mContext = context;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -138,29 +157,26 @@ public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter imp
 
     // return the header view, if it's in a section header position
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position,
+                        View convertView,
+                        ViewGroup parent) {
         final int type = getItemViewType(position);
 
         if (type == TYPE_HEADER) {
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.list_item_section_header, parent, false);
+                convertView = mInflater.inflate(R.layout.list_item_section_header,
+                                                parent,
+                                                false);
             }
 
             ((TextView) convertView.findViewById(android.R.id.text1)).setText((String) getSections()[getSectionForPosition(position)]);
 
-            // display number of items count in the first header
-            if (position == 0) {
-                int itemsCount = getCursor().getCount();
-                ((TextView) convertView.findViewById(android.R.id.text2)).setText(this.mContext.getResources().getQuantityString(this.mResourceLabelCount, itemsCount, itemsCount));
-            }
-            else {
-                ((TextView) convertView.findViewById(android.R.id.text2)).setText("");
-            }
-
             return convertView;
         }
 
-        return super.getView(position - sectionToOffset.get(getSectionForPosition(position)) - 1, convertView, parent);
+        return super.getView(position - sectionToOffset.get(getSectionForPosition(position)) - 1,
+                             convertView,
+                             parent);
     }
 
     //these two methods just disable the headers
@@ -177,7 +193,8 @@ public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter imp
 
     @Override
     public int getPositionForSection(int section) {
-        if (sectionToOffset.get(section, Integer.MIN_VALUE) == Integer.MIN_VALUE) {
+        if (sectionToOffset.get(section,
+                                Integer.MIN_VALUE) == Integer.MIN_VALUE) {
             // This is only the case when the FastScroller is scrolling, and so this section doesn't appear in our data set.
             // The implementation of Fastscroller requires that missing sections have the same index as the beginning of the next non-missing section
             // (or the end of the the list if if the rest of the sections are missing).
@@ -213,6 +230,10 @@ public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter imp
         int i = 0;
         int maxLength = usedSectionNumbers.length;
 
+        if (maxLength == 0) {
+            return 0;
+        }
+
         // linear scan over the used alphabetical sections' positions to find where the given section fits in
         while (i < maxLength && position >= sectionToPosition.get(usedSectionNumbers[i])) {
             i++;
@@ -230,6 +251,20 @@ public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter imp
         return mIndexer.getSections();
     }
 
+    @Override
+    public boolean isItemViewTypePinned(int viewType) {
+        return viewType == TYPE_HEADER;
+    }
+
+    @Override
+    public void onSectionViewPinned(@NonNull View view) {
+        int itemsCount = getCursor().getCount();
+        ((TextView) view.findViewById(android.R.id.text2)).setText(this.mContext.getResources()
+                                                                                .getQuantityString(this.mResourceLabelCount,
+                                                                                                   itemsCount,
+                                                                                                   itemsCount));
+    }
+
     public void setSortedColumnIndex(String pSortedColumnIndex) {
         this.mSortedColumnIndex = pSortedColumnIndex;
     }
@@ -238,10 +273,14 @@ public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter imp
      * Gets the current position for a given item
      *
      * @param itemId item to lookup
+     *
      * @return position of this item
      */
     public int getItemPosition(final long itemId) {
-        Log.d(AlphabetSectionIndexerCursorAdapter.class.getName(), "getItemPosition : mSelectedItemPosition = " + this.mSelectedItemPosition + ", itemId = " + itemId);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "getItemPosition: mSelectedItemPosition = " + this.mSelectedItemPosition + ", itemId = " + itemId);
+        }
 
         if ((this.mSelectedItemPosition == -1) || (itemId != this.mSelectedItem)) {
             final int count = getCount();
@@ -257,7 +296,10 @@ public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter imp
                 i++;
             }
 
-            Log.d(AlphabetSectionIndexerCursorAdapter.class.getName(), "getItemPosition : mSelectedItemPosition = " + this.mSelectedItemPosition);
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      "getItemPosition : mSelectedItemPosition = " + this.mSelectedItemPosition);
+            }
 
             if (this.mSelectedItemPosition != -1) {
                 this.mSelectedItem = itemId;
@@ -283,24 +325,28 @@ public class AlphabetSectionIndexerCursorAdapter extends SimpleCursorAdapter imp
         // temporarily have a map alphabet section to first index it appears
         // (this map is going to be doing something else later)
         for (i = count - 1; i >= 0; i--) {
-            sectionToPosition.put(mIndexer.getSectionForPosition(i), i);
+            sectionToPosition.put(mIndexer.getSectionForPosition(i),
+                                  i);
         }
 
         i = 0;
-        usedSectionNumbers = new int[sectionToPosition.keySet().size()];
+        usedSectionNumbers = new int[sectionToPosition.keySet()
+                                                      .size()];
 
         // note that for each section that appears before a position,
         // we must offset our indices by 1,
         // to make room for an alphabetical header in our list
         for (Integer section : sectionToPosition.keySet()) {
-            sectionToOffset.put(section, i);
+            sectionToOffset.put(section,
+                                i);
             usedSectionNumbers[i] = section;
             i++;
         }
 
         // use offset to map the alphabet sections to their actual indices in the list
         for (Integer section : sectionToPosition.keySet()) {
-            sectionToPosition.put(section, sectionToPosition.get(section) + sectionToOffset.get(section));
+            sectionToPosition.put(section,
+                                  sectionToPosition.get(section) + sectionToOffset.get(section));
         }
     }
 }

@@ -16,6 +16,7 @@ import android.widget.ListView;
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
+import com.makina.ecrins.commons.util.ThemeUtils;
 import com.makina.ecrins.invertebrate.MainApplication;
 import com.makina.ecrins.invertebrate.R;
 import com.makina.ecrins.invertebrate.content.MainContentProvider;
@@ -63,7 +64,7 @@ public class EnvironmentsFragment
 
                 if (getInput().getEnvironmentId() == getItemId(position)) {
                     getListView().setSelection(position);
-                    view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
+                    view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                 }
                 else {
                     view.setBackgroundColor(getResources().getColor(android.R.color.transparent));

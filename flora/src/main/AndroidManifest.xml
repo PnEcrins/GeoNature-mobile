@@ -4,18 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:sharedUserId="com.makina.ecrins"
-    android:versionCode="657"
+    android:versionCode="1214"
     tools:ignore="GradleOverrides">
-
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <!--
-    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
-    -->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
 
     <application
         android:name="com.makina.ecrins.flora.MainApplication"
@@ -26,7 +16,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".ui.MainFragmentActivity"
+            android:name=".ui.home.HomeActivity"
             android:label="@string/activity_main_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -48,10 +38,10 @@
             android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
-            android:name=".ui.observers.ObserversFragmentActivity"
+            android:name=".ui.observers.ObserverListActivity"
             android:label="@string/activity_observers_title">
             <intent-filter>
-                <action android:name="com.makina.ecrins.flora.ui.observers.ObserversFragmentActivity"/>
+                <action android:name="com.makina.ecrins.flora.ui.observers.ObserverListActivity"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
@@ -68,18 +58,16 @@
             android:exported="false"/>
 
         <service
-            android:name="com.makina.ecrins.flora.settings.SettingsService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.makina.ecrins.flora.settings.SettingsService"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </service>
+            android:name="com.makina.ecrins.flora.settings.AppSettingsIntentService"
+            android:exported="false"/>
         <service
             android:name="com.makina.ecrins.commons.sync.CheckServerService"
             android:exported="false"/>
         <service
             android:name="com.makina.ecrins.commons.sync.SyncService"
+            android:exported="false"/>
+        <service
+            android:name="com.makina.ecrins.flora.input.InputIntentService"
             android:exported="false"/>
 
         <receiver

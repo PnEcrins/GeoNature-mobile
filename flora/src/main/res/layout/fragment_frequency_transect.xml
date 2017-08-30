@@ -40,7 +40,7 @@
             android:layout_toRightOf="@+id/textViewNumberOfTransects"
             android:ems="3"
             android:inputType="number"
-            android:singleLine="true"
+            android:maxLines="1"
             tools:ignore="RtlHardcoded">
         </EditText>
 
@@ -62,7 +62,7 @@
             android:layout_centerHorizontal="true"
             android:ems="3"
             android:inputType="number"
-            android:singleLine="true"/>
+            android:maxLines="1"/>
 
         <Button
             android:id="@+id/buttonNo"
@@ -82,7 +82,7 @@
             android:layout_centerHorizontal="true"
             android:ems="3"
             android:inputType="number"
-            android:singleLine="true"/>
+            android:maxLines="1"/>
 
         <TextView
             android:id="@+id/textViewNumberOfSteps"

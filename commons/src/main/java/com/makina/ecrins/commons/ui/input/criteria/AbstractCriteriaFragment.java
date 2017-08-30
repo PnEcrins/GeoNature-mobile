@@ -8,7 +8,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -19,6 +18,7 @@ import com.makina.ecrins.commons.input.AbstractInput;
 import com.makina.ecrins.commons.input.AbstractTaxon;
 import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
+import com.makina.ecrins.commons.util.ThemeUtils;
 
 /**
  * Lists all criteria.
@@ -52,7 +52,7 @@ public abstract class AbstractCriteriaFragment extends ListFragment
 
                 if (getInput().getTaxa().get(getInput().getCurrentSelectedTaxonId()).getCriterionId() == getItemId(position)) {
                     getListView().setSelection(position);
-                    view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
+                    view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                 }
                 else {
                     view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
@@ -64,15 +64,6 @@ public abstract class AbstractCriteriaFragment extends ListFragment
 
         setListAdapter(mAdapter);
         getListView().setFastScrollEnabled(true);
-    }
-
-    @Override
-    public void onPause() {
-        Log.d(AbstractCriteriaFragment.class.getName(), "onPause");
-
-        getLoaderManager().destroyLoader(0);
-
-        super.onPause();
     }
 
     @Override
@@ -108,11 +99,13 @@ public abstract class AbstractCriteriaFragment extends ListFragment
 
     @Override
     public void refreshView() {
-        // prepare the loader, either re-connect with an existing one, or start a new one
-        getLoaderManager().restartLoader(0, null, this);
+        if (isAdded()) {
+            // prepare the loader, either re-connect with an existing one, or start a new one
+            getLoaderManager().restartLoader(0, null, this);
 
-        // start out with a progress indicator
-        setListShown(false);
+            // start out with a progress indicator
+            setListShown(false);
+        }
     }
 
     @Override

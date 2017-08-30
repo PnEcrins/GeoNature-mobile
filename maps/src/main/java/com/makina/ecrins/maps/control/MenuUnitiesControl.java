@@ -2,6 +2,7 @@ package com.makina.ecrins.maps.control;
 
 import android.content.Context;
 import android.location.Location;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -9,19 +10,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 
-import com.makina.ecrins.maps.R;
+import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.IWebViewFragment;
-import com.makina.ecrins.maps.settings.MapSettings;
+import com.makina.ecrins.maps.R;
 import com.makina.ecrins.maps.content.ITilesLayerDataSource;
-import com.makina.ecrins.maps.geojson.Feature;
-import com.makina.ecrins.maps.geojson.FeatureCollection;
-import com.makina.ecrins.maps.geojson.geometry.GeoPoint;
-import com.makina.ecrins.maps.geojson.geometry.GeometryUtils;
-import com.makina.ecrins.maps.geojson.geometry.Point;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.FeatureCollection;
+import com.makina.ecrins.maps.jts.geojson.GeoPoint;
+import com.makina.ecrins.maps.jts.geojson.io.GeoJsonWriter;
 import com.makina.ecrins.maps.location.Geolocation;
+import com.makina.ecrins.maps.settings.MapSettings;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
@@ -37,16 +37,19 @@ import java.util.List;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public final class MenuUnitiesControl extends AbstractControl {
+public final class MenuUnitiesControl
+        extends AbstractControl {
 
-    protected static final String KEY_SHOW_UNITIES_LAYER = "display_unities_layer";
-    protected static final String KEY_SELECTED_UNITY = "selected_unity";
-    protected static final String KEY_POINTING_LOCATION = "pointing_location";
+    private static final String TAG = MenuUnitiesControl.class.getName();
+
+    private static final String KEY_SHOW_UNITIES_LAYER = "display_unities_layer";
+    private static final String KEY_SELECTED_UNITY = "selected_unity";
+    private static final String KEY_POINTING_LOCATION = "pointing_location";
 
     private static JSONArray jsonArray = new JSONArray();
     private static JSONObject jsonObject = new JSONObject();
 
-    protected boolean mIsActionMarkerSelected = false;
+    private boolean mIsActionMarkerSelected = false;
 
     /**
      * Default constructor.
@@ -57,6 +60,11 @@ public final class MenuUnitiesControl extends AbstractControl {
         setControlListener(new OnIControlListener() {
             @Override
             public void onControlInitialized() {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "onControlInitialized");
+                }
+
                 mIsActionMarkerSelected = false;
                 mWebViewFragment.invalidateMenu();
             }
@@ -74,9 +82,11 @@ public final class MenuUnitiesControl extends AbstractControl {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu,
+                                    MenuInflater inflater) {
         if (isControlInitialized()) {
-            inflater.inflate(R.menu.menu_unities_layer, menu);
+            inflater.inflate(R.menu.menu_unities_layer,
+                             menu);
         }
     }
 
@@ -95,8 +105,8 @@ public final class MenuUnitiesControl extends AbstractControl {
             }
 
             if (this.mWebViewFragment.getMapSettings()
-                    .getMinimumZoomPointing() > this.mWebViewFragment.getMapSettings()
-                    .getZoom()) {
+                                     .getMinimumZoomPointing() > this.mWebViewFragment.getMapSettings()
+                                                                                      .getZoom()) {
                 itemMarker.setEnabled(false);
                 itemMarkerFromLocation.setEnabled(false);
                 this.mIsActionMarkerSelected = false;
@@ -109,7 +119,8 @@ public final class MenuUnitiesControl extends AbstractControl {
 
             if (this.hasUnitiesLayerSource()) {
                 itemToggleUnitiesLayers.setIcon(mWebViewFragment.getSavedInstanceState()
-                        .getBoolean(KEY_SHOW_UNITIES_LAYER, true) ? R.drawable.ic_action_layer_remove : R.drawable.ic_action_layer_add);
+                                                                .getBoolean(KEY_SHOW_UNITIES_LAYER,
+                                                                            true) ? R.drawable.ic_action_layer_remove : R.drawable.ic_action_layer_add);
             }
             else {
                 menu.removeItem(R.id.itemToggleUnitiesLayers);
@@ -151,16 +162,18 @@ public final class MenuUnitiesControl extends AbstractControl {
         super.add(webViewFragment);
 
         this.mWebViewFragment.getSavedInstanceState()
-                .putBoolean(KEY_SHOW_UNITIES_LAYER, this.mWebViewFragment.getMapSettings()
-                        .isShowUnitiesLayer());
+                             .putBoolean(KEY_SHOW_UNITIES_LAYER,
+                                         this.mWebViewFragment.getMapSettings()
+                                                              .isShowUnitiesLayer());
 
-        initializeJSController("js/Control.Unities.js", "new L.Control.Unities({" +
-                "hasUnityLayerSource: " + hasUnitiesLayerSource() + ", " +
-                "minZoom: " + this.mWebViewFragment.getMapSettings()
-                .getMinZoom() + ", " +
-                "maxZoom: " + this.mWebViewFragment.getMapSettings()
-                .getMaxZoom() +
-                "})");
+        initializeJSController("js/Control.Unities.js",
+                               "new L.Control.Unities({" +
+                                       "hasUnityLayerSource: " + hasUnitiesLayerSource() + ", " +
+                                       "minZoom: " + this.mWebViewFragment.getMapSettings()
+                                                                          .getMinZoom() + ", " +
+                                       "maxZoom: " + this.mWebViewFragment.getMapSettings()
+                                                                          .getMaxZoom() +
+                                       "})");
     }
 
     /**
@@ -182,12 +195,13 @@ public final class MenuUnitiesControl extends AbstractControl {
      * Gets the minimum zoom level for pointing on the map
      *
      * @return the minimum zoom level for pointing
+     *
      * @see MapSettings#getMinimumZoomPointing()
      */
     @JavascriptInterface
     public int getMinimumZoomPointing() {
         return mWebViewFragment.getMapSettings()
-                .getMinimumZoomPointing();
+                               .getMinimumZoomPointing();
     }
 
     /**
@@ -198,16 +212,13 @@ public final class MenuUnitiesControl extends AbstractControl {
     @JavascriptInterface
     public String getMarkerPosition() {
         final GeoPoint pointing = mWebViewFragment.getSavedInstanceState()
-                .getParcelable(KEY_POINTING_LOCATION);
+                                                  .getParcelable(KEY_POINTING_LOCATION);
 
-        if (pointing != null) {
-            jsonArray = pointing.getJSONObject(GeoPoint.LAT_LON);
-            return jsonArray.toString();
+        if (pointing == null) {
+            return "[]";
         }
-        else {
-            jsonArray = new JSONArray();
-            return jsonArray.toString();
-        }
+
+        return pointing.toString();
     }
 
     /**
@@ -218,14 +229,18 @@ public final class MenuUnitiesControl extends AbstractControl {
      * @param accuracy  the accuracy of this position
      */
     @JavascriptInterface
-    public void setMarkerPosition(final double latitude, final double longitude, int accuracy) {
+    public void setMarkerPosition(final double latitude,
+                                  final double longitude,
+                                  int accuracy) {
         getHandler().post(new Runnable() {
             @Override
             public void run() {
                 mIsActionMarkerSelected = false;
                 mWebViewFragment.invalidateMenu();
                 mWebViewFragment.getSavedInstanceState()
-                        .putParcelable(KEY_POINTING_LOCATION, new GeoPoint(latitude, longitude));
+                                .putParcelable(KEY_POINTING_LOCATION,
+                                               new GeoPoint(latitude,
+                                                            longitude));
             }
         });
     }
@@ -234,8 +249,8 @@ public final class MenuUnitiesControl extends AbstractControl {
     public String getUnityLayerSource() {
         if (hasUnitiesLayerSource()) {
             return mWebViewFragment.getMapSettings()
-                    .getUnityLayer()
-                    .getName();
+                                   .getUnityLayer()
+                                   .getName();
         }
         else {
             return "";
@@ -244,12 +259,14 @@ public final class MenuUnitiesControl extends AbstractControl {
 
     @JavascriptInterface
     public String getMetadata(String mbTilesSource) {
-        //Log.d(getClass().getName(), "getMetadata : " + mbTilesSource);
+        final ITilesLayerDataSource dataSource = this.mWebViewFragment.getTilesLayersDataSource(mbTilesSource);
 
-        jsonObject = this.mWebViewFragment.getTilesLayersDataSource(mbTilesSource)
-                .getMetadata();
+        if (dataSource == null) {
+            return "{}";
+        }
 
-        return jsonObject.toString();
+        return dataSource.getMetadata()
+                         .toString();
     }
 
     /**
@@ -259,13 +276,20 @@ public final class MenuUnitiesControl extends AbstractControl {
      * @param zoomLevel   the current zoom level
      * @param column      column index of the tile
      * @param row         row index of the tile
+     *
      * @return the tile as a <code>Base64</code> representation
+     *
      * @see ITilesLayerDataSource#getTile(int, int, int)
      */
     @JavascriptInterface
-    public String getTile(String tilesSource, int zoomLevel, int column, int row) {
+    public String getTile(String tilesSource,
+                          int zoomLevel,
+                          int column,
+                          int row) {
         return this.mWebViewFragment.getTilesLayersDataSource(tilesSource)
-                .getTile(zoomLevel, column, row);
+                                    .getTile(zoomLevel,
+                                             column,
+                                             row);
     }
 
     /**
@@ -276,7 +300,7 @@ public final class MenuUnitiesControl extends AbstractControl {
     @JavascriptInterface
     public boolean showUnitiesLayer() {
         return this.mWebViewFragment.getSavedInstanceState()
-                .getBoolean(KEY_SHOW_UNITIES_LAYER);
+                                    .getBoolean(KEY_SHOW_UNITIES_LAYER);
     }
 
     /**
@@ -290,40 +314,32 @@ public final class MenuUnitiesControl extends AbstractControl {
             @Override
             public void run() {
                 mWebViewFragment.getSavedInstanceState()
-                        .putBoolean(KEY_SHOW_UNITIES_LAYER, added);
+                                .putBoolean(KEY_SHOW_UNITIES_LAYER,
+                                            added);
                 mWebViewFragment.invalidateMenu();
             }
         });
     }
 
     /**
-     * Returns the previously selected unity as {@link JSONObject}.
+     * Returns the previously selected unity as {@code JSONObject}.
      *
-     * @return the selected unity as {@link JSONObject} if found
+     * @return the selected unity as {@code JSONObject} if found
      */
     @JavascriptInterface
     public String getSelectedUnity() {
-        Feature selectedFeature = mWebViewFragment.getSavedInstanceState()
-                .getParcelable(KEY_SELECTED_UNITY);
+        final Feature selectedFeature = mWebViewFragment.getSavedInstanceState()
+                                                        .getParcelable(KEY_SELECTED_UNITY);
 
         if (selectedFeature == null) {
-            jsonObject = new JSONObject();
-            return jsonObject.toString();
+            return "{}";
         }
-        else {
-            try {
-                FeatureCollection featureCollection = new FeatureCollection();
-                featureCollection.addFeature(selectedFeature);
-                jsonObject = featureCollection.getJSONObject();
-                return jsonObject.toString();
-            }
-            catch (JSONException je) {
-                Log.w(getClass().getName(), je.getMessage(), je);
 
-                jsonObject = new JSONObject();
-                return jsonObject.toString();
-            }
-        }
+        final FeatureCollection featureCollection = new FeatureCollection();
+        featureCollection.addFeature(selectedFeature);
+        final String toJson = new GeoJsonWriter().write(featureCollection);
+
+        return TextUtils.isEmpty(toJson) ? "{}" : toJson;
     }
 
     /**
@@ -331,27 +347,35 @@ public final class MenuUnitiesControl extends AbstractControl {
      *
      * @param latitude  the latitude in degrees
      * @param longitude the longitude in degrees
+     *
      * @return the selected unity as {@link JSONObject} if found
      */
     @JavascriptInterface
-    public String getUnityFromLocation(double latitude, double longitude, int accuracy) {
-        final Geolocation geolocation = new Geolocation(longitude, latitude, accuracy);
-        final Point location = new Point(new GeoPoint(latitude, longitude));
+    public String getUnityFromLocation(double latitude,
+                                       double longitude,
+                                       int accuracy) {
+        final Geolocation geolocation = new Geolocation(longitude,
+                                                        latitude,
+                                                        accuracy);
+        final GeoPoint geoPoint = new GeoPoint(latitude,
+                                               longitude);
 
         final List<Feature> unities = this.mWebViewFragment.getFeatures();
         final Iterator<Feature> iterator = unities.iterator();
         Feature selectedFeature = mWebViewFragment.getSavedInstanceState()
-                .getParcelable(KEY_SELECTED_UNITY);
+                                                  .getParcelable(KEY_SELECTED_UNITY);
 
         // checks before if the previously selected unity is still valid
-        if ((selectedFeature != null) && (!GeometryUtils.contains(location, selectedFeature.getGeometry()))) {
+        if ((selectedFeature != null) && !selectedFeature.getGeometry()
+                                                         .contains(geoPoint.getPoint())) {
             selectedFeature = null;
         }
 
         while ((selectedFeature == null) && iterator.hasNext()) {
-            Feature featureToCheck = iterator.next();
+            final Feature featureToCheck = iterator.next();
 
-            if (GeometryUtils.contains(location, featureToCheck.getGeometry())) {
+            if (featureToCheck.getGeometry()
+                              .contains(geoPoint.getPoint())) {
                 selectedFeature = featureToCheck;
             }
         }
@@ -363,50 +387,38 @@ public final class MenuUnitiesControl extends AbstractControl {
             public void run() {
                 if (featureToUpdate == null) {
                     mWebViewFragment.getSavedInstanceState()
-                            .remove(KEY_SELECTED_UNITY);
+                                    .remove(KEY_SELECTED_UNITY);
                 }
                 else {
                     mWebViewFragment.getSavedInstanceState()
-                            .putParcelable(KEY_SELECTED_UNITY, featureToUpdate);
+                                    .putParcelable(KEY_SELECTED_UNITY,
+                                                   featureToUpdate);
                 }
 
-                mWebViewFragment.setSelectedFeature(geolocation, featureToUpdate);
+                mWebViewFragment.setSelectedFeature(geolocation,
+                                                    featureToUpdate);
             }
         });
 
-        if (selectedFeature != null) {
-            try {
-                FeatureCollection featureCollection = new FeatureCollection();
-                featureCollection.addFeature(selectedFeature);
-
-                Log.d(getClass().getName(), "getUnityFromLocation, feature found : " + selectedFeature.getId());
-
-                jsonObject = featureCollection.getJSONObject();
-                return jsonObject.toString();
-            }
-            catch (JSONException je) {
-                Log.w(getClass().getName(), je.getMessage(), je);
-
-                jsonObject = new JSONObject();
-                return jsonObject.toString();
-            }
+        if (selectedFeature == null) {
+            return "{}";
         }
-        else {
-            Log.d(getClass().getName(), "getUnityFromLocation, no feature found");
 
-            jsonObject = new JSONObject();
-            return jsonObject.toString();
-        }
+        final FeatureCollection featureCollection = new FeatureCollection();
+        featureCollection.addFeature(selectedFeature);
+        final String toJson = new GeoJsonWriter().write(featureCollection);
+
+        return TextUtils.isEmpty(toJson) ? "{}" : toJson;
     }
 
     private boolean hasUnitiesLayerSource() {
         return (this.mWebViewFragment.getMapSettings()
-                .getUnityLayer() != null) &&
+                                     .getUnityLayer() != null) &&
                 (!this.mWebViewFragment.getMapSettings()
-                        .getUnityLayer()
-                        .getName()
-                        .isEmpty()) &&
+                                       .getUnityLayer()
+                                       .getName()
+                                       .isEmpty()) &&
                 (!this.mWebViewFragment.getFeatures()
-                        .isEmpty());
+                                       .isEmpty());
     }
 }

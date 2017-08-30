@@ -1,0 +1,1 @@
+{"url":"http://domain.com/sync/","token":"my!token#","status_url":"status/","import_url":"import/","exports":[{"url":"export/sqlite/","file":"databases/data.db"}]}

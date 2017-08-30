@@ -1,45 +1,52 @@
 package com.makina.ecrins.search.ui;
 
-import android.app.ProgressDialog;
+import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
-import com.makina.ecrins.commons.service.AbstractRequestHandler;
-import com.makina.ecrins.commons.service.RequestHandlerServiceClient;
-import com.makina.ecrins.commons.service.RequestHandlerStatus;
+import com.makina.ecrins.commons.settings.AbstractAppSettings;
+import com.makina.ecrins.commons.settings.AbstractAppSettingsIntentService;
 import com.makina.ecrins.commons.ui.dialog.AlertDialogFragment;
-import com.makina.ecrins.commons.ui.dialog.ProgressDialogFragment;
-import com.makina.ecrins.maps.geojson.Feature;
-import com.makina.ecrins.maps.geojson.geometry.GeoPoint;
+import com.makina.ecrins.commons.util.PermissionUtils;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.GeoPoint;
 import com.makina.ecrins.search.BuildConfig;
 import com.makina.ecrins.search.MainApplication;
 import com.makina.ecrins.search.R;
 import com.makina.ecrins.search.settings.AppSettings;
-import com.makina.ecrins.search.settings.LoadSettingsRequestHandler;
+import com.makina.ecrins.search.settings.AppSettingsIntentService;
 import com.makina.ecrins.search.ui.dialog.FeatureDialogFragment;
 import com.makina.ecrins.search.ui.maps.WebViewFragment;
 import com.makina.ecrins.search.ui.maps.WebViewFragment.OnFeaturesFoundListener;
 import com.makina.ecrins.search.ui.settings.MainPreferencesActivity;
 import com.makina.ecrins.search.ui.sync.SynchronizationActivity;
 
-import org.json.JSONException;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * This is the main {@code Activity} of this application used to initialize
- * * {@link com.makina.ecrins.search.ui.maps.WebViewFragment}.
+ * {@link com.makina.ecrins.search.ui.maps.WebViewFragment}.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
@@ -49,14 +56,69 @@ public class MainFragmentActivity
 
     private static final String TAG = MainFragmentActivity.class.getSimpleName();
 
-    private static final String KEY_REQUEST_HANDLER_SERVICE_CLIENT_TOKEN = "KEY_REQUEST_HANDLER_SERVICE_CLIENT_TOKEN";
+    private static final int REQUEST_EXTERNAL_STORAGE = 0;
+    private static final int REQUEST_SELECT_FEATURE = 1;
     private static final String KEY_SELECTED_FEATURE = "KEY_SELECTED_FEATURE";
 
     private static final String QUIT_ACTION_DIALOG = "QUIT_ACTION_DIALOG";
-    private static final String LOAD_SETTINGS_DIALOG = "LOAD_SETTINGS_DIALOG";
     private static final String SHOW_FEATURE_DIALOG = "SHOW_FEATURE_DIALOG";
 
+    private View mLayout;
+    private ProgressBar mProgressBar;
     private Bundle mSavedState;
+    private boolean mRequestPermissionsResult;
+
+    private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context,
+                              Intent intent) {
+            if ((intent == null) || (intent.getAction() == null)) {
+                return;
+            }
+
+            final AbstractAppSettingsIntentService.Status status = (AbstractAppSettingsIntentService.Status) intent.getSerializableExtra(AbstractAppSettingsIntentService.EXTRA_STATUS);
+            final AbstractAppSettings appSettings = intent.getParcelableExtra(AbstractAppSettingsIntentService.EXTRA_SETTINGS);
+
+            if (status == null) {
+                Log.w(TAG,
+                      "onReceive, no status defined for action " + intent.getAction());
+
+                return;
+            }
+
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      "onReceive, action: " + intent.getAction() + ", status: " + status);
+            }
+
+            if (intent.getAction()
+                      .equals(getBroadcastActionReadAppSettings())) {
+                switch (status) {
+                    case FINISHED_WITH_ERRORS:
+                    case FINISHED_NOT_FOUND:
+                        showAppSettingsLoadingFailedAlert();
+                        break;
+                    case FINISHED:
+                        if (appSettings != null) {
+                            ((MainApplication) getApplication()).setAppSettings((AppSettings) appSettings);
+                            ActivityCompat.invalidateOptionsMenu(MainFragmentActivity.this);
+
+                            final FragmentManager fm = getSupportFragmentManager();
+
+                            if (fm.findFragmentById(R.id.fragment_content) == null) {
+                                final WebViewFragment mapsFragment = new WebViewFragment();
+                                fm.beginTransaction()
+                                  .add(R.id.fragment_content,
+                                       mapsFragment)
+                                  .commit();
+                            }
+                        }
+
+                        break;
+                }
+            }
+        }
+    };
 
     private AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
         @Override
@@ -71,57 +133,22 @@ public class MainFragmentActivity
         }
     };
 
-    private RequestHandlerServiceClient.ServiceClientListener mServiceClientListener = new RequestHandlerServiceClient.ServiceClientListener() {
-        @Override
-        public void onConnected(@NonNull String token) {
-
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG,
-                      "onConnected: " + token);
-            }
-
-            mSavedState.putString(KEY_REQUEST_HANDLER_SERVICE_CLIENT_TOKEN,
-                                  token);
-
-            // send Message to get the current status of LoadSettingsRequestHandler
-            final Bundle data = new Bundle();
-            data.putSerializable(LoadSettingsRequestHandler.KEY_COMMAND,
-                                 LoadSettingsRequestHandler.Command.GET_STATUS);
-
-            mRequestHandlerServiceClient.send(LoadSettingsRequestHandler.class,
-                                              data);
-        }
-
-        @Override
-        public void onDisconnected() {
-
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG,
-                      "onDisconnected");
-            }
-        }
-
-        @Override
-        public void onHandleMessage(
-                @NonNull AbstractRequestHandler requestHandler,
-                @NonNull Bundle data) {
-
-            if (requestHandler instanceof LoadSettingsRequestHandler) {
-                handleMessageForLoadSettingsRequestHandler(data);
-            }
-        }
-    };
-
-    private RequestHandlerServiceClient mRequestHandlerServiceClient;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
-        supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        mRequestPermissionsResult = true;
 
         setContentView(R.layout.activity_maps);
+
+        mLayout = findViewById(android.R.id.content);
+
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            mProgressBar = (ProgressBar) toolbar.findViewById(R.id.progressBar);
+        }
 
         if (savedInstanceState == null) {
             if (BuildConfig.DEBUG) {
@@ -158,13 +185,31 @@ public class MainFragmentActivity
                   "onResume");
         }
 
-        if (((MainApplication) getApplication()).getAppSettings() == null) {
-            if (mRequestHandlerServiceClient == null) {
-                mRequestHandlerServiceClient = new RequestHandlerServiceClient(this);
-            }
+        LocalBroadcastManager.getInstance(this)
+                             .registerReceiver(mBroadcastReceiver,
+                                               new IntentFilter(getBroadcastActionReadAppSettings()));
 
-            mRequestHandlerServiceClient.setServiceClientListener(mServiceClientListener);
-            mRequestHandlerServiceClient.connect(mSavedState.getString(KEY_REQUEST_HANDLER_SERVICE_CLIENT_TOKEN));
+        if (mRequestPermissionsResult) {
+            PermissionUtils.checkSelfPermissions(this,
+                                                 new PermissionUtils.OnCheckSelfPermissionListener() {
+                                                     @Override
+                                                     public void onPermissionsGranted() {
+                                                         loadAppSettings();
+                                                     }
+
+                                                     @Override
+                                                     public void onRequestPermissions(@NonNull String... permissions) {
+                                                         PermissionUtils.requestPermissions(MainFragmentActivity.this,
+                                                                                            mLayout,
+                                                                                            R.string.snackbar_permission_external_storage_rationale,
+                                                                                            REQUEST_EXTERNAL_STORAGE,
+                                                                                            permissions);
+                                                     }
+                                                 },
+                                                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        else {
+            mRequestPermissionsResult = true;
         }
     }
 
@@ -176,26 +221,77 @@ public class MainFragmentActivity
                   "onPause");
         }
 
-        if (mRequestHandlerServiceClient != null) {
-            mRequestHandlerServiceClient.disconnect();
-        }
+        LocalBroadcastManager.getInstance(this)
+                             .unregisterReceiver(mBroadcastReceiver);
 
         super.onPause();
     }
 
     @Override
-    protected void onActivityResult(
-            int requestCode,
-            int resultCode,
-            Intent data) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_EXTERNAL_STORAGE:
+                if (permissions.length > 0) {
+                    mRequestPermissionsResult = PermissionUtils.checkPermissions(grantResults);
+
+                    if (mRequestPermissionsResult) {
+                        int messageResourceId = R.string.snackbar_permissions_granted;
+
+                        if (Arrays.asList(permissions)
+                                  .containsAll(Arrays.asList(Manifest.permission.ACCESS_FINE_LOCATION,
+                                                             Manifest.permission.ACCESS_COARSE_LOCATION)) && !Arrays.asList(permissions)
+                                                                                                                    .contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            messageResourceId = R.string.message_permission_location_available;
+                        }
+                        else if (!Arrays.asList(permissions)
+                                        .containsAll(Arrays.asList(Manifest.permission.ACCESS_FINE_LOCATION,
+                                                                   Manifest.permission.ACCESS_COARSE_LOCATION)) && Arrays.asList(permissions)
+                                                                                                                         .contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            messageResourceId = R.string.snackbar_permission_external_storage_available;
+                        }
+
+                        Snackbar.make(mLayout,
+                                      messageResourceId,
+                                      Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                    else {
+                        Snackbar.make(mLayout,
+                                      R.string.snackbar_permissions_not_granted,
+                                      Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                }
+
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode,
+                                                 permissions,
+                                                 grantResults);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode,
+                                    int resultCode,
+                                    Intent data) {
 
         super.onActivityResult(requestCode,
                                resultCode,
                                data);
 
-        if ((requestCode == 0) && (resultCode == RESULT_OK) && (data.getExtras() != null)) {
+        if ((requestCode == REQUEST_SELECT_FEATURE) && (resultCode == RESULT_OK) && (data.getExtras() != null)) {
             final Feature selectedFeature = data.getExtras()
                                                 .getParcelable(FeaturesFragmentActivity.KEY_SELECTED_FEATURE);
+
+            if (selectedFeature == null) {
+                Log.d(TAG,
+                      "onActivityResult, no feature selected");
+
+                return;
+            }
 
             if (BuildConfig.DEBUG) {
                 Log.d(TAG,
@@ -251,6 +347,15 @@ public class MainFragmentActivity
     }
 
     @Override
+    public void onFindFeatures(boolean start) {
+        if (mProgressBar == null) {
+            return;
+        }
+
+        mProgressBar.setVisibility(start ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
     public void onFeaturesFound(List<Feature> features) {
 
         final Intent intent = new Intent();
@@ -260,12 +365,12 @@ public class MainFragmentActivity
                                            new ArrayList<>(features));
 
         startActivityForResult(intent,
-                               0);
+                               REQUEST_SELECT_FEATURE);
     }
 
+    @Nullable
     @Override
     public Feature getSelectedFeature() {
-
         if (mSavedState.containsKey(KEY_SELECTED_FEATURE)) {
             return mSavedState.getParcelable(KEY_SELECTED_FEATURE);
         }
@@ -275,99 +380,50 @@ public class MainFragmentActivity
     }
 
     @Override
-    public void onFeatureSelected(
-            GeoPoint geoPoint,
-            Feature feature) {
-
-        try {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG,
-                      "onFeatureSelected, geoPoint : " + geoPoint.toString() + ", feature : " + feature.getJSONObject()
-                                                                                                       .toString());
-            }
-
-            FeatureDialogFragment dialogFragment = (FeatureDialogFragment) getSupportFragmentManager().findFragmentByTag(SHOW_FEATURE_DIALOG);
-
-            if (dialogFragment != null) {
-                dialogFragment.dismiss();
-            }
-
-            dialogFragment = FeatureDialogFragment.newInstance(feature,
-                                                               geoPoint);
-            dialogFragment.show(getSupportFragmentManager(),
-                                SHOW_FEATURE_DIALOG);
+    public void onFeatureSelected(GeoPoint geoPoint,
+                                  Feature feature) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "onFeatureSelected, geoPoint: " + geoPoint.toString() + ", feature: " + feature.getId());
         }
-        catch (JSONException je) {
-            Log.w(TAG,
-                  je.getMessage());
+
+        FeatureDialogFragment dialogFragment = (FeatureDialogFragment) getSupportFragmentManager().findFragmentByTag(SHOW_FEATURE_DIALOG);
+
+        if (dialogFragment != null) {
+            dialogFragment.dismiss();
         }
+
+        dialogFragment = FeatureDialogFragment.newInstance(feature,
+                                                           geoPoint);
+        dialogFragment.show(getSupportFragmentManager(),
+                            SHOW_FEATURE_DIALOG);
     }
 
-    private void handleMessageForLoadSettingsRequestHandler(@NonNull final Bundle data) {
+    private void loadAppSettings() {
+        AbstractAppSettingsIntentService.readSettings(this,
+                                                      AppSettingsIntentService.class,
+                                                      getBroadcastActionReadAppSettings(),
+                                                      getAppSettingsFilename());
+    }
 
-        if (data.containsKey(LoadSettingsRequestHandler.KEY_STATUS)) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG,
-                      "onHandleMessage: LoadSettingsRequestHandler status " + ((RequestHandlerStatus) data.getParcelable(LoadSettingsRequestHandler.KEY_STATUS)).getStatus()
-                                                                                                                                                                .name());
-            }
+    @NonNull
+    private String getBroadcastActionReadAppSettings() {
+        return getPackageName() + ".broadcast.settings.read";
+    }
 
-            switch (((RequestHandlerStatus) data.getParcelable(LoadSettingsRequestHandler.KEY_STATUS)).getStatus()) {
-                case PENDING:
-                    dismissProgressDialog(LOAD_SETTINGS_DIALOG);
+    @NonNull
+    private String getAppSettingsFilename() {
+        final String packageName = getPackageName();
 
-                    // send Message to start loading AppSettings
-                    data.putSerializable(LoadSettingsRequestHandler.KEY_COMMAND,
-                                         LoadSettingsRequestHandler.Command.START);
-                    data.putString(LoadSettingsRequestHandler.KEY_FILENAME,
-                                   "settings_search.json");
+        return "settings_" + packageName.substring(packageName.lastIndexOf('.') + 1) + ".json";
+    }
 
-                    mRequestHandlerServiceClient.send(LoadSettingsRequestHandler.class,
-                                                      data);
-                    break;
-                case RUNNING:
-                    showProgressDialog(LOAD_SETTINGS_DIALOG,
-                                       R.string.progress_title,
-                                       R.string.progress_message_loading_settings,
-                                       ProgressDialog.STYLE_SPINNER,
-                                       0,
-                                       0);
-                    break;
-                case FINISHED:
-                    dismissProgressDialog(LOAD_SETTINGS_DIALOG);
-                    final AppSettings appSettings = data.getParcelable(LoadSettingsRequestHandler.KEY_APP_SETTINGS);
-
-                    if (appSettings == null) {
-                        Toast.makeText(MainFragmentActivity.this,
-                                       String.format(getString(R.string.message_settings_not_found),
-                                                     data.getString(LoadSettingsRequestHandler.KEY_FILENAME)),
-                                       Toast.LENGTH_LONG)
-                             .show();
-                    }
-                    else {
-                        ((MainApplication) getApplication()).setAppSettings(appSettings);
-
-                        final FragmentManager fm = getSupportFragmentManager();
-
-                        if (fm.findFragmentById(android.R.id.content) == null) {
-                            final WebViewFragment mapsFragment = new WebViewFragment();
-                            fm.beginTransaction()
-                              .add(android.R.id.content,
-                                   mapsFragment)
-                              .commit();
-                        }
-                    }
-                    break;
-                case FINISHED_WITH_ERRORS:
-                    dismissProgressDialog(LOAD_SETTINGS_DIALOG);
-                    Toast.makeText(MainFragmentActivity.this,
-                                   String.format(getString(R.string.message_settings_not_found),
-                                                 data.getString(LoadSettingsRequestHandler.KEY_FILENAME)),
-                                   Toast.LENGTH_LONG)
-                         .show();
-                    break;
-            }
-        }
+    private void showAppSettingsLoadingFailedAlert() {
+        Toast.makeText(this,
+                       getString(R.string.message_settings_not_found,
+                                 getAppSettingsFilename()),
+                       Toast.LENGTH_LONG)
+             .show();
     }
 
     private void showConfirmDialogBeforeQuit() {
@@ -377,41 +433,5 @@ public class MainFragmentActivity
         alertDialog.setOnAlertDialogListener(mOnAlertDialogListener);
         alertDialog.show(getSupportFragmentManager(),
                          QUIT_ACTION_DIALOG);
-    }
-
-    private void showProgressDialog(
-            String tag,
-            int title,
-            int message,
-            int progressStyle,
-            int progress,
-            int max) {
-
-        ProgressDialogFragment progressDialogFragment = (ProgressDialogFragment) getSupportFragmentManager().findFragmentByTag(tag);
-
-        if (progressDialogFragment == null) {
-            progressDialogFragment = ProgressDialogFragment.newInstance(title,
-                                                                        message,
-                                                                        progressStyle,
-                                                                        max);
-            progressDialogFragment.show(getSupportFragmentManager(),
-                                        tag);
-        }
-
-        progressDialogFragment.setProgress(progress);
-    }
-
-    private void dismissProgressDialog(String tag) {
-
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG,
-                  "dismissProgressDialog " + tag);
-        }
-
-        ProgressDialogFragment dialogFragment = (ProgressDialogFragment) getSupportFragmentManager().findFragmentByTag(tag);
-
-        if (dialogFragment != null) {
-            dialogFragment.dismiss();
-        }
     }
 }

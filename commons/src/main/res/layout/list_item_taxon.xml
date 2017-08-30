@@ -3,6 +3,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@drawable/list_item_background"
                 android:minHeight="?android:attr/listPreferredItemHeight">
 
     <View
@@ -34,6 +35,19 @@
         android:layout_toLeftOf="@id/imageViewHeritage"
         android:layout_toRightOf="@id/viewStatusColor"
         tools:ignore="RtlHardcoded">
+
+        <TextView
+            android:id="@android:id/text1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <TextView
+            android:id="@android:id/text2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
     </TextSwitcher>
 
     <TextView

@@ -6,9 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 
-import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
 
 /**
@@ -29,10 +27,8 @@ public class AlertDialogFragment
     private final DialogInterface.OnClickListener mOnPositiveOnClickListener = new DialogInterface.OnClickListener() {
 
         @Override
-        public void onClick(
-                DialogInterface dialog,
-                int which) {
-
+        public void onClick(DialogInterface dialog,
+                            int which) {
             if (mOnAlertDialogListener != null) {
                 mOnAlertDialogListener.onPositiveButtonClick(dialog);
             }
@@ -41,37 +37,38 @@ public class AlertDialogFragment
 
     private final DialogInterface.OnClickListener mOnNegativeOnClickListener = new DialogInterface.OnClickListener() {
         @Override
-        public void onClick(
-                DialogInterface dialog,
-                int which) {
-
+        public void onClick(DialogInterface dialog,
+                            int which) {
             if (mOnAlertDialogListener != null) {
                 mOnAlertDialogListener.onNegativeButtonClick(dialog);
             }
         }
     };
 
-    public static AlertDialogFragment newInstance(
-            int title,
-            int message) {
-
+    public static AlertDialogFragment newInstance(int title,
+                                                  int message) {
         return newInstance(title,
                            message,
                            R.string.alert_dialog_ok,
                            R.string.alert_dialog_cancel);
     }
 
-    public static AlertDialogFragment newInstance(
-            int title,
-            int message,
-            int buttonPositiveResourceId,
-            int buttonNegativeResourceId) {
+    public static AlertDialogFragment newInstance(int title,
+                                                  int message,
+                                                  int buttonPositiveResourceId,
+                                                  int buttonNegativeResourceId) {
+        return newInstance(title,
+                           message,
+                           buttonPositiveResourceId,
+                           buttonNegativeResourceId,
+                           false);
+    }
 
-        if (BuildConfig.DEBUG) {
-            Log.d(AlertDialogFragment.class.getName(),
-                  "newInstance");
-        }
-
+    public static AlertDialogFragment newInstance(int title,
+                                                  int message,
+                                                  int buttonPositiveResourceId,
+                                                  int buttonNegativeResourceId,
+                                                  boolean cancelable) {
         final AlertDialogFragment dialogFragment = new AlertDialogFragment();
         final Bundle args = new Bundle();
         args.putInt(KEY_TITLE,
@@ -84,7 +81,7 @@ public class AlertDialogFragment
                     buttonNegativeResourceId);
 
         dialogFragment.setArguments(args);
-        dialogFragment.setCancelable(false);
+        dialogFragment.setCancelable(cancelable);
 
         return dialogFragment;
     }

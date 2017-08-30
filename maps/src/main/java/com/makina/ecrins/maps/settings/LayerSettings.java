@@ -39,6 +39,7 @@ public class LayerSettings implements Parcelable, Comparable<LayerSettings> {
         mSource = source.readString();
     }
 
+    @Deprecated
     public LayerSettings(JSONObject json) throws JSONException {
         mName = json.getString(KEY_NAME);
         mLabel = json.getString(KEY_LABEL);
@@ -78,6 +79,7 @@ public class LayerSettings implements Parcelable, Comparable<LayerSettings> {
         return mSource;
     }
 
+    @Deprecated
     public JSONObject getJSONObject() throws JSONException {
         JSONObject json = new JSONObject();
         json.put(KEY_NAME, mName);

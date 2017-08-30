@@ -2,6 +2,7 @@ package com.makina.ecrins.commons.ui.observers;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,6 +40,7 @@ import com.makina.ecrins.commons.content.AbstractMainContentProvider;
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.input.Observer;
 import com.makina.ecrins.commons.ui.widget.AlphabetSectionIndexerCursorAdapter;
+import com.makina.ecrins.commons.util.ThemeUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +53,9 @@ import java.util.regex.Pattern;
  * Lists all {@link com.makina.ecrins.commons.input.Observer}s.
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+ * @deprecated use {@link AbstractObserverListActivity} instead
  */
+@Deprecated
 public abstract class AbstractObserversFragmentActivity
         extends AppCompatActivity {
 
@@ -75,7 +79,10 @@ public abstract class AbstractObserversFragmentActivity
         if (fm.findFragmentById(android.R.id.content) == null) {
             ObserversListFragment listFragment = new ObserversListFragment();
             listFragment.setArguments(getIntent().getExtras());
-            fm.beginTransaction().add(android.R.id.content, listFragment).commit();
+            fm.beginTransaction()
+              .add(android.R.id.content,
+                   listFragment)
+              .commit();
         }
     }
 
@@ -101,7 +108,9 @@ public abstract class AbstractObserversFragmentActivity
     }
 
     public boolean isSingleChoice() {
-        return (getIntent().getExtras() == null) || ((getIntent().getExtras().containsKey(CHOICE_MODE)) && (getIntent().getExtras().getInt(CHOICE_MODE) == ListView.CHOICE_MODE_SINGLE));
+        return (getIntent().getExtras() == null) || ((getIntent().getExtras()
+                                                                 .containsKey(CHOICE_MODE)) && (getIntent().getExtras()
+                                                                                                           .getInt(CHOICE_MODE) == ListView.CHOICE_MODE_SINGLE));
     }
 
     /**
@@ -114,14 +123,16 @@ public abstract class AbstractObserversFragmentActivity
     /**
      * Gets the loader URI to use by the loader.
      *
-     * @param id                the ID whose loader is to be created (
-     *                          {@link com.makina.ecrins.commons.content.AbstractMainContentProvider#OBSERVERS} or
-     *                          {@link com.makina.ecrins.commons.content.AbstractMainContentProvider#OBSERVER_ID})
+     * @param id                 the ID whose loader is to be created (
+     *                           {@link com.makina.ecrins.commons.content.AbstractMainContentProvider#OBSERVERS} or
+     *                           {@link com.makina.ecrins.commons.content.AbstractMainContentProvider#OBSERVER_ID})
      * @param selectedObserverId the current selected {@link Observer}
+     *
      * @return the URI to use
      */
     @NonNull
-    public abstract Uri getLoaderUri(int id, long selectedObserverId);
+    public abstract Uri getLoaderUri(int id,
+                                     long selectedObserverId);
 
     /**
      * Updates {@link #getSelectedObservers()} before loading the list view.
@@ -135,7 +146,9 @@ public abstract class AbstractObserversFragmentActivity
      */
     public abstract boolean updateSelection();
 
-    public static class ObserversListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    public static class ObserversListFragment
+            extends ListFragment
+            implements LoaderManager.LoaderCallbacks<Cursor> {
         private static final String KEY_FILTER = "filter";
         private static final String KEY_SELECTED_OBSERVER = "selected_observer";
 
@@ -145,28 +158,38 @@ public abstract class AbstractObserversFragmentActivity
 
         private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
             @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                if (!((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().isEmpty()) {
-                    final MenuItem menuItem = menu.add(Menu.NONE, 0, Menu.NONE, R.string.action_unselect_all).setIcon(R.drawable.ic_action_unselect_all);
-                    MenuItemCompat.setShowAsAction(menuItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+            public boolean onCreateActionMode(ActionMode mode,
+                                              Menu menu) {
+                if (!((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                        .isEmpty()) {
+                    final MenuItem menuItem = menu.add(Menu.NONE,
+                                                       0,
+                                                       Menu.NONE,
+                                                       R.string.action_unselect_all)
+                                                  .setIcon(R.drawable.ic_action_unselect_all);
+                    MenuItemCompat.setShowAsAction(menuItem,
+                                                   MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
                 }
 
                 return true;
             }
 
             @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            public boolean onPrepareActionMode(ActionMode mode,
+                                               Menu menu) {
                 return false;
             }
 
             @Override
-            public boolean onActionItemClicked(final ActionMode mode, final MenuItem item) {
+            public boolean onActionItemClicked(final ActionMode mode,
+                                               final MenuItem item) {
                 switch (item.getItemId()) {
                     case 0:
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().clear();
+                                ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                                   .clear();
                                 ((AbstractObserversFragmentActivity) getActivity()).updateSelection();
 
                                 mAdapter.notifyDataSetChanged();
@@ -220,15 +243,21 @@ public abstract class AbstractObserversFragmentActivity
             ((AbstractObserversFragmentActivity) getActivity()).initializeSelection();
 
             // prepare the loader, either re-connect with an existing one, or start a new one
-            getLoaderManager().initLoader(AbstractMainContentProvider.OBSERVERS, mSavedState, this);
+            getLoaderManager().initLoader(AbstractMainContentProvider.OBSERVERS,
+                                          mSavedState,
+                                          this);
 
             // start out with a progress indicator
             setListShown(false);
         }
 
         @Override
-        public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-            final MenuItem menuItemSearch = menu.add(Menu.NONE, 0, Menu.NONE, R.string.action_search);
+        public void onCreateOptionsMenu(Menu menu,
+                                        MenuInflater inflater) {
+            final MenuItem menuItemSearch = menu.add(Menu.NONE,
+                                                     0,
+                                                     Menu.NONE,
+                                                     R.string.action_search);
             menuItemSearch.setIcon(R.drawable.ic_action_search);
             MenuItemCompat.setShowAsAction(menuItemSearch,
                                            MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
@@ -239,22 +268,31 @@ public abstract class AbstractObserversFragmentActivity
                 @Override
                 public boolean onQueryTextSubmit(String query) {
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN, 0);
+                    imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN,
+                                        0);
                     return true;
                 }
 
                 @Override
                 public boolean onQueryTextChange(String newText) {
-                    mAdapter.getFilter().filter(!TextUtils.isEmpty(newText) ? newText : null);
+                    mAdapter.getFilter()
+                            .filter(!TextUtils.isEmpty(newText) ? newText : null);
                     return true;
                 }
             });
 
-            MenuItemCompat.setActionView(menuItemSearch, searchView);
+            MenuItemCompat.setActionView(menuItemSearch,
+                                         searchView);
 
-            if (!((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().isEmpty()) {
-                final MenuItem menuItem = menu.add(Menu.NONE, 1, Menu.NONE, R.string.action_unselect_all).setIcon(R.drawable.ic_action_unselect_all);
-                MenuItemCompat.setShowAsAction(menuItem, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+            if (!((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                    .isEmpty()) {
+                final MenuItem menuItem = menu.add(Menu.NONE,
+                                                   1,
+                                                   Menu.NONE,
+                                                   R.string.action_unselect_all)
+                                              .setIcon(R.drawable.ic_action_unselect_all);
+                MenuItemCompat.setShowAsAction(menuItem,
+                                               MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
             }
         }
 
@@ -265,7 +303,8 @@ public abstract class AbstractObserversFragmentActivity
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().clear();
+                            ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                               .clear();
                             ((AbstractObserversFragmentActivity) getActivity()).updateSelection();
 
                             mAdapter.notifyDataSetChanged();
@@ -279,34 +318,44 @@ public abstract class AbstractObserversFragmentActivity
         }
 
         @Override
-        public void onListItemClick(ListView l, View v, int position, long id) {
+        public void onListItemClick(ListView l,
+                                    View v,
+                                    int position,
+                                    long id) {
             long selectedObserverId = mAdapter.getItemId(position);
 
-            Log.d(AbstractObserversFragmentActivity.class.getName(), "onListItemClick : " + selectedObserverId);
+            Log.d(AbstractObserversFragmentActivity.class.getName(),
+                  "onListItemClick : " + selectedObserverId);
 
             CheckBox checkBox = (CheckBox) v.findViewById(android.R.id.checkbox);
 
             if (checkBox != null) {
                 boolean isSelected = !checkBox.isChecked();
-
                 checkBox.setChecked(isSelected);
+                v.setBackgroundColor(checkBox.isChecked() ? ThemeUtils.getAccentColor(getContext()) : Color.TRANSPARENT);
 
                 if (isSelected) {
-                    mSavedState.putLong(KEY_SELECTED_OBSERVER, selectedObserverId);
-                    getLoaderManager().restartLoader(AbstractMainContentProvider.OBSERVER_ID, mSavedState, this);
+                    mSavedState.putLong(KEY_SELECTED_OBSERVER,
+                                        selectedObserverId);
+                    getLoaderManager().restartLoader(AbstractMainContentProvider.OBSERVER_ID,
+                                                     mSavedState,
+                                                     this);
                 }
                 else {
                     if (isSingleChoice()) {
-                        ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().clear();
+                        ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                           .clear();
 
                         if (mMode != null) {
                             mMode.finish();
                         }
                     }
                     else {
-                        ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().remove(selectedObserverId);
+                        ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                           .remove(selectedObserverId);
 
-                        if (((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().isEmpty()) {
+                        if (((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                               .isEmpty()) {
                             // update menu
                             ActivityCompat.invalidateOptionsMenu(getActivity());
 
@@ -319,7 +368,9 @@ public abstract class AbstractObserversFragmentActivity
                                 mMode = ((AbstractObserversFragmentActivity) getActivity()).startSupportActionMode(mActionModeCallback);
                             }
 
-                            mMode.setTitle(String.format(getString(R.string.action_title_item_selected), ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().size()));
+                            mMode.setTitle(String.format(getString(R.string.action_title_item_selected),
+                                                         ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                                                            .size()));
                         }
                     }
 
@@ -329,7 +380,8 @@ public abstract class AbstractObserversFragmentActivity
         }
 
         @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        public Loader<Cursor> onCreateLoader(int id,
+                                             Bundle args) {
 
             final String[] projection = {
                     MainDatabaseHelper.ObserversColumns._ID,
@@ -361,16 +413,29 @@ public abstract class AbstractObserversFragmentActivity
                         selectionArgs.add(filter);
                     }
 
-                    return new CursorLoader(getActivity(), ((AbstractObserversFragmentActivity) getActivity()).getLoaderUri(id, args.getLong(KEY_SELECTED_OBSERVER)), projection, selection.toString(), selectionArgs.toArray(new String[selectionArgs.size()]), null);
+                    return new CursorLoader(getActivity(),
+                                            ((AbstractObserversFragmentActivity) getActivity()).getLoaderUri(id,
+                                                                                                             args.getLong(KEY_SELECTED_OBSERVER)),
+                                            projection,
+                                            selection.toString(),
+                                            selectionArgs.toArray(new String[selectionArgs.size()]),
+                                            null);
                 case AbstractMainContentProvider.OBSERVER_ID:
-                    return new CursorLoader(getActivity(), ((AbstractObserversFragmentActivity) getActivity()).getLoaderUri(id, args.getLong(KEY_SELECTED_OBSERVER)), projection, null, null, null);
+                    return new CursorLoader(getActivity(),
+                                            ((AbstractObserversFragmentActivity) getActivity()).getLoaderUri(id,
+                                                                                                             args.getLong(KEY_SELECTED_OBSERVER)),
+                                            projection,
+                                            null,
+                                            null,
+                                            null);
                 default:
                     throw new IllegalArgumentException("Unknown loader : " + id);
             }
         }
 
         @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        public void onLoadFinished(Loader<Cursor> loader,
+                                   Cursor data) {
             switch (loader.getId()) {
                 case AbstractMainContentProvider.OBSERVERS:
                     if (mAdapter == null) {
@@ -383,12 +448,15 @@ public abstract class AbstractObserversFragmentActivity
                     getListView().setFastScrollEnabled(true);
                     getListView().setScrollingCacheEnabled(true);
 
-                    if (!((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().isEmpty()) {
+                    if (!((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                            .isEmpty()) {
                         if (mMode == null) {
                             mMode = ((AbstractObserversFragmentActivity) getActivity()).startSupportActionMode(mActionModeCallback);
                         }
 
-                        mMode.setTitle(String.format(getString(R.string.action_title_item_selected), ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().size()));
+                        mMode.setTitle(String.format(getString(R.string.action_title_item_selected),
+                                                     ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                                                        .size()));
                         // update menu
                         ActivityCompat.invalidateOptionsMenu(getActivity());
                     }
@@ -404,19 +472,27 @@ public abstract class AbstractObserversFragmentActivity
                 case AbstractMainContentProvider.OBSERVER_ID:
                     if (data.moveToFirst()) {
                         if (isSingleChoice()) {
-                            ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().clear();
+                            ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                               .clear();
                         }
 
-                        ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().put(data.getLong(data.getColumnIndex(MainDatabaseHelper.ObserversColumns._ID)), new Observer(data.getLong(data.getColumnIndex(MainDatabaseHelper.ObserversColumns._ID)), data.getString(data.getColumnIndex(MainDatabaseHelper.ObserversColumns.LASTNAME)), data.getString(data.getColumnIndex(MainDatabaseHelper.ObserversColumns.FIRSTNAME))));
+                        ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                           .put(data.getLong(data.getColumnIndex(MainDatabaseHelper.ObserversColumns._ID)),
+                                                                                new Observer(data.getLong(data.getColumnIndex(MainDatabaseHelper.ObserversColumns._ID)),
+                                                                                             data.getString(data.getColumnIndex(MainDatabaseHelper.ObserversColumns.LASTNAME)),
+                                                                                             data.getString(data.getColumnIndex(MainDatabaseHelper.ObserversColumns.FIRSTNAME))));
                         ((AbstractObserversFragmentActivity) getActivity()).updateSelection();
 
                         if (mMode == null) {
                             mMode = ((AbstractObserversFragmentActivity) getActivity()).startSupportActionMode(mActionModeCallback);
                         }
-                        mMode.setTitle(String.format(getString(R.string.action_title_item_selected), ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().size()));
+                        mMode.setTitle(String.format(getString(R.string.action_title_item_selected),
+                                                     ((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                                                        .size()));
                     }
                     else {
-                        Log.w(AbstractObserversFragmentActivity.class.getName(), "onLoadFinished, unable to fetch the selected observer from database");
+                        Log.w(AbstractObserversFragmentActivity.class.getName(),
+                              "onLoadFinished, unable to fetch the selected observer from database");
                     }
 
                     mAdapter.notifyDataSetChanged();
@@ -447,34 +523,33 @@ public abstract class AbstractObserversFragmentActivity
             if (mAdapter == null) {
                 // create the adapter we will use to display the loaded data
                 mAdapter = new AlphabetSectionIndexerCursorAdapter(getActivity(),
-                        R.layout.list_item_2_multiple_choice,
-                        R.plurals.observers_count,
-                        cursor,
-                        MainDatabaseHelper.ObserversColumns.LASTNAME,
-                        new String[]
-                                {
-                                        MainDatabaseHelper.ObserversColumns.LASTNAME,
-                                        MainDatabaseHelper.ObserversColumns.FIRSTNAME
-                                },
-                        new int[]
-                                {
-                                        android.R.id.text1,
-                                        android.R.id.text2
-                                }, 0
-                ) {
+                                                                   R.layout.list_item_2_multiple_choice,
+                                                                   R.plurals.observers_count,
+                                                                   cursor,
+                                                                   MainDatabaseHelper.ObserversColumns.LASTNAME,
+                                                                   new String[] {
+                                                                           MainDatabaseHelper.ObserversColumns.LASTNAME,
+                                                                           MainDatabaseHelper.ObserversColumns.FIRSTNAME
+                                                                   },
+                                                                   new int[] {
+                                                                           android.R.id.text1,
+                                                                           android.R.id.text2
+                                                                   },
+                                                                   0) {
                     @Override
-                    public View getView(int position, View convertView, ViewGroup parent) {
-                        View view = super.getView(position, convertView, parent);
+                    public View getView(int position,
+                                        View convertView,
+                                        ViewGroup parent) {
+                        View view = super.getView(position,
+                                                  convertView,
+                                                  parent);
 
                         if (getItemViewType(position) == TYPE_NORMAL) {
-                            if (((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().containsKey(getItemId(position))) {
-                                view.setBackgroundColor(getResources().getColor(android.R.color.background_dark));
-                                ((CheckBox) view.findViewById(android.R.id.checkbox)).setChecked(true);
-                            }
-                            else {
-                                view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                                ((CheckBox) view.findViewById(android.R.id.checkbox)).setChecked(false);
-                            }
+                            final CheckBox checkBox = (CheckBox) view.findViewById(android.R.id.checkbox);
+                            checkBox.setChecked(((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                                                   .containsKey(getItemId(position)));
+
+                            view.setBackgroundColor(checkBox.isChecked() ? ThemeUtils.getAccentColor(getContext()) : Color.TRANSPARENT);
                         }
 
                         return view;
@@ -483,19 +558,26 @@ public abstract class AbstractObserversFragmentActivity
                 // sets a custom ViewBinder for this adapter
                 mAdapter.setViewBinder(new ViewBinder() {
                     @Override
-                    public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                    public boolean setViewValue(View view,
+                                                Cursor cursor,
+                                                int columnIndex) {
                         String filter = mSavedState.getString(KEY_FILTER);
-                        String selectedColor = Integer.toHexString(getResources().getColor(R.color.holo_blue_light)).substring(2);
+                        String selectedColor = Integer.toHexString(ThemeUtils.getAccentColor(getContext()))
+                                                      .substring(2);
 
                         switch (view.getId()) {
                             case android.R.id.text1:
                                 String lastname = cursor.getString(columnIndex);
-                                Spanned lastnameFilterFormat = (filter != null) ? Html.fromHtml(lastname.replaceAll(Pattern.compile("(?i)(" + filter + ")").pattern(), "<font color=\"#" + selectedColor + "\">$1</font>")) : SpannedString.valueOf(lastname);
+                                Spanned lastnameFilterFormat = (filter != null) ? Html.fromHtml(lastname.replaceAll(Pattern.compile("(?i)(" + filter + ")")
+                                                                                                                           .pattern(),
+                                                                                                                    "<font color=\"#" + selectedColor + "\">$1</font>")) : SpannedString.valueOf(lastname);
                                 ((TextView) view).setText(lastnameFilterFormat);
                                 return true;
                             case android.R.id.text2:
                                 String firstname = cursor.getString(columnIndex);
-                                Spanned firstnameFilterFormat = (filter != null) ? Html.fromHtml(firstname.replaceAll(Pattern.compile("(?i)(" + filter + ")").pattern(), "<font color=\"#" + selectedColor + "\">$1</font>")) : SpannedString.valueOf(firstname);
+                                Spanned firstnameFilterFormat = (filter != null) ? Html.fromHtml(firstname.replaceAll(Pattern.compile("(?i)(" + filter + ")")
+                                                                                                                             .pattern(),
+                                                                                                                      "<font color=\"#" + selectedColor + "\">$1</font>")) : SpannedString.valueOf(firstname);
                                 ((TextView) view).setText(firstnameFilterFormat);
                                 return true;
                         }
@@ -507,8 +589,11 @@ public abstract class AbstractObserversFragmentActivity
                 mAdapter.setFilterQueryProvider(new FilterQueryProvider() {
                     @Override
                     public Cursor runQuery(CharSequence constraint) {
-                        mSavedState.putString(KEY_FILTER, (constraint != null) ? constraint.toString() : null);
-                        getLoaderManager().restartLoader(AbstractMainContentProvider.OBSERVERS, mSavedState, ObserversListFragment.this);
+                        mSavedState.putString(KEY_FILTER,
+                                              (constraint != null) ? constraint.toString() : null);
+                        getLoaderManager().restartLoader(AbstractMainContentProvider.OBSERVERS,
+                                                         mSavedState,
+                                                         ObserversListFragment.this);
 
                         return mAdapter.getCursor();
                     }
@@ -517,10 +602,13 @@ public abstract class AbstractObserversFragmentActivity
                 setListAdapter(mAdapter);
 
                 // sets the current position to the first selected observer
-                if (!((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().isEmpty()) {
-                    ArrayList<Observer> sortedObservers = new ArrayList<>(((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers().values());
+                if (!((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                        .isEmpty()) {
+                    ArrayList<Observer> sortedObservers = new ArrayList<>(((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
+                                                                                                                             .values());
                     Collections.sort(sortedObservers);
-                    getListView().setSelection(mAdapter.getItemPosition(sortedObservers.get(0).getObserverId()));
+                    getListView().setSelection(mAdapter.getItemPosition(sortedObservers.get(0)
+                                                                                       .getObserverId()));
                 }
             }
         }
@@ -530,7 +618,8 @@ public abstract class AbstractObserversFragmentActivity
         }
 
         private void setChoiceMode(final Bundle args) {
-            getListView().setChoiceMode((args != null) ? args.getInt(CHOICE_MODE, ListView.CHOICE_MODE_SINGLE) : ListView.CHOICE_MODE_SINGLE);
+            getListView().setChoiceMode((args != null) ? args.getInt(CHOICE_MODE,
+                                                                     ListView.CHOICE_MODE_SINGLE) : ListView.CHOICE_MODE_SINGLE);
         }
     }
 }

@@ -5,9 +5,10 @@ import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,17 +19,17 @@ import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.model.MountPoint;
 import com.makina.ecrins.commons.util.FileUtils;
 import com.makina.ecrins.maps.AbstractWebViewFragment;
-import com.makina.ecrins.maps.settings.MapSettings;
-import com.makina.ecrins.maps.RenderQualityEnum;
 import com.makina.ecrins.maps.control.AbstractControl.OnIControlListener;
 import com.makina.ecrins.maps.control.CenterPositionControl;
 import com.makina.ecrins.maps.control.ControlUtils;
 import com.makina.ecrins.maps.control.FeaturesControl;
 import com.makina.ecrins.maps.control.SwitchLayersControl;
 import com.makina.ecrins.maps.control.ZoomControl;
-import com.makina.ecrins.maps.geojson.Feature;
-import com.makina.ecrins.maps.geojson.geometry.GeoPoint;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.FeatureStyle;
+import com.makina.ecrins.maps.jts.geojson.GeoPoint;
 import com.makina.ecrins.maps.location.Geolocation;
+import com.makina.ecrins.maps.settings.MapSettings;
 import com.makina.ecrins.search.BuildConfig;
 import com.makina.ecrins.search.MainApplication;
 import com.makina.ecrins.search.R;
@@ -72,15 +73,14 @@ public class WebViewFragment
                       "onControlInitialized");
             }
 
-            if (mOnFeaturesFoundListener.getSelectedFeature() != null) {
+            final Feature selectedFeature = mOnFeaturesFoundListener.getSelectedFeature();
+
+            if (selectedFeature != null) {
                 final Feature previousFeature = getSavedInstanceState().getParcelable(KEY_SELECTED_FEATURE);
 
-                if ((previousFeature != null) &&
-                        previousFeature.getId()
-                                       .equals(mOnFeaturesFoundListener.getSelectedFeature()
-                                                                       .getId()) &&
-                        !getSavedInstanceState().getParcelableArrayList(KEY_FEATURES)
-                                                .isEmpty()) {
+                if ((previousFeature != null) && previousFeature.getId()
+                                                                .equals(selectedFeature.getId()) && !getSavedInstanceState().getParcelableArrayList(KEY_FEATURES)
+                                                                                                                            .isEmpty()) {
 
                     final ArrayList<Feature> features = getSavedInstanceState().getParcelableArrayList(KEY_FEATURES);
                     addFeaturesToFeaturesControl(features);
@@ -90,11 +90,10 @@ public class WebViewFragment
                 }
                 else {
                     getSavedInstanceState().putParcelable(KEY_SELECTED_FEATURE,
-                                                          mOnFeaturesFoundListener.getSelectedFeature());
+                                                          selectedFeature);
                     getSavedInstanceState().putString(KEY_TAXON,
-                                                      mOnFeaturesFoundListener.getSelectedFeature()
-                                                                              .getProperties()
-                                                                              .getString(MainDatabaseHelper.SearchColumns.TAXON));
+                                                      selectedFeature.getProperties()
+                                                                     .getString(MainDatabaseHelper.SearchColumns.TAXON));
                     getLoaderManager().restartLoader(LOADER_TAXA,
                                                      getSavedInstanceState(),
                                                      WebViewFragment.this);
@@ -107,10 +106,9 @@ public class WebViewFragment
 
     private OnSearchDialogValidateListener mOnSearchDialogValidateListener = new OnSearchDialogValidateListener() {
         @Override
-        public void onSearchCriteria(
-                DialogInterface dialog,
-                int radius,
-                GeoPoint location) {
+        public void onSearchCriteria(DialogInterface dialog,
+                                     int radius,
+                                     GeoPoint location) {
 
             if (BuildConfig.DEBUG) {
                 Log.d(getClass().getName(),
@@ -119,9 +117,7 @@ public class WebViewFragment
 
             clearFeaturesToFeaturesControl();
 
-            if (getSavedInstanceState().containsKey(KEY_SEARCH_LOCATION) &&
-                    getSavedInstanceState().containsKey(KEY_RADIUS) &&
-                    getSavedInstanceState().containsKey(KEY_FEATURES_FOUND)) {
+            if (getSavedInstanceState().containsKey(KEY_SEARCH_LOCATION) && getSavedInstanceState().containsKey(KEY_RADIUS) && getSavedInstanceState().containsKey(KEY_FEATURES_FOUND)) {
                 if (BuildConfig.DEBUG) {
                     Log.d(getClass().getName(),
                           "onSearchCriteria, previous location " + getSavedInstanceState().getParcelable(KEY_SEARCH_LOCATION)
@@ -138,18 +134,14 @@ public class WebViewFragment
                 }
             }
 
-            if (getSavedInstanceState().containsKey(KEY_SEARCH_LOCATION) &&
-                    getSavedInstanceState().containsKey(KEY_RADIUS) &&
-                    getSavedInstanceState().containsKey(KEY_FEATURES_FOUND) &&
-                    getSavedInstanceState().getParcelable(KEY_SEARCH_LOCATION)
-                                           .equals(location) &&
-                    (Double.valueOf(getSavedInstanceState().getDouble(KEY_RADIUS))
-                           .intValue() == radius)) {
+            if (getSavedInstanceState().containsKey(KEY_SEARCH_LOCATION) && getSavedInstanceState().containsKey(KEY_RADIUS) && getSavedInstanceState().containsKey(KEY_FEATURES_FOUND) && getSavedInstanceState().getParcelable(KEY_SEARCH_LOCATION)
+                                                                                                                                                                                                                 .equals(location) && (Double.valueOf(getSavedInstanceState().getDouble(KEY_RADIUS))
+                                                                                                                                                                                                                                             .intValue() == radius)) {
                 final ArrayList<Feature> features = getSavedInstanceState().getParcelableArrayList(KEY_FEATURES_FOUND);
                 mOnFeaturesFoundListener.onFeaturesFound(features);
             }
             else {
-                ((AppCompatActivity) getActivity()).setSupportProgressBarIndeterminateVisibility(true);
+                mOnFeaturesFoundListener.onFindFeatures(true);
 
                 getSavedInstanceState().putParcelable(KEY_SEARCH_LOCATION,
                                                       location);
@@ -191,9 +183,8 @@ public class WebViewFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(
-            Menu menu,
-            MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu,
+                                    MenuInflater inflater) {
 
         super.onCreateOptionsMenu(menu,
                                   inflater);
@@ -248,6 +239,7 @@ public class WebViewFragment
         return mapSettings;
     }
 
+    @NonNull
     @Override
     public List<Feature> getFeatures() {
 
@@ -260,9 +252,8 @@ public class WebViewFragment
     }
 
     @Override
-    public void setSelectedFeature(
-            Geolocation geolocation,
-            Feature selectedFeature) {
+    public void setSelectedFeature(Geolocation geolocation,
+                                   Feature selectedFeature) {
 
         mOnFeaturesFoundListener.onFeatureSelected((GeoPoint) getSavedInstanceState().getParcelable(KEY_SEARCH_LOCATION),
                                                    selectedFeature);
@@ -285,9 +276,11 @@ public class WebViewFragment
 
         final FeaturesControl featuresControl = new FeaturesControl(getActivity());
         featuresControl.setFeaturesClickable(true);
-        featuresControl.setFeatureSelectedStyle(featuresControl.getFeatureSelectedStyle()
-                                                               .setColorResourceId(R.color.feature_selected)
-                                                               .setFillColorResourceId(R.color.feature_selected));
+        featuresControl.setFeatureSelectedStyle(FeatureStyle.Builder.newInstance(getContext())
+                                                                    .from(featuresControl.getFeatureSelectedStyle())
+                                                                    .setColorResourceId(R.color.feature_selected)
+                                                                    .setFillColorResourceId(R.color.feature_selected)
+                                                                    .build());
         featuresControl.addControlListener(mFeaturesControlListener);
 
         addControl(new ZoomControl(getActivity()),
@@ -303,16 +296,16 @@ public class WebViewFragment
     }
 
     @Override
-    protected File getTilesSourcePath() throws IOException {
+    protected File getTilesSourcePath() throws
+                                        IOException {
 
         return FileUtils.getDatabaseFolder(getActivity(),
                                            MountPoint.StorageType.EXTERNAL);
     }
 
     @Override
-    public Loader<List<Feature>> onCreateLoader(
-            int id,
-            Bundle args) {
+    public Loader<List<Feature>> onCreateLoader(int id,
+                                                Bundle args) {
 
         switch (id) {
             case LOADER_TAXA_GROUPBY:
@@ -344,15 +337,14 @@ public class WebViewFragment
     }
 
     @Override
-    public void onLoadFinished(
-            Loader<List<Feature>> loader,
-            List<Feature> data) {
+    public void onLoadFinished(Loader<List<Feature>> loader,
+                               List<Feature> data) {
 
         switch (loader.getId()) {
             case LOADER_TAXA_GROUPBY:
                 getSavedInstanceState().putParcelableArrayList(KEY_FEATURES_FOUND,
                                                                new ArrayList<>(data));
-                ((AppCompatActivity) getActivity()).setSupportProgressBarIndeterminateVisibility(false);
+                mOnFeaturesFoundListener.onFindFeatures(false);
                 invalidateMenu();
 
                 clearFeaturesToFeaturesControl();
@@ -396,29 +388,22 @@ public class WebViewFragment
 
     @Override
     public void onLoaderReset(Loader<List<Feature>> loader) {
-
-        ((AppCompatActivity) getActivity()).setSupportProgressBarIndeterminateVisibility(false);
+        mOnFeaturesFoundListener.onFindFeatures(false);
 
         clearFeaturesToFeaturesControl();
     }
 
     private boolean updateMapSettings() {
 
-        boolean update = (getMapSettings().isDisplayScale() != PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                                .getBoolean("pointing_display_scale",
-                                                                                            true)) || (getMapSettings().getRenderQuality()
-                                                                                                                       .getValue() != Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                                                                                                                        .getString("density_display_map",
-                                                                                                                                                                                   "0")));
+        boolean update = getMapSettings().isDisplayScale() != PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                                                               .getBoolean("pointing_display_scale",
+                                                                                           true);
 
         if (update) {
             MapSettings mapSettings = getMapSettings();
             mapSettings.setDisplayScale(PreferenceManager.getDefaultSharedPreferences(getActivity())
                                                          .getBoolean("pointing_display_scale",
                                                                      true));
-            mapSettings.setRenderQuality(RenderQualityEnum.asRenderQuality(Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity())
-                                                                                                             .getString("density_display_map",
-                                                                                                                        "0"))));
             mapSettings.setShowUnitiesLayer(PreferenceManager.getDefaultSharedPreferences(getActivity())
                                                              .getBoolean("pointing_display_geographic_units",
                                                                          true));
@@ -450,12 +435,14 @@ public class WebViewFragment
 
     public interface OnFeaturesFoundListener {
 
-        public void onFeaturesFound(List<Feature> features);
+        void onFindFeatures(boolean start);
 
-        public Feature getSelectedFeature();
+        void onFeaturesFound(List<Feature> features);
 
-        public void onFeatureSelected(
-                GeoPoint geoPoint,
-                Feature feature);
+        @Nullable
+        Feature getSelectedFeature();
+
+        void onFeatureSelected(GeoPoint geoPoint,
+                               Feature feature);
     }
 }

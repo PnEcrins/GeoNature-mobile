@@ -21,6 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class NetworkConnectivityListener {
 
+    private static final String TAG = NetworkConnectivityListener.class.getName();
+
     private Context mContext;
 
     protected final AtomicBoolean mListening = new AtomicBoolean();
@@ -91,14 +93,13 @@ public class NetworkConnectivityListener {
             extends BroadcastReceiver {
 
         @Override
-        public void onReceive(
-                Context context,
-                Intent intent) {
+        public void onReceive(Context context,
+                              Intent intent) {
 
-            String action = intent.getAction();
+            final String action = intent.getAction();
 
             if (!action.equals(ConnectivityManager.CONNECTIVITY_ACTION) || !mListening.get()) {
-                Log.w(getClass().getName(),
+                Log.w(TAG,
                       "onReceive() called with " + intent);
 
                 return;
@@ -107,7 +108,7 @@ public class NetworkConnectivityListener {
             final NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
 
             if (BuildConfig.DEBUG) {
-                Log.d(getClass().getName(),
+                Log.d(TAG,
                       "onReceive: " + networkInfo.toString());
             }
 

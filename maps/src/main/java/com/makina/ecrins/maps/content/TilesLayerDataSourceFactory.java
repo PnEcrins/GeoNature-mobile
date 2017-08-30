@@ -1,5 +1,7 @@
 package com.makina.ecrins.maps.content;
 
+import android.support.annotation.NonNull;
+
 import com.makina.ecrins.maps.settings.LayerSettings;
 
 import java.io.File;
@@ -15,7 +17,7 @@ public class TilesLayerDataSourceFactory {
 
     private final File mTilesSourcePath;
 
-    public TilesLayerDataSourceFactory(File pTilesSourcePath) {
+    public TilesLayerDataSourceFactory(@NonNull final File pTilesSourcePath) {
         this.mTilesSourcePath = pTilesSourcePath;
     }
 
@@ -23,33 +25,31 @@ public class TilesLayerDataSourceFactory {
      * Gets the most appropriate {@link ITilesLayerDataSource} according to the given {@link LayerSettings}.
      *
      * @param pLayerSettings {@link LayerSettings} instance to use to load tiles
+     *
      * @return the best {@link ITilesLayerDataSource} implementation for the given {@link LayerSettings}
      * or thrown an {@link UnsupportedOperationException} if no implementation cannot be found
+     *
      * @throws IOException
      */
-    public ITilesLayerDataSource getTilesLayerDataSource(LayerSettings pLayerSettings) throws UnsupportedOperationException, IOException {
-        ITilesLayerDataSource tileLayerDataSource;
-
+    @NonNull
+    public ITilesLayerDataSource getTilesLayerDataSource(@NonNull final LayerSettings pLayerSettings) throws
+                                                                                                      UnsupportedOperationException,
+                                                                                                      IOException {
         switch (pLayerSettings.getSource()) {
             case LayerSettings.SOURCE_MBTILES:
                 // try to load MBTiles data source implementation
-                tileLayerDataSource = new MBTilesDataSource(mTilesSourcePath,
-                                                            pLayerSettings);
-                break;
+                return new MBTilesDataSource(mTilesSourcePath,
+                                             pLayerSettings);
             case LayerSettings.SOURCE_MBTILES_SPLIT:
-                tileLayerDataSource = new MBTilesSplitDataSource(mTilesSourcePath,
-                                                                 pLayerSettings);
-                break;
+                return new MBTilesSplitDataSource(mTilesSourcePath,
+                                                  pLayerSettings);
             case LayerSettings.SOURCE_DIR:
-                tileLayerDataSource = new FileDataSource(mTilesSourcePath,
-                                                         pLayerSettings);
-                break;
+                return new FileDataSource(mTilesSourcePath,
+                                          pLayerSettings);
             case LayerSettings.SOURCE_HTTP:
-                throw new UnsupportedOperationException("no implementation found for '" + pLayerSettings.getName() + "' (source : " + pLayerSettings.getSource() + ")");
+                throw new UnsupportedOperationException("no implementation found for '" + pLayerSettings.getName() + "' (source: " + pLayerSettings.getSource() + ")");
             default:
-                throw new UnsupportedOperationException("no implementation found for '" + pLayerSettings.getName() + "' (source : " + pLayerSettings.getSource() + ")");
+                throw new UnsupportedOperationException("no implementation found for '" + pLayerSettings.getName() + "' (source: " + pLayerSettings.getSource() + ")");
         }
-
-        return tileLayerDataSource;
     }
 }

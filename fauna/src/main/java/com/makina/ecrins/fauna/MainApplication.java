@@ -7,7 +7,7 @@ import com.makina.ecrins.commons.input.Observer;
 import com.makina.ecrins.commons.util.MountPointUtils;
 import com.makina.ecrins.fauna.input.Input;
 import com.makina.ecrins.fauna.settings.AppSettings;
-import com.makina.ecrins.maps.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.Feature;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +68,7 @@ public class MainApplication
         Log.i(getClass().getName(),
               "internal storage: " + MountPointUtils.getInternalStorage());
         Log.i(getClass().getName(),
-              "external storage: " + MountPointUtils.getExternalStorage());
+              "external storage: " + MountPointUtils.getExternalStorage(this));
     }
 
     public boolean isCloseApplication() {

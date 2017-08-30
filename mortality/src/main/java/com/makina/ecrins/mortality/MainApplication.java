@@ -57,7 +57,7 @@ public class MainApplication
         Log.i(getClass().getName(),
               "internal storage: " + MountPointUtils.getInternalStorage());
         Log.i(getClass().getName(),
-              "external storage: " + MountPointUtils.getExternalStorage());
+              "external storage: " + MountPointUtils.getExternalStorage(this));
     }
 
     public boolean isCloseApplication() {

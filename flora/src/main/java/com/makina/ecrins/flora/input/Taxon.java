@@ -3,10 +3,13 @@ package com.makina.ecrins.flora.input;
 import android.os.BadParcelableException;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.makina.ecrins.commons.input.AbstractTaxon;
-import com.makina.ecrins.maps.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.io.GeoJsonWriter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,7 +25,8 @@ import java.util.TreeMap;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class Taxon extends AbstractTaxon {
+public class Taxon
+        extends AbstractTaxon {
 
     public static final String KEY_AREAS = "areas";
     public static final String KEY_PROSPECTING_AREA = "prospecting_area";
@@ -46,12 +50,14 @@ public class Taxon extends AbstractTaxon {
         mCurrentSelectedAreaId = null;
 
         List<Area> areas = new ArrayList<>();
-        source.readTypedList(areas, Area.CREATOR);
+        source.readTypedList(areas,
+                             Area.CREATOR);
         mAreas = new TreeMap<>();
 
         for (Area area : areas) {
             mAreas.put(area.getFeature()
-                    .getId(), area);
+                           .getId(),
+                       area);
         }
 
         try {
@@ -60,10 +66,12 @@ public class Taxon extends AbstractTaxon {
         catch (BadParcelableException bpe) {
             mProspectingArea = null;
 
-            Log.w(Taxon.class.getName(), bpe.getMessage());
+            Log.w(Taxon.class.getName(),
+                  bpe.getMessage());
         }
     }
 
+    @NonNull
     public Map<String, Area> getAreas() {
         return mAreas;
     }
@@ -72,8 +80,10 @@ public class Taxon extends AbstractTaxon {
      * Gets the currently selected {@link Area} for this {@link Taxon}.
      *
      * @return the selected {@link Area}
+     *
      * @see Feature#getId()
      */
+    @Nullable
     public String getCurrentSelectedAreaId() {
         return mCurrentSelectedAreaId;
     }
@@ -82,6 +92,7 @@ public class Taxon extends AbstractTaxon {
      * Sets the currently selected {@link Area} for this {@link Taxon}.
      *
      * @param pCurrentSelectedAreaId the selected {@link AbstractTaxon}
+     *
      * @see Feature#getId()
      */
     public void setCurrentSelectedAreaId(String pCurrentSelectedAreaId) {
@@ -92,8 +103,10 @@ public class Taxon extends AbstractTaxon {
      * Gets the last inserted {@link Area} for this {@link Taxon} or <code>null</code> if none was added.
      *
      * @return the last inserted {@link Area}
+     *
      * @see Feature#getId()
      */
+    @Nullable
     public String getLastInsertedAreaId() {
         if (this.mAreas.isEmpty()) {
             return null;
@@ -108,6 +121,7 @@ public class Taxon extends AbstractTaxon {
      *
      * @return the selected {@link Area} or <code>null</code> if none was selected.
      */
+    @Nullable
     public Area getCurrentSelectedArea() {
         return (getCurrentSelectedAreaId() == null) ? null : getAreas().get(getCurrentSelectedAreaId());
     }
@@ -121,7 +135,8 @@ public class Taxon extends AbstractTaxon {
     }
 
     @Override
-    public JSONObject getJSONObject() throws JSONException {
+    public JSONObject getJSONObject() throws
+                                      JSONException {
         JSONObject json = super.getJSONObject();
 
         JSONArray jsonAreas = new JSONArray();
@@ -130,12 +145,15 @@ public class Taxon extends AbstractTaxon {
             jsonAreas.put(area.getJSONObject());
         }
 
-        json.put(KEY_AREAS, jsonAreas);
+        json.put(KEY_AREAS,
+                 jsonAreas);
 
         JSONObject jsonProspectingArea = new JSONObject();
-        jsonProspectingArea.put(KEY_PROSPECTING_AREA_FEATURE, mProspectingArea.getJSONObject());
+        jsonProspectingArea.put(KEY_PROSPECTING_AREA_FEATURE,
+                                new JSONObject(new GeoJsonWriter().write(mProspectingArea)));
 
-        json.put(KEY_PROSPECTING_AREA, jsonProspectingArea);
+        json.put(KEY_PROSPECTING_AREA,
+                 jsonProspectingArea);
 
         return json;
     }
@@ -146,10 +164,14 @@ public class Taxon extends AbstractTaxon {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
+    public void writeToParcel(Parcel dest,
+                              int flags) {
+        super.writeToParcel(dest,
+                            flags);
 
         dest.writeTypedList(new ArrayList<>(mAreas.values()));
+        dest.writeParcelable(mProspectingArea,
+                             0);
     }
 
     public static final Parcelable.Creator<Taxon> CREATOR = new Parcelable.Creator<Taxon>() {

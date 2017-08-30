@@ -6,8 +6,9 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
 
-import com.makina.ecrins.maps.geojson.geometry.IGeoConstants;
-import com.makina.ecrins.maps.geojson.geometry.IMathConstants;
+import com.makina.ecrins.maps.BuildConfig;
+import com.makina.ecrins.maps.jts.geojson.IGeoConstants;
+import com.makina.ecrins.maps.jts.geojson.IMathConstants;
 import com.makina.ecrins.maps.util.DebugUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -73,9 +74,10 @@ public class MockLocationProvider
     }
 
     public void pushLocation(Geolocation geolocation) {
-
-        Log.d(TAG,
-              "pushLocation " + geolocation.toString());
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                  "pushLocation " + geolocation.toString());
+        }
 
         Location location = new Location(MOCK_LOCATION_PROVIDER);
         location.setTime(System.currentTimeMillis());

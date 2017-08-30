@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-version = "1.1.0"
+version = "1.2.0"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.makina.ecrins.invertebrate"
-        minSdkVersion 10
+        minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.compileSdkVersion
         versionName version
         buildConfigField "String", "BUILD_DATE", "\"" + new Date().getTime() + "\""
@@ -53,15 +53,20 @@ android {
             }
         }
     }
+
+    productFlavors {
+        pne {
+        }
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile project(':commons')
-    compile project(':maps')
-
-    compile "com.android.support:appcompat-v7:${rootProject.ext.androidSupportVersion}"
+    debugCompile project(path: ':commons', configuration: 'debug')
+    debugCompile project(path: ':maps', configuration: 'debug')
+    releaseCompile project(path: ':commons', configuration: 'release')
+    releaseCompile project(path: ':maps', configuration: 'release')
 }
 
 task('increaseVersionCode') << {

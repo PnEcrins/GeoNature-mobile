@@ -1,24 +1,16 @@
 package com.makina.ecrins.maps;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.makina.ecrins.maps.geojson.Feature;
-import com.makina.ecrins.maps.geojson.GeoJSONType;
-import com.makina.ecrins.maps.geojson.geometry.GeoPoint;
-import com.makina.ecrins.maps.geojson.geometry.Point;
-import com.makina.ecrins.maps.geojson.geometry.Polygon;
+import com.makina.ecrins.maps.jts.geojson.Feature;
+import com.makina.ecrins.maps.jts.geojson.FeatureCollection;
+import com.makina.ecrins.maps.jts.geojson.io.WKTFileReader;
 
-import org.apache.commons.io.FileUtils;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * {@code AsyncTask} implementation to load all {@link Feature} from a given file
@@ -29,7 +21,7 @@ import java.util.regex.Pattern;
 public abstract class AbstractLoadFeaturesFromFileAsyncTask
         extends AsyncTask<File, Integer, List<Feature>> {
 
-    private static final String TAG = AbstractLoadFeaturesFromFileAsyncTask.class.getSimpleName();
+    private static final String TAG = AbstractLoadFeaturesFromFileAsyncTask.class.getName();
 
     private String mFilename;
 
@@ -48,14 +40,12 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask
 
     protected abstract int whatLoadingLoaded();
 
-    protected abstract void sendMessage(
-            int what,
-            Object obj);
+    protected abstract void sendMessage(int what,
+                                        Object obj);
 
-    protected abstract void sendProgress(
-            int what,
-            int progress,
-            int max);
+    protected abstract void sendProgress(int what,
+                                         int progress,
+                                         int max);
 
     /*
      * (non-Javadoc)
@@ -71,103 +61,55 @@ public abstract class AbstractLoadFeaturesFromFileAsyncTask
                   "loading features from '" + params[0] + "' ...");
         }
 
-        List<Feature> unities = new ArrayList<>();
-        BufferedReader input = null;
+        final List<Feature> unities = new ArrayList<>();
 
-        try {
-            if (params[0].exists()) {
-                // count the number of lines (i.e. the number of unities to load)
-                int numberOfLines = FileUtils.readLines(params[0])
-                                             .size();
+        if (params[0].exists()) {
+            new WKTFileReader().readFeatures(params[0],
+                                             new WKTFileReader.OnWKTFileReaderListener() {
+                                                 @Override
+                                                 public void onStart(int size) {
+                                                     if (BuildConfig.DEBUG) {
+                                                         Log.d(TAG,
+                                                               "number of features to load: " + size);
+                                                     }
 
-                if (numberOfLines > 0) {
-                    int currentLine = 0;
+                                                     sendMessage(whatLoadingStart(),
+                                                                 size);
+                                                 }
 
-                    sendMessage(whatLoadingStart(),
-                                numberOfLines);
+                                                 @Override
+                                                 public void onProgress(int progress,
+                                                                        int size,
+                                                                        @NonNull Feature feature) {
+                                                     publishProgress(progress,
+                                                                     size);
+                                                     unities.add(feature);
+                                                 }
 
-                    if (BuildConfig.DEBUG) {
-                        Log.d(TAG,
-                              "number of features to load: " + numberOfLines);
-                    }
+                                                 @Override
+                                                 public void onProgress(int progress,
+                                                                        @NonNull Feature feature) {
+                                                 }
 
-                    input = new BufferedReader(new FileReader(params[0]));
-                    String unityAsString;
+                                                 @Override
+                                                 public void onFinish(@NonNull FeatureCollection featureCollection) {
+                                                     if (BuildConfig.DEBUG) {
+                                                         Log.d(TAG,
+                                                               unities.size() + " features loaded");
+                                                     }
+                                                 }
 
-                    Pattern p0 = Pattern.compile("^([0-9]+),([A-Z]+)(\\(.+\\))$");
-                    Pattern p2 = Pattern.compile("([0-9]+\\.[0-9]+ [0-9]+\\.[0-9]+)");
-
-                    while ((unityAsString = input.readLine()) != null) {
-                        publishProgress(currentLine,
-                                        numberOfLines);
-
-                        Matcher m0 = p0.matcher(unityAsString);
-
-                        if (m0.matches()) {
-                            Feature currentUnity = new Feature(m0.group(1));
-                            String geometry = m0.group(2);
-
-                            if (geometry.equalsIgnoreCase(GeoJSONType.POLYGON.getValue())) {
-                                String[] polygonsAsString = m0.group(3)
-                                                              .split("\\),\\(");
-
-                                for (int i = 0; i < polygonsAsString.length; i++) {
-                                    List<Point> polygon = new ArrayList<>();
-                                    Matcher m2 = p2.matcher(polygonsAsString[i]);
-
-                                    while (m2.find()) {
-                                        String[] coordinates = m2.group()
-                                                                 .split(" ");
-                                        polygon.add(new Point(new GeoPoint(Double.valueOf(coordinates[1]),
-                                                                           Double.valueOf(coordinates[0]))));
-                                    }
-
-                                    // build the main polygon
-                                    if (i == 0) {
-                                        currentUnity.setGeometry(new Polygon(polygon));
-                                    }
-                                    else {
-                                        // consider other polygons as holes
-                                        ((Polygon) currentUnity.getGeometry()).addHole(polygon);
-                                    }
-                                }
-                            }
-
-                            unities.add(currentUnity);
-                        }
-
-                        currentLine++;
-                    }
-                }
-            }
-            else {
-                Log.w(TAG,
-                      "unable to load features from path '" + params[0].getPath() + "'");
-            }
+                                                 @Override
+                                                 public void onError(Throwable t) {
+                                                     Log.w(TAG,
+                                                           t.getMessage(),
+                                                           t);
+                                                 }
+                                             });
         }
-        catch (IOException ioe) {
-            Log.e(TAG,
-                  ioe.getMessage(),
-                  ioe);
-
-            return unities;
-        }
-        finally {
-            if (input != null) {
-                try {
-                    input.close();
-                }
-                catch (IOException ioe) {
-                    Log.e(TAG,
-                          ioe.getMessage(),
-                          ioe);
-                }
-            }
-        }
-
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG,
-                  unities.size() + " features loaded");
+        else {
+            Log.w(TAG,
+                  "unable to load features from path '" + params[0].getPath() + "'");
         }
 
         return unities;

@@ -15,9 +15,6 @@
     <string name="preference_category_pointing_display_scale">Display the map scale</string>
     <string name="preference_category_taxa">Taxa</string>
     <string name="preference_category_taxa_display_details">Display the details of each taxon</string>
-    <string name="preference_category_density">Quality</string>
-    <string name="preference_category_density_title">Quality rendering of map</string>
-    <string name="preference_category_density_dialog">Choice of rendering</string>
 
     <string name="pager_fragment_webview_title">Pointing</string>
     <string name="pager_fragment_environments_title">Environments</string>
@@ -48,7 +45,7 @@
     <string name="taxa_class_lamellibranchia_hint">Lamellibranchia</string>
 
     <plurals name="results_input_selected_taxon_counting">
-        <item quantity="one">Counting : 1</item>
+        <item quantity="one">Counting : %d</item>
         <item quantity="other">Counting : %d</item>
     </plurals>
     <string name="results_input_selected_taxon_criterion">Criterion : %1$s</string>

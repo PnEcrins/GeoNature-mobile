@@ -32,10 +32,10 @@ public class MainDatabaseHelper
 
     private File mDatabaseFile;
 
-    public MainDatabaseHelper(
-            Context context,
-            String databaseName,
-            int databaseVersion) throws IOException {
+    public MainDatabaseHelper(Context context,
+                              String databaseName,
+                              int databaseVersion) throws
+                                                   IOException {
 
         super(context,
               databaseName,
@@ -58,10 +58,9 @@ public class MainDatabaseHelper
     }
 
     @Override
-    public void onUpgrade(
-            SQLiteDatabase db,
-            int oldVersion,
-            int newVersion) {
+    public void onUpgrade(SQLiteDatabase db,
+                          int oldVersion,
+                          int newVersion) {
         // do nothing ...
     }
 
@@ -80,15 +79,14 @@ public class MainDatabaseHelper
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static class LeaklessCursorFactory
+    private static class LeaklessCursorFactory
             implements CursorFactory {
 
         @Override
-        public Cursor newCursor(
-                SQLiteDatabase db,
-                SQLiteCursorDriver masterQuery,
-                String editTable,
-                SQLiteQuery query) {
+        public Cursor newCursor(SQLiteDatabase db,
+                                SQLiteCursorDriver masterQuery,
+                                String editTable,
+                                SQLiteQuery query) {
 
             return new LeaklessCursor(db,
                                       masterQuery,
@@ -102,22 +100,20 @@ public class MainDatabaseHelper
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
-    public static class LeaklessCursor
+    private static class LeaklessCursor
             extends SQLiteCursor {
 
         final SQLiteDatabase mDatabase;
 
-        @SuppressWarnings("deprecation")
-        public LeaklessCursor(
-                SQLiteDatabase db,
-                SQLiteCursorDriver driver,
-                String editTable,
-                SQLiteQuery query) {
+        LeaklessCursor(SQLiteDatabase db,
+                       SQLiteCursorDriver driver,
+                       String editTable,
+                       SQLiteQuery query) {
 
-            super(db,
-                  driver,
+            super(driver,
                   editTable,
                   query);
+
             this.mDatabase = db;
         }
 
@@ -126,7 +122,7 @@ public class MainDatabaseHelper
 
             if (BuildConfig.DEBUG) {
                 Log.d(TAG,
-                      "Closing LeaklessCursor : '" + mDatabase.getPath() + "'");
+                      "Closing LeaklessCursor: '" + mDatabase.getPath() + "'");
             }
 
             mDatabase.close();

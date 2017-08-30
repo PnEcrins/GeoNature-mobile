@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
+import com.makina.ecrins.commons.util.ThemeUtils;
 import com.makina.ecrins.mortality.MainApplication;
 import com.makina.ecrins.mortality.R;
 import com.makina.ecrins.mortality.input.Taxon;
@@ -403,7 +404,7 @@ public class SimpleCountingListFragment
                                                                                    .get(((MainApplication) getActivity().getApplication()).getInput()
                                                                                                                                           .getCurrentSelectedTaxonId())).getMortalityAdultMale() > 0) {
                         getListView().setSelection(position);
-                        view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
+                        view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                     }
                     else {
                         view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
@@ -419,7 +420,7 @@ public class SimpleCountingListFragment
                                                                                    .get(((MainApplication) getActivity().getApplication()).getInput()
                                                                                                                                           .getCurrentSelectedTaxonId())).getMortalityAdultFemale() > 0) {
                         getListView().setSelection(position);
-                        view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
+                        view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                     }
                     else {
                         view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
@@ -435,7 +436,7 @@ public class SimpleCountingListFragment
                                                                                    .get(((MainApplication) getActivity().getApplication()).getInput()
                                                                                                                                           .getCurrentSelectedTaxonId())).getMortalityAdultUndetermined() > 0) {
                         getListView().setSelection(position);
-                        view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
+                        view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                     }
                     else {
                         view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
@@ -461,7 +462,7 @@ public class SimpleCountingListFragment
                                                                                    .get(((MainApplication) getActivity().getApplication()).getInput()
                                                                                                                                           .getCurrentSelectedTaxonId())).getMortalityNotAdult() > 0) {
                         getListView().setSelection(position);
-                        view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
+                        view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                     }
                     else {
                         view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
@@ -487,7 +488,7 @@ public class SimpleCountingListFragment
                                                                                    .get(((MainApplication) getActivity().getApplication()).getInput()
                                                                                                                                           .getCurrentSelectedTaxonId())).getMortalityYoung() > 0) {
                         getListView().setSelection(position);
-                        view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
+                        view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                     }
                     else {
                         view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
@@ -513,7 +514,7 @@ public class SimpleCountingListFragment
                                                                                    .get(((MainApplication) getActivity().getApplication()).getInput()
                                                                                                                                           .getCurrentSelectedTaxonId())).getMortalityYearling() > 0) {
                         getListView().setSelection(position);
-                        view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
+                        view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                     }
                     else {
                         view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
@@ -529,7 +530,7 @@ public class SimpleCountingListFragment
                                                                                    .get(((MainApplication) getActivity().getApplication()).getInput()
                                                                                                                                           .getCurrentSelectedTaxonId())).getMortalityUndetermined() > 0) {
                         getListView().setSelection(position);
-                        view.setBackgroundColor(getResources().getColor(R.color.holo_blue_light));
+                        view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
                     }
                     else {
                         view.setBackgroundColor(getResources().getColor(android.R.color.transparent));

@@ -8,20 +8,24 @@ import android.view.View.OnClickListener;
 import android.webkit.JavascriptInterface;
 import android.widget.ImageButton;
 
-import com.makina.ecrins.maps.R;
+import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.IWebViewFragment;
+import com.makina.ecrins.maps.R;
 
 /**
  * A basic zoom control with two buttons (zoom in and zoom out).
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public final class ZoomControl extends AbstractControl implements OnClickListener {
+public final class ZoomControl
+        extends AbstractControl
+        implements OnClickListener {
 
-    protected ImageButton mImageButtonZoomIn;
-    protected ImageButton mImageButtonZoomOut;
+    private static final String TAG = ZoomControl.class.getName();
 
-    private final LayoutInflater mInflater;
+    private ImageButton mImageButtonZoomIn;
+    private ImageButton mImageButtonZoomOut;
+
     private View mView = null;
 
     /**
@@ -30,20 +34,23 @@ public final class ZoomControl extends AbstractControl implements OnClickListene
     public ZoomControl(Context pContext) {
         super(pContext);
 
-        mInflater = (LayoutInflater) pContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         setControlListener(new OnIControlListener() {
             @Override
             public void onControlInitialized() {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "onControlInitialized");
+                }
+
                 if (mWebViewFragment.getMapSettings()
-                        .getMinZoom() < mWebViewFragment.getMapSettings()
-                        .getZoom()) {
+                                    .getMinZoom() < mWebViewFragment.getMapSettings()
+                                                                    .getZoom()) {
                     mImageButtonZoomOut.setEnabled(true);
                 }
 
                 if (mWebViewFragment.getMapSettings()
-                        .getMaxZoom() > mWebViewFragment.getMapSettings()
-                        .getZoom()) {
+                                    .getMaxZoom() > mWebViewFragment.getMapSettings()
+                                                                    .getZoom()) {
                     mImageButtonZoomIn.setEnabled(true);
                 }
             }
@@ -53,7 +60,9 @@ public final class ZoomControl extends AbstractControl implements OnClickListene
     @Override
     public View getView(boolean forceCreate) {
         if ((this.mView == null) || forceCreate) {
-            this.mView = mInflater.inflate(R.layout.control_zoom_layout, null);
+            this.mView = LayoutInflater.from(getContext())
+                                       .inflate(R.layout.control_zoom_layout,
+                                                null);
 
             mImageButtonZoomIn = (ImageButton) this.mView.findViewById(R.id.imageButtonZoomIn);
             mImageButtonZoomOut = (ImageButton) this.mView.findViewById(R.id.imageButtonZoomOut);
@@ -72,7 +81,8 @@ public final class ZoomControl extends AbstractControl implements OnClickListene
     public void add(IWebViewFragment webViewFragment) {
         super.add(webViewFragment);
 
-        initializeJSController("js/Control.NativeZoom.js", "new L.Control.NativeZoom()");
+        initializeJSController("js/Control.NativeZoom.js",
+                               "new L.Control.NativeZoom()");
     }
 
     @Override
@@ -94,18 +104,21 @@ public final class ZoomControl extends AbstractControl implements OnClickListene
      */
     @JavascriptInterface
     public void setZoom(final int zoom) {
-        Log.d(ZoomControl.class.getName(), "setZoom " + zoom);
-
         getHandler().post(new Runnable() {
             @Override
             public void run() {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "setZoom " + zoom);
+                }
+
                 if (mWebViewFragment.getMapSettings()
-                        .getMinZoom() < zoom) {
+                                    .getMinZoom() < zoom) {
                     mImageButtonZoomOut.setEnabled(true);
                 }
 
                 if (mWebViewFragment.getMapSettings()
-                        .getMaxZoom() > zoom) {
+                                    .getMaxZoom() > zoom) {
                     mImageButtonZoomIn.setEnabled(true);
                 }
             }

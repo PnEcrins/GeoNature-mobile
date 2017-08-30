@@ -1,10 +1,13 @@
 package com.makina.ecrins.flora.ui.frequencies;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -13,9 +16,9 @@ import android.view.View.OnClickListener;
 
 import com.makina.ecrins.commons.ui.dialog.ChooseActionDialogFragment;
 import com.makina.ecrins.flora.BuildConfig;
-import com.makina.ecrins.flora.MainApplication;
 import com.makina.ecrins.flora.R;
-import com.makina.ecrins.flora.input.Taxon;
+import com.makina.ecrins.flora.input.Area;
+import com.makina.ecrins.flora.input.Frequency;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,21 +31,27 @@ import java.util.List;
  */
 public class FrequencyFragmentActivity
         extends AppCompatActivity
-        implements OnClickListener {
+        implements OnClickListener,
+                   OnFrequencyListener {
+
+    private static final String TAG = FrequencyFragmentActivity.class.getName();
+
+    public static final String EXTRA_AREA = "EXTRA_AREA";
+    public static final String EXTRA_FREQUENCY = "EXTRA_FREQUENCY";
 
     private static final String CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT = "choose_quit_action_dialog";
 
+    private Frequency mFrequency;
+
     private ChooseActionDialogFragment.OnChooseActionDialogListener mOnChooseActionDialogListener = new ChooseActionDialogFragment.OnChooseActionDialogListener() {
         @Override
-        public void onItemClick(
-                DialogInterface dialog,
-                int position,
-                int actionResourceId) {
-
+        public void onItemClick(DialogInterface dialog,
+                                int position,
+                                int actionResourceId) {
             switch (actionResourceId) {
                 case R.string.choose_action_yes:
                     dialog.dismiss();
-                    FrequencyFragmentActivity.this.finish();
+                    FrequencyFragmentActivity.this.finishAndSendResult();
                     break;
                 case R.string.choose_action_no:
                     dialog.dismiss();
@@ -53,27 +62,26 @@ public class FrequencyFragmentActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_frequency);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        final ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         findViewById(R.id.buttonFinish).setOnClickListener(this);
 
-        if ((((MainApplication) getApplication()).getInput()
-                                                 .getCurrentSelectedTaxon() == null) ||
-                ((((MainApplication) getApplication()).getInput()
-                                                      .getCurrentSelectedTaxon() != null) && (((Taxon) ((MainApplication) getApplication()).getInput()
-                                                                                                                                           .getCurrentSelectedTaxon()).getCurrentSelectedArea() == null)) ||
-                ((((MainApplication) getApplication()).getInput()
-                                                      .getCurrentSelectedTaxon() != null) &&
-                        (((Taxon) ((MainApplication) getApplication()).getInput()
-                                                                      .getCurrentSelectedTaxon()).getCurrentSelectedArea() != null) &&
-                        (((Taxon) ((MainApplication) getApplication()).getInput()
-                                                                      .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                 .getFrequency() == null))) {
+        final Bundle bundle = getIntent().getExtras();
+        final Area area = bundle.getParcelable(EXTRA_AREA);
+        mFrequency = (savedInstanceState == null) ? (Frequency) bundle.getParcelable(EXTRA_FREQUENCY) : (Frequency) savedInstanceState.getParcelable(EXTRA_FREQUENCY);
+
+        if ((area == null) || (mFrequency == null)) {
+            Log.w(TAG,
+                  "invalid parameters");
+
             finish();
         }
         else {
@@ -81,21 +89,18 @@ public class FrequencyFragmentActivity
                 final FragmentManager fm = getSupportFragmentManager();
                 final FragmentTransaction transaction = fm.beginTransaction();
 
-                switch (((Taxon) ((MainApplication) getApplication()).getInput()
-                                                                     .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                                .getFrequency()
-                                                                                                .getType()) {
+                switch (mFrequency.getType()) {
                     case ESTIMATION:
                         Fragment frequencyEstimationFragment = fm.findFragmentByTag(FrequencyEstimationFragment.class.getSimpleName());
 
                         if (frequencyEstimationFragment == null) {
                             if (BuildConfig.DEBUG) {
-                                Log.d(FrequencyFragmentActivity.class.getName(),
+                                Log.d(TAG,
                                       "create FrequencyEstimationFragment");
                             }
 
                             transaction.replace(R.id.fragment_frequency_container,
-                                                new FrequencyEstimationFragment(),
+                                                FrequencyEstimationFragment.newInstance(mFrequency),
                                                 FrequencyEstimationFragment.class.getSimpleName());
                         }
                         else {
@@ -110,12 +115,13 @@ public class FrequencyFragmentActivity
 
                         if (frequencyTransectFragment == null) {
                             if (BuildConfig.DEBUG) {
-                                Log.d(FrequencyFragmentActivity.class.getName(),
+                                Log.d(TAG,
                                       "create FrequencyTransectFragment");
                             }
 
                             transaction.replace(R.id.fragment_frequency_container,
-                                                new FrequencyTransectFragment(),
+                                                FrequencyTransectFragment.newInstance(area,
+                                                                                      mFrequency),
                                                 FrequencyTransectFragment.class.getSimpleName());
                         }
                         else {
@@ -125,6 +131,13 @@ public class FrequencyFragmentActivity
 
                         transaction.commit();
                         break;
+                    default:
+                        Log.w(TAG,
+                              "invalid frequency type " + mFrequency.getType()
+                                                                    .getValue());
+
+                        // nothing to do at this point, so we finish this activity
+                        finish();
                 }
             }
 
@@ -139,13 +152,14 @@ public class FrequencyFragmentActivity
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-
         super.onSaveInstanceState(outState);
+
+        outState.putParcelable(EXTRA_FREQUENCY,
+                               mFrequency);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case android.R.id.home:
                 showConfirmDialogIfNeeded();
@@ -157,13 +171,11 @@ public class FrequencyFragmentActivity
 
     @Override
     public void onBackPressed() {
-
         showConfirmDialogIfNeeded();
     }
 
     @Override
     public void onClick(View v) {
-
         switch (v.getId()) {
             case R.id.buttonFinish:
                 showConfirmDialogIfNeeded();
@@ -171,12 +183,13 @@ public class FrequencyFragmentActivity
         }
     }
 
-    private void showConfirmDialogIfNeeded() {
+    @Override
+    public void OnFrequencyUpdated(@NonNull Frequency frequency) {
+        mFrequency = frequency;
+    }
 
-        switch (((Taxon) ((MainApplication) getApplication()).getInput()
-                                                             .getCurrentSelectedTaxon()).getCurrentSelectedArea()
-                                                                                        .getFrequency()
-                                                                                        .getType()) {
+    private void showConfirmDialogIfNeeded() {
+        switch (mFrequency.getType()) {
             case TRANSECT:
                 final List<Integer> actions = new ArrayList<>();
                 Collections.addAll(actions,
@@ -189,7 +202,18 @@ public class FrequencyFragmentActivity
                                                 CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT);
                 break;
             default:
-                finish();
+                finishAndSendResult();
         }
+    }
+
+    private void finishAndSendResult() {
+        final Intent intent = new Intent();
+        intent.putExtra(EXTRA_FREQUENCY,
+                        mFrequency);
+
+        setResult(RESULT_OK,
+                  intent);
+
+        finish();
     }
 }

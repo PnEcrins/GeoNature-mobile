@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-version = "1.1.0"
+version = "1.2.0"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.makina.ecrins.flora"
-        minSdkVersion 10
+        minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.compileSdkVersion
         versionName version
         buildConfigField "String", "BUILD_DATE", "\"" + new Date().getTime() + "\""
@@ -46,11 +46,16 @@ android {
             zipAlignEnabled true
 
             applicationVariants.all { variant ->
-                variant.outputs.each  { output ->
+                variant.outputs.each { output ->
                     // noinspection GroovyAssignabilityCheck
                     output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace(".apk", "-" + defaultConfig.versionName + ".apk"))
                 }
             }
+        }
+    }
+
+    productFlavors {
+        pne {
         }
     }
 }
@@ -58,10 +63,14 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile project(':commons')
-    compile project(':maps')
+    debugCompile project(path: ':commons', configuration: 'debug')
+    debugCompile project(path: ':maps', configuration: 'debug')
+    releaseCompile project(path: ':commons', configuration: 'release')
+    releaseCompile project(path: ':maps', configuration: 'release')
 
-    compile "com.android.support:appcompat-v7:${rootProject.ext.androidSupportVersion}"
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.robolectric:robolectric:3.1.2'
+    testCompile 'org.mockito:mockito-core:2.2.7'
 }
 
 task('increaseVersionCode') << {
