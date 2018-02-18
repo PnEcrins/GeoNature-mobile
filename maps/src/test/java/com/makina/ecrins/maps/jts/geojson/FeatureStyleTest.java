@@ -2,7 +2,6 @@ package com.makina.ecrins.maps.jts.geojson;
 
 import android.app.Application;
 
-import com.makina.ecrins.maps.BuildConfig;
 import com.makina.ecrins.maps.R;
 import com.makina.ecrins.maps.TestHelper;
 
@@ -11,7 +10,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -23,10 +21,6 @@ import static junit.framework.Assert.assertTrue;
  * @author <a href="mailto:sebastien.grimault@gmail.com">S. Grimault</a>
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class,
-        sdk = 21,
-        manifest = "src/main/AndroidManifest.xml",
-        packageName = "com.makina.ecrins.maps")
 public class FeatureStyleTest {
 
     private Application application;

@@ -17,7 +17,7 @@ import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.util.ServiceController;
+import org.robolectric.android.controller.ServiceController;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -374,8 +374,7 @@ public class InputIntentServiceTest {
                                                   @Nullable final Writer writer) {
         final ServiceController<DummyInputIntentService> serviceController = buildService(DummyInputIntentService.class,
                                                                                           intent);
-        final DummyInputIntentService inputIntentService = spy(serviceController.attach()
-                                                                                .create()
+        final DummyInputIntentService inputIntentService = spy(serviceController.create()
                                                                                 .get());
 
         if (writer != null) {

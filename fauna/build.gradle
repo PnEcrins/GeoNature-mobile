@@ -10,8 +10,10 @@ android {
         applicationId "com.makina.ecrins.fauna"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.compileSdkVersion
+        versionCode updateVersionCode(module.name)
         versionName version
         buildConfigField "String", "BUILD_DATE", "\"" + new Date().getTime() + "\""
+        archivesBaseName = module.name + "-" + versionName
     }
 
     compileOptions {
@@ -44,15 +46,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             zipAlignEnabled true
-
-            applicationVariants.all { variant ->
-                variant.outputs.each  { output ->
-                    // noinspection GroovyAssignabilityCheck
-                    output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace(".apk", "-" + defaultConfig.versionName + ".apk"))
-                }
-            }
         }
     }
+
+    flavorDimensions "api"
 
     productFlavors {
         pne {
@@ -61,20 +58,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
-    debugCompile project(path: ':commons', configuration: 'debug')
-    debugCompile project(path: ':maps', configuration: 'debug')
-    releaseCompile project(path: ':commons', configuration: 'release')
-    releaseCompile project(path: ':maps', configuration: 'release')
-}
-
-task('increaseVersionCode') << {
-    getVersionCode(module.name + "/src/main/AndroidManifest.xml", true)
-}
-
-tasks.whenTaskAdded { task ->
-    if (task.name == 'generateReleaseBuildConfig' || task.name == 'generateDebugBuildConfig') {
-        task.dependsOn 'increaseVersionCode'
-    }
+    implementation project(':commons')
+    implementation project(':maps')
 }

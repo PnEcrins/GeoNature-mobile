@@ -3,7 +3,6 @@
     package="com.makina.ecrins.maps"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:versionCode="710"
     tools:ignore="GradleOverrides">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>

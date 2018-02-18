@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest package="com.makina.ecrins.search"
           xmlns:android="http://schemas.android.com/apk/res/android"
-          android:sharedUserId="com.makina.ecrins"
-          android:versionCode="289">
+          android:sharedUserId="com.makina.ecrins">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>

@@ -16,7 +16,7 @@ import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.util.ServiceController;
+import org.robolectric.android.controller.ServiceController;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -154,8 +154,7 @@ public class AppSettingsIntentServiceTest {
                                                         @Nullable final String filename) {
         final ServiceController<DummyAppSettingsIntentService> serviceController = buildService(DummyAppSettingsIntentService.class,
                                                                                                 intent);
-        final DummyAppSettingsIntentService appSettingsIntentService = spy(serviceController.attach()
-                                                                                            .create()
+        final DummyAppSettingsIntentService appSettingsIntentService = spy(serviceController.create()
                                                                                             .get());
 
         if (!TextUtils.isEmpty(filename)) {

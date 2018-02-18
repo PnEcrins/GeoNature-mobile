@@ -1,8 +1,7 @@
 <manifest
     package="com.makina.ecrins.invertebrate"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:sharedUserId="com.makina.ecrins"
-    android:versionCode="152">
+    android:sharedUserId="com.makina.ecrins">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
