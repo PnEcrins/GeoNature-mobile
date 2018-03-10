@@ -3,6 +3,7 @@ package com.makina.ecrins.fauna.ui.input.criteria;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
@@ -23,10 +24,10 @@ import java.util.List;
 public class CriteriaFragment
         extends AbstractCriteriaFragment {
 
+    @NonNull
     @Override
-    public Loader<Cursor> onCreateLoader(
-            int id,
-            Bundle args) {
+    public Loader<Cursor> onCreateLoader(int id,
+                                         Bundle args) {
 
         final String[] projection = {
                 MainDatabaseHelper.CriteriaColumns._ID,
@@ -35,11 +36,9 @@ public class CriteriaFragment
                 MainDatabaseHelper.CriteriaColumns.CLASS_ID
         };
 
-        final StringBuilder selection = new StringBuilder();
+        final String selection = MainDatabaseHelper.CriteriaColumns.CLASS_ID + " = ?";
         final List<String> selectionArgs = new ArrayList<>();
 
-        selection.append(MainDatabaseHelper.CriteriaColumns.CLASS_ID);
-        selection.append(" = ?");
         selectionArgs.add(Long.valueOf(((MainApplication) getActivity().getApplication()).getInput()
                                                                                          .getTaxa()
                                                                                          .get(((MainApplication) getActivity().getApplication()).getInput()
@@ -47,10 +46,10 @@ public class CriteriaFragment
                                                                                          .getClassId())
                               .toString());
 
-        return new CursorLoader(getActivity(),
+        return new CursorLoader(getContext(),
                                 getLoaderUri(),
                                 projection,
-                                selection.toString(),
+                                selection,
                                 selectionArgs.toArray(new String[selectionArgs.size()]),
                                 null);
     }

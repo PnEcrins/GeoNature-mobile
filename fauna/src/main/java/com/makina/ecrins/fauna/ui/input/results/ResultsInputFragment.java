@@ -1,6 +1,7 @@
 package com.makina.ecrins.fauna.ui.input.results;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,7 @@ public class ResultsInputFragment
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater,
+            @NonNull LayoutInflater inflater,
             ViewGroup container,
             Bundle savedInstanceState) {
 
@@ -46,12 +47,12 @@ public class ResultsInputFragment
                     View parentView) {
 
                 Taxon taxon = (Taxon) selectedTaxon;
-                TextView textViewTaxonCounting = (TextView) parentView.findViewById(R.id.textViewTaxonCounting);
+                TextView textViewTaxonCounting = parentView.findViewById(R.id.textViewTaxonCounting);
                 textViewTaxonCounting.setText(getResources().getQuantityString(R.plurals.results_input_selected_taxon_counting,
                                                                                taxon.counting(),
                                                                                taxon.counting()));
 
-                TextView textViewTaxonCriterion = (TextView) parentView.findViewById(R.id.textViewTaxonCriterion);
+                TextView textViewTaxonCriterion = parentView.findViewById(R.id.textViewTaxonCriterion);
                 textViewTaxonCriterion.setText(getString(R.string.results_input_selected_taxon_criterion,
                                                          taxon.getCriterionLabel()));
             }

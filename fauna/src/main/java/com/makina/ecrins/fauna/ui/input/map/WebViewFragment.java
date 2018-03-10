@@ -1,5 +1,6 @@
 package com.makina.ecrins.fauna.ui.input.map;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.makina.ecrins.commons.model.MountPoint;
@@ -84,6 +85,7 @@ public class WebViewFragment
         return mapSettings;
     }
 
+    @NonNull
     @Override
     public List<Feature> getFeatures() {
         // may be null
