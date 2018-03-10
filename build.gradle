@@ -27,7 +27,7 @@ ext {
     minSdkVersion = 15
     compileSdkVersion = 27
     buildToolsVersion = '27.0.2'
-    androidSupportVersion = '27.0.2'
+    androidSupportVersion = '27.1.0'
 }
 
 File getVersionPropertiesFile(moduleName) {
