@@ -2,6 +2,7 @@ package com.makina.ecrins.invertebrate.ui.input.environments;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
@@ -35,14 +36,13 @@ public class EnvironmentsFragment
     protected SimpleCursorAdapter mAdapter;
 
     @Override
-    public void onViewCreated(
-            View view,
-            Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view,
+                              Bundle savedInstanceState) {
         // give some text to display if there is no data
         setEmptyText(getString(R.string.environments_no_data));
 
         // create an empty adapter we will use to display the loaded data
-        mAdapter = new SimpleCursorAdapter(getActivity(),
+        mAdapter = new SimpleCursorAdapter(getContext(),
                                            android.R.layout.simple_list_item_1,
                                            null,
                                            new String[] {
@@ -53,10 +53,9 @@ public class EnvironmentsFragment
                                            },
                                            0) {
             @Override
-            public View getView(
-                    int position,
-                    View convertView,
-                    ViewGroup parent) {
+            public View getView(int position,
+                                View convertView,
+                                ViewGroup parent) {
 
                 View view = super.getView(position,
                                           convertView,
@@ -139,17 +138,17 @@ public class EnvironmentsFragment
         setListShown(false);
     }
 
+    @NonNull
     @Override
-    public Loader<Cursor> onCreateLoader(
-            int id,
-            Bundle args) {
+    public Loader<Cursor> onCreateLoader(int id,
+                                         Bundle args) {
 
         String[] projection = {
                 MainDatabaseHelper.EnvironmentsColumns._ID,
                 MainDatabaseHelper.EnvironmentsColumns.NAME
         };
 
-        return new CursorLoader(getActivity(),
+        return new CursorLoader(getContext(),
                                 MainContentProvider.CONTENT_ENVIRONMENTS_URI,
                                 projection,
                                 null,
@@ -158,9 +157,8 @@ public class EnvironmentsFragment
     }
 
     @Override
-    public void onLoadFinished(
-            Loader<Cursor> loader,
-            Cursor data) {
+    public void onLoadFinished(@NonNull Loader<Cursor> loader,
+                               Cursor data) {
 
         mAdapter.swapCursor(data);
 
@@ -174,7 +172,7 @@ public class EnvironmentsFragment
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         // data is not available anymore, delete reference
         mAdapter.swapCursor(null);
     }

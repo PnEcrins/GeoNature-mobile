@@ -61,7 +61,7 @@ public class MainApplication
         this.mAppSettings = null;
         this.mInput = null;
         this.mDefaultObserver = null;
-        this.mUnities = new ArrayList<Feature>();
+        this.mUnities = new ArrayList<>();
 
         Log.i(getClass().getName(),
               "internal storage: " + MountPointUtils.getInternalStorage());

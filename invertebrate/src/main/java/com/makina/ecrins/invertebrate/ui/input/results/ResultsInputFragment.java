@@ -1,6 +1,7 @@
 package com.makina.ecrins.invertebrate.ui.input.results;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,7 @@ public class ResultsInputFragment
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater,
+            @NonNull LayoutInflater inflater,
             ViewGroup container,
             Bundle savedInstanceState) {
 

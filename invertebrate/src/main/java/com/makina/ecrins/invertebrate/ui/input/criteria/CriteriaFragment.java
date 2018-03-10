@@ -3,6 +3,7 @@ package com.makina.ecrins.invertebrate.ui.input.criteria;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
@@ -12,9 +13,6 @@ import com.makina.ecrins.commons.ui.input.criteria.AbstractCriteriaFragment;
 import com.makina.ecrins.invertebrate.MainApplication;
 import com.makina.ecrins.invertebrate.content.MainContentProvider;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Lists all criteria.
  *
@@ -23,11 +21,11 @@ import java.util.List;
 public class CriteriaFragment
         extends AbstractCriteriaFragment {
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(
             int id,
             Bundle args) {
-
         final String[] projection = {
                 MainDatabaseHelper.CriteriaColumns._ID,
                 MainDatabaseHelper.CriteriaColumns.NAME,
@@ -36,29 +34,23 @@ public class CriteriaFragment
         };
 
         // select only criteria with no class
-        final StringBuilder selection = new StringBuilder();
-        final List<String> selectionArgs = new ArrayList<>();
+        final String selection = MainDatabaseHelper.CriteriaColumns.CLASS_ID + " is null";
 
-        selection.append(MainDatabaseHelper.CriteriaColumns.CLASS_ID);
-        selection.append(" is null");
-
-        return new CursorLoader(getActivity(),
+        return new CursorLoader(getContext(),
                                 getLoaderUri(),
                                 projection,
-                                selection.toString(),
-                                selectionArgs.toArray(new String[selectionArgs.size()]),
+                                selection,
+                                new String[0],
                                 null);
     }
 
     @Override
     public AbstractInput getInput() {
-
         return ((MainApplication) getActivity().getApplication()).getInput();
     }
 
     @Override
     public Uri getLoaderUri() {
-
         return MainContentProvider.CONTENT_CRITERIA_URI;
     }
 }

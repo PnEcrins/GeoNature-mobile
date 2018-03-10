@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
@@ -39,6 +40,7 @@ import java.util.List;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
+@SuppressWarnings("ALL")
 public class TaxaFragment
         extends AbstractTaxaFragment
         implements OnClickListener {
@@ -167,7 +169,7 @@ public class TaxaFragment
 
     @Override
     public void onViewCreated(
-            View view,
+            @NonNull View view,
             Bundle savedInstanceState) {
 
         super.onViewCreated(view,
@@ -329,7 +331,7 @@ public class TaxaFragment
         }
 
         final StringBuilder selection = new StringBuilder();
-        final List<String> selectionArgs = new ArrayList<String>();
+        final List<String> selectionArgs = new ArrayList<>();
 
         // adding filter
         selection.append("((");
@@ -352,9 +354,9 @@ public class TaxaFragment
                 TaxonStatus[] statusFilter = (TaxonStatus[]) args.getParcelableArray(KEY_FILTER_STATUS);
                 boolean filterStatusAdded = false;
 
-                if (statusFilter.length > 0) {
-                    for (int i = 0; i < statusFilter.length; i++) {
-                        if (statusFilter[i].isSelected()) {
+                if (statusFilter != null && statusFilter.length > 0) {
+                    for (TaxonStatus aStatusFilter : statusFilter) {
+                        if (aStatusFilter.isSelected()) {
                             if (!filterStatusAdded) {
                                 selection.append(" AND (");
                             }
@@ -364,13 +366,13 @@ public class TaxaFragment
 
                             selection.append(MainDatabaseHelper.TaxaUnitiesColumns.COLOR);
 
-                            if (statusFilter[i].getStatus()
-                                               .equals(TaxonStatus.STATUS_NEW)) {
+                            if (aStatusFilter.getStatus()
+                                             .equals(TaxonStatus.STATUS_NEW)) {
                                 selection.append(" IS NULL");
                             }
                             else {
                                 selection.append(" = ?");
-                                selectionArgs.add(statusFilter[i].getStatus());
+                                selectionArgs.add(aStatusFilter.getStatus());
                             }
 
                             filterStatusAdded = true;
