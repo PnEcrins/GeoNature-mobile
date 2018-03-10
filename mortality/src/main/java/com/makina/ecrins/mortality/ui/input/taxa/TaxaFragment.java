@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
@@ -33,6 +34,7 @@ import java.util.List;
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
+@SuppressWarnings("ALL")
 public class TaxaFragment
         extends AbstractTaxaFragment
         implements OnClickListener {
@@ -73,7 +75,6 @@ public class TaxaFragment
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public View onCreateView(
             LayoutInflater inflater,
             ViewGroup container,
@@ -105,7 +106,7 @@ public class TaxaFragment
 
     @Override
     public void onViewCreated(
-            View view,
+            @NonNull View view,
             Bundle savedInstanceState) {
 
         super.onViewCreated(view,
@@ -129,7 +130,7 @@ public class TaxaFragment
 
         super.refreshView();
 
-        TaxaFilterClass filterClasses = (TaxaFilterClass) getSavedInstanceState().getParcelable(KEY_FILTER_CLASSES);
+        TaxaFilterClass filterClasses = getSavedInstanceState().getParcelable(KEY_FILTER_CLASSES);
 
         for (int i = 0; i < filterClasses.getFilterClasses()
                                          .size(); i++) {
@@ -221,7 +222,7 @@ public class TaxaFragment
         }
 
         final StringBuilder selection = new StringBuilder();
-        final List<String> selectionArgs = new ArrayList<String>();
+        final List<String> selectionArgs = new ArrayList<>();
 
         // adding filter
         selection.append("((");
@@ -231,7 +232,7 @@ public class TaxaFragment
 
         if (args != null) {
             if (args.containsKey(KEY_FILTER_CLASSES) && args.getParcelable(KEY_FILTER_CLASSES) != null) {
-                TaxaFilterClass filterClasses = (TaxaFilterClass) args.getParcelable(KEY_FILTER_CLASSES);
+                TaxaFilterClass filterClasses = args.getParcelable(KEY_FILTER_CLASSES);
 
                 if (filterClasses.getFilterClasses()
                                  .size() > 0) {

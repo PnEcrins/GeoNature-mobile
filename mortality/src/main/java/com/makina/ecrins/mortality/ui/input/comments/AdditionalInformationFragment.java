@@ -1,7 +1,7 @@
 package com.makina.ecrins.mortality.ui.input.comments;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,11 +11,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
+import com.makina.ecrins.commons.util.KeyboardUtils;
 import com.makina.ecrins.mortality.MainApplication;
 import com.makina.ecrins.mortality.R;
 import com.makina.ecrins.mortality.input.Taxon;
@@ -37,10 +37,9 @@ public class AdditionalInformationFragment
     private EditText mEditTextAdditionalInformation;
 
     @Override
-    public View onCreateView(
-            LayoutInflater inflater,
-            ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
 
         Log.d(getClass().getName(),
               "onCreateView");
@@ -49,23 +48,21 @@ public class AdditionalInformationFragment
                                      container,
                                      false);
 
-        mEditTextAdditionalInformation = (EditText) view.findViewById(R.id.editTextAdditionalInformation);
+        mEditTextAdditionalInformation = view.findViewById(R.id.editTextAdditionalInformation);
         mEditTextAdditionalInformation.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onTextChanged(
-                    CharSequence s,
-                    int start,
-                    int before,
-                    int count) {
+            public void onTextChanged(CharSequence s,
+                                      int start,
+                                      int before,
+                                      int count) {
                 // nothing to do ...
             }
 
             @Override
-            public void beforeTextChanged(
-                    CharSequence s,
-                    int start,
-                    int count,
-                    int after) {
+            public void beforeTextChanged(CharSequence s,
+                                          int start,
+                                          int count,
+                                          int after) {
                 // nothing to do ...
             }
 
@@ -89,22 +86,19 @@ public class AdditionalInformationFragment
         // adding OnFocusChangeListener to this input text to display or hide soft keyboard
         mEditTextAdditionalInformation.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
-            public void onFocusChange(
-                    View v,
-                    boolean hasFocus) {
+            public void onFocusChange(View v,
+                                      boolean hasFocus) {
 
                 if (hasFocus) {
-                    ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(mEditTextAdditionalInformation,
-                                                                                                                              0);
+                    KeyboardUtils.showSoftKeyboard(mEditTextAdditionalInformation);
                 }
                 else {
-                    ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(mEditTextAdditionalInformation.getWindowToken(),
-                                                                                                                                        0);
+                    KeyboardUtils.hideSoftKeyboard(mEditTextAdditionalInformation);
                 }
             }
         });
 
-        mCheckBoxSampleTaken = (CheckBox) view.findViewById(R.id.checkBoxSampleTaken);
+        mCheckBoxSampleTaken = view.findViewById(R.id.checkBoxSampleTaken);
         mCheckBoxSampleTaken.setOnClickListener(this);
 
         return view;
@@ -147,8 +141,8 @@ public class AdditionalInformationFragment
             Log.d(getClass().getName(),
                   "validate : " + selectedTaxon.getComment());
 
-            return (selectedTaxon.isMortalitySample()) ? !selectedTaxon.getComment()
-                                                                       .isEmpty() : true;
+            return !selectedTaxon.isMortalitySample() || !selectedTaxon.getComment()
+                                                                       .isEmpty();
         }
     }
 

@@ -2,6 +2,7 @@ package com.makina.ecrins.mortality.ui.input.counting;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.util.TypedValue;
@@ -34,9 +35,8 @@ public class SimpleCountingListFragment
     private CountingAdapter mAdapter;
 
     @Override
-    public void onViewCreated(
-            View view,
-            Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view,
+                              Bundle savedInstanceState) {
         // give some text to display if there is no data
         setEmptyText(getString(R.string.counting_no_data));
 
@@ -46,13 +46,17 @@ public class SimpleCountingListFragment
     }
 
     @Override
-    public void onListItemClick(
-            ListView l,
-            View v,
-            int position,
-            long id) {
+    public void onListItemClick(ListView l,
+                                View v,
+                                int position,
+                                long id) {
+        final Integer item = mAdapter.getItem(position);
 
-        switch (mAdapter.getItem(position)) {
+        if (item == null) {
+            return;
+        }
+
+        switch (item) {
             case CountingAdapter.COUNTING_ADULT_MALE:
                 ((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
                                                                            .getTaxa()
@@ -355,19 +359,17 @@ public class SimpleCountingListFragment
 
         private final LayoutInflater mInflater;
 
-        public CountingAdapter(Context context) {
-
+        CountingAdapter(Context context) {
             super(context,
                   R.layout.list_item_simple_counting);
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
+        @NonNull
         @Override
-        public View getView(
-                final int position,
-                View convertView,
-                ViewGroup parent) {
-
+        public View getView(final int position,
+                            View convertView,
+                            @NonNull ViewGroup parent) {
             View view;
 
             if (convertView == null) {
@@ -379,9 +381,9 @@ public class SimpleCountingListFragment
                 view = convertView;
             }
 
-            TextView textView = (TextView) view.findViewById(R.id.textViewTaxonCounting);
+            TextView textView = view.findViewById(R.id.textViewTaxonCounting);
 
-            ImageView imageView = (ImageView) view.findViewById(R.id.imageViewTaxonCounting);
+            ImageView imageView = view.findViewById(R.id.imageViewTaxonCounting);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) imageView.getLayoutParams();
             params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                                                            48,
@@ -391,152 +393,153 @@ public class SimpleCountingListFragment
                                                             getResources().getDisplayMetrics());
             imageView.setLayoutParams(params);
 
-            Log.d(getClass().getName(),
-                  "getView " + getItem(position));
+            final Integer item = getItem(position);
 
-            switch (getItem(position)) {
-                case COUNTING_ADULT_MALE:
-                    textView.setText(R.string.counting_adult_male);
-                    imageView.setImageResource(R.drawable.ic_male_symbol);
+            if (item != null) {
+                switch (item) {
+                    case COUNTING_ADULT_MALE:
+                        textView.setText(R.string.counting_adult_male);
+                        imageView.setImageResource(R.drawable.ic_male_symbol);
 
-                    if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getTaxa()
-                                                                                   .get(((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                          .getCurrentSelectedTaxonId())).getMortalityAdultMale() > 0) {
-                        getListView().setSelection(position);
-                        view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
-                    }
-                    else {
-                        view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                    }
+                        if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                       .getTaxa()
+                                                                                       .get(((MainApplication) getActivity().getApplication()).getInput()
+                                                                                                                                              .getCurrentSelectedTaxonId())).getMortalityAdultMale() > 0) {
+                            getListView().setSelection(position);
+                            view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
+                        }
+                        else {
+                            view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                        }
 
-                    break;
-                case COUNTING_ADULT_FEMALE:
-                    textView.setText(R.string.counting_adult_female);
-                    imageView.setImageResource(R.drawable.ic_female_symbol);
+                        break;
+                    case COUNTING_ADULT_FEMALE:
+                        textView.setText(R.string.counting_adult_female);
+                        imageView.setImageResource(R.drawable.ic_female_symbol);
 
-                    if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getTaxa()
-                                                                                   .get(((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                          .getCurrentSelectedTaxonId())).getMortalityAdultFemale() > 0) {
-                        getListView().setSelection(position);
-                        view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
-                    }
-                    else {
-                        view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                    }
+                        if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                       .getTaxa()
+                                                                                       .get(((MainApplication) getActivity().getApplication()).getInput()
+                                                                                                                                              .getCurrentSelectedTaxonId())).getMortalityAdultFemale() > 0) {
+                            getListView().setSelection(position);
+                            view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
+                        }
+                        else {
+                            view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                        }
 
-                    break;
-                case COUNTING_ADULT_UNDETERMINED:
-                    textView.setText(R.string.counting_adult_undetermined);
-                    imageView.setImageResource(R.drawable.ic_unspecified_symbol);
+                        break;
+                    case COUNTING_ADULT_UNDETERMINED:
+                        textView.setText(R.string.counting_adult_undetermined);
+                        imageView.setImageResource(R.drawable.ic_unspecified_symbol);
 
-                    if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getTaxa()
-                                                                                   .get(((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                          .getCurrentSelectedTaxonId())).getMortalityAdultUndetermined() > 0) {
-                        getListView().setSelection(position);
-                        view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
-                    }
-                    else {
-                        view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                    }
+                        if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                       .getTaxa()
+                                                                                       .get(((MainApplication) getActivity().getApplication()).getInput()
+                                                                                                                                              .getCurrentSelectedTaxonId())).getMortalityAdultUndetermined() > 0) {
+                            getListView().setSelection(position);
+                            view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
+                        }
+                        else {
+                            view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                        }
 
-                    break;
-                case COUNTING_NOT_ADULT:
-                    textView.setText(R.string.counting_not_adult);
+                        break;
+                    case COUNTING_NOT_ADULT:
+                        textView.setText(R.string.counting_not_adult);
 
-                    params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                                                                   32,
-                                                                   getResources().getDisplayMetrics());
-                    params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                                                                    32,
-                                                                    getResources().getDisplayMetrics());
-                    params.addRule(RelativeLayout.CENTER_VERTICAL);
-                    imageView.setLayoutParams(params);
-                    imageView.setScaleType(ScaleType.CENTER_INSIDE);
-                    imageView.setImageResource(R.drawable.ic_male_female_symbol);
+                        params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                                                                       32,
+                                                                       getResources().getDisplayMetrics());
+                        params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                                                                        32,
+                                                                        getResources().getDisplayMetrics());
+                        params.addRule(RelativeLayout.CENTER_VERTICAL);
+                        imageView.setLayoutParams(params);
+                        imageView.setScaleType(ScaleType.CENTER_INSIDE);
+                        imageView.setImageResource(R.drawable.ic_male_female_symbol);
 
-                    if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getTaxa()
-                                                                                   .get(((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                          .getCurrentSelectedTaxonId())).getMortalityNotAdult() > 0) {
-                        getListView().setSelection(position);
-                        view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
-                    }
-                    else {
-                        view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                    }
+                        if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                       .getTaxa()
+                                                                                       .get(((MainApplication) getActivity().getApplication()).getInput()
+                                                                                                                                              .getCurrentSelectedTaxonId())).getMortalityNotAdult() > 0) {
+                            getListView().setSelection(position);
+                            view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
+                        }
+                        else {
+                            view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                        }
 
-                    break;
-                case COUNTING_YOUNG:
-                    textView.setText(R.string.counting_young);
+                        break;
+                    case COUNTING_YOUNG:
+                        textView.setText(R.string.counting_young);
 
-                    params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                                                                   32,
-                                                                   getResources().getDisplayMetrics());
-                    params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                                                                    32,
-                                                                    getResources().getDisplayMetrics());
-                    params.addRule(RelativeLayout.CENTER_VERTICAL);
-                    imageView.setLayoutParams(params);
-                    imageView.setScaleType(ScaleType.CENTER_INSIDE);
-                    imageView.setImageResource(R.drawable.ic_male_female_symbol);
+                        params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                                                                       32,
+                                                                       getResources().getDisplayMetrics());
+                        params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                                                                        32,
+                                                                        getResources().getDisplayMetrics());
+                        params.addRule(RelativeLayout.CENTER_VERTICAL);
+                        imageView.setLayoutParams(params);
+                        imageView.setScaleType(ScaleType.CENTER_INSIDE);
+                        imageView.setImageResource(R.drawable.ic_male_female_symbol);
 
-                    if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getTaxa()
-                                                                                   .get(((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                          .getCurrentSelectedTaxonId())).getMortalityYoung() > 0) {
-                        getListView().setSelection(position);
-                        view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
-                    }
-                    else {
-                        view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                    }
+                        if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                       .getTaxa()
+                                                                                       .get(((MainApplication) getActivity().getApplication()).getInput()
+                                                                                                                                              .getCurrentSelectedTaxonId())).getMortalityYoung() > 0) {
+                            getListView().setSelection(position);
+                            view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
+                        }
+                        else {
+                            view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                        }
 
-                    break;
-                case COUNTING_YEARLING:
-                    textView.setText(R.string.counting_yearling);
+                        break;
+                    case COUNTING_YEARLING:
+                        textView.setText(R.string.counting_yearling);
 
-                    params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                                                                   32,
-                                                                   getResources().getDisplayMetrics());
-                    params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                                                                    32,
-                                                                    getResources().getDisplayMetrics());
-                    params.addRule(RelativeLayout.CENTER_VERTICAL);
-                    imageView.setLayoutParams(params);
-                    imageView.setScaleType(ScaleType.CENTER_INSIDE);
-                    imageView.setImageResource(R.drawable.ic_male_female_symbol);
+                        params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                                                                       32,
+                                                                       getResources().getDisplayMetrics());
+                        params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                                                                        32,
+                                                                        getResources().getDisplayMetrics());
+                        params.addRule(RelativeLayout.CENTER_VERTICAL);
+                        imageView.setLayoutParams(params);
+                        imageView.setScaleType(ScaleType.CENTER_INSIDE);
+                        imageView.setImageResource(R.drawable.ic_male_female_symbol);
 
-                    if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getTaxa()
-                                                                                   .get(((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                          .getCurrentSelectedTaxonId())).getMortalityYearling() > 0) {
-                        getListView().setSelection(position);
-                        view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
-                    }
-                    else {
-                        view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                    }
+                        if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                       .getTaxa()
+                                                                                       .get(((MainApplication) getActivity().getApplication()).getInput()
+                                                                                                                                              .getCurrentSelectedTaxonId())).getMortalityYearling() > 0) {
+                            getListView().setSelection(position);
+                            view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
+                        }
+                        else {
+                            view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                        }
 
-                    break;
-                case COUNTING_UNDETERMINED:
-                    textView.setText(R.string.counting_undetermined);
-                    imageView.setImageResource(R.drawable.ic_male_female_symbol);
+                        break;
+                    case COUNTING_UNDETERMINED:
+                        textView.setText(R.string.counting_undetermined);
+                        imageView.setImageResource(R.drawable.ic_male_female_symbol);
 
-                    if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
-                                                                                   .getTaxa()
-                                                                                   .get(((MainApplication) getActivity().getApplication()).getInput()
-                                                                                                                                          .getCurrentSelectedTaxonId())).getMortalityUndetermined() > 0) {
-                        getListView().setSelection(position);
-                        view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
-                    }
-                    else {
-                        view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                    }
+                        if (((Taxon) ((MainApplication) getActivity().getApplication()).getInput()
+                                                                                       .getTaxa()
+                                                                                       .get(((MainApplication) getActivity().getApplication()).getInput()
+                                                                                                                                              .getCurrentSelectedTaxonId())).getMortalityUndetermined() > 0) {
+                            getListView().setSelection(position);
+                            view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
+                        }
+                        else {
+                            view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                        }
 
-                    break;
+                        break;
+                }
             }
 
             return view;
