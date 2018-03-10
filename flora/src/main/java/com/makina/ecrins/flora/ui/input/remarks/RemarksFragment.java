@@ -67,14 +67,14 @@ public class RemarksFragment
     };
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_remarks,
                                      container,
                                      false);
 
-        mEditTextRemarks = (EditText) view.findViewById(R.id.editTextRemarks);
+        mEditTextRemarks = view.findViewById(R.id.editTextRemarks);
 
         return view;
     }

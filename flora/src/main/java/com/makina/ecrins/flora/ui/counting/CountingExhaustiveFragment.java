@@ -34,19 +34,15 @@ public class CountingExhaustiveFragment
     private static final String KEY_COUNTING = "KEY_COUNTING";
 
     private EditText mEditTextCountingFertile;
-    protected Button mButtonCountingMinusFertile;
+    private Button mButtonCountingMinusFertile;
     private Button mButtonCountingPlusFertile;
     private EditText mEditTextCountingSterile;
-    protected Button mButtonCountingMinusSterile;
+    private Button mButtonCountingMinusSterile;
     private Button mButtonCountingPlusSterile;
 
     private Counting mCounting;
 
     private OnCountingListener mOnCountingListener;
-
-    public CountingExhaustiveFragment() {
-        // Required empty public constructor
-    }
 
     /**
      * Use this factory method to create a new instance of
@@ -74,20 +70,20 @@ public class CountingExhaustiveFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_counting_exhaustive,
                                            container,
                                            false);
 
-        mEditTextCountingFertile = (EditText) view.findViewById(R.id.editTextCountingFertile);
-        mButtonCountingMinusFertile = (Button) view.findViewById(R.id.buttonCountingMinusFertile);
-        mButtonCountingPlusFertile = (Button) view.findViewById(R.id.buttonCountingPlusFertile);
+        mEditTextCountingFertile = view.findViewById(R.id.editTextCountingFertile);
+        mButtonCountingMinusFertile = view.findViewById(R.id.buttonCountingMinusFertile);
+        mButtonCountingPlusFertile = view.findViewById(R.id.buttonCountingPlusFertile);
 
-        mEditTextCountingSterile = (EditText) view.findViewById(R.id.editTextCountingSterile);
-        mButtonCountingMinusSterile = (Button) view.findViewById(R.id.buttonCountingMinusSterile);
-        mButtonCountingPlusSterile = (Button) view.findViewById(R.id.buttonCountingPlusSterile);
+        mEditTextCountingSterile = view.findViewById(R.id.editTextCountingSterile);
+        mButtonCountingMinusSterile = view.findViewById(R.id.buttonCountingMinusSterile);
+        mButtonCountingPlusSterile = view.findViewById(R.id.buttonCountingPlusSterile);
 
         mButtonCountingMinusFertile.setOnClickListener(this);
         mButtonCountingPlusFertile.setOnClickListener(this);
@@ -198,12 +194,12 @@ public class CountingExhaustiveFragment
             mOnCountingListener = (OnCountingListener) context;
         }
         else {
-            throw new RuntimeException(getContext().toString() + " must implement OnCountingListener");
+            throw new RuntimeException(context.toString() + " must implement OnCountingListener");
         }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable(KEY_COUNTING,

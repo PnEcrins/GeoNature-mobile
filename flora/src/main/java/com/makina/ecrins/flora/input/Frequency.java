@@ -24,7 +24,7 @@ public class Frequency implements Parcelable {
     public static final String KEY_TRANSECT_NO = "transect_no";
     public static final String KEY_VALUE = "value";
 
-    private FrequencyType mType;
+    private final FrequencyType mType;
     private double mRecommendedStep;
     private int mTransects;
     private int mTransectYes;

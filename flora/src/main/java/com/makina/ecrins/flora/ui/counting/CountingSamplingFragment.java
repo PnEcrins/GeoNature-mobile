@@ -35,23 +35,19 @@ public class CountingSamplingFragment
     private static final String ARG_AREA = "ARG_AREA";
     private static final String KEY_COUNTING = "KEY_COUNTING";
 
-    protected EditText mEditTextPlotSurface;
-    protected EditText mEditTextCountingPlot;
-    protected Button mButtonCountingMinusPlot;
+    private EditText mEditTextPlotSurface;
+    private EditText mEditTextCountingPlot;
+    private Button mButtonCountingMinusPlot;
     private Button mButtonCountingPlusPlot;
-    protected EditText mEditTextCountingFertile;
+    private EditText mEditTextCountingFertile;
     private TextView mTextViewTotalCountingFertile;
-    protected EditText mEditTextCountingSterile;
+    private EditText mEditTextCountingSterile;
     private TextView mTextViewTotalCountingSterile;
 
     private Area mArea;
     private Counting mCounting;
 
     private OnCountingListener mOnCountingListener;
-
-    public CountingSamplingFragment() {
-        // Required empty public constructor
-    }
 
     /**
      * Use this factory method to create a new instance of
@@ -83,17 +79,17 @@ public class CountingSamplingFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_counting_sampling,
                                            container,
                                            false);
 
-        mEditTextPlotSurface = (EditText) view.findViewById(R.id.editTextPlotSurface);
-        mEditTextCountingPlot = (EditText) view.findViewById(R.id.editTextCountingPlot);
-        mButtonCountingMinusPlot = (Button) view.findViewById(R.id.buttonCountingMinusPlot);
-        mButtonCountingPlusPlot = (Button) view.findViewById(R.id.buttonCountingPlusPlot);
+        mEditTextPlotSurface = view.findViewById(R.id.editTextPlotSurface);
+        mEditTextCountingPlot = view.findViewById(R.id.editTextCountingPlot);
+        mButtonCountingMinusPlot = view.findViewById(R.id.buttonCountingMinusPlot);
+        mButtonCountingPlusPlot = view.findViewById(R.id.buttonCountingPlusPlot);
 
         mEditTextPlotSurface.addTextChangedListener(new TextWatcher() {
             @Override
@@ -181,8 +177,8 @@ public class CountingSamplingFragment
         mButtonCountingMinusPlot.setOnClickListener(this);
         mButtonCountingPlusPlot.setOnClickListener(this);
 
-        mEditTextCountingFertile = (EditText) view.findViewById(R.id.editTextCountingFertile);
-        mTextViewTotalCountingFertile = (TextView) view.findViewById(R.id.textViewTotalCountingFertile);
+        mEditTextCountingFertile = view.findViewById(R.id.editTextCountingFertile);
+        mTextViewTotalCountingFertile = view.findViewById(R.id.textViewTotalCountingFertile);
 
         mEditTextCountingFertile.addTextChangedListener(new TextWatcher() {
             @Override
@@ -220,8 +216,8 @@ public class CountingSamplingFragment
             }
         });
 
-        mEditTextCountingSterile = (EditText) view.findViewById(R.id.editTextCountingSterile);
-        mTextViewTotalCountingSterile = (TextView) view.findViewById(R.id.textViewTotalCountingSterile);
+        mEditTextCountingSterile = view.findViewById(R.id.editTextCountingSterile);
+        mTextViewTotalCountingSterile = view.findViewById(R.id.textViewTotalCountingSterile);
 
         mEditTextCountingSterile.addTextChangedListener(new TextWatcher() {
             @Override
@@ -270,7 +266,7 @@ public class CountingSamplingFragment
             mOnCountingListener = (OnCountingListener) context;
         }
         else {
-            throw new RuntimeException(getContext().toString() + " must implement OnCountingListener");
+            throw new RuntimeException(context.toString() + " must implement OnCountingListener");
         }
     }
 
@@ -282,7 +278,7 @@ public class CountingSamplingFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable(KEY_COUNTING,

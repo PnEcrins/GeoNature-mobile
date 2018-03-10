@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -49,8 +50,14 @@ public class ChooseActionListFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getActivity().getSupportFragmentManager()
-                                                                                           .findFragmentByTag(ALERT_DIALOG_DELETE_AREA_FRAGMENT);
+        final FragmentActivity activity = getActivity();
+
+        if (activity == null) {
+            return;
+        }
+
+        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) activity.getSupportFragmentManager()
+                                                                                      .findFragmentByTag(ALERT_DIALOG_DELETE_AREA_FRAGMENT);
 
         if (alertDialogFragment != null) {
             alertDialogFragment.dismiss();
@@ -67,7 +74,7 @@ public class ChooseActionListFragment
     }
 
     @Override
-    public void onViewCreated(View view,
+    public void onViewCreated(@NonNull View view,
                               Bundle savedInstanceState) {
         super.onViewCreated(view,
                             savedInstanceState);
@@ -125,7 +132,7 @@ public class ChooseActionListFragment
             mOnInputFragmentListener = (OnInputFragmentListener) context;
         }
         else {
-            throw new RuntimeException(getContext().toString() + " must implement OnInputFragmentListener");
+            throw new RuntimeException(context.toString() + " must implement OnInputFragmentListener");
         }
     }
 
@@ -240,8 +247,8 @@ public class ChooseActionListFragment
         private final LayoutInflater mInflater;
         private final int mResourceId;
 
-        public ActionItemArrayAdapter(Context context,
-                                      int resource) {
+        ActionItemArrayAdapter(Context context,
+                               int resource) {
             super(context,
                   resource);
 

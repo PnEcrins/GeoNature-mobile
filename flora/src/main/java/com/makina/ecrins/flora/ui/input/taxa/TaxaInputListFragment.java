@@ -62,6 +62,7 @@ public class TaxaInputListFragment
                                                 LabelSwitcher.LATIN);
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id,
                                          Bundle args) {
@@ -83,8 +84,10 @@ public class TaxaInputListFragment
 
         String sortOrder = MainDatabaseHelper.TaxaColumns.NAME + " ASC";
 
-        if (args.containsKey(KEY_SWITCH_LABEL)) {
-            switch ((LabelSwitcher) args.getSerializable(KEY_SWITCH_LABEL)) {
+        final LabelSwitcher labelSwitcher = (LabelSwitcher) args.getSerializable(KEY_SWITCH_LABEL);
+
+        if (labelSwitcher != null) {
+            switch (labelSwitcher) {
                 case FRENCH:
                     sortOrder = MainDatabaseHelper.TaxaColumns.NAME_FR + " COLLATE UNICODE ASC";
                     break;
@@ -111,13 +114,18 @@ public class TaxaInputListFragment
 
                 String filter = "%" + args.getString(KEY_FILTER) + "%";
 
-                switch ((LabelSwitcher) args.getSerializable(KEY_SWITCH_LABEL)) {
-                    case FRENCH:
-                        selection.append(MainDatabaseHelper.TaxaColumns.NAME_FR);
-                        break;
-                    default:
-                        selection.append(MainDatabaseHelper.TaxaColumns.NAME);
-                        break;
+                if (labelSwitcher == null) {
+                    selection.append(MainDatabaseHelper.TaxaColumns.NAME);
+                }
+                else {
+                    switch (labelSwitcher) {
+                        case FRENCH:
+                            selection.append(MainDatabaseHelper.TaxaColumns.NAME_FR);
+                            break;
+                        default:
+                            selection.append(MainDatabaseHelper.TaxaColumns.NAME);
+                            break;
+                    }
                 }
 
                 selection.append(" LIKE ?");
@@ -130,7 +138,7 @@ public class TaxaInputListFragment
         Log.d(TAG,
               "selectionArgs: " + selectionArgs.toString());
 
-        cursorLoader = new CursorLoader(getActivity(),
+        cursorLoader = new CursorLoader(getContext(),
                                         Uri.parse(MainContentProvider.CONTENT_TAXA_UNITY_URI + "/0"),
                                         projection,
                                         selection.toString(),

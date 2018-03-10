@@ -43,7 +43,7 @@ public class FrequencyFragmentActivity
 
     private Frequency mFrequency;
 
-    private ChooseActionDialogFragment.OnChooseActionDialogListener mOnChooseActionDialogListener = new ChooseActionDialogFragment.OnChooseActionDialogListener() {
+    private final ChooseActionDialogFragment.OnChooseActionDialogListener mOnChooseActionDialogListener = new ChooseActionDialogFragment.OnChooseActionDialogListener() {
         @Override
         public void onItemClick(DialogInterface dialog,
                                 int position,

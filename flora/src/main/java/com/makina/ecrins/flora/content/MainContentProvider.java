@@ -18,7 +18,6 @@ public class MainContentProvider extends AbstractMainContentProvider {
     public static final String AUTHORITY = "com.makina.ecrins.flora.content.MainContentProvider";
 
     public static final Uri CONTENT_OBSERVERS_URI = Uri.parse("content://" + AUTHORITY + "/" + PATH_OBSERVERS);
-    public static final Uri CONTENT_TAXA_URI = Uri.parse("content://" + AUTHORITY + "/" + PATH_TAXA);
     public static final Uri CONTENT_TAXA_UNITY_URI = Uri.parse("content://" + AUTHORITY + "/" + PATH_TAXA_UNITY);
     public static final Uri CONTENT_INCLINES_URI = Uri.parse("content://" + AUTHORITY + "/" + PATH_INCLINES);
     public static final Uri CONTENT_PHENOLOGY_URI = Uri.parse("content://" + AUTHORITY + "/" + PATH_PHENOLOGY);

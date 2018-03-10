@@ -3,7 +3,6 @@ package com.makina.ecrins.flora;
 import android.app.Application;
 import android.util.Log;
 
-import com.makina.ecrins.commons.input.Observer;
 import com.makina.ecrins.commons.util.MountPointUtils;
 import com.makina.ecrins.flora.settings.AppSettings;
 
@@ -15,11 +14,12 @@ import com.makina.ecrins.flora.settings.AppSettings;
 public class MainApplication
         extends Application {
 
+    private static final String TAG = MainApplication.class.getName();
+
     private static MainApplication sInstance;
 
     private boolean mCloseApplication;
     private AppSettings mAppSettings;
-    private Observer mDefaultObserver;
 
     public static MainApplication getInstance() {
         return sInstance;
@@ -30,21 +30,12 @@ public class MainApplication
         super.onCreate();
 
         sInstance = this;
-
         this.mCloseApplication = false;
-
-        /*
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        editor.clear();
-        editor.commit();
-        */
-
         this.mAppSettings = null;
-        this.mDefaultObserver = null;
 
-        Log.i(getClass().getName(),
+        Log.i(TAG,
               "internal storage: " + MountPointUtils.getInternalStorage());
-        Log.i(getClass().getName(),
+        Log.i(TAG,
               "external storage: " + MountPointUtils.getExternalStorage(this));
     }
 
@@ -62,13 +53,5 @@ public class MainApplication
 
     public void setAppSettings(AppSettings pAppSettings) {
         this.mAppSettings = pAppSettings;
-    }
-
-    public Observer getDefaultObserver() {
-        return mDefaultObserver;
-    }
-
-    public void setDefaultObserver(Observer pDefaultObserver) {
-        this.mDefaultObserver = pDefaultObserver;
     }
 }

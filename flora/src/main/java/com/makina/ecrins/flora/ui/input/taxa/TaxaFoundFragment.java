@@ -39,7 +39,7 @@ public class TaxaFoundFragment
 
     private Input mInput;
 
-    private AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
+    private final AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
         @Override
         public void onPositiveButtonClick(DialogInterface dialog) {
             if (BuildConfig.DEBUG) {
@@ -75,7 +75,7 @@ public class TaxaFoundFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_taxa_found,

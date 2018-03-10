@@ -51,8 +51,8 @@ public class PagerFragmentActivity
 
     private static final String TAG = PagerFragmentActivity.class.getName();
 
-    protected static final String PROGRESS_DIALOG_FRAGMENT = "PROGRESS_DIALOG_FRAGMENT";
-    protected static final String CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT = "CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT";
+    private static final String PROGRESS_DIALOG_FRAGMENT = "PROGRESS_DIALOG_FRAGMENT";
+    private static final String CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT = "CHOOSE_QUIT_ACTION_DIALOG_FRAGMENT";
 
     public static final String EXTRA_NEW_INPUT = "extra_new_input";
 
@@ -110,7 +110,7 @@ public class PagerFragmentActivity
     };
 
     private InputHelper mInputHelper;
-    private InputHelper.OnInputHelperListener mOnInputHelperListener = new InputHelper.OnInputHelperListener() {
+    private final InputHelper.OnInputHelperListener mOnInputHelperListener = new InputHelper.OnInputHelperListener() {
         @NonNull
         @Override
         public AbstractInput createInput() {
@@ -397,10 +397,10 @@ public class PagerFragmentActivity
                                              R.string.alert_dialog_action_continue_input));
     }
 
-    protected void showProgressDialog(int titleResourceId,
-                                      int messageResourceId,
-                                      int progressStyle,
-                                      int max) {
+    private void showProgressDialog(int titleResourceId,
+                                    int messageResourceId,
+                                    int progressStyle,
+                                    int max) {
         ProgressDialogFragment progressDialogFragment = ProgressDialogFragment.newInstance(titleResourceId,
                                                                                            messageResourceId,
                                                                                            progressStyle,
@@ -409,9 +409,9 @@ public class PagerFragmentActivity
                                     PROGRESS_DIALOG_FRAGMENT);
     }
 
-    protected void showChooseActionDialog(int titleResourceId,
-                                          int messageResourceId,
-                                          @NonNull final List<Integer> actions) {
+    private void showChooseActionDialog(int titleResourceId,
+                                        int messageResourceId,
+                                        @NonNull final List<Integer> actions) {
         final ChooseActionDialogFragment chooseActionDialogFragment = ChooseActionDialogFragment.newInstance(titleResourceId,
                                                                                                              messageResourceId,
                                                                                                              actions);

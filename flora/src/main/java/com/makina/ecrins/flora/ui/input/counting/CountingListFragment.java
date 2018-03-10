@@ -190,8 +190,8 @@ public class CountingListFragment
         private final LayoutInflater mInflater;
         private final int mResourceId;
 
-        public CountingArrayAdapter(Context context,
-                                    int resource) {
+        CountingArrayAdapter(Context context,
+                             int resource) {
             super(context,
                   resource);
 

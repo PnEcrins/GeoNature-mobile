@@ -66,15 +66,15 @@ public class PhysiognomyFragment
     private ExpandableListView mExpandableListView;
     private TextView mTextViewEmpty;
 
-    protected final Handler mHandler = new Handler();
+    private final Handler mHandler = new Handler();
 
     private Input mInput;
-    private List<String> mSelectedPhysiognomyGroupNames = new ArrayList<>();
+    private final List<String> mSelectedPhysiognomyGroupNames = new ArrayList<>();
 
     private boolean mListShown;
     private boolean mIsVisibleToUser = false;
-    private AtomicBoolean mBackButtonEvent = new AtomicBoolean();
-    private AtomicBoolean mRefreshActionMode = new AtomicBoolean();
+    private final AtomicBoolean mBackButtonEvent = new AtomicBoolean();
+    private final AtomicBoolean mRefreshActionMode = new AtomicBoolean();
 
     private ActionMode mMode;
     private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
@@ -175,7 +175,7 @@ public class PhysiognomyFragment
         }
     };
 
-    private AbstractBaseActivity.OnDispatchKeyEventListener mOnDispatchKeyEventListener = new AbstractBaseActivity.OnDispatchKeyEventListener() {
+    private final AbstractBaseActivity.OnDispatchKeyEventListener mOnDispatchKeyEventListener = new AbstractBaseActivity.OnDispatchKeyEventListener() {
         @Override
         public boolean dispatchKeyEvent(KeyEvent event) {
             // catch back button event when ActionMode is still active
@@ -192,7 +192,7 @@ public class PhysiognomyFragment
     };
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_expandable_list,
@@ -201,14 +201,14 @@ public class PhysiognomyFragment
 
         mProgressContainer = view.findViewById(R.id.progressContainer);
         mListContainer = view.findViewById(R.id.listContainer);
-        mExpandableListView = (ExpandableListView) view.findViewById(R.id.expandableListView);
-        mTextViewEmpty = (TextView) view.findViewById(R.id.textViewEmpty);
+        mExpandableListView = view.findViewById(R.id.expandableListView);
+        mTextViewEmpty = view.findViewById(R.id.textViewEmpty);
 
         return view;
     }
 
     @Override
-    public void onViewCreated(View view,
+    public void onViewCreated(@NonNull View view,
                               Bundle savedInstanceState) {
         super.onViewCreated(view,
                             savedInstanceState);
@@ -275,7 +275,7 @@ public class PhysiognomyFragment
                 final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
 
                 if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
-                    final CheckedTextView checkedTextView = (CheckedTextView) view.findViewById(android.R.id.text1);
+                    final CheckedTextView checkedTextView = view.findViewById(android.R.id.text1);
                     final long childId = mAdapter.getChildId(groupPosition,
                                                              childPosition);
 
@@ -330,7 +330,7 @@ public class PhysiognomyFragment
                 final Taxon currentSelectedTaxon = (Taxon) mInput.getCurrentSelectedTaxon();
 
                 if ((currentSelectedTaxon != null) && (currentSelectedTaxon.getCurrentSelectedArea() != null)) {
-                    final CheckedTextView checkedTextView = (CheckedTextView) v.findViewById(android.R.id.text1);
+                    final CheckedTextView checkedTextView = v.findViewById(android.R.id.text1);
 
                     if (currentSelectedTaxon.getCurrentSelectedArea()
                                             .getSelectedPhysiognomy()
@@ -448,6 +448,7 @@ public class PhysiognomyFragment
         this.mInput = (Input) input;
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id,
                                          Bundle args) {
@@ -479,7 +480,7 @@ public class PhysiognomyFragment
             }
 
             // group cursor
-            return new CursorLoader(getActivity(),
+            return new CursorLoader(getContext(),
                                     MainContentProvider.CONTENT_PHYSIOGNOMY_GROUPS_URI,
                                     projection,
                                     (selection.length() == 0) ? null : selection.toString(),
@@ -488,7 +489,7 @@ public class PhysiognomyFragment
         }
         else {
             // children cursor
-            return new CursorLoader(getActivity(),
+            return new CursorLoader(getContext(),
                                     Uri.withAppendedPath(MainContentProvider.CONTENT_PHYSIOGNOMY_GROUPS_URI,
                                                          args.getString(AbstractGroupsCursorAdapter.KEY_SELECTED_GROUP_ID)),
                                     projection,
@@ -499,7 +500,7 @@ public class PhysiognomyFragment
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader,
+    public void onLoadFinished(@NonNull Loader<Cursor> loader,
                                Cursor data) {
         if (loader.getId() == -2) {
             mSelectedPhysiognomyGroupNames.clear();
@@ -551,7 +552,7 @@ public class PhysiognomyFragment
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         // this is called when the last Cursor provided to onLoadFinished() is about to be closed.
         if (mAdapter != null) {
             if (loader.getId() == -1) {

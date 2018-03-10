@@ -59,9 +59,9 @@ public abstract class AbstractMapFragment
 
     private static final String TAG = AbstractMapFragment.class.getName();
 
-    protected static final String KEY_EDITING_FEATURE = "KEY_EDITING_FEATURE";
+    static final String KEY_EDITING_FEATURE = "KEY_EDITING_FEATURE";
 
-    protected Input mInput;
+    Input mInput;
     private boolean mIsActionMarkerCollectionPAsSelected = false;
 
     @Override
@@ -255,18 +255,10 @@ public abstract class AbstractMapFragment
         this.mInput = (Input) input;
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id,
                                          Bundle args) {
-        final Context context = getContext();
-
-        if (context == null) {
-            Log.w(TAG,
-                  "onCreateLoader: context null");
-
-            return null;
-        }
-
         final String[] projection = {
                 MainDatabaseHelper.ProspectingAreasColumns._ID,
                 MainDatabaseHelper.ProspectingAreasColumns.TAXON_ID,
@@ -277,7 +269,7 @@ public abstract class AbstractMapFragment
             Log.w(TAG,
                   "onCreateLoader: no taxon selected !");
 
-            return new CursorLoader(context,
+            return new CursorLoader(getContext(),
                                     Uri.withAppendedPath(MainContentProvider.CONTENT_PROSPECTING_AREAS_TAXON_URI,
                                                          Long.toString(0)),
                                     projection,
@@ -286,7 +278,7 @@ public abstract class AbstractMapFragment
                                     null);
         }
         else {
-            return new CursorLoader(context,
+            return new CursorLoader(getContext(),
                                     Uri.withAppendedPath(MainContentProvider.CONTENT_PROSPECTING_AREAS_TAXON_URI,
                                                          Long.toString(mInput.getCurrentSelectedTaxon()
                                                                              .getTaxonId())),
@@ -298,7 +290,7 @@ public abstract class AbstractMapFragment
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader,
+    public void onLoadFinished(@NonNull Loader<Cursor> loader,
                                Cursor data) {
         if ((data != null) && data.moveToFirst()) {
             final List<Feature> features = new ArrayList<>();
@@ -330,16 +322,16 @@ public abstract class AbstractMapFragment
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         // nothing to do ...
     }
 
     @Nullable
-    protected FeaturesControl getFeaturesControl() {
+    private FeaturesControl getFeaturesControl() {
         return (FeaturesControl) getControl(ControlUtils.getControlName(FeaturesControl.class));
     }
 
-    protected void clearFeatures() {
+    void clearFeatures() {
         final FeaturesControl featuresControl = getFeaturesControl();
 
         if (featuresControl == null) {
@@ -352,9 +344,9 @@ public abstract class AbstractMapFragment
         featuresControl.clearFeatures();
     }
 
-    protected void showFeatures(@NonNull final List<Feature> features,
-                                @NonNull final FeatureStyle featureStyle,
-                                boolean fitBounds) {
+    void showFeatures(@NonNull final List<Feature> features,
+                      @NonNull final FeatureStyle featureStyle,
+                      boolean fitBounds) {
         if (features.isEmpty()) {
             Log.d(TAG,
                   "showFeatures: no features to display");
@@ -377,11 +369,11 @@ public abstract class AbstractMapFragment
     }
 
     @Nullable
-    protected DrawControl getDrawControl() {
+    DrawControl getDrawControl() {
         return (DrawControl) getControl(ControlUtils.getControlName(DrawControl.class));
     }
 
-    protected void clearEditableFeatures() {
+    void clearEditableFeatures() {
         final DrawControl drawControl = (DrawControl) getControl(ControlUtils.getControlName(DrawControl.class));
 
         if (drawControl == null) {
@@ -394,7 +386,7 @@ public abstract class AbstractMapFragment
         drawControl.clearFeatures();
     }
 
-    protected void validateCurrentPage() {
+    void validateCurrentPage() {
         final Activity activity = getActivity();
 
         if (activity != null) {

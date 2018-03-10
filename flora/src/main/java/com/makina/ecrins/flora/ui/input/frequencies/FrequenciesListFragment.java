@@ -192,8 +192,8 @@ public class FrequenciesListFragment
         private final LayoutInflater mInflater;
         private final int mResourceId;
 
-        public FrequenciesArrayAdapter(Context context,
-                                       int resource) {
+        FrequenciesArrayAdapter(Context context,
+                                int resource) {
             super(context,
                   resource);
 

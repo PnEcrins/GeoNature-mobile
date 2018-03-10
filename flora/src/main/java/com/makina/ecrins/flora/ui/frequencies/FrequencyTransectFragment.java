@@ -54,10 +54,6 @@ public class FrequencyTransectFragment
 
     private Handler mHandler;
 
-    public FrequencyTransectFragment() {
-        // Required empty public constructor
-    }
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -90,18 +86,18 @@ public class FrequencyTransectFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_frequency_transect,
                                      container,
                                      false);
 
-        mTextViewFrequencyStepAdvice = (TextView) view.findViewById(R.id.textViewFrequencyStepAdvice);
+        mTextViewFrequencyStepAdvice = view.findViewById(R.id.textViewFrequencyStepAdvice);
         mTextViewFrequencyStepAdvice.setText(String.format(getString(R.string.frequency_transect_step_advice),
                                                            0));
 
-        mEditTextNumberOfTransects = (EditText) view.findViewById(R.id.editTextNumberOfTransects);
+        mEditTextNumberOfTransects = view.findViewById(R.id.editTextNumberOfTransects);
         mEditTextNumberOfTransects.setText(NumberFormat.getInstance()
                                                        .format(mFrequency.getTransects()));
         mEditTextNumberOfTransects.addTextChangedListener(new TextWatcher() {
@@ -136,12 +132,12 @@ public class FrequencyTransectFragment
             }
         });
 
-        mButtonYes = (Button) view.findViewById(R.id.buttonYes);
-        mButtonNo = (Button) view.findViewById(R.id.buttonNo);
+        mButtonYes = view.findViewById(R.id.buttonYes);
+        mButtonNo = view.findViewById(R.id.buttonNo);
         mButtonYes.setOnClickListener(this);
         mButtonNo.setOnClickListener(this);
 
-        mEditTextYes = (EditText) view.findViewById(R.id.editTextYes);
+        mEditTextYes = view.findViewById(R.id.editTextYes);
         mEditTextYes.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s,
@@ -175,7 +171,7 @@ public class FrequencyTransectFragment
             }
         });
 
-        mEditTextNo = (EditText) view.findViewById(R.id.editTextNo);
+        mEditTextNo = view.findViewById(R.id.editTextNo);
         mEditTextNo.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s,
@@ -209,8 +205,8 @@ public class FrequencyTransectFragment
             }
         });
 
-        mTextViewNumberOfSteps = (TextView) view.findViewById(R.id.textViewNumberOfSteps);
-        mTextViewComputedFrequency = (TextView) view.findViewById(R.id.textViewComputedFrequency);
+        mTextViewNumberOfSteps = view.findViewById(R.id.textViewNumberOfSteps);
+        mTextViewComputedFrequency = view.findViewById(R.id.textViewComputedFrequency);
 
         return view;
     }
@@ -233,12 +229,12 @@ public class FrequencyTransectFragment
             mOnFrequencyListener = (OnFrequencyListener) context;
         }
         else {
-            throw new RuntimeException(getContext().toString() + " must implement OnFrequencyListener");
+            throw new RuntimeException(context.toString() + " must implement OnFrequencyListener");
         }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable(KEY_FREQUENCY,

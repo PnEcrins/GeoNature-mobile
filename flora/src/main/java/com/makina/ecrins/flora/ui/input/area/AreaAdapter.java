@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -24,6 +23,7 @@ import android.widget.TextView;
 
 import com.makina.ecrins.commons.content.AbstractMainContentProvider;
 import com.makina.ecrins.commons.content.MainDatabaseHelper;
+import com.makina.ecrins.commons.util.KeyboardUtils;
 import com.makina.ecrins.flora.BuildConfig;
 import com.makina.ecrins.flora.R;
 import com.makina.ecrins.flora.content.MainContentProvider;
@@ -53,7 +53,7 @@ class AreaAdapter
     private static final int TYPE_POLYGON = 3;
 
     private final Context mContext;
-    private LoaderManager mLoaderManager;
+    private final LoaderManager mLoaderManager;
     private final OnAreaAdapterListener mOnAreaAdapterListener;
     private final DecimalFormat mDecimalFormat;
 
@@ -73,8 +73,9 @@ class AreaAdapter
         mDecimalFormat.setDecimalFormatSymbols(symbols);
     }
 
+    @NonNull
     @Override
-    public AbstractViewHolder onCreateViewHolder(ViewGroup parent,
+    public AbstractViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
                                                  int viewType) {
         switch (viewType) {
             case TYPE_POINT:
@@ -112,7 +113,7 @@ class AreaAdapter
     }
 
     @Override
-    public void onBindViewHolder(AbstractViewHolder holder,
+    public void onBindViewHolder(@NonNull AbstractViewHolder holder,
                                  int position) {
         holder.bind(mArea,
                     position);
@@ -164,7 +165,7 @@ class AreaAdapter
         PointViewHolder(View itemView) {
             super(itemView);
 
-            mEditTextPointArea = (EditText) itemView.findViewById(R.id.editTextPointArea);
+            mEditTextPointArea = itemView.findViewById(R.id.editTextPointArea);
             mEditTextPointArea.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void onTextChanged(CharSequence s,
@@ -204,12 +205,10 @@ class AreaAdapter
                 public void onFocusChange(View v,
                                           boolean hasFocus) {
                     if (hasFocus) {
-                        ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(v,
-                                                                                                                     0);
+                        KeyboardUtils.showSoftKeyboard(v);
                     }
                     else {
-                        ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(v.getWindowToken(),
-                                                                                                                               0);
+                        KeyboardUtils.hideSoftKeyboard(v);
                     }
                 }
             });
@@ -224,8 +223,7 @@ class AreaAdapter
             mEditTextPointArea.post(new Runnable() {
                 @Override
                 public void run() {
-                    ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(mEditTextPointArea,
-                                                                                                                 0);
+                    KeyboardUtils.showSoftKeyboard(mEditTextPointArea);
                 }
             });
         }
@@ -257,11 +255,11 @@ class AreaAdapter
         LineStringViewHolder(View itemView) {
             super(itemView);
 
-            mTextViewPathLengthComputed = (TextView) itemView.findViewById(R.id.textViewPathLengthComputed);
+            mTextViewPathLengthComputed = itemView.findViewById(R.id.textViewPathLengthComputed);
             mTextViewPathLengthComputed.setText(String.format(mContext.getString(R.string.area_path_length_computed),
                                                               0.0));
 
-            mEditTextPathWidth = (EditText) itemView.findViewById(R.id.editTextPathWidth);
+            mEditTextPathWidth = itemView.findViewById(R.id.editTextPathWidth);
             mEditTextPathWidth.setEnabled(false);
             mEditTextPathWidth.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -302,21 +300,19 @@ class AreaAdapter
                 public void onFocusChange(View v,
                                           boolean hasFocus) {
                     if (hasFocus) {
-                        ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(v,
-                                                                                                                     0);
+                        KeyboardUtils.showSoftKeyboard(v);
                     }
                     else {
-                        ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(v.getWindowToken(),
-                                                                                                                               0);
+                        KeyboardUtils.hideSoftKeyboard(v);
                     }
                 }
             });
 
-            mSpinnerIncline = (Spinner) itemView.findViewById(R.id.spinnerIncline);
+            mSpinnerIncline = itemView.findViewById(R.id.spinnerIncline);
             mSpinnerIncline.setOnItemSelectedListener(mOnItemSelectedListener);
             mSpinnerIncline.setEnabled(false);
 
-            mTextViewAreaComputed = (TextView) itemView.findViewById(R.id.textViewAreaComputed);
+            mTextViewAreaComputed = itemView.findViewById(R.id.textViewAreaComputed);
             mTextViewAreaComputed.setText(String.format(mContext.getString(R.string.area_computed),
                                                         0.0));
 
@@ -363,8 +359,7 @@ class AreaAdapter
             mEditTextPathWidth.post(new Runnable() {
                 @Override
                 public void run() {
-                    ((InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(mEditTextPathWidth,
-                                                                                                                 0);
+                    KeyboardUtils.showSoftKeyboard(mEditTextPathWidth);
                 }
             });
         }
@@ -408,15 +403,15 @@ class AreaAdapter
         PolygonViewHolder(View itemView) {
             super(itemView);
 
-            mTextViewPolygonPlanimetricAreaComputed = (TextView) itemView.findViewById(R.id.textViewPolygonPlanimetricAreaComputed);
+            mTextViewPolygonPlanimetricAreaComputed = itemView.findViewById(R.id.textViewPolygonPlanimetricAreaComputed);
             mTextViewPolygonPlanimetricAreaComputed.setText(String.format(mContext.getString(R.string.area_polygon_planimetric_area_computed),
                                                                           0.0));
 
-            mSpinnerIncline = (Spinner) itemView.findViewById(R.id.spinnerIncline);
+            mSpinnerIncline = itemView.findViewById(R.id.spinnerIncline);
             mSpinnerIncline.setOnItemSelectedListener(mOnItemSelectedListener);
             mSpinnerIncline.setEnabled(false);
 
-            mTextViewAreaComputed = (TextView) itemView.findViewById(R.id.textViewAreaComputed);
+            mTextViewAreaComputed = itemView.findViewById(R.id.textViewAreaComputed);
             mTextViewAreaComputed.setText(String.format(mContext.getString(R.string.area_computed),
                                                         0.0));
 
@@ -482,7 +477,7 @@ class AreaAdapter
         SimpleCursorAdapter mAdapter;
         double mInclineValue;
 
-        LoaderManager.LoaderCallbacks<Cursor> mLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+        final LoaderManager.LoaderCallbacks<Cursor> mLoaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
             @Override
             public Loader<Cursor> onCreateLoader(int id,
                                                  Bundle args) {
@@ -514,7 +509,7 @@ class AreaAdapter
             }
 
             @Override
-            public void onLoadFinished(Loader<Cursor> loader,
+            public void onLoadFinished(@NonNull Loader<Cursor> loader,
                                        Cursor data) {
                 switch (loader.getId()) {
                     case AbstractMainContentProvider.INCLINES:
@@ -537,12 +532,12 @@ class AreaAdapter
             }
 
             @Override
-            public void onLoaderReset(Loader<Cursor> loader) {
+            public void onLoaderReset(@NonNull Loader<Cursor> loader) {
 
             }
         };
 
-        AdapterView.OnItemSelectedListener mOnItemSelectedListener = new AdapterView.OnItemSelectedListener() {
+        final AdapterView.OnItemSelectedListener mOnItemSelectedListener = new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent,
                                        View view,

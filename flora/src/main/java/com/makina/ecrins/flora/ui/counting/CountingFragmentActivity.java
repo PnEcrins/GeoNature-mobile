@@ -74,7 +74,7 @@ public class CountingFragmentActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        mButtonFinish = (Button) findViewById(R.id.buttonFinish);
+        mButtonFinish = findViewById(R.id.buttonFinish);
         mButtonFinish.setOnClickListener(this);
 
         final Bundle bundle = getIntent().getExtras();

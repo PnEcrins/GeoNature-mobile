@@ -172,6 +172,7 @@ public class InputIntentServiceTest {
         assertNull(area.getComment());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteEmptyInput() throws
                                       Exception {
@@ -199,6 +200,7 @@ public class InputIntentServiceTest {
                      jsonString);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteInputWithEmptyAreas() throws
                                                Exception {
@@ -236,6 +238,7 @@ public class InputIntentServiceTest {
                      jsonString);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteInputWithOneArea() throws
                                             Exception {

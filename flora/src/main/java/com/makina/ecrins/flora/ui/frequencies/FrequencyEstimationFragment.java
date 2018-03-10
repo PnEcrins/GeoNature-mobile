@@ -46,10 +46,6 @@ public class FrequencyEstimationFragment
 
     private OnFrequencyListener mOnFrequencyListener;
 
-    public FrequencyEstimationFragment() {
-        // Required empty public constructor
-    }
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -76,7 +72,7 @@ public class FrequencyEstimationFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_frequency_estimation,
@@ -103,7 +99,7 @@ public class FrequencyEstimationFragment
         abacus.add(new Abacus(R.drawable.ic_abacus_90,
                               0.9));
 
-        final GridView gridViewAbacus = (GridView) view.findViewById(R.id.gridViewAbacus);
+        final GridView gridViewAbacus = view.findViewById(R.id.gridViewAbacus);
         final AbacusAdapter abacusAdapter = new AbacusAdapter(getActivity(),
                                                               abacus);
         gridViewAbacus.setAdapter(abacusAdapter);
@@ -127,7 +123,7 @@ public class FrequencyEstimationFragment
             }
         });
 
-        mSeekBarFrequency = (SeekBar) view.findViewById(R.id.seekBarFrequency);
+        mSeekBarFrequency = view.findViewById(R.id.seekBarFrequency);
         mSeekBarFrequency.setMax(100);
         mSeekBarFrequency.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
@@ -151,7 +147,7 @@ public class FrequencyEstimationFragment
             }
         });
 
-        mEditTextFrequency = (EditText) view.findViewById(R.id.editTextFrequency);
+        mEditTextFrequency = view.findViewById(R.id.editTextFrequency);
         mEditTextFrequency.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s,
@@ -202,12 +198,12 @@ public class FrequencyEstimationFragment
             mOnFrequencyListener = (OnFrequencyListener) context;
         }
         else {
-            throw new RuntimeException(getContext().toString() + " must implement OnFrequencyListener");
+            throw new RuntimeException(context.toString() + " must implement OnFrequencyListener");
         }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable(KEY_FREQUENCY,
@@ -278,7 +274,7 @@ public class FrequencyEstimationFragment
             final Abacus abacus = getItem(position);
 
             if (abacus != null) {
-                TextView textView = (TextView) view.findViewById(android.R.id.text1);
+                TextView textView = view.findViewById(android.R.id.text1);
                 textView.setText(mNumberFormat.format(abacus.getValue()));
                 textView.setCompoundDrawablesWithIntrinsicBounds(0,
                                                                  abacus.getResourceId(),

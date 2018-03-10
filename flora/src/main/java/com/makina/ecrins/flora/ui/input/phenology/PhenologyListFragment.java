@@ -40,7 +40,7 @@ public class PhenologyListFragment
     private Input mInput;
 
     @Override
-    public void onViewCreated(View view,
+    public void onViewCreated(@NonNull View view,
                               Bundle savedInstanceState) {
         // give some text to display if there is no data
         setEmptyText(getString(R.string.phenology_no_data));
@@ -157,6 +157,7 @@ public class PhenologyListFragment
         this.mInput = (Input) input;
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id,
                                          Bundle args) {
@@ -166,7 +167,7 @@ public class PhenologyListFragment
                 MainDatabaseHelper.PhenologyColumns.NAME
         };
 
-        return new CursorLoader(getActivity(),
+        return new CursorLoader(getContext(),
                                 MainContentProvider.CONTENT_PHENOLOGY_URI,
                                 projection,
                                 null,
@@ -175,7 +176,7 @@ public class PhenologyListFragment
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader,
+    public void onLoadFinished(@NonNull Loader<Cursor> loader,
                                Cursor data) {
         mAdapter.swapCursor(data);
 
@@ -189,7 +190,7 @@ public class PhenologyListFragment
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         // data is not available anymore, delete reference
         mAdapter.swapCursor(null);
     }

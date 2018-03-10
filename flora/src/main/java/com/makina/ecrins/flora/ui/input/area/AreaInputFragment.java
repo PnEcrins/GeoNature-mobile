@@ -78,7 +78,7 @@ public class AreaInputFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
         // inflate the layout for this fragment
@@ -88,12 +88,12 @@ public class AreaInputFragment
     }
 
     @Override
-    public void onViewCreated(View view,
+    public void onViewCreated(@NonNull View view,
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view,
                             savedInstanceState);
 
-        final RecyclerView mRecyclerView = (RecyclerView) view.findViewById(android.R.id.list);
+        final RecyclerView mRecyclerView = view.findViewById(android.R.id.list);
         mRecyclerView.setHasFixedSize(false);
         // use a linear layout manager as default layout manager
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

@@ -25,7 +25,7 @@ public class Counting implements Parcelable {
     public static final String KEY_COUTING_STERILE = "sterile";
     public static final String KEY_TOTAL_STERILE = "total_sterile";
 
-    private CountingType mType;
+    private final CountingType mType;
     private double mPlotSurface;
     private int mPlots;
     private int mCountFertile;
