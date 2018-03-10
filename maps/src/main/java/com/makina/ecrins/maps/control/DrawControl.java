@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -152,15 +151,15 @@ public class DrawControl
     @Override
     public View getView(boolean forceCreate) {
         if ((this.mView == null) || forceCreate) {
-            this.mView = LayoutInflater.from(getContext())
-                                       .inflate(R.layout.control_draw_toolbar_layout,
-                                                null);
+            this.mView = View.inflate(getContext(),
+                                      R.layout.control_draw_toolbar_layout,
+                                      null);
 
-            mImageButtonAddMarker = (ImageButton) this.mView.findViewById(R.id.imageButtonAddMarker);
-            mImageButtonAddPath = (ImageButton) this.mView.findViewById(R.id.imageButtonAddPath);
-            mImageButtonAddPolygon = (ImageButton) this.mView.findViewById(R.id.imageButtonAddPolygon);
-            mImageButtonEdit = (ImageButton) this.mView.findViewById(R.id.imageButtonEdit);
-            mImageButtonDelete = (ImageButton) this.mView.findViewById(R.id.imageButtonDelete);
+            mImageButtonAddMarker = this.mView.findViewById(R.id.imageButtonAddMarker);
+            mImageButtonAddPath = this.mView.findViewById(R.id.imageButtonAddPath);
+            mImageButtonAddPolygon = this.mView.findViewById(R.id.imageButtonAddPolygon);
+            mImageButtonEdit = this.mView.findViewById(R.id.imageButtonEdit);
+            mImageButtonDelete = this.mView.findViewById(R.id.imageButtonDelete);
 
             mImageButtonAddMarker.setOnClickListener(this);
             mImageButtonAddPath.setOnClickListener(this);

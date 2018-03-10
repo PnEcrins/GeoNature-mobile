@@ -49,21 +49,26 @@ public class GeoJsonWriterTest {
         geoJsonWriter = new GeoJsonWriter();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteFeatureToJsonString() throws
                                                Exception {
         // given a Feature as Point
         final Feature feature = mock(Feature.class);
-        doReturn("id1").when(feature)
-                       .getId();
-        doReturn("Feature").when(feature)
-                           .getType();
+        doReturn("id1")
+                .when(feature)
+                .getId();
+        doReturn("Feature")
+                .when(feature)
+                .getType();
         doReturn(createPoint(gf,
                              47.2256258d,
-                             -1.5545135d)).when(feature)
-                                          .getGeometry();
-        doReturn(new Bundle()).when(feature)
-                              .getProperties();
+                             -1.5545135d))
+                .when(feature)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature)
+                .getProperties();
 
         // when write this Feature as JSON string
         final String json = geoJsonWriter.write(feature);
@@ -74,15 +79,18 @@ public class GeoJsonWriterTest {
                      json);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteInvalidFeatureToJsonString() throws
                                                       Exception {
         // given a Feature as Point
         final Feature feature = mock(Feature.class);
-        doReturn("id1").when(feature)
-                       .getId();
-        doReturn(mock(Geometry.class)).when(feature)
-                                      .getGeometry();
+        doReturn("id1")
+                .when(feature)
+                .getId();
+        doReturn(mock(Geometry.class))
+                .when(feature)
+                .getGeometry();
 
         // when write this Feature as JSON string
         final String json = geoJsonWriter.write(feature);
@@ -91,21 +99,26 @@ public class GeoJsonWriterTest {
         assertNull(json);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteFeatureAsPoint() throws
                                           Exception {
         // given a Feature as Point
         final Feature feature = mock(Feature.class);
-        doReturn("id1").when(feature)
-                       .getId();
-        doReturn("Feature").when(feature)
-                           .getType();
+        doReturn("id1")
+                .when(feature)
+                .getId();
+        doReturn("Feature")
+                .when(feature)
+                .getType();
         doReturn(createPoint(gf,
                              47.2256258d,
-                             -1.5545135d)).when(feature)
-                                          .getGeometry();
-        doReturn(new Bundle()).when(feature)
-                              .getProperties();
+                             -1.5545135d))
+                .when(feature)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature)
+                .getProperties();
 
         // when write this Feature as JSON string
         final StringWriter writer = new StringWriter();
@@ -118,25 +131,30 @@ public class GeoJsonWriterTest {
                      writer.toString());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteFeatureAsMultiPoint() throws
                                                Exception {
         // given a Feature as MultiPoint
         final Feature feature = mock(Feature.class);
-        doReturn("id1").when(feature)
-                       .getId();
-        doReturn("Feature").when(feature)
-                           .getType();
+        doReturn("id1")
+                .when(feature)
+                .getId();
+        doReturn("Feature")
+                .when(feature)
+                .getType();
         doReturn(createMultiPoint(gf,
                                   createPoint(gf,
                                               47.2256258d,
                                               -1.5545135d),
                                   createPoint(gf,
                                               47.225136d,
-                                              -1.553913d))).when(feature)
-                                                           .getGeometry();
-        doReturn(new Bundle()).when(feature)
-                              .getProperties();
+                                              -1.553913d)))
+                .when(feature)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature)
+                .getProperties();
 
         // when write this Feature as JSON string
         final StringWriter writer = new StringWriter();
@@ -149,25 +167,30 @@ public class GeoJsonWriterTest {
                      writer.toString());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteFeatureAsLineString() throws
                                                Exception {
         // given a Feature as LineString
         final Feature feature = mock(Feature.class);
-        doReturn("id1").when(feature)
-                       .getId();
-        doReturn("Feature").when(feature)
-                           .getType();
+        doReturn("id1")
+                .when(feature)
+                .getId();
+        doReturn("Feature")
+                .when(feature)
+                .getType();
         doReturn(createLineString(gf,
                                   createCoordinate(gf,
                                                    47.2256258d,
                                                    -1.5545135d),
                                   createCoordinate(gf,
                                                    47.225136d,
-                                                   -1.553913d))).when(feature)
-                                                                .getGeometry();
-        doReturn(new Bundle()).when(feature)
-                              .getProperties();
+                                                   -1.553913d)))
+                .when(feature)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature)
+                .getProperties();
 
         // when write this Feature as JSON string
         final StringWriter writer = new StringWriter();
@@ -180,15 +203,18 @@ public class GeoJsonWriterTest {
                      writer.toString());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteFeatureAsMultiLineString() throws
                                                     Exception {
         // given a Feature as MultiLineString
         final Feature feature = mock(Feature.class);
-        doReturn("id1").when(feature)
-                       .getId();
-        doReturn("Feature").when(feature)
-                           .getType();
+        doReturn("id1")
+                .when(feature)
+                .getId();
+        doReturn("Feature")
+                .when(feature)
+                .getType();
         doReturn(createMultiLineString(gf,
                                        createLineString(gf,
                                                         createCoordinate(gf,
@@ -196,10 +222,12 @@ public class GeoJsonWriterTest {
                                                                          -1.5545135d),
                                                         createCoordinate(gf,
                                                                          47.225136d,
-                                                                         -1.553913d)))).when(feature)
-                                                                                       .getGeometry();
-        doReturn(new Bundle()).when(feature)
-                              .getProperties();
+                                                                         -1.553913d))))
+                .when(feature)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature)
+                .getProperties();
 
         // when write this Feature as JSON string
         final StringWriter writer = new StringWriter();
@@ -212,15 +240,18 @@ public class GeoJsonWriterTest {
                      writer.toString());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteFeatureAsSimplePolygon() throws
                                                   Exception {
         // given a Feature as simple Polygon
         final Feature feature = mock(Feature.class);
-        doReturn("id1").when(feature)
-                       .getId();
-        doReturn("Feature").when(feature)
-                           .getType();
+        doReturn("id1")
+                .when(feature)
+                .getId();
+        doReturn("Feature")
+                .when(feature)
+                .getType();
         doReturn(createPolygon(gf,
                                createCoordinate(gf,
                                                 47.226219d,
@@ -236,10 +267,12 @@ public class GeoJsonWriterTest {
                                                 -1.554411d),
                                createCoordinate(gf,
                                                 47.226219d,
-                                                -1.554430d))).when(feature)
-                                                             .getGeometry();
-        doReturn(new Bundle()).when(feature)
-                              .getProperties();
+                                                -1.554430d)))
+                .when(feature)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature)
+                .getProperties();
 
         // when write this Feature as JSON string
         final StringWriter writer = new StringWriter();
@@ -252,15 +285,18 @@ public class GeoJsonWriterTest {
                      writer.toString());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteFeatureAsPolygonWithHoles() throws
                                                      Exception {
         // given a Feature as Polygon with holes
         final Feature feature = mock(Feature.class);
-        doReturn("id1").when(feature)
-                       .getId();
-        doReturn("Feature").when(feature)
-                           .getType();
+        doReturn("id1")
+                .when(feature)
+                .getId();
+        doReturn("Feature")
+                .when(feature)
+                .getType();
         doReturn(createPolygon(gf,
                                createLinearRing(gf,
                                                 createCoordinate(gf,
@@ -293,10 +329,12 @@ public class GeoJsonWriterTest {
                                                                  -1.554411d),
                                                 createCoordinate(gf,
                                                                  47.226219d,
-                                                                 -1.554430d)))).when(feature)
-                                                                               .getGeometry();
-        doReturn(new Bundle()).when(feature)
-                              .getProperties();
+                                                                 -1.554430d))))
+                .when(feature)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature)
+                .getProperties();
 
         // when write this Feature as JSON string
         final StringWriter writer = new StringWriter();
@@ -309,15 +347,18 @@ public class GeoJsonWriterTest {
                      writer.toString());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteFeatureAsMultiPolygon() throws
                                                  Exception {
         // given a Feature as MultiPolygon
         final Feature feature = mock(Feature.class);
-        doReturn("id1").when(feature)
-                       .getId();
-        doReturn("Feature").when(feature)
-                           .getType();
+        doReturn("id1")
+                .when(feature)
+                .getId();
+        doReturn("Feature")
+                .when(feature)
+                .getType();
         doReturn(createMultiPolygon(gf,
                                     createPolygon(gf,
                                                   createCoordinate(gf,
@@ -367,11 +408,13 @@ public class GeoJsonWriterTest {
                                                                                     -1.554411d),
                                                                    createCoordinate(gf,
                                                                                     47.226219d,
-                                                                                    -1.554430d))))).when(feature)
-                                                                                                   .getGeometry();
+                                                                                    -1.554430d)))))
+                .when(feature)
+                .getGeometry();
 
-        doReturn(new Bundle()).when(feature)
-                              .getProperties();
+        doReturn(new Bundle())
+                .when(feature)
+                .getProperties();
 
         // when write this Feature as JSON string
         final StringWriter writer = new StringWriter();
@@ -384,15 +427,18 @@ public class GeoJsonWriterTest {
                      writer.toString());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteFeatureAsGeometryCollection() throws
                                                        Exception {
         // given a Feature as GeometryCollection
         final Feature feature = mock(Feature.class);
-        doReturn("id1").when(feature)
-                       .getId();
-        doReturn("Feature").when(feature)
-                           .getType();
+        doReturn("id1")
+                .when(feature)
+                .getId();
+        doReturn("Feature")
+                .when(feature)
+                .getType();
         doReturn(createGeometryCollection(gf,
                                           createPoint(gf,
                                                       47.2256258d,
@@ -434,11 +480,13 @@ public class GeoJsonWriterTest {
                                                                          -1.554411d),
                                                         createCoordinate(gf,
                                                                          47.226219d,
-                                                                         -1.554430d)))).when(feature)
-                                                                                       .getGeometry();
+                                                                         -1.554430d))))
+                .when(feature)
+                .getGeometry();
 
-        doReturn(new Bundle()).when(feature)
-                              .getProperties();
+        doReturn(new Bundle())
+                .when(feature)
+                .getProperties();
 
         // when write this Feature as JSON string
         final StringWriter writer = new StringWriter();
@@ -451,62 +499,77 @@ public class GeoJsonWriterTest {
                      writer.toString());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteFeatureCollectionToJsonString() throws
                                                          Exception {
         // given Feature1 as Point
         final Feature feature1 = mock(Feature.class);
-        doReturn("id1").when(feature1)
-                       .getId();
-        doReturn("Feature").when(feature1)
-                           .getType();
+        doReturn("id1")
+                .when(feature1)
+                .getId();
+        doReturn("Feature")
+                .when(feature1)
+                .getType();
         doReturn(createPoint(gf,
                              47.2256258d,
-                             -1.5545135d)).when(feature1)
-                                          .getGeometry();
-        doReturn(new Bundle()).when(feature1)
-                              .getProperties();
+                             -1.5545135d))
+                .when(feature1)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature1)
+                .getProperties();
 
         // given Feature2 as MultiPoint
         final Feature feature2 = mock(Feature.class);
-        doReturn("id2").when(feature2)
-                       .getId();
-        doReturn("Feature").when(feature2)
-                           .getType();
+        doReturn("id2")
+                .when(feature2)
+                .getId();
+        doReturn("Feature")
+                .when(feature2)
+                .getType();
         doReturn(createMultiPoint(gf,
                                   createPoint(gf,
                                               47.2256258d,
                                               -1.5545135d),
                                   createPoint(gf,
                                               47.225136d,
-                                              -1.553913d))).when(feature2)
-                                                           .getGeometry();
-        doReturn(new Bundle()).when(feature2)
-                              .getProperties();
+                                              -1.553913d)))
+                .when(feature2)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature2)
+                .getProperties();
 
         // given Feature3 as LineString
         final Feature feature3 = mock(Feature.class);
-        doReturn("id3").when(feature3)
-                       .getId();
-        doReturn("Feature").when(feature3)
-                           .getType();
+        doReturn("id3")
+                .when(feature3)
+                .getId();
+        doReturn("Feature")
+                .when(feature3)
+                .getType();
         doReturn(createLineString(gf,
                                   createCoordinate(gf,
                                                    47.2256258d,
                                                    -1.5545135d),
                                   createCoordinate(gf,
                                                    47.225136d,
-                                                   -1.553913d))).when(feature3)
-                                                                .getGeometry();
-        doReturn(new Bundle()).when(feature3)
-                              .getProperties();
+                                                   -1.553913d)))
+                .when(feature3)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature3)
+                .getProperties();
 
         // given Feature4 as MultiLineString
         final Feature feature4 = mock(Feature.class);
-        doReturn("id4").when(feature4)
-                       .getId();
-        doReturn("Feature").when(feature4)
-                           .getType();
+        doReturn("id4")
+                .when(feature4)
+                .getId();
+        doReturn("Feature")
+                .when(feature4)
+                .getType();
         doReturn(createMultiLineString(gf,
                                        createLineString(gf,
                                                         createCoordinate(gf,
@@ -514,17 +577,21 @@ public class GeoJsonWriterTest {
                                                                          -1.5545135d),
                                                         createCoordinate(gf,
                                                                          47.225136d,
-                                                                         -1.553913d)))).when(feature4)
-                                                                                       .getGeometry();
-        doReturn(new Bundle()).when(feature4)
-                              .getProperties();
+                                                                         -1.553913d))))
+                .when(feature4)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature4)
+                .getProperties();
 
         // given Feature5 as simple Polygon
         final Feature feature5 = mock(Feature.class);
-        doReturn("id5").when(feature5)
-                       .getId();
-        doReturn("Feature").when(feature5)
-                           .getType();
+        doReturn("id5")
+                .when(feature5)
+                .getId();
+        doReturn("Feature")
+                .when(feature5)
+                .getType();
         doReturn(createPolygon(gf,
                                createCoordinate(gf,
                                                 47.226219d,
@@ -540,21 +607,25 @@ public class GeoJsonWriterTest {
                                                 -1.554411d),
                                createCoordinate(gf,
                                                 47.226219d,
-                                                -1.554430d))).when(feature5)
-                                                             .getGeometry();
-        doReturn(new Bundle()).when(feature5)
-                              .getProperties();
+                                                -1.554430d)))
+                .when(feature5)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature5)
+                .getProperties();
 
         // given a FeatureCollection
         final FeatureCollection featureCollection = mock(FeatureCollection.class);
-        doReturn("FeatureCollection").when(featureCollection)
-                                     .getType();
+        doReturn("FeatureCollection")
+                .when(featureCollection)
+                .getType();
         doReturn(asList(feature1,
                         feature2,
                         feature3,
                         feature4,
-                        feature5)).when(featureCollection)
-                                  .getFeatures();
+                        feature5))
+                .when(featureCollection)
+                .getFeatures();
 
         // when write this FeatureCollection as JSON string
         final String json = geoJsonWriter.write(featureCollection);
@@ -565,13 +636,15 @@ public class GeoJsonWriterTest {
                      json);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteEmptyFeatureCollection() throws
                                                   Exception {
         // given an empty FeatureCollection
         final FeatureCollection featureCollection = mock(FeatureCollection.class);
-        doReturn("FeatureCollection").when(featureCollection)
-                                     .getType();
+        doReturn("FeatureCollection")
+                .when(featureCollection)
+                .getType();
 
         // when write this FeatureCollection as JSON string
         final StringWriter writer = new StringWriter();
@@ -584,62 +657,77 @@ public class GeoJsonWriterTest {
                      writer.toString());
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void testWriteFeatureCollection() throws
                                              Exception {
         // given Feature1 as Point
         final Feature feature1 = mock(Feature.class);
-        doReturn("id1").when(feature1)
-                       .getId();
-        doReturn("Feature").when(feature1)
-                           .getType();
+        doReturn("id1")
+                .when(feature1)
+                .getId();
+        doReturn("Feature")
+                .when(feature1)
+                .getType();
         doReturn(createPoint(gf,
                              47.2256258d,
-                             -1.5545135d)).when(feature1)
-                                          .getGeometry();
-        doReturn(new Bundle()).when(feature1)
-                              .getProperties();
+                             -1.5545135d))
+                .when(feature1)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature1)
+                .getProperties();
 
         // given Feature2 as MultiPoint
         final Feature feature2 = mock(Feature.class);
-        doReturn("id2").when(feature2)
-                       .getId();
-        doReturn("Feature").when(feature2)
-                           .getType();
+        doReturn("id2")
+                .when(feature2)
+                .getId();
+        doReturn("Feature")
+                .when(feature2)
+                .getType();
         doReturn(createMultiPoint(gf,
                                   createPoint(gf,
                                               47.2256258d,
                                               -1.5545135d),
                                   createPoint(gf,
                                               47.225136d,
-                                              -1.553913d))).when(feature2)
-                                                           .getGeometry();
-        doReturn(new Bundle()).when(feature2)
-                              .getProperties();
+                                              -1.553913d)))
+                .when(feature2)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature2)
+                .getProperties();
 
         // given Feature3 as LineString
         final Feature feature3 = mock(Feature.class);
-        doReturn("id3").when(feature3)
-                       .getId();
-        doReturn("Feature").when(feature3)
-                           .getType();
+        doReturn("id3")
+                .when(feature3)
+                .getId();
+        doReturn("Feature")
+                .when(feature3)
+                .getType();
         doReturn(createLineString(gf,
                                   createCoordinate(gf,
                                                    47.2256258d,
                                                    -1.5545135d),
                                   createCoordinate(gf,
                                                    47.225136d,
-                                                   -1.553913d))).when(feature3)
-                                                                .getGeometry();
-        doReturn(new Bundle()).when(feature3)
-                              .getProperties();
+                                                   -1.553913d)))
+                .when(feature3)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature3)
+                .getProperties();
 
         // given Feature4 as MultiLineString
         final Feature feature4 = mock(Feature.class);
-        doReturn("id4").when(feature4)
-                       .getId();
-        doReturn("Feature").when(feature4)
-                           .getType();
+        doReturn("id4")
+                .when(feature4)
+                .getId();
+        doReturn("Feature")
+                .when(feature4)
+                .getType();
         doReturn(createMultiLineString(gf,
                                        createLineString(gf,
                                                         createCoordinate(gf,
@@ -647,17 +735,21 @@ public class GeoJsonWriterTest {
                                                                          -1.5545135d),
                                                         createCoordinate(gf,
                                                                          47.225136d,
-                                                                         -1.553913d)))).when(feature4)
-                                                                                       .getGeometry();
-        doReturn(new Bundle()).when(feature4)
-                              .getProperties();
+                                                                         -1.553913d))))
+                .when(feature4)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature4)
+                .getProperties();
 
         // given Feature5 as simple Polygon
         final Feature feature5 = mock(Feature.class);
-        doReturn("id5").when(feature5)
-                       .getId();
-        doReturn("Feature").when(feature5)
-                           .getType();
+        doReturn("id5")
+                .when(feature5)
+                .getId();
+        doReturn("Feature")
+                .when(feature5)
+                .getType();
         doReturn(createPolygon(gf,
                                createCoordinate(gf,
                                                 47.226219d,
@@ -673,21 +765,25 @@ public class GeoJsonWriterTest {
                                                 -1.554411d),
                                createCoordinate(gf,
                                                 47.226219d,
-                                                -1.554430d))).when(feature5)
-                                                             .getGeometry();
-        doReturn(new Bundle()).when(feature5)
-                              .getProperties();
+                                                -1.554430d)))
+                .when(feature5)
+                .getGeometry();
+        doReturn(new Bundle())
+                .when(feature5)
+                .getProperties();
 
         // given a FeatureCollection
         final FeatureCollection featureCollection = mock(FeatureCollection.class);
-        doReturn("FeatureCollection").when(featureCollection)
-                                     .getType();
+        doReturn("FeatureCollection")
+                .when(featureCollection)
+                .getType();
         doReturn(asList(feature1,
                         feature2,
                         feature3,
                         feature4,
-                        feature5)).when(featureCollection)
-                                  .getFeatures();
+                        feature5))
+                .when(featureCollection)
+                .getFeatures();
 
         // when write this FeatureCollection as JSON string
         final StringWriter writer = new StringWriter();

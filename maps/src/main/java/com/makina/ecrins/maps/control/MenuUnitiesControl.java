@@ -46,9 +46,6 @@ public final class MenuUnitiesControl
     private static final String KEY_SELECTED_UNITY = "selected_unity";
     private static final String KEY_POINTING_LOCATION = "pointing_location";
 
-    private static JSONArray jsonArray = new JSONArray();
-    private static JSONObject jsonObject = new JSONObject();
-
     private boolean mIsActionMarkerSelected = false;
 
     /**

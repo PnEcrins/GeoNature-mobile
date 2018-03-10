@@ -22,7 +22,7 @@ public final class DebugUtils {
      *
      * @param pContext the current context
      * @return <code>true</code> if the application is being run in debug mode.
-     * @see {@link ApplicationInfo#FLAG_DEBUGGABLE}
+     * @see ApplicationInfo#FLAG_DEBUGGABLE
      */
     public static boolean isDebuggable(Context pContext) {
         return (pContext.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;

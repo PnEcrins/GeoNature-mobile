@@ -2,7 +2,6 @@ package com.makina.ecrins.maps.control;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.JavascriptInterface;
@@ -60,12 +59,12 @@ public final class ZoomControl
     @Override
     public View getView(boolean forceCreate) {
         if ((this.mView == null) || forceCreate) {
-            this.mView = LayoutInflater.from(getContext())
-                                       .inflate(R.layout.control_zoom_layout,
-                                                null);
+            this.mView = View.inflate(getContext(),
+                                      R.layout.control_zoom_layout,
+                                      null);
 
-            mImageButtonZoomIn = (ImageButton) this.mView.findViewById(R.id.imageButtonZoomIn);
-            mImageButtonZoomOut = (ImageButton) this.mView.findViewById(R.id.imageButtonZoomOut);
+            mImageButtonZoomIn = this.mView.findViewById(R.id.imageButtonZoomIn);
+            mImageButtonZoomOut = this.mView.findViewById(R.id.imageButtonZoomOut);
 
             mImageButtonZoomIn.setOnClickListener(this);
             mImageButtonZoomOut.setOnClickListener(this);

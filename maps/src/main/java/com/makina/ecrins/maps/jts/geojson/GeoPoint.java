@@ -20,7 +20,7 @@ public class GeoPoint
                    IGeoConstants,
                    Comparable<GeoPoint> {
 
-    private Point point;
+    private final Point point;
 
     public GeoPoint(final int latitudeE6,
                     final int longitudeE6) {

@@ -16,8 +16,8 @@ public class Feature
         extends AbstractGeoJson
         implements Parcelable {
 
-    private String id;
-    private Geometry geometry;
+    private final String id;
+    private final Geometry geometry;
     private Bundle properties = new Bundle();
 
     public Feature(@NonNull final String id,

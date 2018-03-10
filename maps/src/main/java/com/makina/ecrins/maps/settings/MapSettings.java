@@ -362,6 +362,7 @@ public class MapSettings
          *
          * @return Fluent interface
          */
+        @SuppressWarnings("UnusedReturnValue")
         @NonNull
         public Builder showUnitiesLayer(boolean showUnitiesLayer) {
             this.showUnitiesLayer = showUnitiesLayer;

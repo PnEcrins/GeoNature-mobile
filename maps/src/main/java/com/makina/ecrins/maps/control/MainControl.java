@@ -395,24 +395,28 @@ public class MainControl
     public String getTile(int zoomLevel,
                           int column,
                           int row) {
-        if (this.mWebViewFragment.getTilesLayersDataSource(this.mWebViewFragment.getSelectedLayer()
-                                                                                .getName())
-                                 .getZooms()
-                                 .contains(zoomLevel)) {
+        final ITilesLayerDataSource selectedTilesLayerDataSource = this.mWebViewFragment.getTilesLayersDataSource(this.mWebViewFragment.getSelectedLayer()
+                                                                                                                                       .getName());
+
+        if (selectedTilesLayerDataSource == null) {
+            return "";
+        }
+
+        if (selectedTilesLayerDataSource.getZooms()
+                                        .contains(zoomLevel)) {
             // try to use the current layer source if possible
-            return this.mWebViewFragment.getTilesLayersDataSource(this.mWebViewFragment.getSelectedLayer()
-                                                                                       .getName())
-                                        .getTile(zoomLevel,
-                                                 column,
-                                                 row);
+            return selectedTilesLayerDataSource.getTile(zoomLevel,
+                                                        column,
+                                                        row);
         }
         else {
             // try to find the most appropriate layer source from MapSettings
             for (LayerSettings layerSettings : this.mWebViewFragment.getMapSettings()
                                                                     .getLayers()) {
-                if (this.mWebViewFragment.getTilesLayersDataSource(layerSettings.getName())
-                                         .getZooms()
-                                         .contains(zoomLevel)) {
+                final ITilesLayerDataSource tilesLayerDataSource = this.mWebViewFragment.getTilesLayersDataSource(layerSettings.getName());
+
+                if (tilesLayerDataSource != null && tilesLayerDataSource.getZooms()
+                                                                        .contains(zoomLevel)) {
                     if (BuildConfig.DEBUG) {
                         Log.d(TAG,
                               "getTile: switch to layer " + layerSettings.getName());
@@ -421,16 +425,15 @@ public class MainControl
                     // switch to this layer source
                     this.mWebViewFragment.setSelectedLayer(layerSettings);
 
-                    return this.mWebViewFragment.getTilesLayersDataSource(layerSettings.getName())
-                                                .getTile(zoomLevel,
-                                                         column,
-                                                         row);
+                    return tilesLayerDataSource.getTile(zoomLevel,
+                                                        column,
+                                                        row);
                 }
             }
         }
 
         Log.w(TAG,
-              "getTile: no layer source found for the given zoom level !");
+              "getTile: no tiles layer data source found for the given zoom level!");
 
         return "";
     }

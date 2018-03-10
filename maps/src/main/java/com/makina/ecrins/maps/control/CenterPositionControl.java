@@ -7,7 +7,6 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.JavascriptInterface;
@@ -64,11 +63,11 @@ public final class CenterPositionControl
     @Override
     public View getView(boolean forceCreate) {
         if ((this.mView == null) || forceCreate) {
-            this.mView = LayoutInflater.from(getContext())
-                                       .inflate(R.layout.control_center_position_layout,
-                                                null);
+            this.mView = View.inflate(getContext(),
+                                      R.layout.control_center_position_layout,
+                                      null);
 
-            mImageButtonCenterPosition = (ImageButton) this.mView.findViewById(R.id.imageButtonCenterPosition);
+            mImageButtonCenterPosition = this.mView.findViewById(R.id.imageButtonCenterPosition);
 
             mImageButtonCenterPosition.setOnClickListener(this);
             mImageButtonCenterPosition.setEnabled(true);

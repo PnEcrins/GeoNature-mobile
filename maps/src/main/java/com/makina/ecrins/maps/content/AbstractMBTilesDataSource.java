@@ -12,8 +12,6 @@ import android.util.Log;
 
 import com.makina.ecrins.maps.settings.LayerSettings;
 
-import java.io.IOException;
-
 /**
  * Simple {@link ITilesLayerDataSource} MBTiles SQLite implementation.
  *
@@ -46,8 +44,7 @@ abstract class AbstractMBTilesDataSource
     }
 
     @NonNull
-    Metadata readMetadata(@NonNull final SQLiteDatabase database) throws
-                                                                  IOException {
+    Metadata readMetadata(@NonNull final SQLiteDatabase database) {
         Cursor cursor = database.query("metadata",
                                        new String[] {
                                                "name",

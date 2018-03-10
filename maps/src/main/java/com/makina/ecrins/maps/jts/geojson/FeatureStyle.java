@@ -18,15 +18,15 @@ import com.makina.ecrins.maps.R;
 public class FeatureStyle
         implements Parcelable {
 
-    private boolean stroke;
-    private int colorResourceId;
-    private String color;
-    private int weight;
-    private double opacity;
-    private boolean fill;
-    private int fillColorResourceId;
-    private String fillColor;
-    private double fillOpacity;
+    private final boolean stroke;
+    private final int colorResourceId;
+    private final String color;
+    private final int weight;
+    private final double opacity;
+    private final boolean fill;
+    private final int fillColorResourceId;
+    private final String fillColor;
+    private final double fillOpacity;
 
     private FeatureStyle(boolean stroke,
                          int colorResourceId,

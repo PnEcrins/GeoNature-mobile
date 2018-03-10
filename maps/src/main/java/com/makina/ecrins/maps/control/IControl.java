@@ -25,7 +25,7 @@ public interface IControl {
      *
      * @return the {@link IControl} name.
      *
-     * @see {@link WebView#addJavascriptInterface(Object, String)}
+     * @see WebView#addJavascriptInterface(Object, String)
      */
     @NonNull
     String getName();
@@ -87,7 +87,7 @@ public interface IControl {
      *
      * @param webViewFragment {@link IWebViewFragment} instance used by this {@link IControl}
      *
-     * @see {@link IWebViewFragment#loadUrl(String)}
+     * @see IWebViewFragment#loadUrl(String)
      */
     void add(IWebViewFragment webViewFragment);
 
@@ -96,7 +96,7 @@ public interface IControl {
      *
      * @param webViewFragment {@link IWebViewFragment} instance used by this {@link IControl}
      *
-     * @see {@link IWebViewFragment#loadUrl(String)}
+     * @see IWebViewFragment#loadUrl(String)
      */
     void remove(IWebViewFragment webViewFragment);
 }

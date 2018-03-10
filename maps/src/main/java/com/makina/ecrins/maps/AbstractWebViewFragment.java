@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -114,8 +115,14 @@ public abstract class AbstractWebViewFragment
             mSavedState = savedInstanceState;
         }
 
+        final FragmentActivity activity = getActivity();
+
+        if (activity == null) {
+            return;
+        }
+
         mIsTilesLayersDataSourcesInitialized = initializeTilesLayersDataSources();
-        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
 
         if (BuildConfig.DEBUG) {
             Log.d(TAG,
@@ -125,21 +132,21 @@ public abstract class AbstractWebViewFragment
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_webview,
                                            container,
                                            false);
-        mLayout = (FrameLayout) view.findViewById(R.id.frameLayout);
-        mLeftToolbarLayout = (LinearLayout) view.findViewById(R.id.leftToolbarLayout);
-        mRightToolbarLayout = (LinearLayout) view.findViewById(R.id.rightToolbarLayout);
+        mLayout = view.findViewById(R.id.frameLayout);
+        mLeftToolbarLayout = view.findViewById(R.id.leftToolbarLayout);
+        mRightToolbarLayout = view.findViewById(R.id.rightToolbarLayout);
 
         if (mWebView != null) {
             mWebView.destroy();
         }
 
-        mWebView = new WebView(getActivity().getApplicationContext());
+        mWebView = new WebView(getActivity());
         mLayout.addView(mWebView);
 
         mWebView.getSettings()
@@ -300,7 +307,7 @@ public abstract class AbstractWebViewFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putAll(mSavedState);
 
         super.onSaveInstanceState(outState);
@@ -359,7 +366,14 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public ITilesLayerDataSource getTilesLayersDataSource(String name) {
-        return this.mTilesLayersDataSources.get(name);
+        final ITilesLayerDataSource tilesLayerDataSource = this.mTilesLayersDataSources.get(name);
+
+        if (tilesLayerDataSource == null) {
+            Log.w(TAG,
+                  "No tiles layer data source found for layer '" + name + "'");
+        }
+
+        return tilesLayerDataSource;
     }
 
     @Override
@@ -464,8 +478,7 @@ public abstract class AbstractWebViewFragment
                   "removeControl " + control.getName());
         }
 
-        if (control instanceof LocationListener) {
-            // noinspection MissingPermission
+        if (control instanceof LocationListener && (mLocationManager != null)) {
             mLocationManager.removeUpdates((LocationListener) control);
         }
 
@@ -567,10 +580,20 @@ public abstract class AbstractWebViewFragment
 
     @Override
     public void requestLocationUpdates(LocationListener listener) {
-        if (ActivityCompat.checkSelfPermission(getContext(),
-                                               Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getContext(),
+        if (mLocationManager == null) {
+            return;
+        }
+
+        final FragmentActivity activity = getActivity();
+
+        if (activity == null) {
+            return;
+        }
+
+        if (ActivityCompat.checkSelfPermission(activity,
+                                               Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(activity,
                                                                                                                                                                       Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(),
+            ActivityCompat.requestPermissions(activity,
                                               new String[] {
                                                       Manifest.permission.ACCESS_COARSE_LOCATION,
                                                       Manifest.permission.ACCESS_FINE_LOCATION
@@ -580,9 +603,9 @@ public abstract class AbstractWebViewFragment
         else {
             mLocationManager.removeUpdates(listener);
 
-            if (DebugUtils.isDebuggable(getActivity())) {
+            if (DebugUtils.isDebuggable(activity)) {
                 if (mLocationManager.getProvider(MockLocationProvider.MOCK_LOCATION_PROVIDER) == null) {
-                    mMockLocationProvider = new MockLocationProvider(getActivity());
+                    mMockLocationProvider = new MockLocationProvider(activity);
                 }
 
                 if (mMockLocationProvider.isProviderEnabled()) {
@@ -666,7 +689,7 @@ public abstract class AbstractWebViewFragment
      *
      * @return the root path as {@link File}
      *
-     * @throws IOException
+     * @throws IOException if something goes wrong
      */
     protected abstract File getTilesSourcePath() throws
                                                  IOException;

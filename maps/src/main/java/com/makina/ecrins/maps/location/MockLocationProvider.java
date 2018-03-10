@@ -36,6 +36,10 @@ public class MockLocationProvider
         mContext = pContext;
         mLocationManager = (LocationManager) pContext.getSystemService(Context.LOCATION_SERVICE);
 
+        if (mLocationManager == null) {
+            return;
+        }
+
         shutdown();
 
         try {

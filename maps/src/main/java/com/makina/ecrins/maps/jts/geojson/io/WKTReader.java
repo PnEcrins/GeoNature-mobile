@@ -84,12 +84,9 @@ public class WKTReader {
      * @param in the {@code Reader} to use
      *
      * @return a {@link Feature} instance from the {@code Reader}
-     *
-     * @throws IOException if something goes wrong
      */
     @NonNull
-    public List<Feature> readFeatures(@NonNull final Reader in) throws
-                                                                IOException {
+    public List<Feature> readFeatures(@NonNull final Reader in) {
         final List<Feature> features = new ArrayList<>();
         readFeatures(in,
                      new OnWKTReaderListener() {
@@ -117,12 +114,9 @@ public class WKTReader {
      * @param in the {@code Reader} to use
      *
      * @return a {@link FeatureCollection} instance from the {@code Reader}
-     *
-     * @throws IOException if something goes wrong
      */
     @NonNull
-    public FeatureCollection readFeatureCollection(@NonNull final Reader in) throws
-                                                                             IOException {
+    public FeatureCollection readFeatureCollection(@NonNull final Reader in) {
         final FeatureCollection featureCollection = new FeatureCollection();
         featureCollection.addAllFeatures(readFeatures(in));
 

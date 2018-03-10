@@ -29,7 +29,7 @@ public class TilesLayerDataSourceFactory {
      * @return the best {@link ITilesLayerDataSource} implementation for the given {@link LayerSettings}
      * or thrown an {@link UnsupportedOperationException} if no implementation cannot be found
      *
-     * @throws IOException
+     * @throws IOException if something goes wrong
      */
     @NonNull
     public ITilesLayerDataSource getTilesLayerDataSource(@NonNull final LayerSettings pLayerSettings) throws
