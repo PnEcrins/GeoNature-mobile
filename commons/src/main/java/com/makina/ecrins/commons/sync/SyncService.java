@@ -362,7 +362,7 @@ public class SyncService
 
         private final WeakReference<SyncService> mSyncService;
 
-        public IncomingHandler(SyncService pSyncService) {
+        IncomingHandler(SyncService pSyncService) {
 
             super();
             mSyncService = new WeakReference<>(pSyncService);
@@ -534,7 +534,7 @@ public class SyncService
 
         private final WebAPIClient webAPIClient;
 
-        public PullDataAsyncTask() {
+        PullDataAsyncTask() {
 
             this.webAPIClient = new WebAPIClient();
         }
@@ -812,7 +812,7 @@ public class SyncService
 
         private final WebAPIClient webAPIClient;
 
-        public PushDataAsyncTask() {
+        PushDataAsyncTask() {
 
             this.webAPIClient = new WebAPIClient();
         }

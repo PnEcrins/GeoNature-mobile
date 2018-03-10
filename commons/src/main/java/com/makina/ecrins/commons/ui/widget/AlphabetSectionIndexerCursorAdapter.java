@@ -42,7 +42,7 @@ public class AlphabetSectionIndexerCursorAdapter
     private final Context mContext;
     private final LayoutInflater mInflater;
 
-    private int mResourceLabelCount;
+    private final int mResourceLabelCount;
 
     private AlphabetIndexer mIndexer;
     private String mSortedColumnIndex;
@@ -53,14 +53,14 @@ public class AlphabetSectionIndexerCursorAdapter
     private final SparseIntArray sectionToOffset;
     private final Map<Integer, Integer> sectionToPosition;
 
-    public AlphabetSectionIndexerCursorAdapter(Context context,
-                                               int layout,
-                                               int resourceLabelCount,
-                                               Cursor c,
-                                               String sortedColumnIndex,
-                                               String[] from,
-                                               int[] to,
-                                               int flags) {
+    protected AlphabetSectionIndexerCursorAdapter(Context context,
+                                                  int layout,
+                                                  int resourceLabelCount,
+                                                  Cursor c,
+                                                  String sortedColumnIndex,
+                                                  String[] from,
+                                                  int[] to,
+                                                  int flags) {
         super(context,
               layout,
               c,

@@ -12,11 +12,11 @@ import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.makina.ecrins.commons.BuildConfig;
 import com.makina.ecrins.commons.R;
+import com.makina.ecrins.commons.util.KeyboardUtils;
 
 /**
  * Custom {@code Dialog} used to add or edit a comment.
@@ -54,17 +54,24 @@ public class CommentDialogFragment
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Bundle arguments = getArguments() == null ? new Bundle() : getArguments();
+        final Context context = getContext();
 
-        final View view = View.inflate(getActivity(),
+        if (context == null) {
+            throw new IllegalArgumentException("Null Context while creating " + CommentDialogFragment.class.getName());
+        }
+
+        final View view = View.inflate(context,
                                        R.layout.dialog_comment,
                                        null);
 
-        final EditText textViewComment = (EditText) view.findViewById(R.id.editTextComment);
+        final EditText textViewComment = view.findViewById(R.id.editTextComment);
 
         int alertDialogTitleResource = R.string.alert_dialog_add_comment_title;
 
-        if (getArguments().containsKey(KEY_MESSAGE) && (!TextUtils.isEmpty(getArguments().getString(KEY_MESSAGE)))) {
-            textViewComment.setText(getArguments().getString(KEY_MESSAGE));
+
+        if (arguments.containsKey(KEY_MESSAGE) && (!TextUtils.isEmpty(arguments.getString(KEY_MESSAGE)))) {
+            textViewComment.setText(arguments.getString(KEY_MESSAGE));
             alertDialogTitleResource = R.string.alert_dialog_edit_comment_title;
         }
 
@@ -73,14 +80,12 @@ public class CommentDialogFragment
         textViewComment.postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
-
-                                            ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(textViewComment,
-                                                                                                                                              InputMethodManager.SHOW_IMPLICIT);
+                                            KeyboardUtils.showSoftKeyboard(textViewComment);
                                         }
                                     },
                                     250);
 
-        return new AlertDialog.Builder(getActivity(),
+        return new AlertDialog.Builder(context,
                                        R.style.CommonsDialogStyle).setTitle(alertDialogTitleResource)
                                                                   .setView(view)
                                                                   .setPositiveButton(R.string.alert_dialog_ok,
@@ -89,8 +94,7 @@ public class CommentDialogFragment
                                                                                          public void onClick(
                                                                                                  DialogInterface dialog,
                                                                                                  int which) {
-
-                                                                                             hideSoftKeyboard(textViewComment);
+                                                                                             KeyboardUtils.hideSoftKeyboard(textViewComment);
 
                                                                                              if (mOnCommentDialogValidateListener != null) {
                                                                                                  mOnCommentDialogValidateListener.onPositiveButtonClick(dialog,
@@ -105,8 +109,7 @@ public class CommentDialogFragment
                                                                                          public void onClick(
                                                                                                  DialogInterface dialog,
                                                                                                  int which) {
-
-                                                                                             hideSoftKeyboard(textViewComment);
+                                                                                             KeyboardUtils.hideSoftKeyboard(textViewComment);
 
                                                                                              if (mOnCommentDialogValidateListener != null) {
                                                                                                  mOnCommentDialogValidateListener.onNegativeButtonClick(dialog);
@@ -116,17 +119,11 @@ public class CommentDialogFragment
                                                                   .create();
     }
 
-    private void hideSoftKeyboard(final EditText editText) {
-
-        ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(editText.getWindowToken(),
-                                                                                                                    0);
-    }
-
     /**
      * The callback used by {@link com.makina.ecrins.commons.ui.dialog.CommentDialogFragment}.
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
-     * @see {@link android.content.DialogInterface.OnClickListener}
+     * @see android.content.DialogInterface.OnClickListener
      */
     public interface OnCommentDialogValidateListener {
 

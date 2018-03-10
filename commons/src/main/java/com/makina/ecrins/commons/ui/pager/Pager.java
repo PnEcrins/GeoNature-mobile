@@ -28,14 +28,14 @@ public class Pager
     private int mPosition;
     private final Deque<Integer> mHistory = new ArrayDeque<>();
 
-    public Pager() {
+    Pager() {
     }
 
-    public Pager(long id) {
+    Pager(long id) {
         mId = id;
     }
 
-    public Pager(Parcel source) {
+    private Pager(Parcel source) {
         mId = source.readLong();
         mSize = source.readInt();
         mPosition = source.readInt();
@@ -72,7 +72,7 @@ public class Pager
     }
 
     @NonNull
-    public Deque<Integer> getHistory() {
+    Deque<Integer> getHistory() {
         return mHistory;
     }
 

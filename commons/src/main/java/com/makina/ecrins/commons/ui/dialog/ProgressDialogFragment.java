@@ -1,11 +1,12 @@
 package com.makina.ecrins.commons.ui.dialog;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
@@ -60,25 +61,30 @@ public class ProgressDialogFragment
     }
 
     public ProgressDialogFragment() {
-
         initFormats();
     }
 
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Bundle arguments = getArguments() == null ? new Bundle() : getArguments();
+        final Context context = getContext();
 
-        final View view = View.inflate(getActivity(),
-                                       (getArguments().getInt(KEY_PROGRESS_STYLE) == ProgressDialog.STYLE_SPINNER) ? R.layout.dialog_progress_indeterminate : R.layout.dialog_progress,
+        if (context == null) {
+            throw new IllegalArgumentException("Null Context while creating " + ProgressDialogFragment.class.getName());
+        }
+
+        final View view = View.inflate(getContext(),
+                                       (arguments.getInt(KEY_PROGRESS_STYLE) == ProgressDialog.STYLE_SPINNER) ? R.layout.dialog_progress_indeterminate : R.layout.dialog_progress,
                                        null);
 
-        mProgressBar = (ProgressBar) view.findViewById(android.R.id.progress);
-        mProgressBar.setMax(getArguments().getInt(KEY_MAX));
+        mProgressBar = view.findViewById(android.R.id.progress);
+        mProgressBar.setMax(arguments.getInt(KEY_MAX));
 
-        final int messageResourceId = getArguments().getInt(KEY_MESSAGE);
+        final int messageResourceId = arguments.getInt(KEY_MESSAGE);
 
-        if (getArguments().getInt(KEY_PROGRESS_STYLE) == ProgressDialog.STYLE_SPINNER) {
-            final TextView mTextViewMessage = (TextView) view.findViewById(android.R.id.message);
+        if (arguments.getInt(KEY_PROGRESS_STYLE) == ProgressDialog.STYLE_SPINNER) {
+            final TextView mTextViewMessage = view.findViewById(android.R.id.message);
 
             if (messageResourceId == 0) {
                 mTextViewMessage.setVisibility(View.GONE);
@@ -88,11 +94,11 @@ public class ProgressDialogFragment
             }
         }
         else {
-            mTextViewProgressPercent = (TextView) view.findViewById(R.id.textViewProgressPercent);
-            mTextViewProgressNumber = (TextView) view.findViewById(R.id.textViewProgressNumber);
+            mTextViewProgressPercent = view.findViewById(R.id.textViewProgressPercent);
+            mTextViewProgressNumber = view.findViewById(R.id.textViewProgressNumber);
         }
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),
                                                                     R.style.CommonsDialogStyle).setTitle(getArguments().getInt(KEY_TITLE))
                                                                                                .setView(view)
                                                                                                .setCancelable(false);
@@ -105,13 +111,14 @@ public class ProgressDialogFragment
     }
 
     public void setProgress(int progress) {
+        final Bundle arguments = getArguments() == null ? new Bundle() : getArguments();
 
         if (mProgressBar != null) {
             mProgressBar.setProgress(progress);
         }
 
         if (mTextViewProgressPercent != null) {
-            double percent = (double) progress / (double) getArguments().getInt(KEY_MAX);
+            double percent = (double) progress / (double) arguments.getInt(KEY_MAX);
             SpannableString spannableString = new SpannableString(mProgressPercentFormat.format(percent));
             spannableString.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
                                     0,
@@ -123,12 +130,11 @@ public class ProgressDialogFragment
         if (mTextViewProgressNumber != null) {
             mTextViewProgressNumber.setText(String.format(mProgressNumberFormat,
                                                           progress,
-                                                          getArguments().getInt(KEY_MAX)));
+                                                          arguments.getInt(KEY_MAX)));
         }
     }
 
     private void initFormats() {
-
         mProgressNumberFormat = "%1d/%2d";
         mProgressPercentFormat = NumberFormat.getPercentInstance();
         mProgressPercentFormat.setMaximumFractionDigits(0);

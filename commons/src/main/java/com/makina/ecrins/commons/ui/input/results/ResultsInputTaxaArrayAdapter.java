@@ -1,6 +1,8 @@
 package com.makina.ecrins.commons.ui.input.results;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,15 +28,17 @@ public class ResultsInputTaxaArrayAdapter extends ArrayAdapter<AbstractTaxon> {
 
     private long mSelectedTaxonId;
 
-    public ResultsInputTaxaArrayAdapter(Context context, int textViewResourceId) {
+    ResultsInputTaxaArrayAdapter(Context context,
+                                 int textViewResourceId) {
         super(context, textViewResourceId);
 
         mTextViewResourceId = textViewResourceId;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View view;
 
         if (convertView == null) {
@@ -48,18 +52,24 @@ public class ResultsInputTaxaArrayAdapter extends ArrayAdapter<AbstractTaxon> {
             view = convertView;
         }
 
-        ((TextView) view.findViewById(R.id.textViewTaxonName)).setText(getItem(position).getNameEntered());
+        final AbstractTaxon taxon = getItem(position);
 
-        if (getItem(position).getId() == getSelectedTaxonId()) {
+        if (taxon == null) {
+            return view;
+        }
+
+        ((TextView) view.findViewById(R.id.textViewTaxonName)).setText(taxon.getNameEntered());
+
+        if (taxon.getId() == getSelectedTaxonId()) {
             ((RadioButton) view.findViewById(R.id.radioButton)).setChecked(true);
-            displaySelectedTaxonDetails(getItem(position), view.findViewById(R.id.layoutTaxonDetails), true);
+            displaySelectedTaxonDetails(taxon, view.findViewById(R.id.layoutTaxonDetails), true);
         }
         else {
             ((RadioButton) view.findViewById(R.id.radioButton)).setChecked(false);
-            displaySelectedTaxonDetails(getItem(position), view.findViewById(R.id.layoutTaxonDetails), false);
+            displaySelectedTaxonDetails(taxon, view.findViewById(R.id.layoutTaxonDetails), false);
         }
 
-        if (getItem(position).getComment().isEmpty()) {
+        if (TextUtils.isEmpty(taxon.getComment())) {
             ((ImageView) view.findViewById(R.id.imageViewTaxonComment)).setImageResource(R.drawable.ic_action_comment_add);
             view.findViewById(R.id.imageViewTaxonComment).setContentDescription(getContext().getString(R.string.action_comment_add));
         }
@@ -69,7 +79,7 @@ public class ResultsInputTaxaArrayAdapter extends ArrayAdapter<AbstractTaxon> {
         }
 
         // sets the background color for the current selected taxon
-        if (getSelectedTaxonId() == getItem(position).getId()) {
+        if (getSelectedTaxonId() == taxon.getId()) {
             view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
         }
         else {

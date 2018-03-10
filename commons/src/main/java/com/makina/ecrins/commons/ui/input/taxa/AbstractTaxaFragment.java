@@ -1,10 +1,12 @@
 package com.makina.ecrins.commons.ui.input.taxa;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -54,6 +56,7 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  * @deprecated use {@link AbstractTaxaInputListFragment} instead
  */
+@SuppressWarnings("ALL")
 @Deprecated
 public abstract class AbstractTaxaFragment
         extends ListFragment
@@ -133,7 +136,7 @@ public abstract class AbstractTaxaFragment
 
         mListContainer = view.findViewById(R.id.listContainer);
         mProgressContainer = view.findViewById(R.id.progressContainer);
-        mSecondActionBarView = (ViewGroup) view.findViewById(R.id.secondActionBarView);
+        mSecondActionBarView = view.findViewById(R.id.secondActionBarView);
 
         mListShown = true;
 
@@ -141,7 +144,7 @@ public abstract class AbstractTaxaFragment
     }
 
     @Override
-    public void onViewCreated(View view,
+    public void onViewCreated(@NonNull View view,
                               Bundle savedInstanceState) {
         super.onViewCreated(view,
                             savedInstanceState);
@@ -155,7 +158,7 @@ public abstract class AbstractTaxaFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putAll(mSavedState);
 
         super.onSaveInstanceState(outState);
@@ -564,6 +567,7 @@ public abstract class AbstractTaxaFragment
 
             // sets a custom ViewBinder for this adapter
             mAdapter.setViewBinder(new ViewBinder() {
+                @SuppressLint("SetTextI18n")
                 @Override
                 @SuppressWarnings("deprecation")
                 public boolean setViewValue(View view,
@@ -727,7 +731,7 @@ public abstract class AbstractTaxaFragment
     }
 
     @Deprecated
-    protected static enum LabelSwitcher {
+    protected enum LabelSwitcher {
         LATIN, FRENCH
     }
 }

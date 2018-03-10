@@ -1,7 +1,9 @@
 package com.makina.ecrins.commons.ui.input.counting;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,7 +17,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 
 import com.makina.ecrins.commons.R;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
+import com.makina.ecrins.commons.util.KeyboardUtils;
 
 /**
  * Counting {@link com.makina.ecrins.commons.input.AbstractTaxon} list view with minus and plus buttons.
@@ -45,7 +47,7 @@ public abstract class AbstractCountingListFragment extends ListFragment implemen
     private final SparseIntArray mValues = new SparseIntArray();
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         // give some text to display if there is no data
         setEmptyText(getString(R.string.counting_no_data));
 
@@ -83,15 +85,17 @@ public abstract class AbstractCountingListFragment extends ListFragment implemen
         private final LayoutInflater mInflater;
         private final SparseArray<EditTextWatcher> mTextWatchers;
 
-        public CountingAdapter(Context context) {
+        CountingAdapter(Context context) {
             super(context, R.layout.list_item_counting);
             mTextViewResourceId = R.layout.list_item_counting;
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             mTextWatchers = new SparseArray<>();
         }
 
+        @SuppressLint("SetTextI18n")
+        @NonNull
         @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
             View view;
 
             final Integer item = getItem(position);
@@ -99,7 +103,7 @@ public abstract class AbstractCountingListFragment extends ListFragment implemen
             if (convertView == null) {
                 view = mInflater.inflate(mTextViewResourceId, parent, false);
 
-                final EditText editText = (EditText) view.findViewById(R.id.editTextCounting);
+                final EditText editText = view.findViewById(R.id.editTextCounting);
 
                 editText.setTag(item);
                 editText.setOnClickListener(this);
@@ -120,7 +124,7 @@ public abstract class AbstractCountingListFragment extends ListFragment implemen
                                 editText.setFocusable(false);
                                 editText.setFocusableInTouchMode(false);
 
-                                ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                                KeyboardUtils.hideSoftKeyboard(editText);
                             }
                         }
                     }
@@ -130,14 +134,19 @@ public abstract class AbstractCountingListFragment extends ListFragment implemen
                 view = convertView;
             }
 
-            final EditText editText = (EditText) view.findViewById(R.id.editTextCounting);
-            final TextView textView = (TextView) view.findViewById(R.id.textViewTaxonCounting);
+            final EditText editText = view.findViewById(R.id.editTextCounting);
+            final TextView textView = view.findViewById(R.id.textViewTaxonCounting);
 
-            final ImageView imageView = (ImageView) view.findViewById(R.id.imageViewTaxonCounting);
+            final ImageView imageView = view.findViewById(R.id.imageViewTaxonCounting);
             final LayoutParams params = imageView.getLayoutParams();
             params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
             params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
             imageView.setLayoutParams(params);
+
+
+            if (item == null) {
+                return view;
+            }
 
             // register / unregister a EditTextWatcher instance for the given EditText
             if (mTextWatchers.get(item) == null) {
@@ -224,7 +233,7 @@ public abstract class AbstractCountingListFragment extends ListFragment implemen
         @Override
         public void onClick(View v) {
             int position = getListView().getPositionForView((View) v.getParent());
-            EditText editText = (EditText) ((View) v.getParent()).findViewById(R.id.editTextCounting);
+            EditText editText = ((View) v.getParent()).findViewById(R.id.editTextCounting);
 
             if (v.getId() == R.id.buttonCountingMinus) {
                 updateEditText(editText, position, -1);
@@ -236,13 +245,20 @@ public abstract class AbstractCountingListFragment extends ListFragment implemen
                 editText.setCursorVisible(true);
                 editText.setFocusable(true);
                 editText.setFocusableInTouchMode(true);
-                editText.requestFocus();
-                ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(editText, 0);
+
+                KeyboardUtils.showSoftKeyboard(editText);
             }
         }
 
+        @SuppressLint("SetTextI18n")
         private void updateEditText(final EditText editText, final int position, final int value) {
-            editText.setText(Integer.toString(((getValues().get(getItem(position)) + value) < 0) ? 0 : (getValues().get(getItem(position)) + value)));
+            final Integer item = getItem(position);
+
+            if (item == null) {
+                return;
+            }
+
+            editText.setText(Integer.toString(((getValues().get(item) + value) < 0) ? 0 : (getValues().get(item) + value)));
         }
     }
 
@@ -250,19 +266,19 @@ public abstract class AbstractCountingListFragment extends ListFragment implemen
         private EditText mEditText = null;
         private Button mButtonCountingMinus;
 
-        public EditTextWatcher(EditText pEditText) {
+        EditTextWatcher(EditText pEditText) {
             registerEditText(pEditText);
         }
 
-        public void registerEditText(EditText pEditText) {
+        void registerEditText(EditText pEditText) {
             unregisterEditText(mEditText);
 
             mEditText = pEditText;
-            mButtonCountingMinus = (Button) ((View) mEditText.getParent()).findViewById(R.id.buttonCountingMinus);
+            mButtonCountingMinus = ((View) mEditText.getParent()).findViewById(R.id.buttonCountingMinus);
             mEditText.addTextChangedListener(this);
         }
 
-        public void unregisterEditText(EditText pEditText) {
+        void unregisterEditText(EditText pEditText) {
             if (pEditText != null) {
                 pEditText.removeTextChangedListener(this);
             }

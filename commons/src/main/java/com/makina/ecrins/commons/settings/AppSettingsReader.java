@@ -25,7 +25,7 @@ class AppSettingsReader {
 
     private static final String TAG = AppSettingsReader.class.getName();
 
-    private SyncSettingsReader mSyncSettingsReader;
+    private final SyncSettingsReader mSyncSettingsReader;
     private final AppSettingsReader.OnAppSettingsReaderListener mOnAppSettingsReaderListener;
 
     AppSettingsReader(@NonNull final OnAppSettingsReaderListener onAppSettingsReaderListener) {

@@ -1,6 +1,7 @@
 package com.makina.ecrins.commons.ui.widget;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +18,8 @@ import java.util.Date;
  */
 public class DatesAdapter extends ArrayAdapter<Date> {
 
-    private int mTextViewResourceId;
-    private int mStringDateFormatResourceId;
+    private final int mTextViewResourceId;
+    private final int mStringDateFormatResourceId;
     private final LayoutInflater mInflater;
 
     public DatesAdapter(Context context, int textViewResourceId, int stringDateFormatResourceId) {
@@ -28,8 +29,9 @@ public class DatesAdapter extends ArrayAdapter<Date> {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View view;
 
         if (convertView == null) {

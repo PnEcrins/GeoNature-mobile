@@ -37,18 +37,23 @@ public abstract class AbstractObserverListActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        final Bundle bundle = getIntent().getExtras();
-        List<Observer> selectedObservers = bundle.getParcelableArrayList(EXTRA_SELECTED_OBSERVERS);
+        List<Observer> selectedObservers = new ArrayList<>();
 
-        if (selectedObservers == null) {
-            selectedObservers = new ArrayList<>();
+        final Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            selectedObservers = bundle.getParcelableArrayList(EXTRA_SELECTED_OBSERVERS);
+
+            if (selectedObservers == null) {
+                selectedObservers = new ArrayList<>();
+            }
         }
 
         // Display the fragment as the main content.
         getSupportFragmentManager().beginTransaction()
                                    .replace(android.R.id.content,
-                                            ObserverListFragment.newInstance(bundle.getInt(EXTRA_CHOICE_MODE,
-                                                                                           ListView.CHOICE_MODE_SINGLE),
+                                            ObserverListFragment.newInstance(bundle == null ? ListView.CHOICE_MODE_SINGLE : bundle.getInt(EXTRA_CHOICE_MODE,
+                                                                                                                                          ListView.CHOICE_MODE_SINGLE),
                                                                              bundle.getInt(EXTRA_INPUT_FILTER),
                                                                              selectedObservers))
                                    .commit();

@@ -143,7 +143,7 @@ public class MainDatabaseHelper
 
         }
 
-        public static final String TABLENAME = "observers";
+        static final String TABLENAME = "observers";
 
         public static final String FULL_ID = TABLENAME + "." + _ID;
         public static final String IDENT = "ident";
@@ -164,7 +164,7 @@ public class MainDatabaseHelper
 
         }
 
-        public static final String TABLENAME = "taxa";
+        static final String TABLENAME = "taxa";
 
         public static final String FULL_ID = TABLENAME + "." + _ID;
         public static final String NAME = "name";
@@ -189,7 +189,7 @@ public class MainDatabaseHelper
 
         }
 
-        public static final String TABLENAME = "taxa_unities";
+        static final String TABLENAME = "taxa_unities";
 
         public static final String UNITY_ID = "unity_id";
         public static final String FULL_UNITY_ID = TABLENAME + "." + UNITY_ID;
@@ -212,7 +212,7 @@ public class MainDatabaseHelper
 
         }
 
-        public static final String TABLENAME = "criterion";
+        static final String TABLENAME = "criterion";
 
         public static final String FULL_ID = TABLENAME + "." + _ID;
         public static final String NAME = "name";
@@ -232,7 +232,7 @@ public class MainDatabaseHelper
 
         }
 
-        public static final String TABLENAME = "environments";
+        static final String TABLENAME = "environments";
 
         public static final String FULL_ID = TABLENAME + "." + _ID;
         public static final String NAME = "name";
@@ -250,7 +250,7 @@ public class MainDatabaseHelper
 
         }
 
-        public static final String TABLENAME = "inclines";
+        static final String TABLENAME = "inclines";
 
         public static final String FULL_ID = TABLENAME + "." + _ID;
         public static final String VALUE = "value";
@@ -269,7 +269,7 @@ public class MainDatabaseHelper
 
         }
 
-        public static final String TABLENAME = "phenology";
+        static final String TABLENAME = "phenology";
 
         public static final String FULL_ID = TABLENAME + "." + _ID;
         public static final String CODE = "code";
@@ -288,7 +288,7 @@ public class MainDatabaseHelper
 
         }
 
-        public static final String TABLENAME = "physiognomy";
+        static final String TABLENAME = "physiognomy";
 
         public static final String FULL_ID = TABLENAME + "." + _ID;
         public static final String GROUP_NAME = "group_name";
@@ -307,7 +307,7 @@ public class MainDatabaseHelper
 
         }
 
-        public static final String TABLENAME = "disturbances";
+        static final String TABLENAME = "disturbances";
 
         public static final String FULL_ID = TABLENAME + "." + _ID;
         public static final String CODE = "code";
@@ -327,7 +327,7 @@ public class MainDatabaseHelper
 
         }
 
-        public static final String TABLENAME = "prospecting_areas";
+        static final String TABLENAME = "prospecting_areas";
 
         public static final String FULL_ID = TABLENAME + "." + _ID;
         public static final String TAXON_ID = "taxon_id";
@@ -346,7 +346,7 @@ public class MainDatabaseHelper
 
         }
 
-        public static final String TABLENAME = "search";
+        static final String TABLENAME = "search";
 
         public static final String FULL_ID = TABLENAME + "." + _ID;
         public static final String TAXON = "taxon";

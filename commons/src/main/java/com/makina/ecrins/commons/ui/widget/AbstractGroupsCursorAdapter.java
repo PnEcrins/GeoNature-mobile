@@ -24,13 +24,13 @@ public abstract class AbstractGroupsCursorAdapter<K extends Serializable>
 
     private boolean mIsExpandAllGroups;
 
-    public AbstractGroupsCursorAdapter(Context context,
-                                       int groupLayout,
-                                       String[] groupFrom,
-                                       int[] groupTo,
-                                       int childLayout,
-                                       String[] childFrom,
-                                       int[] childTo) {
+    protected AbstractGroupsCursorAdapter(Context context,
+                                          int groupLayout,
+                                          String[] groupFrom,
+                                          int[] groupTo,
+                                          int childLayout,
+                                          String[] childFrom,
+                                          int[] childTo) {
         super(context,
               null,
               groupLayout,

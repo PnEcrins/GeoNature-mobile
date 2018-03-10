@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -51,7 +52,7 @@ public abstract class AbstractObserversAndDateInputFragment
                    LoaderManager.LoaderCallbacks<Cursor>,
                    OnCalendarSetListener {
 
-    protected static final String TAG = AbstractObserversAndDateInputFragment.class.getName();
+    private static final String TAG = AbstractObserversAndDateInputFragment.class.getName();
 
     private static final String KEY_SELECTED_OBSERVER = "selected_observer";
     private static final String ALERT_DIALOG_CALENDAR_FRAGMENT = "ALERT_DIALOG_CALENDAR_FRAGMENT";
@@ -65,8 +66,14 @@ public abstract class AbstractObserversAndDateInputFragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final DateTimePickerDialogFragment dialogFragment = (DateTimePickerDialogFragment) getActivity().getSupportFragmentManager()
-                                                                                                        .findFragmentByTag(ALERT_DIALOG_CALENDAR_FRAGMENT);
+        final FragmentActivity activity = getActivity();
+
+        if (activity == null) {
+            return;
+        }
+
+        final DateTimePickerDialogFragment dialogFragment = (DateTimePickerDialogFragment) activity.getSupportFragmentManager()
+                                                                                                   .findFragmentByTag(ALERT_DIALOG_CALENDAR_FRAGMENT);
 
         if (dialogFragment != null) {
             dialogFragment.setOnCalendarSetListener(this);
@@ -75,7 +82,7 @@ public abstract class AbstractObserversAndDateInputFragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_observers_and_date,
@@ -105,7 +112,11 @@ public abstract class AbstractObserversAndDateInputFragment
                     mObserversAdapter.setNotifyOnChange(true);
                 }
 
-                ((AbstractPagerFragmentActivity) getActivity()).validateCurrentPage();
+                final FragmentActivity activity = getActivity();
+
+                if (activity != null) {
+                    ((AbstractPagerFragmentActivity) activity).validateCurrentPage();
+                }
             }
         });
 
@@ -113,7 +124,7 @@ public abstract class AbstractObserversAndDateInputFragment
                                          android.R.layout.simple_list_item_2,
                                          getDateFormatResourceId());
 
-        ListView listSelectedObserversView = (ListView) view.findViewById(R.id.listSelectedObservers);
+        ListView listSelectedObserversView = view.findViewById(R.id.listSelectedObservers);
         listSelectedObserversView.setAdapter(mObserversAdapter);
         listSelectedObserversView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -135,7 +146,7 @@ public abstract class AbstractObserversAndDateInputFragment
             }
         });
 
-        ListView listCurrentDateView = (ListView) view.findViewById(R.id.listSelectedDate);
+        ListView listCurrentDateView = view.findViewById(R.id.listSelectedDate);
         listCurrentDateView.setAdapter(mDatesAdapter);
         listCurrentDateView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -152,11 +163,14 @@ public abstract class AbstractObserversAndDateInputFragment
                     builder.currentDate(mInput.getDate());
                 }
 
-                final DateTimePickerDialogFragment datePickerDialogFragment = builder.create();
-                datePickerDialogFragment.setOnCalendarSetListener(AbstractObserversAndDateInputFragment.this);
-                datePickerDialogFragment.show(AbstractObserversAndDateInputFragment.this.getActivity()
-                                                                                        .getSupportFragmentManager(),
-                                              ALERT_DIALOG_CALENDAR_FRAGMENT);
+                final FragmentActivity activity = AbstractObserversAndDateInputFragment.this.getActivity();
+
+                if (activity != null) {
+                    final DateTimePickerDialogFragment datePickerDialogFragment = builder.create();
+                    datePickerDialogFragment.setOnCalendarSetListener(AbstractObserversAndDateInputFragment.this);
+                    datePickerDialogFragment.show(activity.getSupportFragmentManager(),
+                                                  ALERT_DIALOG_CALENDAR_FRAGMENT);
+                }
             }
         });
 
@@ -210,8 +224,11 @@ public abstract class AbstractObserversAndDateInputFragment
             return;
         }
 
-        activity.getSupportActionBar()
-                .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        final ActionBar actionBar = activity.getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        }
 
         if (mInput == null) {
             Log.w(TAG,
@@ -231,6 +248,7 @@ public abstract class AbstractObserversAndDateInputFragment
         this.mInput = input;
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id,
                                          Bundle args) {
@@ -249,7 +267,7 @@ public abstract class AbstractObserversAndDateInputFragment
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader,
+    public void onLoadFinished(@NonNull Loader<Cursor> loader,
                                Cursor data) {
         if ((data != null) && data.moveToFirst()) {
             final Observer defaultObserver = new Observer(data.getLong(data.getColumnIndex(MainDatabaseHelper.ObserversColumns._ID)),
@@ -274,7 +292,7 @@ public abstract class AbstractObserversAndDateInputFragment
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         // nothing to do ...
     }
 

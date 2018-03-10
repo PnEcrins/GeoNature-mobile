@@ -149,8 +149,8 @@ public class UnderlinePageIndicator
             return;
         }
 
-        final int count = mViewPager.getAdapter()
-                                    .getCount();
+        final int count = mViewPager.getAdapter() == null ? 0 : mViewPager.getAdapter()
+                                                                          .getCount();
         if (count == 0) {
             return;
         }
@@ -198,7 +198,7 @@ public class UnderlinePageIndicator
             extends BaseSavedState {
         int currentPage;
 
-        public SavedState(Parcelable superState) {
+        SavedState(Parcelable superState) {
             super(superState);
         }
 

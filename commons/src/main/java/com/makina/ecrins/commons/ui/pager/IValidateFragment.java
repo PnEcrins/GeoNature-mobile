@@ -10,7 +10,7 @@ public interface IValidateFragment {
     /**
      * Returns the view title.
      * <p>
-     * <strong>Note : </strong> Must be a constant value (e.g. R.string.my_value).
+     * <strong>Note: </strong> Must be a constant value (e.g. R.string.my_value).
      * </p>
      *
      * @return view title as resource ID

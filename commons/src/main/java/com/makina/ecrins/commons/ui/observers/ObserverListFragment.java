@@ -7,12 +7,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
@@ -29,7 +28,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.FilterQueryProvider;
 import android.widget.ListView;
@@ -41,6 +39,7 @@ import com.makina.ecrins.commons.content.MainDatabaseHelper;
 import com.makina.ecrins.commons.input.Observer;
 import com.makina.ecrins.commons.ui.widget.AlphabetSectionIndexerCursorAdapter;
 import com.makina.ecrins.commons.ui.widget.PinnedSectionListView;
+import com.makina.ecrins.commons.util.KeyboardUtils;
 import com.makina.ecrins.commons.util.ThemeUtils;
 
 import java.util.ArrayList;
@@ -90,8 +89,7 @@ public class ObserverListFragment
                                                    Menu.NONE,
                                                    R.string.action_unselect_all)
                                               .setIcon(R.drawable.ic_action_unselect_all);
-                MenuItemCompat.setShowAsAction(menuItem,
-                                               MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+                menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
             }
 
             return true;
@@ -112,7 +110,12 @@ public class ObserverListFragment
                     mAdapter.notifyDataSetChanged();
                     mode.finish();
 
-                    ActivityCompat.invalidateOptionsMenu(getActivity());
+                    final FragmentActivity activity = getActivity();
+
+                    if (activity != null) {
+                        activity.invalidateOptionsMenu();
+                    }
+
                     return true;
                 default:
                     return false;
@@ -177,7 +180,8 @@ public class ObserverListFragment
         final List<Observer> selectedObservers;
 
         if (savedInstanceState == null) {
-            selectedObservers = getArguments().getParcelableArrayList(KEY_SELECTED_OBSERVERS);
+            final Bundle arguments = getArguments() == null ? new Bundle() : getArguments();
+            selectedObservers = arguments.getParcelableArrayList(KEY_SELECTED_OBSERVERS);
         }
         else {
             selectedObservers = savedInstanceState.getParcelableArrayList(KEY_SELECTED_OBSERVERS);
@@ -210,7 +214,7 @@ public class ObserverListFragment
     }
 
     @Override
-    public void onViewCreated(View view,
+    public void onViewCreated(@NonNull View view,
                               Bundle savedInstanceState) {
         super.onViewCreated(view,
                             savedInstanceState);
@@ -239,22 +243,26 @@ public class ObserverListFragment
     @Override
     public void onCreateOptionsMenu(Menu menu,
                                     MenuInflater inflater) {
+        final Context context = getContext();
+
+        if (context == null) {
+            return;
+        }
+
         final MenuItem menuItemSearch = menu.add(Menu.NONE,
                                                  0,
                                                  Menu.NONE,
                                                  R.string.action_search);
         menuItemSearch.setIcon(R.drawable.ic_action_search);
-        MenuItemCompat.setShowAsAction(menuItemSearch,
-                                       MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        menuItemSearch.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 
-        final SearchView searchView = new SearchView(getActivity());
+        final SearchView searchView = new SearchView(context);
         searchView.setQueryHint(getString(R.string.observers_search_hint));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN,
-                                    0);
+                KeyboardUtils.hideSoftKeyboard(context);
+
                 return true;
             }
 
@@ -266,8 +274,7 @@ public class ObserverListFragment
             }
         });
 
-        MenuItemCompat.setActionView(menuItemSearch,
-                                     searchView);
+        menuItemSearch.setActionView(searchView);
 
         if (!mSelectedObservers.isEmpty()) {
             final MenuItem menuItem = menu.add(Menu.NONE,
@@ -275,8 +282,7 @@ public class ObserverListFragment
                                                Menu.NONE,
                                                R.string.action_unselect_all)
                                           .setIcon(R.drawable.ic_action_unselect_all);
-            MenuItemCompat.setShowAsAction(menuItem,
-                                           MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+            menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         }
     }
 
@@ -289,7 +295,13 @@ public class ObserverListFragment
             case 1:
                 mSelectedObservers.clear();
                 mAdapter.notifyDataSetChanged();
-                ActivityCompat.invalidateOptionsMenu(getActivity());
+
+                final FragmentActivity activity = getActivity();
+
+                if (activity != null) {
+                    activity.invalidateOptionsMenu();
+                }
+
                 return true;
             default:
                 return false;
@@ -302,7 +314,7 @@ public class ObserverListFragment
                                 int position,
                                 long id) {
         long selectedObserverId = mAdapter.getItemId(position);
-        final CheckBox checkBox = (CheckBox) v.findViewById(android.R.id.checkbox);
+        final CheckBox checkBox = v.findViewById(android.R.id.checkbox);
 
         if (checkBox != null) {
             boolean isSelected = !checkBox.isChecked();
@@ -325,18 +337,22 @@ public class ObserverListFragment
                 }
                 else {
                     mSelectedObservers.remove(selectedObserverId);
+                    final FragmentActivity activity = getActivity();
 
                     if (mSelectedObservers.isEmpty()) {
                         // update menu
-                        ActivityCompat.invalidateOptionsMenu(getActivity());
+
+                        if (activity != null) {
+                            activity.invalidateOptionsMenu();
+                        }
 
                         if (mMode != null) {
                             mMode.finish();
                         }
                     }
                     else {
-                        if (mMode == null) {
-                            mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+                        if (mMode == null && activity != null) {
+                            mMode = ((AppCompatActivity) activity).startSupportActionMode(mActionModeCallback);
 
                             if (mMode != null) {
                                 mMode.setTitle(R.string.activity_observers_title);
@@ -352,7 +368,7 @@ public class ObserverListFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArrayList(KEY_SELECTED_OBSERVERS,
@@ -382,9 +398,12 @@ public class ObserverListFragment
                      false);
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id,
                                          Bundle args) {
+        final Bundle arguments = getArguments();
+
         final String[] projection = {
                 MainDatabaseHelper.ObserversColumns._ID,
                 MainDatabaseHelper.ObserversColumns.LASTNAME,
@@ -400,7 +419,7 @@ public class ObserverListFragment
                 selection.append("((");
                 selection.append(MainDatabaseHelper.ObserversColumns.FILTER);
                 selection.append(" & ?) != 0)");
-                selectionArgs.add(Integer.toString(getArguments().getInt(ARG_INPUT_FILTER)));
+                selectionArgs.add(Integer.toString(arguments.getInt(ARG_INPUT_FILTER)));
 
                 if (args.containsKey(KEY_FILTER) && (!TextUtils.isEmpty(args.getString(KEY_FILTER)))) {
                     selection.append(" AND (");
@@ -415,7 +434,7 @@ public class ObserverListFragment
                     selectionArgs.add(filter);
                 }
 
-                return new CursorLoader(getActivity(),
+                return new CursorLoader(getContext(),
                                         mListener.getLoaderUri(id,
                                                                args.getLong(KEY_SELECTED_OBSERVER_ID)),
                                         projection,
@@ -423,7 +442,7 @@ public class ObserverListFragment
                                         selectionArgs.toArray(new String[selectionArgs.size()]),
                                         null);
             case AbstractMainContentProvider.OBSERVER_ID:
-                return new CursorLoader(getActivity(),
+                return new CursorLoader(getContext(),
                                         mListener.getLoaderUri(id,
                                                                args.getLong(KEY_SELECTED_OBSERVER_ID)),
                                         projection,
@@ -436,8 +455,10 @@ public class ObserverListFragment
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader,
+    public void onLoadFinished(@NonNull Loader<Cursor> loader,
                                Cursor data) {
+        final FragmentActivity activity = getActivity();
+
         switch (loader.getId()) {
             case AbstractMainContentProvider.OBSERVERS:
                 if (mAdapter == null) {
@@ -451,8 +472,8 @@ public class ObserverListFragment
                 getListView().setScrollingCacheEnabled(true);
 
                 if (!mSelectedObservers.isEmpty()) {
-                    if (mMode == null) {
-                        mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+                    if (mMode == null && activity != null) {
+                        mMode = ((AppCompatActivity) activity).startSupportActionMode(mActionModeCallback);
 
                         if (mMode != null) {
                             mMode.setTitle(R.string.activity_observers_title);
@@ -462,7 +483,9 @@ public class ObserverListFragment
                     mMode.setSubtitle(String.format(getString(R.string.action_title_item_selected),
                                                     mSelectedObservers.size()));
                     // update menu
-                    ActivityCompat.invalidateOptionsMenu(getActivity());
+                    if (activity != null) {
+                        activity.invalidateOptionsMenu();
+                    }
                 }
 
                 if (isResumed()) {
@@ -484,8 +507,8 @@ public class ObserverListFragment
                                                         data.getString(data.getColumnIndex(MainDatabaseHelper.ObserversColumns.LASTNAME)),
                                                         data.getString(data.getColumnIndex(MainDatabaseHelper.ObserversColumns.FIRSTNAME))));
 
-                    if (mMode == null) {
-                        mMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+                    if (mMode == null && activity != null) {
+                        mMode = ((AppCompatActivity) activity).startSupportActionMode(mActionModeCallback);
 
                         if (mMode != null) {
                             mMode.setTitle(R.string.activity_observers_title);
@@ -501,7 +524,10 @@ public class ObserverListFragment
                 }
 
                 mAdapter.notifyDataSetChanged();
-                ActivityCompat.invalidateOptionsMenu(getActivity());
+
+                if (activity != null) {
+                    activity.invalidateOptionsMenu();
+                }
 
                 break;
             default:
@@ -510,7 +536,7 @@ public class ObserverListFragment
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         switch (loader.getId()) {
             case AbstractMainContentProvider.OBSERVERS:
                 // data is not available anymore, delete reference
@@ -582,7 +608,7 @@ public class ObserverListFragment
                                               parent);
 
                     if (getItemViewType(position) == TYPE_NORMAL) {
-                        final CheckBox checkBox = (CheckBox) view.findViewById(android.R.id.checkbox);
+                        final CheckBox checkBox = view.findViewById(android.R.id.checkbox);
                         checkBox.setChecked(mSelectedObservers.containsKey(getItemId(position)));
 
                         view.setBackgroundColor(checkBox.isChecked() ? ThemeUtils.getAccentColor(getContext()) : Color.TRANSPARENT);

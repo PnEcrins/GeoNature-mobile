@@ -9,8 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -54,7 +54,7 @@ public class HomeFragment
     private static final int REQUEST_EXTERNAL_STORAGE = 0;
 
     private InputHelper mInputHelper;
-    private InputHelper.OnInputHelperListener mOnInputHelperListener = new InputHelper.OnInputHelperListener() {
+    private final InputHelper.OnInputHelperListener mOnInputHelperListener = new InputHelper.OnInputHelperListener() {
         @NonNull
         @Override
         public AbstractInput createInput() {
@@ -137,11 +137,11 @@ public class HomeFragment
             }
 
             if (intent.getAction()
-                      .equals(getBroadcastActionReadAppSettings())) {
+                      .equals(getBroadcastActionReadAppSettings(context))) {
                 switch (status) {
                     case FINISHED_WITH_ERRORS:
                     case FINISHED_NOT_FOUND:
-                        showAppSettingsLoadingFailedAlert();
+                        showAppSettingsLoadingFailedAlert(context);
                         break;
                     case FINISHED:
                         mAppSettings = appSettings;
@@ -150,8 +150,10 @@ public class HomeFragment
                             mOnHomeFragmentListener.onAppSettingsLoaded(appSettings);
                             mHomeAdapter.setAppSettings(appSettings);
 
-                            if (getActivity() != null) {
-                                ActivityCompat.invalidateOptionsMenu(getActivity());
+                            final FragmentActivity activity = getActivity();
+
+                            if (activity != null) {
+                                activity.invalidateOptionsMenu();
                             }
 
                             mInputHelper.readInput();
@@ -172,17 +174,23 @@ public class HomeFragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final Context context = getContext();
+
+        if (context == null) {
+            return;
+        }
+
         mRequestPermissionsResult = true;
 
-        mInputHelper = new InputHelper(getContext(),
+        mInputHelper = new InputHelper(context,
                                        mOnInputHelperListener);
 
-        mHomeAdapter = new HomeAdapter(getContext(),
+        mHomeAdapter = new HomeAdapter(context,
                                        mOnHomeAdapterListener);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
         // inflate the layout for this fragment
@@ -192,7 +200,7 @@ public class HomeFragment
     }
 
     @Override
-    public void onViewCreated(View view,
+    public void onViewCreated(@NonNull View view,
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view,
                             savedInstanceState);
@@ -201,13 +209,13 @@ public class HomeFragment
 
         mLayout = view.findViewById(android.R.id.content);
 
-        final RecyclerView mRecyclerView = (RecyclerView) view.findViewById(android.R.id.list);
+        final RecyclerView mRecyclerView = view.findViewById(android.R.id.list);
         mRecyclerView.setHasFixedSize(false);
         // use a linear layout manager as default layout manager
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mHomeAdapter);
 
-        mButtonStartInput = (Button) view.findViewById(R.id.buttonStartInput);
+        mButtonStartInput = view.findViewById(R.id.buttonStartInput);
         mButtonStartInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -248,16 +256,22 @@ public class HomeFragment
     public void onResume() {
         super.onResume();
 
+        final Context context = getContext();
+
+        if (context == null) {
+            return;
+        }
+
         mButtonStartInput.setEnabled(false);
 
-        LocalBroadcastManager.getInstance(getContext())
+        LocalBroadcastManager.getInstance(context)
                              .registerReceiver(mBroadcastReceiver,
-                                               new IntentFilter(getBroadcastActionReadAppSettings()));
+                                               new IntentFilter(getBroadcastActionReadAppSettings(context)));
 
         mInputHelper.resume();
 
         if (mRequestPermissionsResult) {
-            PermissionUtils.checkSelfPermissions(getContext(),
+            PermissionUtils.checkSelfPermissions(context,
                                                  new PermissionUtils.OnCheckSelfPermissionListener() {
                                                      @Override
                                                      public void onPermissionsGranted() {
@@ -284,8 +298,15 @@ public class HomeFragment
     public void onPause() {
         super.onPause();
 
-        LocalBroadcastManager.getInstance(getContext())
+        final Context context = getContext();
+
+        if (context == null) {
+            return;
+        }
+
+        LocalBroadcastManager.getInstance(context)
                              .unregisterReceiver(mBroadcastReceiver);
+
         mInputHelper.dispose();
     }
 
@@ -331,28 +352,34 @@ public class HomeFragment
     }
 
     private void loadAppSettings() {
-        AbstractAppSettingsIntentService.readSettings(getContext(),
+        final Context context = getContext();
+
+        if (context == null) {
+            return;
+        }
+
+        AbstractAppSettingsIntentService.readSettings(context,
                                                       mOnHomeFragmentListener.getAppSettingsIntentServiceClass(),
-                                                      getBroadcastActionReadAppSettings(),
-                                                      getAppSettingsFilename());
+                                                      getBroadcastActionReadAppSettings(context),
+                                                      getAppSettingsFilename(context));
     }
 
     @NonNull
-    private String getBroadcastActionReadAppSettings() {
-        return getContext().getPackageName() + ".broadcast.settings.read";
+    private String getBroadcastActionReadAppSettings(@NonNull final Context context) {
+        return context.getPackageName() + ".broadcast.settings.read";
     }
 
     @NonNull
-    private String getAppSettingsFilename() {
-        final String packageName = getContext().getPackageName();
+    private String getAppSettingsFilename(@NonNull final Context context) {
+        final String packageName = context.getPackageName();
 
         return "settings_" + packageName.substring(packageName.lastIndexOf('.') + 1) + ".json";
     }
 
-    private void showAppSettingsLoadingFailedAlert() {
-        Toast.makeText(getContext(),
+    private void showAppSettingsLoadingFailedAlert(@NonNull final Context context) {
+        Toast.makeText(context,
                        getString(R.string.message_settings_not_found,
-                                 getAppSettingsFilename()),
+                                 getAppSettingsFilename(context)),
                        Toast.LENGTH_LONG)
              .show();
     }

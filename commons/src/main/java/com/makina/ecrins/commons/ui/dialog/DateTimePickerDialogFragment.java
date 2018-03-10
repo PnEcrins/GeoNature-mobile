@@ -3,6 +3,7 @@ package com.makina.ecrins.commons.ui.dialog;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Build;
@@ -64,24 +65,30 @@ public final class DateTimePickerDialogFragment
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Bundle arguments = getArguments() == null ? new Bundle() : getArguments();
+        final Context context = getContext();
+
+        if (context == null) {
+            throw new IllegalArgumentException("Null Context while creating " + DateTimePickerDialogFragment.class.getName());
+        }
 
         final View view;
 
-        if (getArguments().getBoolean(KEY_SHOW_TIME)) {
-            view = View.inflate(getActivity(),
+        if (arguments.getBoolean(KEY_SHOW_TIME)) {
+            view = View.inflate(context,
                                 R.layout.dialog_datetime,
                                 null);
 
             configureTabHost((TabHost) view.findViewById(android.R.id.tabhost));
         }
         else {
-            view = View.inflate(getActivity(),
+            view = View.inflate(context,
                                 R.layout.dialog_date,
                                 null);
         }
 
-        Date minDate = (getArguments().getSerializable(KEY_MIN_DATE) == null) ? null : (Date) getArguments().getSerializable(KEY_MIN_DATE);
-        Date maxDate = (getArguments().getSerializable(KEY_MAX_DATE) == null) ? null : (Date) getArguments().getSerializable(KEY_MAX_DATE);
+        Date minDate = (arguments.getSerializable(KEY_MIN_DATE) == null) ? null : (Date) arguments.getSerializable(KEY_MIN_DATE);
+        Date maxDate = (arguments.getSerializable(KEY_MAX_DATE) == null) ? null : (Date) arguments.getSerializable(KEY_MAX_DATE);
 
         // do nothing if we have inconsistent values (e.g. minDate > maxDate)
         if (minDate != null && maxDate != null && minDate.after(maxDate)) {
@@ -89,8 +96,8 @@ public final class DateTimePickerDialogFragment
             maxDate = null;
         }
 
-        if (getArguments().getSerializable(KEY_CURRENT_DATE) != null) {
-            mSelectedDateCalendar.setTime((Date) getArguments().getSerializable(KEY_CURRENT_DATE));
+        if (arguments.getSerializable(KEY_CURRENT_DATE) != null) {
+            mSelectedDateCalendar.setTime((Date) arguments.getSerializable(KEY_CURRENT_DATE));
         }
 
         // restore the current selected date
@@ -106,7 +113,7 @@ public final class DateTimePickerDialogFragment
             mSelectedDateCalendar.setTime(minDate);
         }
 
-        final AlertDialog dialog = new AlertDialog.Builder(getActivity(),
+        final AlertDialog dialog = new AlertDialog.Builder(context,
                                                            R.style.CommonsDialogStyle).setView(view)
                                                                                       .setPositiveButton(R.string.alert_dialog_ok,
                                                                                                          new OnClickListener() {
@@ -126,10 +133,10 @@ public final class DateTimePickerDialogFragment
                             minDate,
                             maxDate);
 
-        if (getArguments().getBoolean(KEY_SHOW_TIME)) {
+        if (arguments.getBoolean(KEY_SHOW_TIME)) {
             configureTimePicker((TimePicker) view.findViewById(R.id.timePicker1),
                                 dialog,
-                                getArguments().getInt(KEY_TIME_INTERVAL,
+                                arguments.getInt(KEY_TIME_INTERVAL,
                                                       1));
         }
 
@@ -148,19 +155,17 @@ public final class DateTimePickerDialogFragment
     }
 
     private void configureTabHost(@NonNull final TabHost tabHost) {
+        final Bundle arguments = getArguments() == null ? new Bundle() : getArguments();
 
         tabHost.setup();
-
         tabHost.addTab(tabHost.newTabSpec("tabDate")
                               .setContent(R.id.tabDate)
                               .setIndicator(getString(R.string.alert_dialog_datetime_tab_date)));
-
         tabHost.addTab(tabHost.newTabSpec("tabTime")
                               .setContent(R.id.tabTime)
                               .setIndicator(getString(R.string.alert_dialog_datetime_tab_time)));
-
-        tabHost.setCurrentTab(getArguments().getInt(KEY_SELECTED_TAB_INDEX,
-                                                    TAB_DATE_INDEX));
+        tabHost.setCurrentTab(arguments.getInt(KEY_SELECTED_TAB_INDEX,
+                                               TAB_DATE_INDEX));
     }
 
     @SuppressLint("NewApi")
@@ -269,6 +274,7 @@ public final class DateTimePickerDialogFragment
         timePicker.setCurrentMinute(mSelectedDateCalendar.get(Calendar.MINUTE) / timeInterval);
     }
 
+    @SuppressLint("DefaultLocale")
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void forceInterval(@NonNull final TimePicker timePicker,
                                int timeInterval) {
@@ -276,8 +282,8 @@ public final class DateTimePickerDialogFragment
         try {
             Class<?> classForid = Class.forName("com.android.internal.R$id");
 
-            NumberPicker minuteSpinner = (NumberPicker) timePicker.findViewById(classForid.getField("minute")
-                                                                                          .getInt(null));
+            final NumberPicker minuteSpinner = timePicker.findViewById(classForid.getField("minute")
+                                                                                 .getInt(null));
             minuteSpinner.setMinValue(0);
             minuteSpinner.setMaxValue((60 / timeInterval) - 1);
 
@@ -291,8 +297,8 @@ public final class DateTimePickerDialogFragment
             minuteSpinner.setDisplayedValues(displayedValues.toArray(new String[displayedValues.size()]));
             minuteSpinner.setValue(mSelectedDateCalendar.get(Calendar.MINUTE) / timeInterval);
 
-            EditText minuteSpinnerInput = (EditText) minuteSpinner.findViewById(classForid.getField("numberpicker_input")
-                                                                                          .getInt(null));
+            final EditText minuteSpinnerInput = minuteSpinner.findViewById(classForid.getField("numberpicker_input")
+                                                                                     .getInt(null));
             minuteSpinnerInput.setImeOptions(EditorInfo.IME_ACTION_NEXT);
             minuteSpinnerInput.setInputType(InputType.TYPE_CLASS_NUMBER);
         }
@@ -303,8 +309,13 @@ public final class DateTimePickerDialogFragment
     }
 
     private void setDialogTitle(@NonNull final AlertDialog dialog) {
+        final Bundle arguments = getArguments();
 
-        if (getArguments().getBoolean(KEY_SHOW_TIME)) {
+        if (arguments == null) {
+            return;
+        }
+
+        if (arguments.getBoolean(KEY_SHOW_TIME)) {
             dialog.setTitle(DateFormat.getLongDateFormat(getActivity())
                                       .format(mSelectedDateCalendar.getTime()) + " " + DateFormat.getTimeFormat(getActivity())
                                                                                                  .format(mSelectedDateCalendar.getTime()));

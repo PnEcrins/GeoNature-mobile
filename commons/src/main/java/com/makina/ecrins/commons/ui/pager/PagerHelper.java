@@ -22,7 +22,7 @@ public class PagerHelper {
     private final PagerJsonReader mPagerJsonReader;
     private final PagerJsonWriter mPagerJsonWriter;
 
-    public PagerHelper(@NonNull final Context context) {
+    PagerHelper(@NonNull final Context context) {
         this.mContext = context;
         this.mPagerJsonReader = new PagerJsonReader();
         this.mPagerJsonWriter = new PagerJsonWriter();
@@ -71,7 +71,7 @@ public class PagerHelper {
     }
 
     @Nullable
-    protected String getPagerPreferenceKey(long pagerId) {
+    String getPagerPreferenceKey(long pagerId) {
         return KEY_PAGER_PREFIX + pagerId;
     }
 }

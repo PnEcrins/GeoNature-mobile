@@ -10,8 +10,8 @@ import android.os.Parcelable;
  */
 public class SyncMessage implements Parcelable {
 
-    private MessageType mMessageType;
-    private SyncStatus mSyncStatus;
+    private final MessageType mMessageType;
+    private final SyncStatus mSyncStatus;
 
     public SyncMessage(MessageType pMessageType, SyncStatus pSyncStatus) {
         super();
@@ -55,7 +55,7 @@ public class SyncMessage implements Parcelable {
         }
     };
 
-    public static enum MessageType {
+    public enum MessageType {
         /**
          * Provides informative messages.
          */

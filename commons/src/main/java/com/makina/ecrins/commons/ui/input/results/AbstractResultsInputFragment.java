@@ -2,9 +2,11 @@ package com.makina.ecrins.commons.ui.input.results;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.view.ActionMode;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -74,14 +76,14 @@ public abstract class AbstractResultsInputFragment extends Fragment
             int commentDrawableResourceId = R.drawable.ic_action_comment_add;
 
             if (mSelectedTaxonForAction != null) {
-                commentStringResourceId = (mSelectedTaxonForAction.getComment().isEmpty()) ? R.string.action_comment_add : R.string.action_comment_edit;
+                commentStringResourceId = (TextUtils.isEmpty(mSelectedTaxonForAction.getComment())) ? R.string.action_comment_add : R.string.action_comment_edit;
                 commentDrawableResourceId = (mSelectedTaxonForAction.getComment().isEmpty()) ? R.drawable.ic_action_comment_add : R.drawable.ic_action_comment;
             }
 
             final MenuItem menuItemAddOrEditComment = menu.add(Menu.NONE, 1, Menu.NONE, commentStringResourceId).setIcon(commentDrawableResourceId);
-            MenuItemCompat.setShowAsAction(menuItemAddOrEditComment, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+            menuItemAddOrEditComment.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
             final MenuItem menuItemDeleteTaxon = menu.add(Menu.NONE, 0, Menu.NONE, R.string.action_delete_taxon).setIcon(R.drawable.ic_action_delete);
-            MenuItemCompat.setShowAsAction(menuItemDeleteTaxon, MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+            menuItemDeleteTaxon.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
             return true;
         }
@@ -101,11 +103,13 @@ public abstract class AbstractResultsInputFragment extends Fragment
 
                     return true;
                 case 1:
-                    if (mSelectedTaxonForAction != null) {
+                    final FragmentActivity activity = getActivity();
+
+                    if (mSelectedTaxonForAction != null && activity != null) {
                         final CommentDialogFragment dialogFragment = CommentDialogFragment.newInstance(mSelectedTaxonForAction.getComment());
                         dialogFragment.setOnCommentDialogValidateListener(mOnCommentDialogValidateListener);
                         dialogFragment.show(
-                                getActivity().getSupportFragmentManager(),
+                                activity.getSupportFragmentManager(),
                                 ALERT_DIALOG_COMMENT_FRAGMENT
                         );
                     }
@@ -131,7 +135,13 @@ public abstract class AbstractResultsInputFragment extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_DELETE_TAXON_FRAGMENT);
+        final FragmentActivity activity = getActivity();
+
+        if (activity == null) {
+            return;
+        }
+
+        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) activity.getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_DELETE_TAXON_FRAGMENT);
 
         if (alertDialogFragment != null) {
             if (mSelectedTaxonForAction == null) {
@@ -140,7 +150,7 @@ public abstract class AbstractResultsInputFragment extends Fragment
         }
 
         // restore CommentDialogFragment state after resume if needed
-        final CommentDialogFragment commentDialogFragment = (CommentDialogFragment) getActivity().getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_COMMENT_FRAGMENT);
+        final CommentDialogFragment commentDialogFragment = (CommentDialogFragment) activity.getSupportFragmentManager().findFragmentByTag(ALERT_DIALOG_COMMENT_FRAGMENT);
 
         if (commentDialogFragment != null) {
             commentDialogFragment.setOnCommentDialogValidateListener(mOnCommentDialogValidateListener);
@@ -148,7 +158,7 @@ public abstract class AbstractResultsInputFragment extends Fragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(AbstractResultsInputFragment.class.getName(), "onCreateView");
 
         View view = inflater.inflate(R.layout.fragment_results_input, container, false);
@@ -159,8 +169,8 @@ public abstract class AbstractResultsInputFragment extends Fragment
         mTaxaAdapter = new ResultsInputTaxaArrayAdapter(getActivity(), R.layout.list_item_selected_taxon);
         mTaxaAdapter.setSelectedTaxonId(getInput().getLastInsertedTaxonId());
 
-        mTextViewTaxaAdded = (TextView) view.findViewById(R.id.textViewTaxaAdded);
-        ListView listSelectedTaxaView = (ListView) view.findViewById(R.id.listSelectedTaxa);
+        mTextViewTaxaAdded = view.findViewById(R.id.textViewTaxaAdded);
+        ListView listSelectedTaxaView = view.findViewById(R.id.listSelectedTaxa);
         listSelectedTaxaView.setAdapter(mTaxaAdapter);
         listSelectedTaxaView.setOnItemClickListener(this);
         listSelectedTaxaView.setOnItemLongClickListener(this);
@@ -226,8 +236,10 @@ public abstract class AbstractResultsInputFragment extends Fragment
         mTaxaAdapter.setSelectedTaxonId(getInput().getCurrentSelectedTaxonId());
         mTaxaAdapter.notifyDataSetChanged();
 
-        if (mMode == null) {
-            mMode = ((AbstractPagerFragmentActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+        final FragmentActivity activity = getActivity();
+
+        if (mMode == null && activity != null) {
+            mMode = ((AbstractPagerFragmentActivity) activity).startSupportActionMode(mActionModeCallback);
         }
     }
 
@@ -265,7 +277,11 @@ public abstract class AbstractResultsInputFragment extends Fragment
 
                         refreshView();
 
-                        ((AbstractPagerFragmentActivity) getActivity()).validateCurrentPage();
+                        final FragmentActivity activity = getActivity();
+
+                        if (activity != null) {
+                            ((AbstractPagerFragmentActivity) activity).validateCurrentPage();
+                        }
                     }
 
                     @Override
@@ -274,6 +290,11 @@ public abstract class AbstractResultsInputFragment extends Fragment
                     }
                 }
         );
-        alertDialogFragment.show(getActivity().getSupportFragmentManager(), ALERT_DIALOG_DELETE_TAXON_FRAGMENT);
+
+        final FragmentActivity activity = getActivity();
+
+        if (activity != null) {
+            alertDialogFragment.show(activity.getSupportFragmentManager(), ALERT_DIALOG_DELETE_TAXON_FRAGMENT);
+        }
     }
 }

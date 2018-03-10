@@ -1,6 +1,7 @@
 package com.makina.ecrins.commons.ui.input.taxa;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,21 +18,23 @@ import com.makina.ecrins.commons.R;
  */
 public class TaxaStatusArrayAdapter extends ArrayAdapter<TaxonStatus> {
 
-    private int mTextViewResourceId;
+    private final int mTextViewResourceId;
     private final LayoutInflater mInflater;
 
-    public TaxaStatusArrayAdapter(Context context) {
+    TaxaStatusArrayAdapter(Context context) {
         this(context, R.layout.list_item_taxa_status_multiple_choice);
     }
 
-    public TaxaStatusArrayAdapter(Context context, int textViewResourceId) {
+    private TaxaStatusArrayAdapter(Context context,
+                                   int textViewResourceId) {
         super(context, textViewResourceId);
         mTextViewResourceId = textViewResourceId;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View view;
 
         if (convertView == null) {
@@ -41,7 +44,12 @@ public class TaxaStatusArrayAdapter extends ArrayAdapter<TaxonStatus> {
             view = convertView;
         }
 
-        TaxonStatus taxonStatus = getItem(position);
+        final TaxonStatus taxonStatus = getItem(position);
+
+        if (taxonStatus == null) {
+            return view;
+        }
+
         view.findViewById(R.id.viewStatusColor).setBackgroundColor(getContext().getResources().getColor(taxonStatus.getResourceColorId()));
         ((TextView) view.findViewById(android.R.id.text1)).setText(getContext().getResources().getString(taxonStatus.getResourceLabelId()));
         ((CheckBox) view.findViewById(android.R.id.checkbox)).setChecked(taxonStatus.isSelected());

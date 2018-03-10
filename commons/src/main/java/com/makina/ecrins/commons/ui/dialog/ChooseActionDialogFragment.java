@@ -80,13 +80,19 @@ public class ChooseActionDialogFragment
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Bundle arguments = getArguments() == null ? new Bundle() : getArguments();
+        final Context context = getContext();
 
-        final View view = View.inflate(getActivity(),
+        if (context == null) {
+            throw new IllegalArgumentException("Null Context while creating " + ChooseActionDialogFragment.class.getName());
+        }
+
+        final View view = View.inflate(context,
                                        R.layout.dialog_list_items,
                                        null);
 
-        TextView textView = (TextView) view.findViewById(R.id.textViewMessageDialog);
-        int message = getArguments().getInt(KEY_MESSAGE);
+        TextView textView = view.findViewById(R.id.textViewMessageDialog);
+        int message = arguments.getInt(KEY_MESSAGE);
 
         if (message == 0) {
             textView.setVisibility(View.GONE);
@@ -95,11 +101,11 @@ public class ChooseActionDialogFragment
             textView.setText(message);
         }
 
-        final ListView listView = (ListView) view.findViewById(android.R.id.list);
+        final ListView listView = view.findViewById(android.R.id.list);
 
         mAdapter = new StringResourcesArrayAdapter(getActivity());
 
-        final List<Integer> actions = getArguments().getIntegerArrayList(KEY_ACTIONS);
+        final List<Integer> actions = arguments.getIntegerArrayList(KEY_ACTIONS);
 
         if (actions != null) {
             for (Integer action : actions) {
@@ -117,16 +123,20 @@ public class ChooseActionDialogFragment
                     long id) {
 
                 if (mOnChooseActionDialogListener != null) {
-                    mOnChooseActionDialogListener.onItemClick(getDialog(),
-                                                              position,
-                                                              mAdapter.getItem(position));
+                    final Integer item = mAdapter.getItem(position);
+
+                    if (item != null) {
+                        mOnChooseActionDialogListener.onItemClick(getDialog(),
+                                                                  position,
+                                                                  item);
+                    }
                 }
             }
         });
 
-        return new AlertDialog.Builder(getActivity(),
+        return new AlertDialog.Builder(context,
                                        R.style.CommonsDialogStyle).setIcon(R.drawable.ic_action_choose)
-                                                                  .setTitle(getArguments().getInt(KEY_TITLE))
+                                                                  .setTitle(arguments.getInt(KEY_TITLE))
                                                                   .setView(view)
                                                                   .setNegativeButton(R.string.alert_dialog_cancel,
                                                                                      null)
@@ -141,18 +151,17 @@ public class ChooseActionDialogFragment
     private class StringResourcesArrayAdapter
             extends ArrayAdapter<Integer> {
 
-        private int mTextViewResourceId;
+        private final int mTextViewResourceId;
         private final LayoutInflater mInflater;
 
-        public StringResourcesArrayAdapter(Context context) {
+        StringResourcesArrayAdapter(Context context) {
 
             this(context,
                  android.R.layout.simple_list_item_1);
         }
 
-        public StringResourcesArrayAdapter(
-                Context context,
-                int textViewResourceId) {
+        StringResourcesArrayAdapter(Context context,
+                                    int textViewResourceId) {
 
             super(context,
                   textViewResourceId);
@@ -161,11 +170,12 @@ public class ChooseActionDialogFragment
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
+        @NonNull
         @Override
         public View getView(
                 int position,
                 View convertView,
-                ViewGroup parent) {
+                @NonNull ViewGroup parent) {
 
             View view;
 
@@ -178,7 +188,11 @@ public class ChooseActionDialogFragment
                 view = convertView;
             }
 
-            ((TextView) view.findViewById(android.R.id.text1)).setText(getItem(position));
+            final Integer item = getItem(position);
+
+            if (item != null) {
+                ((TextView) view.findViewById(android.R.id.text1)).setText(item);
+            }
 
             return view;
         }

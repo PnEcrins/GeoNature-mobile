@@ -1,5 +1,6 @@
 package com.makina.ecrins.commons.ui.pager;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -29,6 +30,7 @@ public class EnablePagingViewPager extends ViewPager {
         return this.mPagingEnabled && super.onInterceptTouchEvent(ev);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         switch (ev.getAction()) {

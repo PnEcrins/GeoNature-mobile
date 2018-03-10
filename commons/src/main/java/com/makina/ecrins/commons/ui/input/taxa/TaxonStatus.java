@@ -15,10 +15,10 @@ public class TaxonStatus implements Parcelable {
     public static final String STATUS_NEW = "orange";
     public static final String STATUS_OPTIONAL = "gray";
 
-    private String mStatus;
+    private final String mStatus;
     private boolean mSelected;
-    private int mResourceLabelId;
-    private int mResourceColorId;
+    private final int mResourceLabelId;
+    private final int mResourceColorId;
 
     public TaxonStatus(String pStatus, boolean psSelected, int pResourceLabelId, int pResourceColorId) {
         this.mStatus = pStatus;

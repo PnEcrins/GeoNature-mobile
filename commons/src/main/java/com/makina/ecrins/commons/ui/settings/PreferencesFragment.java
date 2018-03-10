@@ -147,9 +147,12 @@ public class PreferencesFragment
         }
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id,
                                          Bundle args) {
+        final Uri observerLoaderUri = mListener.getObserverLoaderUri(args.getLong(KEY_SELECTED_OBSERVER));
+
         final String[] projection = {
                 MainDatabaseHelper.ObserversColumns._ID,
                 MainDatabaseHelper.ObserversColumns.LASTNAME,
@@ -157,7 +160,7 @@ public class PreferencesFragment
         };
 
         return new CursorLoader(getContext(),
-                                mListener.getObserverLoaderUri(args.getLong(KEY_SELECTED_OBSERVER)),
+                                observerLoaderUri,
                                 projection,
                                 null,
                                 null,
@@ -165,7 +168,7 @@ public class PreferencesFragment
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader,
+    public void onLoadFinished(@NonNull Loader<Cursor> loader,
                                Cursor data) {
         if ((data != null) && data.moveToFirst()) {
             final Observer defaultObserver = new Observer(data.getLong(data.getColumnIndex(MainDatabaseHelper.ObserversColumns._ID)),
@@ -179,7 +182,7 @@ public class PreferencesFragment
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         // nothing to do ...
     }
 

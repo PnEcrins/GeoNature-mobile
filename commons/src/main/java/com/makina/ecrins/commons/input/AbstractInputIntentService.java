@@ -32,16 +32,16 @@ public abstract class AbstractInputIntentService
 
     private static final String BROADCAST_ACTION = "BROADCAST_ACTION";
 
-    protected static final String ACTION_READ = "ACTION_READ";
-    protected static final String ACTION_SAVE = "ACTION_SAVE";
-    protected static final String ACTION_DELETE = "ACTION_DELETE";
-    protected static final String ACTION_EXPORT = "ACTION_EXPORT";
+    static final String ACTION_READ = "ACTION_READ";
+    static final String ACTION_SAVE = "ACTION_SAVE";
+    static final String ACTION_DELETE = "ACTION_DELETE";
+    static final String ACTION_EXPORT = "ACTION_EXPORT";
 
     private static final String EXTRA_DATE_FORMAT = "EXTRA_DATE_FORMAT";
     public static final String EXTRA_STATUS = "EXTRA_STATUS";
     public static final String EXTRA_INPUT = "EXTRA_INPUT";
 
-    protected static final String KEY_PREFERENCE_CURRENT_INPUT = "KEY_PREFERENCE_CURRENT_INPUT";
+    static final String KEY_PREFERENCE_CURRENT_INPUT = "KEY_PREFERENCE_CURRENT_INPUT";
 
     private final InputJsonReader mInputJsonReader;
     private final InputJsonWriter mInputJsonWriter;
@@ -96,12 +96,12 @@ public abstract class AbstractInputIntentService
     }
 
     @NonNull
-    protected static Intent buildIntent(@NonNull final Context context,
-                                        @NonNull final Class<? extends AbstractInputIntentService> clazz,
-                                        @NonNull final String action,
-                                        @NonNull final String broadcastAction,
-                                        @Nullable final String dateFormat,
-                                        @Nullable final AbstractInput input) {
+    static Intent buildIntent(@NonNull final Context context,
+                              @NonNull final Class<? extends AbstractInputIntentService> clazz,
+                              @NonNull final String action,
+                              @NonNull final String broadcastAction,
+                              @Nullable final String dateFormat,
+                              @Nullable final AbstractInput input) {
         final Intent intent = new Intent(context,
                                          clazz);
         intent.setAction(action);
@@ -153,12 +153,18 @@ public abstract class AbstractInputIntentService
             return;
         }
 
+        final String action = intent.getAction();
+
         if (BuildConfig.DEBUG) {
             Log.d(TAG,
-                  "onHandleIntent, action: " + intent.getAction());
+                  "onHandleIntent, action: " + action);
         }
 
-        switch (intent.getAction()) {
+        if (action == null) {
+            return;
+        }
+
+        switch (action) {
             case ACTION_READ:
                 sendBroadcast(broadcastAction,
                               Status.STARTING);
@@ -171,7 +177,7 @@ public abstract class AbstractInputIntentService
                 if (TextUtils.isEmpty(json)) {
                     if (BuildConfig.DEBUG) {
                         Log.d(TAG,
-                              "onHandleIntent, " + intent.getAction() + ": no JSON found");
+                              "onHandleIntent, " + action + ": no JSON found");
                     }
 
                     sendBroadcast(broadcastAction,
@@ -200,7 +206,7 @@ public abstract class AbstractInputIntentService
 
                 if (inputToSave == null) {
                     Log.w(TAG,
-                          "onHandleIntent, " + intent.getAction() + ": no input to write");
+                          "onHandleIntent, " + action + ": no input to write");
 
                     sendBroadcast(broadcastAction,
                                   Status.FINISHED_WITH_ERRORS);
@@ -208,7 +214,7 @@ public abstract class AbstractInputIntentService
                 else {
                     if (BuildConfig.DEBUG) {
                         Log.d(TAG,
-                              "onHandleIntent, " + intent.getAction() + ", input to save: " + inputToSave.getInputId());
+                              "onHandleIntent, " + action + ", input to save: " + inputToSave.getInputId());
                     }
 
                     final String inputAsJson = mInputJsonWriter.write(inputToSave);
@@ -252,7 +258,7 @@ public abstract class AbstractInputIntentService
 
                 if (inputToExport == null) {
                     Log.w(TAG,
-                          "onHandleIntent, " + intent.getAction() + ": no input to write");
+                          "onHandleIntent, " + action + ": no input to write");
 
                     sendBroadcast(broadcastAction,
                                   Status.FINISHED_WITH_ERRORS);
@@ -281,16 +287,16 @@ public abstract class AbstractInputIntentService
         }
     }
 
-    protected void sendBroadcast(@NonNull final String action,
-                                 @NonNull final Status status) {
+    void sendBroadcast(@NonNull final String action,
+                       @NonNull final Status status) {
         sendBroadcast(action,
                       status,
                       null);
     }
 
-    protected void sendBroadcast(@NonNull final String action,
-                                 @NonNull final Status status,
-                                 @Nullable final AbstractInput input) {
+    void sendBroadcast(@NonNull final String action,
+                       @NonNull final Status status,
+                       @Nullable final AbstractInput input) {
         final Intent intent = new Intent();
         intent.setAction(action);
         intent.putExtra(EXTRA_STATUS,
@@ -311,7 +317,7 @@ public abstract class AbstractInputIntentService
     }
 
     @NonNull
-    protected Writer getInputExportWriter(@NonNull final AbstractInput input) throws
+    Writer getInputExportWriter(@NonNull final AbstractInput input) throws
                                                                               IOException {
         final File inputDir = FileUtils.getInputsFolder(this);
 

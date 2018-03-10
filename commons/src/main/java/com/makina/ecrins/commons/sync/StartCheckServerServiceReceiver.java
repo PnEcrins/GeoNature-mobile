@@ -17,17 +17,23 @@ import android.util.Log;
  */
 public class StartCheckServerServiceReceiver extends BroadcastReceiver {
 
+    private static final String TAG = StartCheckServerServiceReceiver.class.getName();
+
     public static final String INTENT_MESSENGER = "messenger";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(getClass().getName(), "onReceive");
+        Log.d(TAG, "onReceive");
 
         Bundle extras = intent.getExtras();
 
         // gets messenger
         if (extras != null) {
-            Messenger messenger = (Messenger) extras.get(INTENT_MESSENGER);
+            final Messenger messenger = (Messenger) extras.get(INTENT_MESSENGER);
+
+            if (messenger == null) {
+                return;
+            }
 
             try {
                 Message message = Message.obtain();
@@ -35,7 +41,7 @@ public class StartCheckServerServiceReceiver extends BroadcastReceiver {
                 messenger.send(message);
             }
             catch (RemoteException re) {
-                Log.w(getClass().getName(), re.getMessage(), re);
+                Log.w(TAG, re.getMessage(), re);
             }
         }
     }

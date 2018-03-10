@@ -71,9 +71,9 @@ public class TaxaFilterClass implements Parcelable {
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
      */
     public static class TaxonFilterClass implements Parcelable {
-        private long mId;
-        private String mLabel;
-        private int mResourceId;
+        private final long mId;
+        private final String mLabel;
+        private final int mResourceId;
         private boolean mSelected;
 
         public TaxonFilterClass(long pId, String pLabel, int pResourceId, boolean pSelected) {

@@ -141,7 +141,7 @@ public class CheckServerService
 
         private final WeakReference<CheckServerService> mCheckServerService;
 
-        public IncomingHandler(CheckServerService pCheckServerService) {
+        IncomingHandler(CheckServerService pCheckServerService) {
 
             super();
             mCheckServerService = new WeakReference<>(pCheckServerService);
@@ -177,7 +177,7 @@ public class CheckServerService
 
         private final WebAPIClient webAPIClient;
 
-        public CheckServerStatusAsyncTask() {
+        CheckServerStatusAsyncTask() {
 
             this.webAPIClient = new WebAPIClient();
         }

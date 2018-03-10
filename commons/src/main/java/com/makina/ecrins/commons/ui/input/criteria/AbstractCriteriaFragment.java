@@ -3,6 +3,8 @@ package com.makina.ecrins.commons.ui.input.criteria;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -30,19 +32,25 @@ public abstract class AbstractCriteriaFragment extends ListFragment
         IValidateFragment,
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    protected SimpleCursorAdapter mAdapter;
+    private SimpleCursorAdapter mAdapter;
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        final FragmentActivity activity = getActivity();
+
+        if (activity == null) {
+            return;
+        }
+
         // give some text to display if there is no data
         setEmptyText(getString(R.string.criteria_no_data));
 
         // create an empty adapter we will use to display the loaded data
-        mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null,
-                new String[] {
+        mAdapter = new SimpleCursorAdapter(activity, android.R.layout.simple_list_item_1, null,
+                                           new String[] {
                                 MainDatabaseHelper.CriteriaColumns.NAME
                         },
-                new int[] {
+                                           new int[] {
                                 android.R.id.text1
                         }, 0
         ) {
@@ -68,6 +76,12 @@ public abstract class AbstractCriteriaFragment extends ListFragment
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+        final FragmentActivity activity = getActivity();
+
+        if (activity == null || mAdapter == null) {
+            return;
+        }
+
         Cursor cursor = (Cursor) mAdapter.getItem(position);
         long criterionId = cursor.getLong(cursor.getColumnIndex(MainDatabaseHelper.CriteriaColumns._ID));
         String criterionLabel = cursor.getString(cursor.getColumnIndex(MainDatabaseHelper.CriteriaColumns.NAME));
@@ -77,7 +91,7 @@ public abstract class AbstractCriteriaFragment extends ListFragment
 
         mAdapter.notifyDataSetChanged();
 
-        ((AbstractPagerFragmentActivity) getActivity()).validateCurrentPage();
+        ((AbstractPagerFragmentActivity) activity).validateCurrentPage();
     }
 
     @Override
@@ -108,21 +122,21 @@ public abstract class AbstractCriteriaFragment extends ListFragment
         }
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] projection =
-                {
-                        MainDatabaseHelper.CriteriaColumns._ID,
-                        MainDatabaseHelper.CriteriaColumns.NAME,
-                        MainDatabaseHelper.CriteriaColumns.SORT,
-                        MainDatabaseHelper.CriteriaColumns.CLASS_ID
-                };
+        final String[] projection = {
+                MainDatabaseHelper.CriteriaColumns._ID,
+                MainDatabaseHelper.CriteriaColumns.NAME,
+                MainDatabaseHelper.CriteriaColumns.SORT,
+                MainDatabaseHelper.CriteriaColumns.CLASS_ID
+        };
 
-        return new CursorLoader(getActivity(), getLoaderUri(), projection, null, null, null);
+        return new CursorLoader(getContext(), getLoaderUri(), projection, null, null, null);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         mAdapter.swapCursor(data);
 
         // the list should now be shown
@@ -135,7 +149,7 @@ public abstract class AbstractCriteriaFragment extends ListFragment
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         // data is not available anymore, delete reference
         mAdapter.swapCursor(null);
     }

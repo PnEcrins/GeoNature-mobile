@@ -1,16 +1,15 @@
 package com.makina.ecrins.commons.ui.input.taxa;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +27,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.FilterQueryProvider;
 import android.widget.ListView;
 import android.widget.TextSwitcher;
@@ -44,6 +42,7 @@ import com.makina.ecrins.commons.ui.pager.AbstractPagerFragmentActivity;
 import com.makina.ecrins.commons.ui.pager.IValidateFragment;
 import com.makina.ecrins.commons.ui.widget.AlphabetSectionIndexerCursorAdapter;
 import com.makina.ecrins.commons.ui.widget.PinnedSectionListView;
+import com.makina.ecrins.commons.util.KeyboardUtils;
 import com.makina.ecrins.commons.util.ThemeUtils;
 
 import java.text.ParseException;
@@ -122,7 +121,7 @@ public abstract class AbstractTaxaInputListFragment
 
         mListContainer = view.findViewById(R.id.listContainer);
         mProgressContainer = view.findViewById(R.id.progressContainer);
-        mSecondActionBarView = (ViewGroup) view.findViewById(R.id.secondActionBarView);
+        mSecondActionBarView = view.findViewById(R.id.secondActionBarView);
 
         mListShown = true;
 
@@ -130,7 +129,7 @@ public abstract class AbstractTaxaInputListFragment
     }
 
     @Override
-    public void onViewCreated(View view,
+    public void onViewCreated(@NonNull View view,
                               Bundle savedInstanceState) {
         super.onViewCreated(view,
                             savedInstanceState);
@@ -144,7 +143,7 @@ public abstract class AbstractTaxaInputListFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putAll(mSavedState);
 
         super.onSaveInstanceState(outState);
@@ -161,19 +160,24 @@ public abstract class AbstractTaxaInputListFragment
     @Override
     public void onCreateOptionsMenu(Menu menu,
                                     MenuInflater inflater) {
+        final AppCompatActivity activity = (AppCompatActivity) getActivity();
+
+        if (activity == null) {
+            return;
+        }
+
         final MenuItem menuItemSearch = menu.add(Menu.NONE,
                                                  0,
                                                  Menu.NONE,
                                                  R.string.action_search);
         menuItemSearch.setIcon(R.drawable.ic_action_search);
-        MenuItemCompat.setShowAsAction(menuItemSearch,
-                                       MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        menuItemSearch.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        final ActionBar actionBar = activity.getSupportActionBar();
         final SearchView searchView;
 
         if (actionBar == null) {
-            searchView = new SearchView(getContext());
+            searchView = new SearchView(activity);
         }
         else {
             searchView = new SearchView(actionBar.getThemedContext());
@@ -183,9 +187,8 @@ public abstract class AbstractTaxaInputListFragment
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN,
-                                    0);
+                KeyboardUtils.hideSoftKeyboard(getContext());
+
                 return true;
             }
 
@@ -201,46 +204,49 @@ public abstract class AbstractTaxaInputListFragment
             }
         });
 
-        MenuItemCompat.setOnActionExpandListener(menuItemSearch,
-                                                 new MenuItemCompat.OnActionExpandListener() {
-                                                     @Override
-                                                     public boolean onMenuItemActionExpand(MenuItem item) {
-                                                         return true;
-                                                     }
+        menuItemSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true;
+            }
 
-                                                     @Override
-                                                     public boolean onMenuItemActionCollapse(MenuItem item) {
-                                                         if (BuildConfig.DEBUG) {
-                                                             Log.d(TAG,
-                                                                   "onMenuItemActionCollapse");
-                                                         }
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG,
+                          "onMenuItemActionCollapse");
+                }
 
-                                                         // clear the search filter on collapse
-                                                         mAdapter.getFilter()
-                                                                 .filter(null);
-                                                         return true;
-                                                     }
-                                                 });
+                // clear the search filter on collapse
+                mAdapter.getFilter()
+                        .filter(null);
+                return true;
+            }
+        });
 
-        MenuItemCompat.setActionView(menuItemSearch,
-                                     searchView);
+        menuItemSearch.setActionView(searchView);
+        menuItemSearch.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-        menu.add(Menu.NONE,
-                 1,
-                 Menu.NONE,
-                 (mSavedState.getSerializable(KEY_SWITCH_LABEL)
-                             .equals(LabelSwitcher.FRENCH)) ? R.string.action_switch_label_latin : R.string.action_switch_label_french)
-            .setIcon((mSavedState.getSerializable(KEY_SWITCH_LABEL)
-                                 .equals(LabelSwitcher.FRENCH)) ? R.drawable.ic_action_label_switcher_la : R.drawable.ic_action_label_switcher_fr);
-        MenuItemCompat.setShowAsAction(menuItemSearch,
-                                       MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+        final LabelSwitcher labelSwitcher = (LabelSwitcher) mSavedState.getSerializable(KEY_SWITCH_LABEL);
+
+        if (labelSwitcher != null) {
+            menu.add(Menu.NONE,
+                     1,
+                     Menu.NONE,
+                     labelSwitcher.equals(LabelSwitcher.FRENCH) ? R.string.action_switch_label_latin : R.string.action_switch_label_french)
+                .setIcon(labelSwitcher.equals(LabelSwitcher.FRENCH) ? R.drawable.ic_action_label_switcher_la : R.drawable.ic_action_label_switcher_fr);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case 1:
-                LabelSwitcher labelSwitcher = (LabelSwitcher) mSavedState.getSerializable(KEY_SWITCH_LABEL);
+                final LabelSwitcher labelSwitcher = (LabelSwitcher) mSavedState.getSerializable(KEY_SWITCH_LABEL);
+
+                if (labelSwitcher == null) {
+                    return false;
+                }
 
                 switch (labelSwitcher) {
                     case FRENCH:
@@ -253,7 +259,12 @@ public abstract class AbstractTaxaInputListFragment
                         break;
                 }
 
-                ActivityCompat.invalidateOptionsMenu(getActivity());
+                final FragmentActivity activity = getActivity();
+
+                if (activity != null) {
+                    activity.invalidateOptionsMenu();
+                }
+
                 refreshView();
 
                 return true;
@@ -279,9 +290,11 @@ public abstract class AbstractTaxaInputListFragment
         }
 
         // replace the previous selection by this one
-        if (mSavedState.getParcelable(KEY_SELECTED_TAXON) != null) {
+        final AbstractTaxon previousSelectedTaxon = mSavedState.getParcelable(KEY_SELECTED_TAXON);
+
+        if (previousSelectedTaxon != null) {
             mInput.getTaxa()
-                  .remove(((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getId());
+                  .remove(previousSelectedTaxon.getId());
         }
 
         // creates a new taxon for this input
@@ -306,7 +319,11 @@ public abstract class AbstractTaxaInputListFragment
                                              .size());
         }
 
-        ((AbstractPagerFragmentActivity) getActivity()).validateCurrentPage();
+        final FragmentActivity activity = getActivity();
+
+        if (activity != null) {
+            ((AbstractPagerFragmentActivity) activity).validateCurrentPage();
+        }
     }
 
     @Override
@@ -332,8 +349,11 @@ public abstract class AbstractTaxaInputListFragment
             return;
         }
 
-        activity.getSupportActionBar()
-                .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        final ActionBar actionBar = activity.getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        }
 
         if (mInput == null) {
             Log.w(TAG,
@@ -358,8 +378,7 @@ public abstract class AbstractTaxaInputListFragment
             mSavedState.remove(KEY_FILTER);
 
             clearFilters();
-
-            ActivityCompat.invalidateOptionsMenu(getActivity());
+            activity.invalidateOptionsMenu();
         }
 
         // restore previously selected taxon
@@ -369,9 +388,12 @@ public abstract class AbstractTaxaInputListFragment
                                       mInput.getTaxa()
                                             .get(mInput.getCurrentSelectedTaxonId()));
 
-            if (BuildConfig.DEBUG) {
+            final AbstractTaxon selectedTaxon = mSavedState.getParcelable(KEY_SELECTED_TAXON);
+
+            if (BuildConfig.DEBUG && selectedTaxon != null) {
+
                 Log.d(TAG,
-                      "restore selected taxon: " + ((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getTaxonId());
+                      "restore selected taxon: " + selectedTaxon.getTaxonId());
             }
         }
 
@@ -399,12 +421,13 @@ public abstract class AbstractTaxaInputListFragment
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader,
+    public void onLoadFinished(@NonNull Loader<Cursor> loader,
                                Cursor data) {
         String sortedColumnIndex = MainDatabaseHelper.TaxaColumns.NAME;
+        final LabelSwitcher labelSwitcher = (LabelSwitcher) mSavedState.getSerializable(KEY_SWITCH_LABEL);
 
-        if (mSavedState.containsKey(KEY_SWITCH_LABEL)) {
-            switch ((LabelSwitcher) mSavedState.getSerializable(KEY_SWITCH_LABEL)) {
+        if (labelSwitcher != null) {
+            switch (labelSwitcher) {
                 case FRENCH:
                     sortedColumnIndex = MainDatabaseHelper.TaxaColumns.NAME_FR;
                     break;
@@ -444,7 +467,7 @@ public abstract class AbstractTaxaInputListFragment
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         // data is not available anymore, delete reference
         if (mAdapter != null) {
             mAdapter.swapCursor(null);
@@ -540,20 +563,25 @@ public abstract class AbstractTaxaInputListFragment
                                               parent);
 
                     if (getItemViewType(position) == TYPE_NORMAL) {
-                        if ((mSavedState.getParcelable(KEY_SELECTED_TAXON) != null) && ((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getTaxonId() == getItemId(position)) {
+                        final AbstractTaxon selectedTaxon = mSavedState.getParcelable(KEY_SELECTED_TAXON);
+
+                        if ((selectedTaxon != null) && (selectedTaxon.getTaxonId() == getItemId(position))) {
                             view.setBackgroundColor(ThemeUtils.getAccentColor(getContext()));
 
                             Cursor cursor = (Cursor) getItem(position);
-                            AbstractTaxon selectedTaxon = mSavedState.getParcelable(KEY_SELECTED_TAXON);
+
+                            final LabelSwitcher labelSwitcher = (LabelSwitcher) mSavedState.getSerializable(KEY_SWITCH_LABEL);
 
                             // saves the current name of this taxon
-                            switch ((LabelSwitcher) mSavedState.getSerializable(KEY_SWITCH_LABEL)) {
-                                case FRENCH:
-                                    selectedTaxon.setNameEntered(cursor.getString(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns.NAME_FR)));
-                                    break;
-                                default:
-                                    selectedTaxon.setNameEntered(cursor.getString(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns.NAME)));
-                                    break;
+                            if (labelSwitcher != null) {
+                                switch (labelSwitcher) {
+                                    case FRENCH:
+                                        selectedTaxon.setNameEntered(cursor.getString(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns.NAME_FR)));
+                                        break;
+                                    default:
+                                        selectedTaxon.setNameEntered(cursor.getString(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns.NAME)));
+                                        break;
+                                }
                             }
 
                             // apply selection to this taxon
@@ -574,10 +602,13 @@ public abstract class AbstractTaxaInputListFragment
 
             // sets a custom ViewBinder for this adapter
             mAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+                @SuppressLint("SetTextI18n")
                 @Override
                 public boolean setViewValue(View view,
                                             Cursor cursor,
                                             int columnIndex) {
+                    final AbstractTaxon selectedTaxon = mSavedState.getParcelable(KEY_SELECTED_TAXON);
+
                     if (view.getId() == R.id.textSwitcher) {
                         TextSwitcher textSwitcher = (TextSwitcher) view;
                         textSwitcher.setInAnimation(AnimationUtils.loadAnimation(getActivity(),
@@ -589,19 +620,23 @@ public abstract class AbstractTaxaInputListFragment
                         String selectedColor = Integer.toHexString(ThemeUtils.getAccentColor(getContext()))
                                                       .substring(2);
 
-                        String taxonDisplayName;
+                        String taxonDisplayName = cursor.getString(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns.NAME));
 
-                        switch ((LabelSwitcher) mSavedState.getSerializable(KEY_SWITCH_LABEL)) {
-                            case LATIN:
-                                taxonDisplayName = cursor.getString(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns.NAME));
-                                break;
-                            default:
-                                taxonDisplayName = cursor.getString(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns.NAME_FR));
-                                break;
+                        final LabelSwitcher labelSwitcher = (LabelSwitcher) mSavedState.getSerializable(KEY_SWITCH_LABEL);
+
+                        if (labelSwitcher != null) {
+                            switch (labelSwitcher) {
+                                case LATIN:
+                                    taxonDisplayName = cursor.getString(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns.NAME));
+                                    break;
+                                default:
+                                    taxonDisplayName = cursor.getString(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns.NAME_FR));
+                                    break;
+                            }
                         }
 
                         // selected taxon
-                        if ((mSavedState.getParcelable(KEY_SELECTED_TAXON) != null) && ((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getTaxonId() == cursor.getLong(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns._ID))) {
+                        if ((selectedTaxon != null) && selectedTaxon.getTaxonId() == cursor.getLong(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns._ID))) {
                             Spanned nameFilterFormat = (filter != null) ? Html.fromHtml(taxonDisplayName.replaceAll(Pattern.compile("(?i)(" + filter + ")")
                                                                                                                            .pattern(),
                                                                                                                     "<b>$1</b>")) : SpannedString.valueOf(taxonDisplayName);
@@ -646,7 +681,7 @@ public abstract class AbstractTaxaInputListFragment
                         TextView textViewTaxonObservers = (TextView) view;
                         textViewTaxonObservers.setText(Integer.toString(cursor.getInt(columnIndex)));
 
-                        if (mSavedState.getBoolean(KEY_DISPLAY_TAXON_DETAILS) && (mSavedState.getParcelable(KEY_SELECTED_TAXON) != null) && (((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getTaxonId() == cursor.getLong(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns._ID)))) {
+                        if (mSavedState.getBoolean(KEY_DISPLAY_TAXON_DETAILS) && (selectedTaxon != null) && (selectedTaxon.getTaxonId() == cursor.getLong(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns._ID)))) {
                             textViewTaxonObservers.setVisibility(View.VISIBLE);
                         }
                         else {
@@ -675,7 +710,7 @@ public abstract class AbstractTaxaInputListFragment
                             textViewTaxonDate.setText("");
                         }
 
-                        if (mSavedState.getBoolean(KEY_DISPLAY_TAXON_DETAILS) && (mSavedState.getParcelable(KEY_SELECTED_TAXON) != null) && (((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getTaxonId() == cursor.getLong(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns._ID)))) {
+                        if (mSavedState.getBoolean(KEY_DISPLAY_TAXON_DETAILS) && (selectedTaxon != null) && (selectedTaxon.getTaxonId() == cursor.getLong(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns._ID)))) {
                             textViewTaxonDate.setVisibility(View.VISIBLE);
                         }
                         else {
@@ -701,7 +736,7 @@ public abstract class AbstractTaxaInputListFragment
                             textViewTaxonMessage.setText("");
                         }
 
-                        if (mSavedState.getBoolean(KEY_DISPLAY_TAXON_DETAILS) && (mSavedState.getParcelable(KEY_SELECTED_TAXON) != null) && (((AbstractTaxon) mSavedState.getParcelable(KEY_SELECTED_TAXON)).getTaxonId() == cursor.getLong(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns._ID)))) {
+                        if (mSavedState.getBoolean(KEY_DISPLAY_TAXON_DETAILS) && (selectedTaxon != null) && (selectedTaxon.getTaxonId() == cursor.getLong(cursor.getColumnIndex(MainDatabaseHelper.TaxaColumns._ID)))) {
                             textViewTaxonMessage.setVisibility(View.VISIBLE);
                         }
                         else {

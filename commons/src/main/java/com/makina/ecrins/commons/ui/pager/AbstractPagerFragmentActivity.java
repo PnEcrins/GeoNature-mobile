@@ -32,14 +32,14 @@ public abstract class AbstractPagerFragmentActivity
     public static final String EXTRA_PAGER_ID = "EXTRA_PAGER_ID";
     protected static final String KEY_PAGER = "KEY_PAGER";
 
-    protected SimpleFragmentPagerAdapter mAdapter;
-    protected EnablePagingViewPager mViewPager;
-    protected Button mPreviousButton;
-    protected Button mNextButton;
+    SimpleFragmentPagerAdapter mAdapter;
+    EnablePagingViewPager mViewPager;
+    Button mPreviousButton;
+    Button mNextButton;
 
     protected PagerHelper mPagerHelper;
     protected Pager mPager;
-    protected boolean mRestorePager = false;
+    boolean mRestorePager = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +51,11 @@ public abstract class AbstractPagerFragmentActivity
 
         mAdapter = new SimpleFragmentPagerAdapter(this,
                                                   getSupportFragmentManager());
-        mViewPager = (EnablePagingViewPager) findViewById(R.id.pager);
+        mViewPager = findViewById(R.id.pager);
         mViewPager.setAdapter(mAdapter);
 
-        mPreviousButton = (Button) findViewById(R.id.previousButton);
-        mNextButton = (Button) findViewById(R.id.nextButton);
+        mPreviousButton = findViewById(R.id.previousButton);
+        mNextButton = findViewById(R.id.nextButton);
 
         if (getIntent().hasExtra(EXTRA_PAGER_ID)) {
             mPager = mPagerHelper.load(getIntent().getLongExtra(EXTRA_PAGER_ID,
@@ -80,7 +80,7 @@ public abstract class AbstractPagerFragmentActivity
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
-        final UnderlinePageIndicator indicator = (UnderlinePageIndicator) findViewById(R.id.indicator);
+        final UnderlinePageIndicator indicator = findViewById(R.id.indicator);
         indicator.setViewPager(mViewPager);
         mViewPager.addOnPageChangeListener(this);
 
@@ -349,7 +349,7 @@ public abstract class AbstractPagerFragmentActivity
      * @return {@link IValidateFragment} instance
      */
     @Nullable
-    protected IValidateFragment getPageFragment(Integer position) {
+    IValidateFragment getPageFragment(Integer position) {
         int currentItem = mViewPager.getCurrentItem();
 
         final Fragment fragment = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + ((position == null) ? currentItem : position));
@@ -375,7 +375,7 @@ public abstract class AbstractPagerFragmentActivity
      * @see AbstractPagerFragmentActivity#getPageFragment(Integer)
      */
     @Nullable
-    protected IValidateFragment getPageFragmentByKey(Integer key) {
+    IValidateFragment getPageFragmentByKey(Integer key) {
         return getPageFragment((new ArrayList<>(mAdapter.getFragments()
                                                         .keySet())).indexOf(key));
     }

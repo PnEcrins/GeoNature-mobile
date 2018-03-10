@@ -120,7 +120,7 @@
     <string name="action_delete_taxon">Delete taxon</string>
     <string name="action_comment_add">Add comment</string>
     <string name="action_comment_edit">Edit comment</string>
-    <string name="action_ok">ok</string>
+    <string name="action_ok">OK</string>
 
     <string name="snackbar_permissions_not_granted">Permissions were not granted</string>
     <string name="snackbar_permissions_granted">Permissions were been granted</string>

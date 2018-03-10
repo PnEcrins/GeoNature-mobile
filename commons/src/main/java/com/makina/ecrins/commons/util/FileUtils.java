@@ -102,7 +102,7 @@ public class FileUtils
      *
      * @return the root folder as {@code File}
      *
-     * @throws IOException
+     * @throws IOException if something goes wrong
      */
     @NonNull
     public static File getRootFolder(Context context,
@@ -127,7 +127,7 @@ public class FileUtils
      *
      * @return the {@code inputs/} folder as {@code File}
      *
-     * @throws IOException
+     * @throws IOException if something goes wrong
      */
     @NonNull
     public static File getInputsFolder(Context context) throws
@@ -147,7 +147,7 @@ public class FileUtils
      *
      * @return the {@code databases/} folder
      *
-     * @throws IOException
+     * @throws IOException if something goes wrong
      */
     @NonNull
     public static File getDatabaseFolder(Context context,

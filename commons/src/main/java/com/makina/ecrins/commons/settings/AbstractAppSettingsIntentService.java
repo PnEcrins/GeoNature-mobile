@@ -32,7 +32,7 @@ public abstract class AbstractAppSettingsIntentService
 
     private static final String BROADCAST_ACTION = "BROADCAST_ACTION";
 
-    protected static final String ACTION_READ = "ACTION_READ";
+    static final String ACTION_READ = "ACTION_READ";
 
     public static final String EXTRA_STATUS = "EXTRA_STATUS";
     public static final String EXTRA_FILENAME = "EXTRA_FILENAME";
@@ -52,11 +52,11 @@ public abstract class AbstractAppSettingsIntentService
     }
 
     @NonNull
-    protected static Intent buildIntent(@NonNull final Context context,
-                                        @NonNull final Class<? extends AbstractAppSettingsIntentService> clazz,
-                                        @NonNull final String action,
-                                        @NonNull final String broadcastAction,
-                                        @NonNull final String filename) {
+    static Intent buildIntent(@NonNull final Context context,
+                              @NonNull final Class<? extends AbstractAppSettingsIntentService> clazz,
+                              @NonNull final String action,
+                              @NonNull final String broadcastAction,
+                              @NonNull final String filename) {
         final Intent intent = new Intent(context,
                                          clazz);
         intent.setAction(action);
@@ -79,6 +79,13 @@ public abstract class AbstractAppSettingsIntentService
         if (intent == null) {
             Log.w(TAG,
                   "onHandleIntent: null intent");
+
+            return;
+        }
+
+        if (intent.getAction() == null) {
+            Log.w(TAG,
+                  "onHandleIntent: no action defined for intent");
 
             return;
         }
@@ -142,8 +149,8 @@ public abstract class AbstractAppSettingsIntentService
         }
     }
 
-    protected void sendBroadcast(@NonNull final String action,
-                                 @NonNull final AbstractAppSettingsIntentService.Status status) {
+    void sendBroadcast(@NonNull final String action,
+                       @NonNull final AbstractAppSettingsIntentService.Status status) {
         sendBroadcast(action,
                       status,
                       null);
@@ -172,8 +179,8 @@ public abstract class AbstractAppSettingsIntentService
     }
 
     @NonNull
-    protected Reader getAppSettingsReader(@NonNull final String filename) throws
-                                                                          IOException {
+    Reader getAppSettingsReader(@NonNull final String filename) throws
+                                                                IOException {
         // noinspection ResultOfMethodCallIgnored
         FileUtils.getRootFolder(this,
                                 MountPoint.StorageType.INTERNAL)

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -42,6 +43,7 @@ import java.util.Map;
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  * @deprecated use {@link AbstractObserversAndDateInputFragment} instead
  */
+@SuppressWarnings("ALL")
 @Deprecated
 public abstract class AbstractObserversAndDateFragment
         extends Fragment
@@ -51,8 +53,8 @@ public abstract class AbstractObserversAndDateFragment
     private static final String ALERT_DIALOG_CALENDAR_FRAGMENT = "alert_dialog_calendar_fragment";
     private static final String KEY_SELECTED_OBSERVERS = "selected_observers";
 
-    protected SimpleCursorAdapter mObserversAdapter;
-    protected static DatesAdapter mDatesAdapter;
+    private SimpleCursorAdapter mObserversAdapter;
+    private static DatesAdapter mDatesAdapter;
 
     private Bundle mSavedState;
 
@@ -69,7 +71,7 @@ public abstract class AbstractObserversAndDateFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(AbstractObserversAndDateFragment.class.getName(),
@@ -95,7 +97,7 @@ public abstract class AbstractObserversAndDateFragment
                                          android.R.layout.simple_list_item_2,
                                          getDateFormatResourceId());
 
-        ListView listSelectedObserversView = (ListView) view.findViewById(R.id.listSelectedObservers);
+        ListView listSelectedObserversView = view.findViewById(R.id.listSelectedObservers);
         listSelectedObserversView.setAdapter(mObserversAdapter);
         listSelectedObserversView.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -110,7 +112,7 @@ public abstract class AbstractObserversAndDateFragment
             }
         });
 
-        ListView listCurrenDateView = (ListView) view.findViewById(R.id.listSelectedDate);
+        ListView listCurrenDateView = view.findViewById(R.id.listSelectedDate);
         listCurrenDateView.setAdapter(mDatesAdapter);
         listCurrenDateView.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -184,7 +186,7 @@ public abstract class AbstractObserversAndDateFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putAll(mSavedState);
 
         super.onSaveInstanceState(outState);

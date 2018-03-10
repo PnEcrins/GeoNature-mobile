@@ -1,13 +1,13 @@
 package com.makina.ecrins.commons.ui.input.taxa;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.view.LayoutInflater;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -52,15 +52,26 @@ public class TaxaStatusFilterDialogFragment
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        final View view = inflater.inflate(R.layout.dialog_list_items, null);
+        final Context context = getContext();
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        if (context == null) {
+            throw new IllegalArgumentException("Null Context while creating " + TaxaStatusFilterDialogFragment.class.getName());
+        }
+
+        final View view = View.inflate(context,
+                                       R.layout.dialog_list_items,
+                                       null);
+
+        ListView listView = view.findViewById(android.R.id.list);
 
         mAdapter = new TaxaStatusArrayAdapter(getActivity());
 
         if (!sInitialize) {
             mStatusFilter = savedInstanceState.getParcelableArrayList(KEY_FILTER_STATUS);
+
+            if (mStatusFilter == null) {
+                mStatusFilter = new ArrayList<>();
+            }
         }
 
         for (TaxonStatus taxonStatus : mStatusFilter) {
@@ -73,7 +84,7 @@ public class TaxaStatusFilterDialogFragment
 
         sInitialize = false;
 
-        return new AlertDialog.Builder(getActivity())
+        return new AlertDialog.Builder(context)
                 .setIcon(R.drawable.dialog_filter_status)
                 .setTitle(R.string.alert_dialog_taxa_filter_status_title)
                 .setView(view)
@@ -89,8 +100,17 @@ public class TaxaStatusFilterDialogFragment
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        mAdapter.getItem(position).setSelected(!mAdapter.getItem(position).isSelected());
+    public void onItemClick(AdapterView<?> parent,
+                            View view,
+                            int position,
+                            long id) {
+        final TaxonStatus item = mAdapter.getItem(position);
+
+        if (item == null) {
+            return;
+        }
+
+        item.setSelected(!item.isSelected());
 
         List<TaxonStatus> taxonStatusFilter = new ArrayList<>();
 

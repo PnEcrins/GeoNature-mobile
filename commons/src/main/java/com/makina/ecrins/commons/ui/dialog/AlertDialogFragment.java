@@ -1,6 +1,7 @@
 package com.makina.ecrins.commons.ui.dialog;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -94,14 +95,20 @@ public class AlertDialogFragment
     @Override
     @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Bundle arguments = getArguments() == null ? new Bundle() : getArguments();
+        final Context context = getContext();
 
-        return new AlertDialog.Builder(getActivity(),
+        if (context == null) {
+            throw new IllegalArgumentException("Null Context while creating " + AlertDialogFragment.class.getName());
+        }
+
+        return new AlertDialog.Builder(context,
                                        R.style.CommonsDialogStyle).setIcon(R.drawable.ic_action_alert)
-                                                                  .setTitle(getArguments().getInt(KEY_TITLE))
-                                                                  .setMessage(getArguments().getInt(KEY_MESSAGE))
-                                                                  .setPositiveButton(getArguments().getInt(KEY_BUTTON_POSITIVE),
+                                                                  .setTitle(arguments.getInt(KEY_TITLE))
+                                                                  .setMessage(arguments.getInt(KEY_MESSAGE))
+                                                                  .setPositiveButton(arguments.getInt(KEY_BUTTON_POSITIVE),
                                                                                      mOnPositiveOnClickListener)
-                                                                  .setNegativeButton(getArguments().getInt(KEY_BUTTON_NEGATIVE),
+                                                                  .setNegativeButton(arguments.getInt(KEY_BUTTON_NEGATIVE),
                                                                                      mOnNegativeOnClickListener)
                                                                   .create();
     }
@@ -110,7 +117,7 @@ public class AlertDialogFragment
      * The callback used by {@link com.makina.ecrins.commons.ui.dialog.AlertDialogFragment}.
      *
      * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
-     * @see {@link android.content.DialogInterface.OnClickListener}
+     * @see android.content.DialogInterface.OnClickListener
      */
     public interface OnAlertDialogListener {
 

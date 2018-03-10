@@ -10,8 +10,8 @@ import android.os.Parcelable;
  */
 public class SyncStatus implements Parcelable {
 
-    private Status mStatus;
-    private String mMessage;
+    private final Status mStatus;
+    private final String mMessage;
 
     public SyncStatus(Status pStatus, String pMessage) {
         super();
@@ -55,7 +55,7 @@ public class SyncStatus implements Parcelable {
         }
     };
 
-    public static enum Status {
+    public enum Status {
         /**
          * Indicates that the service has not been executed yet.
          */

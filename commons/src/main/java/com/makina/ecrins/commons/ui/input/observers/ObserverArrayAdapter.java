@@ -18,11 +18,11 @@ import com.makina.ecrins.commons.input.Observer;
 public class ObserverArrayAdapter
         extends ArrayAdapter<Observer> {
 
-    private int mTextViewResourceId;
+    private final int mTextViewResourceId;
     private final LayoutInflater mInflater;
 
-    public ObserverArrayAdapter(Context context,
-                                int textViewResourceId) {
+    ObserverArrayAdapter(Context context,
+                         int textViewResourceId) {
         super(context,
               textViewResourceId);
 

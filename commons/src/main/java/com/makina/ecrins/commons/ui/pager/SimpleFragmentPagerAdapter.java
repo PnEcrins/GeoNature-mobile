@@ -16,16 +16,17 @@ import java.util.Map;
  */
 public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
 
-    private Context mContext;
+    private final Context mContext;
     private final Map<Integer, Fragment> mFragments = new LinkedHashMap<>();
 
-    public SimpleFragmentPagerAdapter(Context context, FragmentManager fm) {
+    SimpleFragmentPagerAdapter(Context context,
+                               FragmentManager fm) {
         super(fm);
 
         this.mContext = context;
     }
 
-    public Map<Integer, Fragment> getFragments() {
+    Map<Integer, Fragment> getFragments() {
         return mFragments;
     }
 

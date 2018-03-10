@@ -23,13 +23,13 @@ public class NetworkConnectivityListener {
 
     private static final String TAG = NetworkConnectivityListener.class.getName();
 
-    private Context mContext;
+    private final Context mContext;
 
-    protected final AtomicBoolean mListening = new AtomicBoolean();
-    protected OnNetworkConnectivityChangeListener mOnNetworkConnectivityChangeListener;
+    private final AtomicBoolean mListening = new AtomicBoolean();
+    private OnNetworkConnectivityChangeListener mOnNetworkConnectivityChangeListener;
 
-    private ConnectivityManager mConnectivityManager;
-    private ConnectivityBroadcastReceiver mReceiver;
+    private final ConnectivityManager mConnectivityManager;
+    private final ConnectivityBroadcastReceiver mReceiver;
 
     public NetworkConnectivityListener(Context pContext) {
 
@@ -95,8 +95,13 @@ public class NetworkConnectivityListener {
         @Override
         public void onReceive(Context context,
                               Intent intent) {
-
             final String action = intent.getAction();
+
+            if (action == null) {
+                Log.w(TAG, "no action defined for intent");
+
+                return;
+            }
 
             if (!action.equals(ConnectivityManager.CONNECTIVITY_ACTION) || !mListening.get()) {
                 Log.w(TAG,

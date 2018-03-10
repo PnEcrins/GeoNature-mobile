@@ -20,6 +20,7 @@ import com.makina.ecrins.commons.util.FileUtils;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.text.NumberFormat;
 import java.util.Date;
 
@@ -33,8 +34,6 @@ class HomeAdapter
 
     private static final String TAG = HomeAdapter.class.getName();
 
-    private static final int VIEW_TYPE_SYNC = 0;
-
     private final Context mContext;
     private final OnHomeAdapterListener mOnHomeAdapterListener;
     private AbstractAppSettings mAppSettings;
@@ -45,22 +44,18 @@ class HomeAdapter
         this.mOnHomeAdapterListener = onHomeAdapterListener;
     }
 
+    @NonNull
     @Override
-    public AbstractViewHolder onCreateViewHolder(ViewGroup parent,
+    public AbstractViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
                                                  int viewType) {
-        switch (viewType) {
-            case VIEW_TYPE_SYNC:
-                return new SyncViewHolder(LayoutInflater.from(parent.getContext())
-                                                        .inflate(R.layout.list_item_home_sync,
-                                                                 parent,
-                                                                 false));
-            default:
-                return null;
-        }
+        return new SyncViewHolder(LayoutInflater.from(parent.getContext())
+                                                .inflate(R.layout.list_item_home_sync,
+                                                         parent,
+                                                         false));
     }
 
     @Override
-    public void onBindViewHolder(AbstractViewHolder holder,
+    public void onBindViewHolder(@NonNull AbstractViewHolder holder,
                                  int position) {
         holder.bind(position);
     }
@@ -83,16 +78,16 @@ class HomeAdapter
 
     private class SyncViewHolder
             extends AbstractViewHolder {
-        private TextView mTextViewLastSync;
-        private TextView mTextViewInputsToSync;
-        private Button mButtonStartSync;
+        private final TextView mTextViewLastSync;
+        private final TextView mTextViewInputsToSync;
+        private final Button mButtonStartSync;
 
         SyncViewHolder(View itemView) {
             super(itemView);
 
-            mTextViewLastSync = (TextView) itemView.findViewById(R.id.textViewLastSync);
-            mTextViewInputsToSync = (TextView) itemView.findViewById(R.id.textViewInputsToSync);
-            mButtonStartSync = (Button) itemView.findViewById(R.id.buttonStartSync);
+            mTextViewLastSync = itemView.findViewById(R.id.textViewLastSync);
+            mTextViewInputsToSync = itemView.findViewById(R.id.textViewInputsToSync);
+            mButtonStartSync = itemView.findViewById(R.id.buttonStartSync);
         }
 
         @Override
@@ -107,79 +102,12 @@ class HomeAdapter
             });
 
             // get the last synchronization date using the last modified date of local database file
-            new AsyncTask<Void, Void, Date>() {
-
-                @Override
-                protected Date doInBackground(Void... params) {
-                    if (mAppSettings == null) {
-                        return null;
-                    }
-
-                    try {
-                        final File dbFile = FileUtils.getFile(FileUtils.getDatabaseFolder(mContext,
-                                                                                          MountPoint.StorageType.INTERNAL),
-                                                              mAppSettings.getDbSettings()
-                                                                          .getName());
-
-                        if (dbFile.lastModified() == 0) {
-                            return null;
-                        }
-
-                        return new Date(dbFile.lastModified());
-                    }
-                    catch (IOException ioe) {
-                        Log.w(TAG,
-                              ioe.getMessage());
-                    }
-
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Date date) {
-                    if (date == null) {
-                        mTextViewLastSync.setText(R.string.synchro_last_synchronization_never);
-                    }
-                    else {
-                        mTextViewLastSync.setText(DateFormat.format(mContext.getString(R.string.synchro_last_synchronization_date),
-                                                                    date));
-                    }
-                }
-            }.execute();
+            new LastSynchronizationDateAsyncTask(mContext,
+                                                 mTextViewLastSync).execute(mAppSettings);
 
             // get the number of inputs not synchronized
-            new AsyncTask<Void, Void, Integer>() {
-                @Override
-                protected Integer doInBackground(Void... params) {
-                    try {
-                        final File inputDir = FileUtils.getInputsFolder(mContext);
-
-                        if (inputDir.exists()) {
-                            final File[] listFiles = inputDir.listFiles(new FileFilter() {
-                                @Override
-                                public boolean accept(File pathname) {
-                                    return pathname.getName()
-                                                   .startsWith("input_") && pathname.getName()
-                                                                                    .endsWith(".json");
-                                }
-                            });
-                            return (listFiles == null) ? 0 : listFiles.length;
-                        }
-                    }
-                    catch (IOException ioe) {
-                        Log.w(TAG,
-                              ioe.getMessage());
-                    }
-
-                    return 0;
-                }
-
-                @Override
-                protected void onPostExecute(Integer integer) {
-                    mTextViewInputsToSync.setText(NumberFormat.getInstance()
-                                                              .format(integer));
-                }
-            }.execute();
+            new NumberOfInputsNotSynchronizedAsyncTask(mContext,
+                                                       mTextViewInputsToSync).execute();
         }
     }
 
@@ -191,6 +119,135 @@ class HomeAdapter
         }
 
         public abstract void bind(int position);
+    }
+
+    static class LastSynchronizationDateAsyncTask
+            extends AsyncTask<AbstractAppSettings, Void, Date> {
+
+        private final WeakReference<Context> mContext;
+        private final WeakReference<TextView> mTextView;
+
+        LastSynchronizationDateAsyncTask(@NonNull final Context pContext,
+                                         @NonNull final TextView pTextView) {
+            this.mContext = new WeakReference<>(pContext);
+            this.mTextView = new WeakReference<>(pTextView);
+        }
+
+        @Override
+        protected Date doInBackground(AbstractAppSettings... params) {
+            final Context context = mContext.get();
+
+            if (context == null) {
+                return null;
+            }
+
+            if (params == null || params.length == 0) {
+                return null;
+            }
+
+            final AbstractAppSettings appSettings = params[0];
+
+            if (appSettings == null) {
+                return null;
+            }
+
+            try {
+                final File dbFile = FileUtils.getFile(FileUtils.getDatabaseFolder(context,
+                                                                                  MountPoint.StorageType.INTERNAL),
+                                                      appSettings.getDbSettings()
+                                                                 .getName());
+
+                if (dbFile.lastModified() == 0) {
+                    return null;
+                }
+
+                return new Date(dbFile.lastModified());
+            }
+            catch (IOException ioe) {
+                Log.w(TAG,
+                      ioe.getMessage());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Date date) {
+            final Context context = mContext.get();
+            final TextView textView = mTextView.get();
+
+            if (context == null) {
+                return;
+            }
+
+            if (textView == null) {
+                return;
+            }
+
+            if (date == null) {
+                textView.setText(R.string.synchro_last_synchronization_never);
+            }
+            else {
+                textView.setText(DateFormat.format(context.getString(R.string.synchro_last_synchronization_date),
+                                                   date));
+            }
+        }
+    }
+
+    static class NumberOfInputsNotSynchronizedAsyncTask
+            extends AsyncTask<Void, Void, Integer> {
+
+        private final WeakReference<Context> mContext;
+        private final WeakReference<TextView> mTextView;
+
+        NumberOfInputsNotSynchronizedAsyncTask(@NonNull final Context pContext,
+                                               @NonNull final TextView pTextView) {
+            this.mContext = new WeakReference<>(pContext);
+            this.mTextView = new WeakReference<>(pTextView);
+        }
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+            final Context context = mContext.get();
+
+            if (context == null) {
+                return null;
+            }
+
+            try {
+                final File inputDir = FileUtils.getInputsFolder(context);
+
+                if (inputDir.exists()) {
+                    final File[] listFiles = inputDir.listFiles(new FileFilter() {
+                        @Override
+                        public boolean accept(File pathname) {
+                            return pathname.getName()
+                                           .startsWith("input_") && pathname.getName()
+                                                                            .endsWith(".json");
+                        }
+                    });
+                    return (listFiles == null) ? 0 : listFiles.length;
+                }
+            }
+            catch (IOException ioe) {
+                Log.w(TAG,
+                      ioe.getMessage());
+            }
+
+            return 0;
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            final TextView textView = mTextView.get();
+
+            if (textView == null) {
+                return;
+            }
+
+            textView.setText(NumberFormat.getInstance()
+                                         .format(integer));
+        }
     }
 
     /**

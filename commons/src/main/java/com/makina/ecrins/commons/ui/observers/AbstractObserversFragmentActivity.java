@@ -55,6 +55,7 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  * @deprecated use {@link AbstractObserverListActivity} instead
  */
+@SuppressWarnings("ALL")
 @Deprecated
 public abstract class AbstractObserversFragmentActivity
         extends AppCompatActivity {
@@ -146,6 +147,7 @@ public abstract class AbstractObserversFragmentActivity
      */
     public abstract boolean updateSelection();
 
+    @SuppressWarnings("deprecation")
     public static class ObserversListFragment
             extends ListFragment
             implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -327,7 +329,7 @@ public abstract class AbstractObserversFragmentActivity
             Log.d(AbstractObserversFragmentActivity.class.getName(),
                   "onListItemClick : " + selectedObserverId);
 
-            CheckBox checkBox = (CheckBox) v.findViewById(android.R.id.checkbox);
+            CheckBox checkBox = v.findViewById(android.R.id.checkbox);
 
             if (checkBox != null) {
                 boolean isSelected = !checkBox.isChecked();
@@ -545,7 +547,7 @@ public abstract class AbstractObserversFragmentActivity
                                                   parent);
 
                         if (getItemViewType(position) == TYPE_NORMAL) {
-                            final CheckBox checkBox = (CheckBox) view.findViewById(android.R.id.checkbox);
+                            final CheckBox checkBox = view.findViewById(android.R.id.checkbox);
                             checkBox.setChecked(((AbstractObserversFragmentActivity) getActivity()).getSelectedObservers()
                                                                                                    .containsKey(getItemId(position)));
 

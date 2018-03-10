@@ -19,9 +19,9 @@ public class Qualification
     private static final String KEY_PROTOCOL_PROTOCOL = "protocol";
     private static final String KEY_PROTOCOL_LOT = "lot";
 
-    private int mOrganism;
-    private int mProtocol;
-    private int mLot;
+    private final int mOrganism;
+    private final int mProtocol;
+    private final int mLot;
 
     private Qualification(@NonNull final Parcel source) {
         this.mOrganism = source.readInt();

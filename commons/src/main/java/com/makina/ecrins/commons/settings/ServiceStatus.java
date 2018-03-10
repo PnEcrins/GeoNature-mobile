@@ -9,6 +9,7 @@ import android.os.Parcelable;
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  * @deprecated see {@link AbstractAppSettingsIntentService}
  */
+@SuppressWarnings("ALL")
 @Deprecated
 public class ServiceStatus implements Parcelable {
 
@@ -58,7 +59,7 @@ public class ServiceStatus implements Parcelable {
         }
     };
 
-    public static enum Status {
+    public enum Status {
         /**
          * Indicates that the service has not been executed yet.
          */

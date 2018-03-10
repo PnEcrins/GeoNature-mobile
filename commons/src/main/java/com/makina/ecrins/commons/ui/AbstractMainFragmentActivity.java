@@ -1,5 +1,6 @@
 package com.makina.ecrins.commons.ui;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -17,6 +18,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
@@ -71,6 +73,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  * @deprecated use {@link AbstractHomeActivity} instead
  */
+@SuppressWarnings("ALL")
 @Deprecated
 public abstract class AbstractMainFragmentActivity
         extends AppCompatActivity
@@ -80,7 +83,7 @@ public abstract class AbstractMainFragmentActivity
 
     private static final String ALERT_DIALOG_DELETE_INPUTS_FRAGMENT = "alert_dialog_delete_inputs";
 
-    protected static final String KEY_SERVICE_STATUS = "service_status";
+    private static final String KEY_SERVICE_STATUS = "service_status";
     private static final String KEY_SERVICE_INITIALIZED = "service_initialized";
     private static final String KEY_SELECTED_OBSERVER = "selected_observer";
 
@@ -311,8 +314,8 @@ public abstract class AbstractMainFragmentActivity
                                warningMessage,
                                Toast.LENGTH_LONG)
                      .show();
-
-                ((TextView) mainFragmentActivity.findViewById(android.R.id.empty)).setText(warningMessage);
+                final TextView emptyTextView = mainFragmentActivity.findViewById(android.R.id.empty);
+                emptyTextView.setText(warningMessage);
             }
             else {
                 mainFragmentActivity.performMessageStatusTaskHandler(mainFragmentActivity,
@@ -354,13 +357,13 @@ public abstract class AbstractMainFragmentActivity
                                    true);
         }
 
-        mButtonStartInput = (Button) findViewById(R.id.buttonStartInput);
+        mButtonStartInput = findViewById(R.id.buttonStartInput);
         mButtonStartInput.setOnClickListener(this);
 
-        mButtonStartSynchronization = (Button) findViewById(R.id.buttonStartSynchronization);
+        mButtonStartSynchronization = findViewById(R.id.buttonStartSynchronization);
         mButtonStartSynchronization.setOnClickListener(this);
 
-        mListViewDeviceStatus = (ListView) findViewById(R.id.listViewDeviceStatus);
+        mListViewDeviceStatus = findViewById(R.id.listViewDeviceStatus);
         mListViewDeviceStatus.setEmptyView(findViewById(android.R.id.empty));
         mDeviceStatusAdapter = new DeviceStatusAdapter(this,
                                                        android.R.layout.simple_list_item_2);
@@ -716,7 +719,7 @@ public abstract class AbstractMainFragmentActivity
                 Log.w(getClass().getName(),
                       ioe);
 
-                result.add(0l);
+                result.add(0L);
             }
 
             try {
@@ -734,7 +737,7 @@ public abstract class AbstractMainFragmentActivity
                     }).length);
                 }
                 else {
-                    result.add(0l);
+                    result.add(0L);
                 }
             }
             catch (IOException ioe) {
@@ -742,7 +745,7 @@ public abstract class AbstractMainFragmentActivity
                       ioe.getMessage(),
                       ioe);
 
-                result.add(0l);
+                result.add(0L);
             }
 
             return result;
@@ -777,10 +780,12 @@ public abstract class AbstractMainFragmentActivity
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
+        @SuppressLint("SetTextI18n")
+        @NonNull
         @Override
         public View getView(int position,
                             View convertView,
-                            ViewGroup parent) {
+                            @NonNull ViewGroup parent) {
 
             View view;
 
@@ -793,22 +798,24 @@ public abstract class AbstractMainFragmentActivity
                 view = convertView;
             }
 
+            final Long item = getItem(position);
+
             switch (position) {
                 case 0:
                     ((TextView) view.findViewById(android.R.id.text1)).setText(R.string.synchro_last_synchronization);
 
-                    if (getItem(position) == 0) {
+                    if (item == null || item == 0) {
                         ((TextView) view.findViewById(android.R.id.text2)).setText(R.string.synchro_last_synchronization_never);
                     }
                     else {
                         ((TextView) view.findViewById(android.R.id.text2)).setText(android.text.format.DateFormat.format(getResources().getString(R.string.synchro_last_synchronization_date),
-                                                                                                                         new Date(getItem(position))));
+                                                                                                                         new Date(item)));
                     }
 
                     break;
                 case 1:
                     ((TextView) view.findViewById(android.R.id.text1)).setText(R.string.synchro_inputs_not_synchronized);
-                    ((TextView) view.findViewById(android.R.id.text2)).setText(getItem(position).toString());
+                    ((TextView) view.findViewById(android.R.id.text2)).setText(item.toString());
 
                     break;
             }

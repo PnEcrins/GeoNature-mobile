@@ -29,7 +29,7 @@ public class WebAPIClient {
     private final String defaultCharset;
     private final int timeout;
 
-    public WebAPIClient() {
+    WebAPIClient() {
 
         this.defaultCharset = Charset.defaultCharset()
                                      .name();
@@ -81,7 +81,7 @@ public class WebAPIClient {
     }
 
     @Nullable
-    public JSONObject readInputStreamAsJson(@NonNull final InputStream inputStream) {
+    JSONObject readInputStreamAsJson(@NonNull final InputStream inputStream) {
 
         try {
             final JSONObject jsonObject = new JSONObject(IOUtils.toString(inputStream));
@@ -97,7 +97,7 @@ public class WebAPIClient {
         return null;
     }
 
-    public boolean checkStatus(@NonNull final JSONObject response) {
+    boolean checkStatus(@NonNull final JSONObject response) {
 
         return response.optInt("status_code",
                                -1) == 0;
