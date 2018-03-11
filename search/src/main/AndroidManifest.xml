@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.makina.ecrins.search"
+<manifest package="com.geonature.mobile.search"
           xmlns:android="http://schemas.android.com/apk/res/android"
-          android:sharedUserId="com.makina.ecrins">
+          android:sharedUserId="com.geonature.mobile">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <!--
-    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
-    -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
-        android:name=".MainApplication"
+        android:name="com.geonature.mobile.search.MainApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -25,7 +22,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -45,21 +41,21 @@
 
         <provider
             android:name=".content.MainContentProvider"
-            android:authorities="com.makina.ecrins.search.content.MainContentProvider"
+            android:authorities="com.geonature.mobile.search.content.MainContentProvider"
             android:exported="false"/>
 
         <service
-            android:name="com.makina.ecrins.search.settings.AppSettingsIntentService"
+            android:name="com.geonature.mobile.search.settings.AppSettingsIntentService"
             android:exported="false"/>
         <service
-            android:name="com.makina.ecrins.commons.sync.CheckServerService"
+            android:name="com.geonature.mobile.commons.sync.CheckServerService"
             android:exported="false"/>
         <service
-            android:name="com.makina.ecrins.commons.sync.SyncService"
+            android:name="com.geonature.mobile.commons.sync.SyncService"
             android:exported="false"/>
 
         <receiver
-            android:name="com.makina.ecrins.commons.sync.StartCheckServerServiceReceiver"
+            android:name="com.geonature.mobile.commons.sync.StartCheckServerServiceReceiver"
             android:exported="false"/>
 
     </application>

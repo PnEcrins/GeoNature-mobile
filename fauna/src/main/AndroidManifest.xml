@@ -1,19 +1,16 @@
 <manifest
-    package="com.makina.ecrins.fauna"
+    package="com.geonature.mobile.fauna"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:sharedUserId="com.makina.ecrins">
+    android:sharedUserId="com.geonature.mobile">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <!--
-    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
-    -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
-        android:name="com.makina.ecrins.fauna.MainApplication"
+        android:name="com.geonature.mobile.fauna.MainApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -46,7 +43,7 @@
             android:name=".ui.observers.ObserverListActivity"
             android:label="@string/activity_observers_title">
             <intent-filter>
-                <action android:name="com.makina.ecrins.fauna.ui.observers.ObserverListActivity"/>
+                <action android:name="com.geonature.mobile.fauna.ui.observers.ObserverListActivity"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
@@ -55,33 +52,33 @@
             android:exported="false"
             android:label="@string/activity_observers_title">
             <intent-filter>
-                <action android:name="com.makina.ecrins.fauna.ui.observers.ObserversFragmentActivity"/>
+                <action android:name="com.geonature.mobile.fauna.ui.observers.ObserversFragmentActivity"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
         <provider
             android:name=".content.MainContentProvider"
-            android:authorities="com.makina.ecrins.fauna.content.MainContentProvider"
+            android:authorities="com.geonature.mobile.fauna.content.MainContentProvider"
             android:exported="false"/>
 
         <service
-            android:name="com.makina.ecrins.fauna.settings.SettingsService"
+            android:name="com.geonature.mobile.fauna.settings.SettingsService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.makina.ecrins.fauna.settings.SettingsService"/>
+                <action android:name="com.geonature.mobile.fauna.settings.SettingsService"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </service>
         <service
-            android:name="com.makina.ecrins.commons.sync.CheckServerService"
+            android:name="com.geonature.mobile.commons.sync.CheckServerService"
             android:exported="false"/>
         <service
-            android:name="com.makina.ecrins.commons.sync.SyncService"
+            android:name="com.geonature.mobile.commons.sync.SyncService"
             android:exported="false"/>
 
         <receiver
-            android:name="com.makina.ecrins.commons.sync.StartCheckServerServiceReceiver"
+            android:name="com.geonature.mobile.commons.sync.StartCheckServerServiceReceiver"
             android:exported="false"/>
 
     </application>

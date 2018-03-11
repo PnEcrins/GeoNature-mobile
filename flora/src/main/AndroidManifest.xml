@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-    package="com.makina.ecrins.flora"
+    package="com.geonature.mobile.flora"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:sharedUserId="com.makina.ecrins"
+    android:sharedUserId="com.geonature.mobile"
     tools:ignore="GradleOverrides">
 
     <application
-        android:name="com.makina.ecrins.flora.MainApplication"
+        android:name="com.geonature.mobile.flora.MainApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -40,7 +40,7 @@
             android:name=".ui.observers.ObserverListActivity"
             android:label="@string/activity_observers_title">
             <intent-filter>
-                <action android:name="com.makina.ecrins.flora.ui.observers.ObserverListActivity"/>
+                <action android:name="com.geonature.mobile.flora.ui.observers.ObserverListActivity"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
@@ -53,24 +53,24 @@
 
         <provider
             android:name=".content.MainContentProvider"
-            android:authorities="com.makina.ecrins.flora.content.MainContentProvider"
+            android:authorities="com.geonature.mobile.flora.content.MainContentProvider"
             android:exported="false"/>
 
         <service
-            android:name="com.makina.ecrins.flora.settings.AppSettingsIntentService"
+            android:name="com.geonature.mobile.flora.settings.AppSettingsIntentService"
             android:exported="false"/>
         <service
-            android:name="com.makina.ecrins.commons.sync.CheckServerService"
+            android:name="com.geonature.mobile.commons.sync.CheckServerService"
             android:exported="false"/>
         <service
-            android:name="com.makina.ecrins.commons.sync.SyncService"
+            android:name="com.geonature.mobile.commons.sync.SyncService"
             android:exported="false"/>
         <service
-            android:name="com.makina.ecrins.flora.input.InputIntentService"
+            android:name="com.geonature.mobile.flora.input.InputIntentService"
             android:exported="false"/>
 
         <receiver
-            android:name="com.makina.ecrins.commons.sync.StartCheckServerServiceReceiver"
+            android:name="com.geonature.mobile.commons.sync.StartCheckServerServiceReceiver"
             android:exported="false"/>
 
     </application>

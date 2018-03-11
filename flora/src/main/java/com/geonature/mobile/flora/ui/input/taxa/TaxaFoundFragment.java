@@ -1,0 +1,166 @@
+package com.geonature.mobile.flora.ui.input.taxa;
+
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+
+import com.geonature.mobile.commons.input.AbstractInput;
+import com.geonature.mobile.commons.ui.dialog.AlertDialogFragment;
+import com.geonature.mobile.commons.ui.input.IInputFragment;
+import com.geonature.mobile.commons.ui.pager.IValidateWithNavigationControlFragment;
+import com.geonature.mobile.flora.BuildConfig;
+import com.geonature.mobile.flora.R;
+import com.geonature.mobile.flora.input.Input;
+import com.geonature.mobile.flora.input.Taxon;
+import com.geonature.mobile.flora.ui.input.PagerFragmentActivity;
+
+/**
+ * Step 3: The user must choose an action if he found or not a {@link Taxon}.
+ *
+ * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
+ */
+public class TaxaFoundFragment
+        extends Fragment
+        implements IValidateWithNavigationControlFragment,
+                   IInputFragment,
+                   OnClickListener {
+
+    private static final String TAG = TaxaFoundFragment.class.getName();
+
+    private static final String ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT = "alert_dialog_delete_all_areas";
+
+    private Input mInput;
+
+    private final AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
+        @Override
+        public void onPositiveButtonClick(DialogInterface dialog) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG,
+                      "delete all areas");
+            }
+
+            if (mInput.getCurrentSelectedTaxon() != null) {
+                ((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                          .clear();
+            }
+
+            ((PagerFragmentActivity) getActivity()).goToPageByKey(R.string.pager_fragment_webview_pa_title);
+        }
+
+        @Override
+        public void onNegativeButtonClick(DialogInterface dialog) {
+            // nothing to do ...
+        }
+    };
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // restore CommentDialogFragment state after resume if needed
+        final AlertDialogFragment alertDialogFragment = (AlertDialogFragment) getActivity().getSupportFragmentManager()
+                                                                                           .findFragmentByTag(ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT);
+
+        if (alertDialogFragment != null) {
+            alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
+        }
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_taxa_found,
+                                           container,
+                                           false);
+
+        view.findViewById(R.id.buttonTaxonFound)
+            .setOnClickListener(this);
+        view.findViewById(R.id.buttonTaxonNotFound)
+            .setOnClickListener(this);
+
+        return view;
+    }
+
+    @Override
+    public int getResourceTitle() {
+        return R.string.pager_fragment_taxa_found_title;
+    }
+
+    @Override
+    public boolean getPagingEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean validate() {
+        return true;
+    }
+
+    @Override
+    public void refreshView() {
+        final AppCompatActivity activity = (AppCompatActivity) getActivity();
+
+        if (activity == null) {
+            return;
+        }
+
+        activity.getSupportActionBar()
+                .setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+    }
+
+    @Override
+    public boolean getPagingToForwardEnabled() {
+        return false;
+    }
+
+    @Override
+    public boolean getPagingToPreviousEnabled() {
+        return true;
+    }
+
+    @Override
+    public void setInput(@NonNull AbstractInput input) {
+        this.mInput = (Input) input;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.buttonTaxonFound:
+                // delete any existing prospecting area
+                if (mInput.getCurrentSelectedTaxon() != null) {
+                    ((Taxon) mInput.getCurrentSelectedTaxon()).setProspectingArea(null);
+                }
+
+                ((PagerFragmentActivity) getActivity()).goToNextPage();
+                break;
+            case R.id.buttonTaxonNotFound:
+                if ((mInput.getCurrentSelectedTaxon() != null) && (((Taxon) mInput.getCurrentSelectedTaxon()).getAreas()
+                                                                                                             .isEmpty())) {
+                    ((PagerFragmentActivity) getActivity()).goToPageByKey(R.string.pager_fragment_webview_pa_title);
+                }
+                else {
+                    confirmBeforeDeleteAreas();
+                }
+
+                break;
+        }
+    }
+
+    private void confirmBeforeDeleteAreas() {
+        final AlertDialogFragment alertDialogFragment = AlertDialogFragment.newInstance(R.string.alert_dialog_confirm_delete_areas_title,
+                                                                                        R.string.alert_dialog_confirm_delete_areas_message);
+        alertDialogFragment.setOnAlertDialogListener(mOnAlertDialogListener);
+        alertDialogFragment.show(getActivity().getSupportFragmentManager(),
+                                 ALERT_DIALOG_DELETE_ALL_AREAS_FRAGMENT);
+    }
+}
