@@ -27,13 +27,13 @@
 
     </LinearLayout>
 
-    <com.makina.ecrins.commons.ui.pager.UnderlinePageIndicator
+    <com.geonature.mobile.commons.ui.pager.UnderlinePageIndicator
         android:id="@+id/indicator"
         android:layout_width="fill_parent"
         android:layout_height="2dp"
         android:layout_alignParentTop="true"/>
 
-    <com.makina.ecrins.commons.ui.pager.EnablePagingViewPager
+    <com.geonature.mobile.commons.ui.pager.EnablePagingViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -70,4 +70,4 @@ License
 
 GPL3
 
-&copy; Makina Corpus / Sebastien Grimault / Parc national des Ecrins 2012 - 2017
+&copy; Makina Corpus / Sebastien Grimault / Parc national des Ecrins 2012 - 2018
