@@ -61,9 +61,9 @@ public class FeatureDialogFragment
 
         final Feature feature = getArguments().getParcelable(KEY_FEATURE);
 
-        final TextView textViewFeatureDate = (TextView) view.findViewById(R.id.textViewFeatureDate);
-        final TextView textViewFeatureObserver = (TextView) view.findViewById(R.id.textViewFeatureObserver);
-        final TextView textViewFeatureDistance = (TextView) view.findViewById(R.id.textViewFeatureDistance);
+        final TextView textViewFeatureDate = view.findViewById(R.id.textViewFeatureDate);
+        final TextView textViewFeatureObserver = view.findViewById(R.id.textViewFeatureObserver);
+        final TextView textViewFeatureDistance = view.findViewById(R.id.textViewFeatureDistance);
 
         if ((feature != null) && feature.getProperties()
                                         .containsKey(MainDatabaseHelper.SearchColumns.DATE_OBS) &&

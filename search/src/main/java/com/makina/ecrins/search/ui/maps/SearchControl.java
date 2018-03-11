@@ -31,30 +31,25 @@ import com.makina.ecrins.search.ui.dialog.SearchDialogFragment.OnSearchDialogVal
  *
  * @author <a href="mailto:sebastien.grimault@makina-corpus.com">S. Grimault</a>
  */
-public class SearchControl
+class SearchControl
         extends AbstractControl
         implements LocationListener {
 
-    protected static final String KEY_SEARCH_LOCATION = "search_location";
-
+    private static final String KEY_SEARCH_LOCATION = "search_location";
     private static final String SEARCH_DIALOG_FRAGMENT = "search_dialog";
 
     private OnSearchDialogValidateListener mOnSearchDialogValidateListener;
 
-    private MenuItem mItemMarker;
-    private MenuItem mItemMarkerFromLocation;
-
-    private int mMinRadius;
     private int mMaxRadius;
     private int mRadius;
 
-    protected boolean mIsActionMarkerSelected = false;
-    protected boolean mIsItemMarkerFromLocationEnabled = false;
+    private boolean mIsActionMarkerSelected = false;
+    private boolean mIsItemMarkerFromLocationEnabled = false;
 
     /**
      * Default constructor.
      */
-    public SearchControl(Context pContext) {
+    SearchControl(Context pContext) {
         super(pContext);
 
         setControlListener(new OnIControlListener() {
@@ -96,8 +91,8 @@ public class SearchControl
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         if (isControlInitialized()) {
-            mItemMarker = menu.findItem(R.id.itemMarker);
-            mItemMarkerFromLocation = menu.findItem(R.id.itemMarkerFromLocation);
+            MenuItem mItemMarker = menu.findItem(R.id.itemMarker);
+            MenuItem mItemMarkerFromLocation = menu.findItem(R.id.itemMarkerFromLocation);
 
             if (this.mIsActionMarkerSelected) {
                 mItemMarker.setIcon(R.drawable.ic_action_marker_selected);
@@ -179,33 +174,25 @@ public class SearchControl
         // nothing to do ...
     }
 
-    public void setOnSearchDialogValidateListener(OnSearchDialogValidateListener pOnSearchDialogValidateListener) {
+    void setOnSearchDialogValidateListener(OnSearchDialogValidateListener pOnSearchDialogValidateListener) {
         if (pOnSearchDialogValidateListener != null) {
             this.mOnSearchDialogValidateListener = pOnSearchDialogValidateListener;
         }
     }
 
-    public int getMinRadius() {
-        return mMinRadius;
-    }
-
-    public void setMinRadius(int pMinRadius) {
-        this.mMinRadius = pMinRadius;
-    }
-
-    public int getMaxRadius() {
+    private int getMaxRadius() {
         return mMaxRadius;
     }
 
-    public void setMaxRadius(int pMaxRadius) {
+    void setMaxRadius(int pMaxRadius) {
         this.mMaxRadius = pMaxRadius;
     }
 
-    public int getRadius() {
+    private int getRadius() {
         return mRadius;
     }
 
-    public void setRadius(int pRadius) {
+    void setRadius(int pRadius) {
         this.mRadius = pRadius;
     }
 

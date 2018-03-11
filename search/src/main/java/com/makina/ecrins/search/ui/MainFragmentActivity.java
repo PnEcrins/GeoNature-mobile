@@ -120,7 +120,7 @@ public class MainFragmentActivity
         }
     };
 
-    private AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
+    private final AlertDialogFragment.OnAlertDialogListener mOnAlertDialogListener = new AlertDialogFragment.OnAlertDialogListener() {
         @Override
         public void onPositiveButtonClick(DialogInterface dialog) {
 
@@ -143,11 +143,11 @@ public class MainFragmentActivity
 
         mLayout = findViewById(android.R.id.content);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
 
         if (toolbar != null) {
             setSupportActionBar(toolbar);
-            mProgressBar = (ProgressBar) toolbar.findViewById(R.id.progressBar);
+            mProgressBar = toolbar.findViewById(R.id.progressBar);
         }
 
         if (savedInstanceState == null) {

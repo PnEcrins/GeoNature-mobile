@@ -71,10 +71,10 @@ public class SearchDialogFragment
                                        R.layout.dialog_search,
                                        null);
 
-        final TextView textViewSearchRadius = (TextView) view.findViewById(R.id.textViewSearchRadius);
-        final TextView textViewSeekBarMinValue = (TextView) view.findViewById(R.id.textViewSeekBarMinValue);
-        final TextView textViewSeekBarMaxValue = (TextView) view.findViewById(R.id.textViewSeekBarMaxValue);
-        final SeekBar seekBarSearchRadius = (SeekBar) view.findViewById(R.id.seekBarSearchRadius);
+        final TextView textViewSearchRadius = view.findViewById(R.id.textViewSearchRadius);
+        final TextView textViewSeekBarMinValue = view.findViewById(R.id.textViewSeekBarMinValue);
+        final TextView textViewSeekBarMaxValue = view.findViewById(R.id.textViewSeekBarMaxValue);
+        final SeekBar seekBarSearchRadius = view.findViewById(R.id.seekBarSearchRadius);
 
         final AlertDialog alertDialog = new AlertDialog.Builder(getActivity(),
                                                                 R.style.CommonsDialogStyle).setTitle(R.string.alert_dialog_search_title)

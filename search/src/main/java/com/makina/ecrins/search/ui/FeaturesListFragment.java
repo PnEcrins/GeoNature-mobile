@@ -1,9 +1,10 @@
 package com.makina.ecrins.search.ui;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.View;
@@ -32,14 +33,14 @@ public class FeaturesListFragment
     private ArrayAdapter<Feature> mAdapter;
 
     private OnFeatureSelectedListener mOnFeatureSelectedListener;
-    private Handler mHandler = new Handler();
+    private final Handler mHandler = new Handler();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // create an empty adapter we will use to display the loaded data
-        mAdapter = new ArrayAdapter<Feature>(getActivity(),
+        mAdapter = new ArrayAdapter<Feature>(getContext(),
                                              android.R.layout.simple_list_item_1,
                                              android.R.id.text1) {
             @NonNull
@@ -60,7 +61,7 @@ public class FeaturesListFragment
     }
 
     @Override
-    public void onViewCreated(View view,
+    public void onViewCreated(@NonNull View view,
                               Bundle savedInstanceState) {
         super.onViewCreated(view,
                             savedInstanceState);
@@ -72,14 +73,14 @@ public class FeaturesListFragment
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
         try {
-            mOnFeatureSelectedListener = (OnFeatureSelectedListener) activity;
+            mOnFeatureSelectedListener = (OnFeatureSelectedListener) context;
         }
         catch (ClassCastException cce) {
-            throw new ClassCastException(activity.toString() + " must implement OnFeatureSelectedListener");
+            throw new ClassCastException(context.toString() + " must implement OnFeatureSelectedListener");
         }
     }
 
@@ -123,7 +124,11 @@ public class FeaturesListFragment
             mHandler.postDelayed(new Runnable() {
                                      @Override
                                      public void run() {
-                                         getActivity().finish();
+                                         final FragmentActivity activity = getActivity();
+
+                                         if (activity != null) {
+                                             activity.finish();
+                                         }
                                      }
                                  },
                                  1500);

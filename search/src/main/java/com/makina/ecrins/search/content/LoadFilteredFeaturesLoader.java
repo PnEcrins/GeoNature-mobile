@@ -39,10 +39,10 @@ public class LoadFilteredFeaturesLoader
     private final List<Feature> mFeatures = new ArrayList<>();
 
     private Cursor mCursor;
-    private Uri mUri;
-    private GeoPoint mLocation;
-    private double mRadius;
-    private String mGroupBy;
+    private final Uri mUri;
+    private final GeoPoint mLocation;
+    private final double mRadius;
+    private final String mGroupBy;
 
     public LoadFilteredFeaturesLoader(Context pContext,
                                       Uri pUri,

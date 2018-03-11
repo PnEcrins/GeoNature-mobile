@@ -14,13 +14,7 @@ import com.makina.ecrins.search.settings.AppSettings;
 public class MainApplication
         extends Application {
 
-    public static final int HANDLER_SETTINGS_LOADING_START = 10;
-    public static final int HANDLER_SETTINGS_LOADING = 11;
-    public static final int HANDLER_SETTINGS_LOADED = 12;
-    public static final int HANDLER_SETTINGS_LOADED_FAILED = 13;
-
     private static MainApplication sInstance;
-
     private AppSettings mAppSettings;
 
     public static MainApplication getInstance() {

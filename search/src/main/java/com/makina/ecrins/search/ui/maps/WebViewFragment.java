@@ -1,6 +1,6 @@
 package com.makina.ecrins.search.ui.maps;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -52,19 +52,19 @@ public class WebViewFragment
         extends AbstractWebViewFragment
         implements LoaderManager.LoaderCallbacks<List<Feature>> {
 
-    protected static final String KEY_FEATURES = "features";
-    protected static final String KEY_FEATURES_FOUND = "features_found";
-    protected static final String KEY_SELECTED_FEATURE = "selected_feature";
-    protected static final String KEY_RADIUS = "radius";
-    protected static final String KEY_SEARCH_LOCATION = "search_location";
-    protected static final String KEY_TAXON = "taxon";
+    private static final String KEY_FEATURES = "features";
+    private static final String KEY_FEATURES_FOUND = "features_found";
+    private static final String KEY_SELECTED_FEATURE = "selected_feature";
+    private static final String KEY_RADIUS = "radius";
+    private static final String KEY_SEARCH_LOCATION = "search_location";
+    private static final String KEY_TAXON = "taxon";
 
     private static final int LOADER_TAXA_GROUPBY = 0;
     private static final int LOADER_TAXA = 1;
 
     private OnFeaturesFoundListener mOnFeaturesFoundListener;
 
-    private OnIControlListener mFeaturesControlListener = new OnIControlListener() {
+    private final OnIControlListener mFeaturesControlListener = new OnIControlListener() {
         @Override
         public void onControlInitialized() {
 
@@ -104,7 +104,7 @@ public class WebViewFragment
         }
     };
 
-    private OnSearchDialogValidateListener mOnSearchDialogValidateListener = new OnSearchDialogValidateListener() {
+    private final OnSearchDialogValidateListener mOnSearchDialogValidateListener = new OnSearchDialogValidateListener() {
         @Override
         public void onSearchCriteria(DialogInterface dialog,
                                      int radius,
@@ -156,9 +156,9 @@ public class WebViewFragment
     };
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(Context context) {
 
-        super.onAttach(activity);
+        super.onAttach(context);
 
         if (BuildConfig.DEBUG) {
             Log.d(WebViewFragment.class.getName(),
@@ -166,10 +166,10 @@ public class WebViewFragment
         }
 
         try {
-            mOnFeaturesFoundListener = (OnFeaturesFoundListener) activity;
+            mOnFeaturesFoundListener = (OnFeaturesFoundListener) context;
         }
         catch (ClassCastException cce) {
-            throw new ClassCastException(activity.toString() + " must implement OnFeatureSelectedListener");
+            throw new ClassCastException(context.toString() + " must implement OnFeatureSelectedListener");
         }
     }
 
@@ -263,7 +263,6 @@ public class WebViewFragment
     protected void loadControls() {
 
         final SearchControl searchControl = new SearchControl(getActivity());
-        searchControl.setMinRadius(0);
         searchControl.setMaxRadius(((MainApplication) getActivity().getApplication()).getAppSettings()
                                                                                      .getSearchSettings()
                                                                                      .getMaxRadius());
@@ -303,10 +302,10 @@ public class WebViewFragment
                                            MountPoint.StorageType.EXTERNAL);
     }
 
+    @NonNull
     @Override
     public Loader<List<Feature>> onCreateLoader(int id,
                                                 Bundle args) {
-
         switch (id) {
             case LOADER_TAXA_GROUPBY:
                 if (BuildConfig.DEBUG) {
@@ -332,12 +331,12 @@ public class WebViewFragment
                                                       args.getDouble(KEY_RADIUS),
                                                       null);
             default:
-                return null;
+                throw new IllegalArgumentException("invalid loader ID used: " + id);
         }
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Feature>> loader,
+    public void onLoadFinished(@NonNull Loader<List<Feature>> loader,
                                List<Feature> data) {
 
         switch (loader.getId()) {
@@ -348,6 +347,7 @@ public class WebViewFragment
                 invalidateMenu();
 
                 clearFeaturesToFeaturesControl();
+                getLoaderManager().destroyLoader(loader.getId());
 
                 mOnFeaturesFoundListener.onFeaturesFound(data);
                 break;
@@ -387,13 +387,13 @@ public class WebViewFragment
     }
 
     @Override
-    public void onLoaderReset(Loader<List<Feature>> loader) {
+    public void onLoaderReset(@NonNull Loader<List<Feature>> loader) {
         mOnFeaturesFoundListener.onFindFeatures(false);
 
         clearFeaturesToFeaturesControl();
     }
 
-    private boolean updateMapSettings() {
+    private void updateMapSettings() {
 
         boolean update = getMapSettings().isDisplayScale() != PreferenceManager.getDefaultSharedPreferences(getActivity())
                                                                                .getBoolean("pointing_display_scale",
@@ -411,16 +411,16 @@ public class WebViewFragment
             setMapSettings(mapSettings);
         }
 
-        return update;
     }
 
     private void clearFeaturesToFeaturesControl() {
-
+        /*
         final String featureControlName = ControlUtils.getControlName(FeaturesControl.class);
 
         if (hasControl(featureControlName)) {
             ((FeaturesControl) getControl(featureControlName)).clearFeatures();
         }
+        */
     }
 
     private void addFeaturesToFeaturesControl(final List<Feature> features) {
