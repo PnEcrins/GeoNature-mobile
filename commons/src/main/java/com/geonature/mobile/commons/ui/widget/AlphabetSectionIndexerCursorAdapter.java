@@ -188,11 +188,14 @@ public class AlphabetSectionIndexerCursorAdapter
     @Override
     public boolean isEnabled(int position) {
         return getItemViewType(position) != TYPE_HEADER;
-
     }
 
     @Override
     public int getPositionForSection(int section) {
+        if (getCursor() == null || getCursor().isClosed()) {
+            return 0;
+        }
+
         if (sectionToOffset.get(section,
                                 Integer.MIN_VALUE) == Integer.MIN_VALUE) {
             // This is only the case when the FastScroller is scrolling, and so this section doesn't appear in our data set.
