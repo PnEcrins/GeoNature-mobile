@@ -14,19 +14,25 @@ GeoNature-mobile permet de saisir 4 de ces protocoles sur appareil mobile Androi
 Démos
 =====
 
- Vidéos
- ------
+Vidéos
+------
+ 
 * Application Android contact faune - http://dai.ly/k4Heui6J10dzcO5ehXf
 * Application Android recherche flore - http://dai.ly/k3bCZzAHgSC9yM5eukA
 
- Screenshots
- -----------
+Screenshots
+-----------
+ 
 ![GeoNature-mobile screenshot](https://raw.githubusercontent.com/PnEcrins/GeoNature-mobile/master/docs/images/screen-contact-faune-nomade.jpg)
 
 ![GeoNature-mobile screenshot 2](https://raw.githubusercontent.com/PnEcrins/GeoNature-mobile/master/docs/images/screen-applis.jpg)
 
 ![GeoNature-mobile screenshot 3](https://raw.githubusercontent.com/PnEcrins/GeoNature-mobile/master/docs/images/screen-applis-02.jpg)
 
+Testez
+------
+
+Téléchargez et installez une version de démo de GeoNature-mobile : http://geonature.fr/documents/demo_mobile/
 
 Concepts
 ========
