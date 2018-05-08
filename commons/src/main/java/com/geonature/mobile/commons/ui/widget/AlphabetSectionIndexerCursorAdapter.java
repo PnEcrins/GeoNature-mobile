@@ -120,6 +120,7 @@ public class AlphabetSectionIndexerCursorAdapter
 
     @Override
     public Cursor swapCursor(Cursor c) {
+        mIndexer.setCursor(c);
         Cursor oldCursor = super.swapCursor(c);
 
         if (c != null) {
@@ -132,10 +133,6 @@ public class AlphabetSectionIndexerCursorAdapter
     @Override
     public void changeCursor(Cursor cursor) {
         super.changeCursor(cursor);
-
-        if (cursor != null) {
-            initializeSectionsIndexer(cursor);
-        }
 
         notifyDataSetChanged();
     }
@@ -313,7 +310,6 @@ public class AlphabetSectionIndexerCursorAdapter
     }
 
     private void initializeSectionsIndexer(@NonNull final Cursor cursor) {
-
         mIndexer = new AlphabetIndexer(cursor,
                                        cursor.getColumnIndexOrThrow(this.mSortedColumnIndex),
                                        ALPHABET);

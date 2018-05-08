@@ -151,7 +151,6 @@ public abstract class AbstractTaxaInputListFragment
 
     @Override
     public void onPause() {
-        getLoaderManager().destroyLoader(0);
         mAdapter = null;
 
         super.onPause();

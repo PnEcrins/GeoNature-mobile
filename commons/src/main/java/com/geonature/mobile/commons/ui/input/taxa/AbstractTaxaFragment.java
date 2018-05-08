@@ -166,12 +166,6 @@ public abstract class AbstractTaxaFragment
 
     @Override
     public void onPause() {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG,
-                  "onPause");
-        }
-
-        getLoaderManager().destroyLoader(0);
         mAdapter = null;
 
         super.onPause();
