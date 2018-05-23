@@ -66,6 +66,16 @@ Création du unities.mbtiles
 * Cocher `` Recréer/ajuster les dalles`` et choisir le format des dalles ``PNG``
 * Cliquer sur le bouton ``Créer l’atlas`` 
 
+Une fois que le fichier est créer il se trouve dans le répertoire ``atlases``.
+
+Il est possible d'ouvrir le fichier avec un éditeur sqlite et supprimer toutes les tuiles vides dont la taille est de 334 octets avec la commande SQL suivante.
+
+  ::  
+  
+        DELETE FROM tiles WHERE length(tile_data) = 334;
+
+Vous devrez ensuite utiliser le menu "système-> optimiser" (logiciel sqliteman) pour réellement réduire la taille de la base de données du fichier mbtiles.
+
 
 Création des scan.mbtiles et ortho.mbtiles
 ------------------------------------------
