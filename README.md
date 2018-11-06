@@ -51,7 +51,7 @@ Il est également possible de connecter le terminal mobile en USB à un PC conne
 
 L'usage de cette application est fortement recommandée dans le cadre d'une flotte importante de terminaux et/ou d'utilisateurs peu à l'aise avec les outils informatiques.
 
-![GeoNature schema general](https://github.com/PnEcrins/GeoNature/raw/master/docs/images/schema-geonature-environnement.jpg)
+![GeoNature schema general](https://github.com/PnEcrins/GeoNature/raw/v1/docs/images/schema-geonature-environnement.jpg)
 
 Déploiement
 ===========
