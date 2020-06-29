@@ -11,7 +11,7 @@ GeoNature-mobile permet de saisir 4 de ces protocoles sur appareil mobile Androi
 * Saisie Flore prioritaire
 * Recherche flore
 
-GeoNature-mobile est l'application de GeoNature version 1. Pour la version 2, elle est remplacée par Occtax-mobile : https://github.com/PnX-SI/gn_mobile_occtax.
+⚠️ GeoNature-mobile est l'application de GeoNature version 1. Pour la **version 2** de GeoNature, elle est remplacée par Occtax-mobile : https://github.com/PnX-SI/gn_mobile_occtax.
 
 Démos
 =====
