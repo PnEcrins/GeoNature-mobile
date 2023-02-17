@@ -1,6 +1,6 @@
 # GeoNature-mobile
 
-warning GeoNature-mobile est l'application de GeoNature version 1 (jusqu'à 2017). Pour la version 2 de GeoNature, elle est remplacée par Occtax-mobile : https://github.com/PnX-SI/gn_mobile_occtax.
+⚠️  GeoNature-mobile est l'application de GeoNature version 1 (jusqu'à 2017). Pour la version 2 de GeoNature, elle est remplacée par Occtax-mobile : https://github.com/PnX-SI/gn_mobile_occtax.
 
 ![GeoNature-mobile illustrations](https://raw.githubusercontent.com/PnEcrins/GeoNature-mobile/master/docs/images/illustration-geonature-mobile.jpg)
 
