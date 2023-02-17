@@ -1,5 +1,7 @@
 # GeoNature-mobile
 
+warning GeoNature-mobile est l'application de GeoNature version 1 (jusqu'à 2017). Pour la version 2 de GeoNature, elle est remplacée par Occtax-mobile : https://github.com/PnX-SI/gn_mobile_occtax.
+
 ![GeoNature-mobile illustrations](https://raw.githubusercontent.com/PnEcrins/GeoNature-mobile/master/docs/images/illustration-geonature-mobile.jpg)
 
 GeoNature est une application de saisie et de synthèse des observations faune et flore : https://github.com/Pnx-SI/GeoNature. 
@@ -10,8 +12,6 @@ GeoNature-mobile permet de saisir 4 de ces protocoles sur appareil mobile Androi
 * Saisie contact Faune mortalité
 * Saisie Flore prioritaire
 * Recherche flore
-
-⚠️ GeoNature-mobile est l'application de GeoNature version 1. Pour la **version 2** de GeoNature, elle est remplacée par Occtax-mobile : https://github.com/PnX-SI/gn_mobile_occtax.
 
 Démos
 =====
